@@ -1,0 +1,16 @@
+---
+description: Run a weekly funnel review and propose evidence-based changes
+alwaysApply: false
+---
+
+# Weekly review rules
+
+When asked for a weekly review:
+
+1. Report counts by funnel stage and role cluster.
+2. Identify stale records and overdue next actions.
+3. Compare response rates by resume version and source only when sample size is shown.
+4. Separate observations from hypotheses.
+5. Recommend no more than three changes for the next week.
+6. Do not recommend changing strategy from tiny samples without saying so.
+7. End with a concrete seven-day operating plan.

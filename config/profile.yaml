@@ -1,0 +1,21 @@
+# Fill or revise this file before asking Cursor to tailor materials.
+name: ""
+preferred_name: ""
+school: "Harvard T.H. Chan School of Public Health"
+degree: "SM in Health Data Science"
+graduation: "December 2026"
+work_authorization:
+  current_status: "F-1"
+  internship_authorization: "CPT/OPT as applicable"
+  future_sponsorship_needed: true
+search:
+  country: "United States"
+  preferred_work_mode: "in-person preferred"
+  role_clusters:
+    - cloud_swe
+    - data_ml
+    - health_ai
+  target_start_window: "Winter 2026 through Summer 2027"
+constraints:
+  - "Verify graduation eligibility for every internship."
+  - "Track sponsorship evidence as verified, likely, unclear, or no."

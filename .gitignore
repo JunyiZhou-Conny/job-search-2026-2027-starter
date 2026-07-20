@@ -1,0 +1,9 @@
+.DS_Store
+__pycache__/
+*.pyc
+.env
+private/
+resumes/**/*.aux
+resumes/**/*.log
+resumes/**/*.out
+resumes/**/*.synctex.gz

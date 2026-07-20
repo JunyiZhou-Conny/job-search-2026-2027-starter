@@ -1,0 +1,16 @@
+---
+description: Enforce the application schema when editing application records or job dossiers
+globs: "{data/applications.csv,jobs/**/*.md}"
+alwaysApply: false
+---
+
+# Application record rules
+
+- Required fields: `id`, `company`, `role`, `posting_url`, `date_found`, `status`, `eligibility`, `priority`, `next_action`, `last_update`.
+- Valid statuses: discovered, researching, referral_requested, ready_to_apply, applied, oa, recruiter_screen, technical_screen, onsite, offer, rejected, withdrawn, closed.
+- Valid priorities: A, B, C.
+- Valid eligibility values: verified, likely, unclear, ineligible.
+- A role is not `applied` until the user confirms submission.
+- Record the exact resume version used after applying.
+- For graduation-sensitive internships, capture the stated graduation window in notes and set eligibility conservatively.
+- Do not overwrite the original posting URL with an aggregator URL when the company career-page URL is available.

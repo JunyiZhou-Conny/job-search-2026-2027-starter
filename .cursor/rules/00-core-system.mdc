@@ -1,0 +1,15 @@
+---
+description: Maintain reliable records and next actions across the job-search repository
+alwaysApply: true
+---
+
+# Core operating rules
+
+- This repository is the user's job-search system of record.
+- Never fabricate facts, dates, application outcomes, contacts, referrals, eligibility, sponsorship, or interview results.
+- Mark uncertain fields as `unknown`; do not silently infer them.
+- Preserve IDs and append to `data/activity_log.csv` when a material status changes.
+- Every active job should end with one concrete next action.
+- Separate discovery, application, networking, and interview preparation as distinct activities.
+- Optimize for qualified applications and follow-through, not raw application count.
+- Do not send messages or submit applications without explicit user authorization.

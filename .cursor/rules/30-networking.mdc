@@ -1,0 +1,15 @@
+---
+description: Create targeted, ethical networking workflows tied to live roles
+globs: "{networking/**,data/networking.csv,templates/*message*.md,prompts/prepare_coffee_chat.md}"
+alwaysApply: false
+---
+
+# Networking rules
+
+- Tie outreach to a specific company, team, role, event, shared affiliation, or technical topic.
+- Ask for perspective first; do not open by asking a stranger for a referral.
+- Keep initial outreach short and easy to answer.
+- Personalize with one real reason for contacting that person.
+- Track outreach, follow-up date, response, conversation notes, and referral outcome separately.
+- Never claim a relationship, referral, or conversation happened unless recorded by the user.
+- After a coffee chat, capture: useful facts, follow-up commitment, possible introduction, and next action.

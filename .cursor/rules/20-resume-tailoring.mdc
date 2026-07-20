@@ -1,0 +1,15 @@
+---
+description: Tailor role-cluster resumes without inventing experience or overfitting to a job description
+globs: "resumes/**/*.{tex,md,txt}"
+alwaysApply: false
+---
+
+# Resume rules
+
+- Preserve factual accuracy. Never invent tools, ownership, scale, users, publications, employment, or metrics.
+- Use three layers: master evidence bank, role-cluster resume, then small job-specific edits.
+- Prioritize demonstrated outcomes and technical decisions over keyword stuffing.
+- Reuse the employer's terminology only when it accurately describes existing experience.
+- Keep bullets concise and interview-defensible.
+- Flag missing evidence instead of manufacturing it.
+- When recommending a change, identify the target job requirement and the supporting user evidence.
