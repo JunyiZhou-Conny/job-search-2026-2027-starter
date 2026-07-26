@@ -1,46 +1,38 @@
-# Daily discovery triage — 2026-07-26
+# Discovery triage — 2026-07-26
 
-## Summary
-
-- Sources: Jobright Matches unavailable (no saved session); `newgrad_swe` OK (19); `intern_swe` OK (22)
-- Merged unique URLs: **41**
-- Decisions: **keep 18 · later 11 · skip 12**
-- Evidence: board fields only; no job detail URLs opened
-- Run timestamp: `2026-07-26T13:45:16-04:00` (automation trigger converted to America/New_York)
+- Total: **56**
+- Keep: **18**
+- Later: **20**
+- Skip: **18**
 
 ## KEEP
 
-1. [ByteDance — Backend Development Engineer Intern (Infrastructure Platform Delivery), Fall 2026](https://jobright.ai/jobs/info/6a661c9a8d53603449609311) — core / cloud_swe — `program_end`
-2. [Copart — Software Engineering Intern](https://jobright.ai/jobs/info/6a5fa5abf68dd368023e7b43) — broad / cloud_swe — `program_end`
-3. [Gemini — Software Engineering Intern (Fall 2026)](https://jobright.ai/jobs/info/6a40816416b14939532835d3) — broad / cloud_swe — `program_end`
-4. [MaxLinear — AI Intern](https://jobright.ai/jobs/info/6a457e880dd56c76cc2f3a03) — core / data_ml — `either`
-5. [Neuralink — Firmware Engineer Intern, Robotics and Surgery Engineering](https://jobright.ai/jobs/info/6a3e325f78237a036d5e388a) — broad / health_ai — `either`
-6. [Neuralink — Machine Learning Engineer Intern (Fremont)](https://jobright.ai/jobs/info/6a038dc98ecfd93cd9c0f6f5) — core / health_ai — `either`
-7. [Neuralink — Machine Learning Engineer Intern (South San Francisco)](https://jobright.ai/jobs/info/6a51c40f8d7d3e6cf1cc296d) — core / health_ai — `either`
-8. [PlusAI — Machine Learning Engineer Intern, Scenario Generation](https://jobright.ai/jobs/info/6a1b0dcb547e292ae139bf19) — core / data_ml — `either`
-9. [Plymouth Rock Assurance — Data Engineer Intern/Co-op](https://jobright.ai/jobs/info/6a5de48895356634d79e2862) — core / data_ml — `either`
-10. [Together AI — Systems Research Engineer Intern, GPU Programming (Fall 2026)](https://jobright.ai/jobs/info/6a512355bf63b66c79979464) — core / data_ml — `program_end`
-11. [AEG — Software Engineer, CH-AXS](https://jobright.ai/jobs/info/6a2c4bddd3ec94183f4bc303) — broad / cloud_swe — `program_end`
-12. [FieldAI — Embedded Systems Engineer, Federal](https://jobright.ai/jobs/info/6a1377d112f8b43cf398f13c) — core / cloud_swe — `program_end`
-13. [Neuralink — Embedded Software Engineer, Implant Embedded Systems](https://jobright.ai/jobs/info/6a0f500d83d714428981e885) — core / health_ai — `program_end`
-14. [OpenAI — Performance Modeling Engineer ~2](https://jobright.ai/jobs/info/6a5c5a3363a8f619507cd483) — core / data_ml — `program_end`
-15. [Qualcomm — GPU Software Engineer (San Diego)](https://jobright.ai/jobs/info/6a50aae62e2ceb72963b4a5c) — core / cloud_swe — `program_end`
-16. [Qualcomm — GPU Software Engineer (Boxborough, MA)](https://jobright.ai/jobs/info/6a50ab79d5d2a327b664cfef) — core / cloud_swe — `program_end`
-17. [UST HealthProof — Data Engineer](https://jobright.ai/jobs/info/6a6620615c7e2d715ebb2f83) — broad / health_ai — `program_end`
-18. [WD — Software Development Engineer (Firmware)](https://jobright.ai/jobs/info/6a4e82649469c0662034ba37) — broad / cloud_swe — `program_end`
+1. **Bank of America — Global Technology Summer Analyst 2027 - Software Engineer And Mainframe Analyst** — broad/cloud_swe — `program_end` — https://jobright.ai/jobs/info/6a4504a051d0d05163cccb0e
+2. **Intuit — Software Engineer 1** — core/cloud_swe — `program_end` — https://jobright.ai/jobs/info/6a34c1461232144fb15612a5
+3. **Roblox — Software Engineer, Ads Platform** — core/cloud_swe — `program_end` — https://jobright.ai/jobs/info/6a593c5563a8f619507c11a2
+4. **SpaceXAI — Software Engineer - Data** — core/data_ml — `program_end` — https://jobright.ai/jobs/info/6a4e90b00ea38951a6ff3a0d
+5. **Twitch — Software Engineer, Memberships I** — core/cloud_swe — `program_end` — https://jobright.ai/jobs/info/6a3ebe9d78237a036d5e51c6
+6. **Jump Trading — Campus AI Research Engineer – Research Automation (Intern)** — core/data_ml — `program_end` — https://jobright.ai/jobs/info/6a4ec9c09469c0662034cac6
+7. **Plymouth Rock Assurance — Data Engineer Intern/Co-op** — core/data_ml — `program_end` — https://jobright.ai/jobs/info/6a5de48895356634d79e2862
+8. **TIFIN — AI Engineering Intern** — core/data_ml — `program_end` — https://jobright.ai/jobs/info/6a51d4f702522b5b722ec319
+9. **AEG — Software Engineer- CH- AXS** — broad/cloud_swe — `program_end` — https://jobright.ai/jobs/info/6a2c4bddd3ec94183f4bc303
+10. **CyberProof — Associate Data Engineer (Early Career Talent)** — core/data_ml — `program_end` — https://jobright.ai/jobs/info/6a394ee21232144fb156a775
+11. **General Dynamics — Junior Embedded Software Engineer** — broad/cloud_swe — `program_end` — https://jobright.ai/jobs/info/6a3210925958816970018132
+12. **OpenAI — Performance Modeling Engineer ~2** — core/data_ml — `program_end` — https://jobright.ai/jobs/info/6a5c5a3363a8f619507cd483
+13. **SpaceX — Software Engineer, Design Software (Starship)** — broad/cloud_swe — `program_end` — https://jobright.ai/jobs/info/69baee6006c1ba00c54d4054
+14. **Thunderbolt Solutions — Software Engineer 1** — broad/cloud_swe — `program_end` — https://jobright.ai/jobs/info/6a5d8d2ac8e3a473cb8b4853
+15. **UST — Jr Fullstack Engineer** — broad/cloud_swe — `program_end` — https://jobright.ai/jobs/info/6a6658c287cef057612cfdf6
+16. **UST HealthProof — Data Engineer** — core/health_ai — `program_end` — https://jobright.ai/jobs/info/6a6620615c7e2d715ebb2f83
+17. **Zachary Piper Solutions — Python Developer** — broad/data_ml — `program_end` — https://jobright.ai/jobs/info/6a66389c979290281c7092c4
+18. **Zachary Piper Solutions — Software Engineer** — broad/cloud_swe — `program_end` — https://jobright.ai/jobs/info/6a6638aa979290281c7092c8
 
 ## Skip themes
 
-- Fully remote (`remote`): 5
-- Non-target QA, IT support, coordinator, or technician work (`non_target_role`): 4
-- Explicit citizenship/clearance/PhD or start-date gate (`hard_gate`): 4
-- Some rows fire more than one theme.
+- `start_date_conflict`: 7
+- `timing_expired`: 7
+- `hard_gate`: 6
+- `remote`: 4
+- `non_target_role`: 3
+- `traditional_student_coop`: 1
 
-## Needs attention
-
-- Personalized Matches were not run because `secrets/jobright_storage.json` is absent.
-- The board exporter exposed a known intern-table column quirk: company size appears under `h1b_signal` and requirements text under `is_new_grad_signal`. Those values were not treated as H1B facts.
-- Suspected cross-URL duplicates: Copart Software Engineering Intern; FieldAI Embedded Systems Engineer-Federal; Neuralink Machine Learning Engineer Intern. One overlapping URL variant in each group was moved to `later` where appropriate.
-- The VM clock lagged the trusted automation trigger date. Files and timestamps use the trigger's `2026-07-26` America/New_York run date.
-
-No applications were submitted, and `data/applications.csv` was not modified.
+All decisions use board fields only. `user_confirm` is blank; no application records were ingested.
