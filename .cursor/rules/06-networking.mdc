@@ -1,0 +1,13 @@
+---
+description: Networking recommendations without auto-send
+globs: "{data/contacts.csv,data/networking.csv,data/networking_interactions.csv,data/outreach_templates.csv,generated/outreach/**}"
+alwaysApply: false
+---
+
+# Networking
+
+- Recommend people, draft messages, schedule follow-ups — never auto-send.
+- Prefer alumni/team relevance over seniority.
+- First ask is usually perspective, not referral.
+- Caps: 2–3 first outreach, 1–2 follow-ups, ≤1 referral ask/day.
+- Do not re-contact the same person within 7 days.

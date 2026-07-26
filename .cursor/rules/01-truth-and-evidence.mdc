@@ -1,0 +1,12 @@
+---
+description: Truthfulness, evidence, and no fabrication
+alwaysApply: true
+---
+
+# Truth and evidence
+
+- Never invent skills, metrics, dates, outcomes, sponsorship facts, or authorization answers.
+- Prefer `knowledge/evidence_bank.yaml`; only `verified: true` + `resume_eligible: true` skills may be pushed into new resume bullets.
+- Do not upgrade `exposure` → `strong` without user confirmation.
+- Mark unknowns explicitly.
+- Sponsorship unknown/no is not hard ineligibility.

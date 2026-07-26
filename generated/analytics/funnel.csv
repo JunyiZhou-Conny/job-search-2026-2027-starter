@@ -1,0 +1,15 @@
+group_field,group_value,n,applied,oa_plus,technical_plus,offers,oa_rate,technical_rate,offer_rate,sample_rule
+source,Company site,1,0,0,0,0,n/a,n/a,n/a,"n<5: show only, no interpretation"
+source,Simplify,15,7,0,0,0,0%,0%,0%,5≤n<15: weak hypothesis only
+role_cluster,cloud_swe,1,0,0,0,0,n/a,n/a,n/a,"n<5: show only, no interpretation"
+role_cluster,unknown,15,7,0,0,0,0%,0%,0%,5≤n<15: weak hypothesis only
+resume_version,unknown,16,7,0,0,0,0%,0%,0%,5≤n<15: weak hypothesis only
+pursuit_lane,core,1,0,0,0,0,n/a,n/a,n/a,"n<5: show only, no interpretation"
+pursuit_lane,unknown,15,7,0,0,0,0%,0%,0%,5≤n<15: weak hypothesis only
+priority,A,1,0,0,0,0,n/a,n/a,n/a,"n<5: show only, no interpretation"
+priority,B,15,7,0,0,0,0%,0%,0%,5≤n<15: weak hypothesis only
+tailoring_level,unknown,16,7,0,0,0,0%,0%,0%,5≤n<15: weak hypothesis only
+referral_status,unknown,16,7,0,0,0,0%,0%,0%,5≤n<15: weak hypothesis only
+sponsorship_signal,unclear,16,7,0,0,0,0%,0%,0%,5≤n<15: weak hypothesis only
+employment_type,new_grad,1,0,0,0,0,n/a,n/a,n/a,"n<5: show only, no interpretation"
+employment_type,unknown,15,7,0,0,0,0%,0%,0%,5≤n<15: weak hypothesis only

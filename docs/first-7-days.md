@@ -4,7 +4,8 @@
 
 - Complete `config/profile.yaml`.
 - Add your master resume and three cluster copies under `resumes/`.
-- Add every currently live, genuinely relevant role you already know about.
+- Decide pursuit lanes (`core` / `broad` / `practice`); do not hard-reject on sponsorship alone.
+- Add live roles manually **or** apply via Simplify and import CSV into `data/imports/simplify/`.
 - Generate the dashboard.
 
 ## Day 2 — Resume evidence bank

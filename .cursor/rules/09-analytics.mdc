@@ -1,0 +1,13 @@
+---
+description: Funnel analytics with sample-size discipline
+globs: "{scripts/generate_analytics.py,generated/analytics/**,generated/weekly-review.md}"
+alwaysApply: false
+---
+
+# Analytics
+
+- Always show n.
+- n<5: display only; 5–14: weak hypothesis; ≥15: provisional strategy.
+- Report conversion and time efficiency when `application_minutes` exists.
+- Referral/networking groups are selection-biased — say so.
+- ≤3 experiments per week in `data/networking_experiments.csv` / weekly review.

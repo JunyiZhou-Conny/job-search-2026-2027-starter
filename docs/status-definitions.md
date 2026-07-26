@@ -3,7 +3,7 @@
 | Status | Meaning |
 |---|---|
 | discovered | Captured but not yet evaluated |
-| researching | Eligibility, sponsorship, team, or role fit is being checked |
+| researching | Hard eligibility, team, or role fit is being checked |
 | referral_requested | A relevant person has been contacted about the live role |
 | ready_to_apply | Materials and required facts are ready |
 | applied | Submission confirmed by the user |
@@ -18,6 +18,16 @@
 
 ## Priority
 
-- **A:** Strong fit, eligible, strategically valuable, apply fast and network.
-- **B:** Reasonable fit, apply with light tailoring.
-- **C:** Low fit, unclear eligibility, or low strategic value; apply only if inexpensive.
+- **A:** Strong fit, strategically valuable; apply fast and network (usually core).
+- **B:** Reasonable fit; light tailoring.
+- **C:** Lower strategic value; inexpensive apply only.
+
+## Pursuit lane
+
+- **core:** High conversion effort (tailor + network + follow).
+- **broad:** Expand interview surface despite weak/no sponsorship signal; low pre-apply effort.
+- **practice:** Intentional practice volume; cap ~15–25% of applied.
+
+## Sponsorship signal
+
+`verified` | `likely` | `unclear` | `no` — probability only. Never equate `no` with hard ineligibility.

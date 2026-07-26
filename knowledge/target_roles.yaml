@@ -1,0 +1,63 @@
+# Co-primary tracks — discovery weight ~50/50 (see config/profile.yaml)
+primary_track: new_grad_2027_start
+secondary_track: internship_if_eligible
+track_balance: balanced_intern_and_new_grad
+discovery_sources:
+  - id: jobright_matches
+    role: personalized_shortlist
+    feeds: [intern, new_grad]
+  - id: intern_list
+    role: category_board
+    url: https://www.intern-list.com/swe-intern-list
+    track: internship_if_eligible
+  - id: newgrad_jobs
+    role: category_board
+    url: https://www.newgrad-jobs.com/
+    track: new_grad_2027_start
+  - id: careerin_ai
+    role: category_board_ai_ml
+    url: https://www.careerin.ai/
+    track: either
+
+role_clusters:
+  cloud_swe:
+    titles: ["Software Engineer", "Backend Engineer", "Platform Engineer", "Cloud Engineer", "Infrastructure Engineer", "New Grad SWE"]
+    default_resume: "2026-07-20_cloud-swe_v1.1"
+  data_ml:
+    titles: ["Machine Learning Engineer", "Applied AI", "AI Engineer", "Data Scientist", "Data Engineer", "ML Intern/New Grad"]
+    default_resume: "2026-07-20_data-ml_v1.1"
+  health_ai:
+    titles: ["Healthcare AI", "Clinical Data", "Digital Health", "Health Informatics", "Life Science ML"]
+    default_resume: "2026-07-20_health-ai_v1.1"
+
+preferences:
+  industries_preferred: ["big tech", "fast-iterating startups", "applied AI / agents", "cloud platforms"]
+  industries_ok: ["healthcare tech", "life science tech"]
+  industries_not_primary: ["pure wet-lab biotech with no software/ML product"]
+  locations:
+    acceptable: ["any US city"]
+    preferred: ["Boston"]
+  remote: false
+  work_mode: "in-person"
+
+# High-interest adjacent families — track via data/role_patterns.csv + /analyze-adjacent-role
+# Do NOT create a permanent fourth cluster until pattern thresholds are met.
+emerging_interest:
+  potential_cluster: ml_systems_ai_infrastructure
+  themes:
+    - AI infrastructure
+    - ML systems
+    - model inference / serving
+    - distributed training or inference
+    - AI agents and agent infrastructure
+    - GPU / accelerator workloads
+    - HPC
+    - cloud AI infrastructure
+    - developer tooling for AI systems
+  cluster_promotion_rules:
+    min_high_interest_jobs: 5
+    or_major_target: true
+    or_repeated_heavy_restructure_pct: 25
+
+pursuit_lanes:
+  practice_share_target: "0.15-0.25"

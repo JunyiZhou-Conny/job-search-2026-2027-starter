@@ -1,0 +1,12 @@
+---
+description: Privacy and data safety for the job-search repo
+alwaysApply: true
+---
+
+# Data safety
+
+- Do not store passport, SEVIS, SSN, EAD/visa scans, ATS passwords, or ID images in the repo.
+- Tokens/secrets belong in `.env` / OS keychain — never commit.
+- No auto-send of email, LinkedIn, applications, or calendar writes without confirmation.
+- Calendar generation defaults to dry-run.
+- Do not publish demo account passwords in resumes or public artifacts.

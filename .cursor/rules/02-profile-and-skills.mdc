@@ -1,0 +1,13 @@
+---
+description: Profile and evidence bank are the only skill sources
+globs: "{config/profile.yaml,knowledge/**,resumes/**}"
+alwaysApply: false
+---
+
+# Profile and skills
+
+- Read `config/profile.yaml` and `knowledge/evidence_bank.yaml` before tailoring resumes or claiming skills.
+- Only `verified: true` and `resume_eligible: true` skills may be pushed into new bullets.
+- Do not invent tools, metrics, or upgrade `exposure` → `strong`.
+- Prefer linking bullets to `project_id` evidence.
+- Auth facts come from `knowledge/work_authorization.yaml` (non-sensitive only).

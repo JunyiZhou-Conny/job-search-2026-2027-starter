@@ -1,21 +1,114 @@
-# Fill or revise this file before asking Cursor to tailor materials.
-name: ""
-preferred_name: ""
+# Canonical profile. Auth details also mirrored in knowledge/work_authorization.yaml (non-sensitive only).
+
+legal_name: "Junyi Zhou"
+preferred_name: "Junyi"
+name: "Junyi Zhou"  # legacy alias
+phone: "4046635601"
+email: "junyizhou@hsph.harvard.edu"
+linkedin: "https://www.linkedin.com/in/junyi-zhou-270208247"
+github: "https://github.com/JunyiZhou-Conny"
+location: "Boston, MA"
+
 school: "Harvard T.H. Chan School of Public Health"
 degree: "SM in Health Data Science"
-graduation: "December 2026"
+graduation_date: "2026-12"
+graduation: "December 2026"  # legacy alias
+
+education_history:
+  - school: "Harvard T.H. Chan School of Public Health"
+    degree: "SM in Health Data Science"
+    end: "2026-12"
+  - school: "Emory University"
+    degree: "B.S. Applied Mathematics and Statistics; Minor Computer Informatics"
+    end: "2025-05"
+    gpa: "3.925"
+
+certifications:
+  - "AWS Certified Cloud Practitioner"
+  - "AWS Certified AI Practitioner"
+  - "AWS Machine Learning Associate"
+
+earliest_start_date: "2027-01-18"
+
 work_authorization:
   current_status: "F-1"
-  internship_authorization: "CPT/OPT as applicable"
+  internship_authorization: "unknown"
+  post_graduation_authorization: "OPT (initial / first-year)"
+  expected_ead_ready: "2027-01-18"
+  earliest_full_time_start: "2027-01-18"
+  preferred_full_time_start: "2027-01-18 (ideal); any later date also fine, including Summer 2027"
   future_sponsorship_needed: true
+  future_sponsorship_required: true
+
 search:
   country: "United States"
-  preferred_work_mode: "in-person preferred"
+  target_locations: ["any US city"]
+  acceptable_cities: ["any US city"]
+  preferred_cities:
+    - Boston
+  remote_preferences: false
+  remote_ok: false
+  preferred_work_mode: "in-person"
+  role_preferences:
+    - cloud_swe
+    - backend_platform
+    - data_ml
+    - ml_ai
+    - health_ai
+  industry_preferences:
+    preferred: ["big tech", "fast-iterating startups", "applied AI"]
+    secondary: ["healthcare tech", "life science tech"]
   role_clusters:
     - cloud_swe
     - data_ml
     - health_ai
-  target_start_window: "Winter 2026 through Summer 2027"
+  tracks:
+    - id: new_grad_2027_start
+      priority: co_primary
+      discovery_weight: 0.5
+      description: "Full-time new-grad / entry-level roles with 2027 start"
+      start_flexibility: "Earliest 2027-01-18; Jan start preferred; Summer 2027 (or any later 2027 date) fully acceptable"
+      discovery_sources: ["jobright_matches", "newgrad_jobs"]
+    - id: internship_if_eligible
+      priority: co_primary
+      discovery_weight: 0.5
+      description: "Internships / off-cycle / co-op when graduation eligibility can be verified for a December 2026 graduate"
+      start_flexibility: "Any start date if eligible — including summer — after verifying return-to-school and graduation-window rules"
+      discovery_sources: ["jobright_matches", "intern_list"]
+  # Both tracks active; discovery volume should be roughly balanced, not new-grad-only.
+  primary_track: "new_grad_2027_start"
+  secondary_track: "internship_if_eligible"
+  track_balance: "balanced_intern_and_new_grad"
+  target_start_window: "Full-time: 2027-01-18 onward (Jan preferred, Summer 2027 OK). Internships: any eligible start."
+  pursuit_lanes:
+    - core
+    - broad
+    - practice
+  practice_lane_target_share: "0.15-0.25"
+
 constraints:
-  - "Verify graduation eligibility for every internship."
-  - "Track sponsorship evidence as verified, likely, unclear, or no."
+  - "Hard eligibility ≠ sponsorship. Never self-reject only because sponsorship is no/unclear."
+  - "Verify graduation eligibility for every internship; do not assume Summer 2027 internships accept December 2026 graduates."
+  - "Track sponsorship evidence separately from hard eligibility."
+  - "Tracks are co-primary: balance discovery across 2027 new-grad AND eligible internships (~50/50 volume intent)."
+  - "Still verify graduation eligibility per internship; do not assume every Summer 2027 intern posting accepts December 2026 grads."
+  - "Answer work-auth questions truthfully; save verbatim Q&A when forms conflate OPT/EAD/H-1B."
+  - "Simplify is the base ledger; this repo is the strategy layer via one-way CSV import."
+  - "Prefer in-person; do not pursue fully remote roles."
+  - "Full-time start must be on or after 2027-01-18. Do not reject Summer 2027 or later new-grad starts."
+  - "Location: any US city acceptable; Boston preferred."
+  - "Manual labels (label_source=manual) must not be auto-overwritten."
+
+do_not_pursue:
+  roles: []
+  work_models:
+    - remote
+  industries: []
+
+available_hours_per_weekday: 3
+daily_caps:
+  must_do: 3
+  applications: 5
+  first_outreach: 3
+  follow_ups: 2
+  prep_blocks: 1

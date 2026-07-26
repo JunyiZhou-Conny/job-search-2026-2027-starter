@@ -1,0 +1,16 @@
+---
+description: Keep discovery, Simplify ledger, and local strategy fields on a one-way sync model
+globs: "{data/applications.csv,data/imports/**,docs/platforms.md,scripts/jobsearch.py}"
+alwaysApply: false
+---
+
+# Platform sync rules
+
+- Discovery tools (Jobright, LinkedIn, Handshake, etc.) are intake only.
+- Simplify owns: company, role, posting URL, date applied, and base status.
+- This repo owns: resume_version, pursuit_lane, sponsorship_signal, eligibility, auth answers, referral, networking, interview notes, next_action, dossiers.
+- Sync is **one-way**: Simplify export → `data/imports/simplify/` → `import-simplify`. Never invent a bidirectional sync.
+- On import, preserve local strategy fields even if Simplify status changes.
+- Jobright status conflicts are ignored unless the user explicitly asks to reconcile them.
+- **Drop-file habit:** If the user provides a Simplify CSV from Downloads (or any path), treat it as `/sync-simplify`: copy into `data/imports/simplify/`, import, dedupe, reconcile URL mismatches (dashboard URLs / typos), then summarize. See `.cursor/commands/sync-simplify.md`.
+- Missing from Simplify ≠ delete local keeps. Unapplied `discovered` rows stay until the user applies or closes them.

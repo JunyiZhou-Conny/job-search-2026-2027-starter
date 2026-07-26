@@ -1,0 +1,13 @@
+---
+description: Cluster resumes and experiment tracking
+globs: "{resumes/**,data/resume_versions.csv}"
+alwaysApply: false
+---
+
+# Resume versioning
+
+- Quality baseline is `resumes/base/JZ_resume.tex` — do not dilute specificity.
+- Active clusters are `*_v1.1` under `cloud_swe` / `data_ml` / `health_ai` (also linked from `resumes/clusters/`).
+- Record exact `resume_version` after every apply.
+- Broad: cluster resume; Core: light tailor; deep tailor rare.
+- Every version change needs a hypothesis in `data/resume_versions.csv`.

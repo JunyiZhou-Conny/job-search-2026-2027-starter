@@ -1,0 +1,139 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[pdftex]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{mathptmx}
+\usepackage{csquotes}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.530in}
+\addtolength{\evensidemargin}{-0.375in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-0.5in}
+\addtolength{\textheight}{1.1in}
+
+\urlstyle{rm}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{
+  \vspace{-10pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-6pt}]
+
+\newcommand{\resumeItem}[2]{
+  \item{
+    \textbf{#1}{: #2 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{#3} & \textit{#4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-3pt}}
+
+\renewcommand{\labelitemii}{$\circ$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}\vspace{-2pt}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-6pt}}
+
+\begin{document}
+
+% Heading
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \textbf{\Large Junyi (Conny) Zhou} & Tel: (404) 663-5601 \\
+  Boston, MA 02215 & Email: \href{mailto:junyizhou@hsph.harvard.edu}{junyizhou@hsph.harvard.edu} \\
+  \href{https://github.com/JunyiZhou-Conny}{github.com/JunyiZhou-Conny} &
+  \href{https://www.linkedin.com/in/junyi-zhou-270208247}{linkedin.com/in/junyi-zhou-270208247} \\
+\end{tabular*}
+
+% Education
+\section{Education}
+\resumeSubHeadingListStart
+  \resumeSubheading
+  {Harvard University}{Boston, MA}
+  {M.S. in Health Data Science}{August 2025 -- December 2026}
+  \resumeItemListStart
+    \item Coursework: Deep Learning, Healthcare Machine Learning
+  \resumeItemListEnd
+  \resumeSubheading
+  {Emory University, College of Arts and Sciences}{Atlanta, GA}
+  {B.S. in Applied Mathematics and Statistics; Minor in Computer Informatics; GPA: 3.925}{August 2021 -- May 2025}
+  \resumeItemListStart
+    \item Honors: Dean's List Spring 2022, Spring 2023
+    \item Coursework: Data Structures, Database Systems, Machine Learning, NLP, Probability and Statistics
+  \resumeItemListEnd
+\resumeSubHeadingListEnd
+
+% Technical Skills — cloud/SWE-first ordering
+\section{Technical Skills}
+\resumeSubHeadingListStart
+  \resumeItem{Languages}{Python, C++, Java, SQL, JavaScript, R}
+  \resumeItem{Backend \& Cloud}{AWS (Lambda, EC2, S3, SageMaker, Redshift), Docker, Kubernetes, Flask, Git}
+  \resumeItem{Data Systems}{PostgreSQL, MySQL, MongoDB, Pinecone, Spark, Hadoop, Snowflake, BigQuery}
+  \resumeItem{ML Systems}{PyTorch, TensorFlow, Hugging Face Transformers, scikit-learn, RAG / LLM application pipelines}
+  \resumeItem{Certifications}{AWS Certified Cloud Practitioner; AWS Certified AI Practitioner; AWS Machine Learning Associate}
+\resumeSubHeadingListEnd
+
+% Experience / Projects — systems work first
+\section{Selected Experience}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {Agentic LLM Simulation Platform}{Atlanta, GA}
+    {Full-Stack Engineer \& Scrum Master | Emory Pediatric Hospital}{January 2024 -- Present}
+    \resumeItemListStart
+      \item Built an \textbf{agentic LLM pipeline} with \textbf{RAG} and OpenAI models, focusing on grounded responses, hallucination control, and privacy constraints for multi-turn simulations.
+      \item Designed \textbf{prompting and context-window management} so the system can generate dynamic scenarios and retain relevant conversation state across practice sessions.
+      \item Shipped a full-stack product (\textbf{Python/Flask}, React, MongoDB, AWS) with secure real-time analytics for user performance tracking.
+      \item Led an Agile team of 6 through code reviews and iterative product feedback loops; deployed demo at \href{https://d3g1qw60hz7yw7.cloudfront.net}{CloudFront}.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Transformer Architecture Reimplementation}{Atlanta, GA}
+    {Machine Learning Researcher | Emory Department of Computer Science}{October 2024 -- January 2025}
+    \resumeItemListStart
+      \item Implemented a Transformer in \textbf{PyTorch} from scratch (multi-head self-attention, positional encodings, layer normalization) and validated against \texttt{nn.Transformer}.
+      \item Tuned training hyperparameters and optimized cross-entropy training, reaching a \textbf{9.38 BLEU} score on English-to-German translation.
+      \item Published implementation and experiments: \href{https://github.com/JunyiZhou-Conny/Reimplementation-of-Transformer}{GitHub}.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {High-Throughput ML Inference Tooling on HPC}{Atlanta, GA}
+    {Data Analyst | Bou-Nader Lab, Emory Department of Biochemistry}{February 2025 -- August 2025}
+    \resumeItemListStart
+      \item Built Python pipelines and \textbf{CLI tooling} around large model inference (AlphaFold-Multimer / AlphaFold3), including documentation for non-ML users.
+      \item Automated GPU jobs with \textbf{parallel scheduling} on HPC clusters; filtered model outputs with quantitative confidence metrics (pLDDT, PAE).
+      \item Code and docs: \href{https://github.com/JunyiZhou-Conny/AlphaFold-Bou-Nader-Lab}{GitHub}.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Generative Models for Cross-Domain Mapping}{Boston, MA}
+    {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
+    \resumeItemListStart
+      \item Implementing \textbf{PyTorch} generative / transport models (VAEs, diffusion, Optimal Transport / CellOT) for out-of-distribution mapping in high-dimensional data.
+      \item Building scalable preprocessing pipelines over large public and lab datasets; evaluating model variants for subpopulation matching quality.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+\end{document}

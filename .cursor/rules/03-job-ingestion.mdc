@@ -1,0 +1,12 @@
+---
+description: Ingest jobs with Simplify ownership boundaries
+globs: "{data/applications.csv,data/imports/**,scripts/jobsearch.py}"
+alwaysApply: false
+---
+
+# Job ingestion
+
+- Discovery tools are intake only; Simplify owns company/role/url/date_applied/base status.
+- Local repo owns resume_version, lanes, eligibility, sponsorship, auth Q&A, networking, next_action.
+- Import must not overwrite local strategy fields or manual labels.
+- Prefer company career URLs over aggregator URLs when both exist.

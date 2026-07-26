@@ -5,11 +5,14 @@ alwaysApply: true
 
 # Core operating rules
 
-- This repository is the user's job-search system of record.
+- This repository is the user's **strategy and memory layer**, not a replacement for Simplify or Jobright.
+- Platforms discover and submit; Simplify holds the base application ledger; this repo stores resume versions, pursuit lanes, auth Q&A, networking, interview learning, and next actions.
 - Never fabricate facts, dates, application outcomes, contacts, referrals, eligibility, sponsorship, or interview results.
 - Mark uncertain fields as `unknown`; do not silently infer them.
 - Preserve IDs and append to `data/activity_log.csv` when a material status changes.
 - Every active job should end with one concrete next action.
 - Separate discovery, application, networking, and interview preparation as distinct activities.
-- Optimize for qualified applications and follow-through, not raw application count.
+- Optimize for qualified applications and follow-through, not raw application count alone.
 - Do not send messages or submit applications without explicit user authorization.
+- **Sponsorship unknown/no is not a hard reject.** Do not auto-mark roles ineligible for sponsorship reasons alone.
+- Prefer one-way Simplify CSV import over manual re-entry of every application.

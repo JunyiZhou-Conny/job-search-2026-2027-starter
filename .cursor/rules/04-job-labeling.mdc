@@ -1,0 +1,13 @@
+---
+description: Auto-labeling with confidence and manual override protection
+globs: "{data/applications.csv,scripts/label_job.py}"
+alwaysApply: false
+---
+
+# Job labeling
+
+- Auto labels must include value, confidence, evidence/reason, source=auto, needs_review.
+- If `label_source=manual`, do not overwrite unless user explicitly forces override.
+- Hard eligibility only for citizenship, clearance, return-to-school conflict, start-date/auth conflict, unacceptable remote, explicit degree/grad-year block.
+- Never set hard_eligibility=ineligible solely for sponsorship.
+- Pursuit lanes: core / broad / practice.

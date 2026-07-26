@@ -1,1 +1,37 @@
 timestamp,job_id,contact_id,event_type,from_status,to_status,note
+2026-07-20T12:10:43,J20260720-001,,job_added,,discovered,Optiver — Graduate Software Engineer (2027 Start)
+2026-07-20T14:26:31,J20260720-002,,simplify_import_created,,saved,Boston Scientific — R&D Software Engineer Intern
+2026-07-20T14:26:31,J20260720-003,,simplify_import_created,,saved,Software Development Engineer Intern 2026 | Boston Scientific — R&D Systems Engineer Intern
+2026-07-20T14:26:31,J20260720-004,,simplify_import_created,,applied,Caterpillar Inc. — 2026 Summer Corporate Intern
+2026-07-20T14:26:31,J20260720-005,,simplify_import_created,,saved,"Publix Super Markets, Inc — Intern – Industrial Operations Software Engineer"
+2026-07-20T14:26:31,J20260720-006,,simplify_import_created,,applied,BambooHR — Software Engineer  Intern
+2026-07-20T14:26:31,J20260720-007,,simplify_import_created,,applied,Fortinet — Software Development Intern
+2026-07-20T14:26:31,J20260720-008,,simplify_import_created,,saved,Hunter Industries Brand — Intern - Software Engineer
+2026-07-20T14:26:31,J20260720-009,,simplify_import_created,,saved,"Westfield — WSP IT Intern, Berkeley Heights Office (2026 Summer)"
+2026-07-20T14:26:31,J20260720-010,,simplify_import_created,,applied,JMP Statistical Discovery — 2026 JMP Summer Intern; Advanced Analytics Testing
+2026-07-20T14:26:31,J20260720-011,,simplify_import_created,,saved,Amazon — Data Center Infrastructure Engineer Intern
+2026-07-20T14:26:31,J20260720-012,,simplify_import_created,,saved,Waystar — Application Engineering Intern
+2026-07-20T14:26:31,J20260720-013,,simplify_import_created,,saved,"Lila Sciences — Intern, Security & Cloud Engineering"
+2026-07-20T14:26:31,J20260720-014,,simplify_import_created,,applied,Sentinel Group - Career Page — Software Developer Summer (Python) Intern 2026
+2026-07-20T14:26:31,J20260720-015,,simplify_import_created,,applied,Virtru — Graduate Software Developer Intern
+2026-07-20T14:26:31,J20260720-016,,simplify_import_created,,applied,Dark Wolf Solutions — UF College Fair – Internship
+2026-07-23T19:22:24,J20260723-001,,triage_ingested,,discovered,Altera — AI Software Development Engineer - Intern
+2026-07-23T19:22:24,J20260723-002,,triage_ingested,,discovered,Bild AI — AI/SWE Intern
+2026-07-23T19:22:24,J20260723-003,,triage_ingested,,discovered,Cadence — Software Engineering Intern
+2026-07-23T19:22:24,J20260723-004,,triage_ingested,,discovered,Etched — Inference Intern
+2026-07-23T19:22:24,J20260723-005,,triage_ingested,,discovered,Exowatt — Software Engineering Intern - Agent Platform (AI)
+2026-07-23T19:22:24,J20260723-006,,triage_ingested,,discovered,"Google — Software Engineering Intern, BS, Summer 2027"
+2026-07-23T19:22:24,J20260723-007,,triage_ingested,,discovered,"Google — Software Engineering Intern, MS, Summer 2027"
+2026-07-23T19:22:24,J20260723-008,,triage_ingested,,discovered,Hadrian — All Levels: Backend Software Engineer
+2026-07-23T19:22:24,J20260723-009,,triage_ingested,,discovered,HyperLight — Software Engineer Intern
+2026-07-23T19:22:24,J20260723-010,,triage_ingested,,discovered,PlusAI — Software Engineer Intern - Data
+2026-07-23T19:22:24,J20260723-011,,triage_ingested,,discovered,Rivian and Volkswagen Group Technologies — Data Engineering Intern - AI & Analytics (Fall 2026)
+2026-07-23T19:22:24,J20260723-012,,triage_ingested,,discovered,SPREEAI — Software Engineer Intern (AI Infrastructure / Training / Inference)
+2026-07-23T19:22:24,J20260723-013,,triage_ingested,,discovered,"SpaceX — New Graduate Engineer, Software"
+2026-07-23T19:22:24,J20260723-014,,triage_ingested,,discovered,TDK SensEI — Data Engineering Intern
+2026-07-23T19:22:24,J20260723-015,,triage_ingested,,discovered,TikTok — Software Engineer Intern (Recommendation Infrastructure) - 2026 Fall (BS/MS)
+2026-07-23T19:22:24,J20260723-016,,triage_ingested,,discovered,Traba — Software Engineer (AI Agents)
+2026-07-26T11:36:00,J20260726-001,,simplify_import_created,,applied,"Google — Software Engineering Inter, MS, Summer 2027"
+2026-07-26T11:36:00,J20260726-002,,simplify_import_created,,applied,"Uber — 2027 Software Engineering Internship, Uber Career Prep"
+2026-07-26T11:36:19,J20260723-007,,simplify_reconcile_merge,discovered,applied,Merged J20260726-001 Google MS Simplify row into triage keep; dashboard URL mismatch
+2026-07-26T11:36:19,J20260726-001,,duplicate_closed,applied,closed,Duplicate of J20260723-007

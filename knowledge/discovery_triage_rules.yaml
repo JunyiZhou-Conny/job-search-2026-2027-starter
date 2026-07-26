@@ -1,0 +1,120 @@
+# AI triage guide for discovery CSVs.
+# Code does NOT apply these as regex hardcode — the agent reads this file + the CSV
+# and writes generated/discovery_triage_YYYY-MM-DD.csv.
+#
+# Decisions: keep | later | skip
+# Only user-confirmed keep rows should be ingested into data/applications.csv.
+
+version: 1
+updated: 2026-07-23
+
+profile_anchors:
+  graduation: "December 2026"
+  earliest_ft_start: "2027-01-18"
+  remote_ok: false
+  preferred_work_mode: "in-person or hybrid"
+  tracks: ["internship_if_eligible", "new_grad_2027_start"]  # co-primary
+  role_clusters: ["cloud_swe", "data_ml", "health_ai"]
+  emerging_interest: ["AI infra", "ML systems", "agents", "inference"]
+
+data_policy:
+  primary_input: "data/discovery/YYYY-MM-DD_all.csv"
+  # Prefer board fields already in the CSV. Do not invent JD facts.
+  # Optional: open a Jobright/company URL only when board text is ambiguous
+  # AND the row would otherwise be keep/borderline — note if unread.
+  do_not_fabricate: true
+  sponsorship_unknown_is_not_skip: true
+
+outputs:
+  csv: "generated/discovery_triage_YYYY-MM-DD.csv"
+  md: "generated/discovery_triage_YYYY-MM-DD.md"
+  required_columns:
+    - decision
+    - company
+    - role
+    - url
+    - source
+    - track
+    - work_model
+    - location
+    - posted_relative
+    - fetched_at
+    - suggested_lane
+    - suggested_cluster
+    - confidence
+    - reason
+    - evidence_basis   # board_fields | board_plus_url_skim | unknown
+    - user_confirm     # leave blank for human
+
+decision_meanings:
+  keep: "Worth user review and likely ingest → applications; prepare Simplify apply."
+  later: "Related but lower priority; do not ingest unless user promotes."
+  skip: "Do not pursue now; explain which guide rule fired."
+
+# Guides for the AI — judge each row; cite which rule id(s) in reason.
+guide_rules:
+  - id: remote
+    severity: hard
+    default_decision: skip
+    guidance: >
+      If work_model (or clear title/notes) indicates fully remote / remote-only,
+      skip. Hybrid or on-site is fine. If work_model blank, do not assume remote;
+      use later or keep based on other fit, and say evidence is incomplete.
+
+  - id: non_target_role
+    severity: hard
+    default_decision: skip
+    guidance: >
+      Skip roles clearly outside SWE / data / ML / AI infra targets
+      (e.g. data-center technician, pure QA-only, unrelated clinical non-tech,
+      wholesale sales). Adjacent cyber/quant may be later, not automatic skip.
+
+  - id: hard_gate
+    severity: hard
+    default_decision: skip
+    guidance: >
+      Skip only when board text clearly shows an incompatible hard gate:
+      PhD-only, polygraph/TS-SCI when not viable, exclusive graduation window
+      the candidate cannot meet (e.g. must graduate Dec 2027–Jun 2028),
+      or must return to / continue school after the internship in a way that
+      conflicts with graduating December 2026. Soft/vague windows → do not skip.
+
+  - id: timing_expired
+    severity: hard
+    default_decision: skip
+    guidance: >
+      If the role requires a term already over relative to today's date
+      (e.g. Summer 2026 internship when today is mid/late July 2026), skip
+      for timing. Fall 2026 / Summer 2027 internships are generally OK.
+
+  - id: traditional_student_coop
+    severity: soft
+    default_decision: later_or_skip
+    guidance: >
+      Heavy "must be enrolled full-time undergrad / credit-hour co-op" framing
+      with weak SWE fit → skip or later. Do not skip strong SWE/ML internships
+      merely because they say "currently pursuing a degree" — candidate is still
+      a student until Dec 2026.
+
+  - id: intern_ok
+    severity: policy
+    default_decision: allow_keep
+    guidance: >
+      Internships are acceptable (co-primary with new-grad). Prefer keep/later
+      over skip when uncertain on graduation wording.
+
+  - id: fit_priority
+    severity: soft
+    default_decision: keep_or_later
+    guidance: >
+      Prefer keep for cloud_swe / data_ml / AI infra / agents / strong new-grad SWE.
+      Use later for weak adjacent (generic front-end, QA automation, light analytics).
+      suggested_lane: core | broad | practice.
+
+process:
+  - Read knowledge/discovery_triage_rules.yaml and config/profile.yaml.
+  - Read data/discovery/YYYY-MM-DD_all.csv (every row).
+  - For each row, choose keep|later|skip using guide_rules; write reason with rule id(s).
+  - Set evidence_basis honestly (usually board_fields).
+  - Write CSV + short MD summary with counts.
+  - Do NOT write applications.csv until user confirms keep rows.

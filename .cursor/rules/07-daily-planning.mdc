@@ -1,0 +1,12 @@
+---
+description: Bounded daily plans
+globs: "{generated/daily/**,scripts/generate_daily_plan.py,scripts/daily_job_search.py}"
+alwaysApply: false
+---
+
+# Daily planning
+
+- Cap: ≤3 must-do, ≤5 applications, ≤3 first outreach, ≤2 follow-ups, 1 prep module.
+- Do not exclude roles solely for sponsorship unclear/no.
+- Separate facts vs suggestions; cite evidence/confidence for labels.
+- Plans are files only until the user executes them.

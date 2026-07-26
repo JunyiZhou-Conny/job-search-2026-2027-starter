@@ -1,0 +1,5 @@
+template_id,name,use_when,channel,body
+T_alumni_perspective,Alumni perspective ask,Core role applied; first touch with school alum,linkedin,"Hi {name} — I'm a Harvard Health Data Science master's student (Dec 2026 grad) with work on agentic LLM/RAG systems. I recently applied to {role} at {company} and would value 15 minutes on how your team approaches {topic}. Happy to share a short background first."
+T_team_engineer,Team engineer question,Target team member; not asking referral yet,linkedin,"Hi {name} — I'm exploring {role}-type work at {company}. Your experience with {topic} stood out. Would you be open to a brief chat about how the team ships {topic}? No ask for a referral — just trying to learn."
+T_followup,Polite bump,No reply after 7 days,linkedin,"Hi {name} — quick follow-up in case this was buried. Still interested in a short conversation about {topic} on the {company} team."
+T_thankyou,Coffee chat thank-you,After coffee chat,email,"Thank you for taking the time today — I especially appreciated what you shared about {topic}. I'll keep you posted on my {company} process and won't ask for anything further unless it seems useful."

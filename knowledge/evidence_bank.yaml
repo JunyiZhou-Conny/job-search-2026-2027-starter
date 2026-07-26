@@ -1,0 +1,156 @@
+# Skill/project evidence. Only verified + resume_eligible items should be pushed into resumes.
+# Levels: strong | working | exposure
+
+projects:
+  airway_chatbot:
+    title: "Airway Management Simulation Chatbot"
+    org: "Emory Pediatric Hospital"
+    role: "Full-Stack Engineer, Scrum Master"
+    dates: "2024-01 — present"
+    source_file: "resumes/base/JZ_resume.tex"
+    source_url: "https://github.com/JunyiZhou-Conny/Airway-Management-Assistant"
+    technologies: ["Python", "Flask", "REST APIs", "React", "Auth0", "MongoDB", "AWS Elastic Beanstalk", "AWS CloudFront", "OpenAI", "RAG", "LLM agents"]
+    software_engineering_evidence:
+      - "React frontend communicates with Flask REST endpoints; MongoDB provides application persistence"
+      - "Auth0 authentication protects application access"
+      - "Backend deployed through AWS Elastic Beanstalk; frontend delivered through CloudFront with SSL/DNS configuration"
+      - "Agile team of 6; code reviews and clinician feedback loop"
+    measurable_results:
+      - "Deployed AWS demo; Agile team of 6; HIPAA-conscious clinical simulation platform"
+    interview_depth: strong
+
+  transformer_reimpl:
+    title: "Reimplementation of Transformer Architecture"
+    org: "Emory Dept. of Computer Science"
+    role: "Machine Learning Researcher"
+    dates: "2024-10 — 2025-01"
+    source_file: "resumes/base/JZ_resume.tex"
+    technologies: ["PyTorch", "Transformers", "BLEU evaluation"]
+    measurable_results:
+      - "9.38 BLEU on EN→DE; validated against nn.Transformer"
+    interview_depth: strong
+
+  cellot_wyss:
+    title: "Cross-Species Drug Translation using Optimal Transport & Generative AI"
+    org: "Wyss Institute (Mooney Lab & Alvarez-Melis Lab)"
+    role: "Graduate Researcher"
+    dates: "2026-02 — present"
+    source_file: "resumes/base/JZ_resume.tex"
+    technologies: ["PyTorch", "VAE", "diffusion", "Optimal Transport", "CellOT", "scanpy"]
+    measurable_results:
+      - "Custom CellOT; OOD subpopulation matching (e.g., T-cell subsets)"
+    interview_depth: moderate
+
+  alphafold_pipeline:
+    title: "AlphaFold Protein–Nucleic Acid Interaction Prediction"
+    org: "Bou-Nader Lab, Emory Biochemistry"
+    role: "Data Analyst"
+    dates: "2025-02 — 2025-08"
+    source_file: "resumes/base/JZ_resume.tex"
+    technologies: ["AlphaFold", "Python", "HPC", "PyMOL", "ChimeraX"]
+    measurable_results:
+      - "GPU parallel inference; pLDDT/PAE filtering; CLI for non-ML users"
+    interview_depth: moderate
+
+skills:
+  python:
+    name: Python
+    category: language
+    level: strong
+    verified: true
+    resume_eligible: true
+    interview_depth: strong
+    last_used: "2026"
+    evidence:
+      - project_id: airway_chatbot
+        description: "Full-stack Flask backend and analytics"
+        technologies: ["Python", "Flask"]
+        measurable_result: "Production-style clinical simulation app"
+        source_file: "resumes/base/JZ_resume.tex"
+      - project_id: transformer_reimpl
+        description: "Transformer training code"
+        technologies: ["Python", "PyTorch"]
+        measurable_result: "9.38 BLEU"
+        source_file: "resumes/base/JZ_resume.tex"
+
+  pytorch:
+    name: PyTorch
+    category: ml_framework
+    level: strong
+    verified: true
+    resume_eligible: true
+    interview_depth: strong
+    last_used: "2026"
+    evidence:
+      - project_id: transformer_reimpl
+        description: "Transformer from scratch"
+        technologies: ["PyTorch"]
+        measurable_result: "Validated vs nn.Transformer"
+        source_file: "resumes/base/JZ_resume.tex"
+      - project_id: cellot_wyss
+        description: "CellOT / generative models"
+        technologies: ["PyTorch", "VAE", "diffusion"]
+        measurable_result: "Custom CellOT implementation"
+        source_file: "resumes/base/JZ_resume.tex"
+
+  rag_agents:
+    name: RAG / Agentic LLM pipelines
+    category: applied_ai
+    level: strong
+    verified: true
+    resume_eligible: true
+    interview_depth: strong
+    last_used: "2026"
+    evidence:
+      - project_id: airway_chatbot
+        description: "Agentic LLM + RAG + context window management"
+        technologies: ["RAG", "OpenAI", "prompt engineering"]
+        measurable_result: "Multi-turn clinical simulation with hallucination control"
+        source_file: "resumes/base/JZ_resume.tex"
+
+  aws:
+    name: AWS
+    category: cloud
+    level: working
+    verified: true
+    resume_eligible: true
+    interview_depth: moderate
+    last_used: "2026"
+    evidence:
+      - project_id: airway_chatbot
+        description: "AWS-hosted full-stack application with backend and frontend deployment"
+        technologies: ["AWS Elastic Beanstalk", "AWS CloudFront", "SSL/DNS"]
+        measurable_result: "Deployed demo environment"
+        source_file: "resumes/base/JZ_resume.tex"
+    notes: "AWS Cloud Practitioner, AI Practitioner, ML Associate certifications listed on resume"
+
+  docker_k8s:
+    name: Docker / Kubernetes
+    category: tools
+    level: exposure
+    verified: false
+    resume_eligible: false
+    interview_depth: weak
+    last_used: "unknown"
+    evidence: []
+    notes: "Listed on resume skills; needs stronger project evidence before claiming as core. Keep resume_eligible false until verified."
+
+  sql:
+    name: SQL
+    category: language
+    level: working
+    verified: true
+    resume_eligible: true
+    interview_depth: moderate
+    last_used: "2025"
+    evidence:
+      - project_id: airway_chatbot
+        description: "MongoDB/analytics stack; SQL listed via coursework/DB systems"
+        technologies: ["SQL", "MongoDB"]
+        measurable_result: "Coursework Database Systems + app data layer"
+        source_file: "resumes/base/JZ_resume.tex"
+
+rules:
+  - "Do not invent skills or upgrade exposure→strong without user confirmation."
+  - "Only verified + resume_eligible skills should be actively pushed into new bullets."
+  - "Prefer linking bullets to project_ids above."

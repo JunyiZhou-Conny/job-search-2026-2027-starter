@@ -1,0 +1,31 @@
+# Non-sensitive work-authorization facts for job-search decisions only.
+# Do NOT store passport, SEVIS, SSN, EAD scans, passwords, or ID images.
+
+current_status: "F-1"
+expected_opt_level: "master's"
+expected_program_end_date: "2026-12"
+expected_opt_start_window: "2027-01-18 onward"
+expected_ead_ready: "2027-01-18"  # planned; confirm against actual EAD dates
+earliest_full_time_start: "2027-01-18"
+preferred_full_time_start: "2027-01-18 ideal; any later 2027 date including Summer OK"
+future_sponsorship_required: true
+
+standard_question_answers:
+  # Use only after OPT EAD is valid for the employment period being asked about.
+  authorized_to_work_in_us:
+    typical_answer: "Yes"
+    condition: "Valid OPT EAD covering the employment period"
+  will_require_sponsorship_now_or_future:
+    typical_answer: "Yes"
+    condition: "Future H-1B or other employer sponsorship expected"
+  never_lie_to_bypass_ats: true
+
+questions_requiring_manual_review:
+  - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"
+  - "Questions asking if you need sponsorship 'to begin work' when OPT covers start"
+  - "Any wording you are unsure about — save verbatim Q&A and ask HIO if needed"
+
+hard_constraints:
+  - "No fully remote roles"
+  - "Full-time start must be on or after 2027-01-18"
+  - "Do not treat no/unclear sponsorship as hard ineligibility"

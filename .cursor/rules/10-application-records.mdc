@@ -9,8 +9,35 @@ alwaysApply: false
 - Required fields: `id`, `company`, `role`, `posting_url`, `date_found`, `status`, `eligibility`, `priority`, `next_action`, `last_update`.
 - Valid statuses: discovered, researching, referral_requested, ready_to_apply, applied, oa, recruiter_screen, technical_screen, onsite, offer, rejected, withdrawn, closed.
 - Valid priorities: A, B, C.
+- Valid pursuit lanes: core, broad, practice.
 - Valid eligibility values: verified, likely, unclear, ineligible.
+- Valid sponsorship_signal values: verified, likely, unclear, no.
+
+## Hard eligibility ≠ sponsorship
+
+- `eligibility` is only for hard gates: citizenship, clearance, graduation/return-to-school conflict, start-date/auth timing conflict, unacceptable location/work model, or no reasonable role fit.
+- **Never** set `eligibility=ineligible` only because sponsorship is `no` or `unclear`.
+- **Never** auto-discard a role because sponsorship is unknown. Route it to `core`, `broad`, or `practice` instead.
+- Record sponsorship separately in `sponsorship_signal` and effort via `pursuit_lane`.
+
+## Pursuit lanes
+
+- `core`: tailor + network + follow closely.
+- `broad`: apply with nearest cluster resume; max 1–2 bullet edits; invest heavily only after OA/interview.
+- `practice`: intentional low-conversion volume for interview reps; keep roughly 15–25% of applied volume.
+
+## Work authorization answers
+
+- After the user applies, store what was submitted:
+  - `auth_work_authorized`: yes | no | unknown | not_asked
+  - `auth_needs_sponsorship`: yes | no | unknown | not_asked
+  - `auth_qa_notes`: verbatim question text + submitted answers when the form is ambiguous
+- Do not invent answers. Do not advise answering "no sponsorship needed" if future H-1B/employer sponsorship is needed.
+
+## Other
+
 - A role is not `applied` until the user confirms submission.
 - Record the exact resume version used after applying.
-- For graduation-sensitive internships, capture the stated graduation window in notes and set eligibility conservatively.
+- For graduation-sensitive internships, capture the stated graduation window and set hard eligibility conservatively.
 - Do not overwrite the original posting URL with an aggregator URL when the company career-page URL is available.
+- Create a `jobs/` dossier only for A-core roles, OA/interview stages, active employee help, or job-specific resumes.

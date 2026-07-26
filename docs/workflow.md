@@ -2,32 +2,48 @@
 
 ## 1. Discover
 
-Capture the company-career URL, source, date found, role cluster, employment type, and location. Do not spend time tailoring yet.
+Use Jobright / LinkedIn / Handshake / career pages. Capture the company URL when convenient; otherwise apply first via Simplify and import later.
 
-## 2. Eligibility gate
+## 2. Hard eligibility gate
 
-Check graduation window, enrollment requirement, start date, location, work authorization wording, and sponsorship evidence. Use `unclear` when the posting is silent.
+Check only hard constraints: citizenship, clearance, graduation/return-to-school, start-date vs authorization timing, unacceptable location/work model, and whether the role can reasonably fit your background.
 
-## 3. Triage
+See `docs/eligibility.md`. Sponsorship wording is **not** this gate.
 
-Assign A/B/C priority. A roles get same-day or next-day action. B roles get light tailoring. C roles are optional.
+## 3. Assign pursuit lane + priority
 
-## 4. Build the application package
+- Lane: `core` / `broad` / `practice` (effort model)
+- Priority: A / B / C (urgency / strategic value)
 
-Choose the nearest cluster resume. Make only evidence-backed changes. Record the version name before submitting.
+Example: strong SWE fit + "no sponsorship" → often `broad` + B, not `ineligible`.
 
-## 5. Networking lane
+## 4. Apply (execution layer)
 
-For A roles, identify 1–3 relevant people: Harvard/Emory alumni, team engineers, recruiters, or event speakers. Outreach should be tied to the live role, but the first ask is usually perspective, not a referral.
+Prefer company career page + Simplify Autofill. Answer work-auth questions truthfully. Confirm submission before status `applied`.
 
-## 6. Apply
+## 5. Local enrichment (same day or end of day)
 
-Use the company career page when possible. Confirm submission before changing status to `applied`.
+Record or import:
+
+- resume version
+- pursuit lane
+- sponsorship signal
+- auth answers / verbatim Q&A if ambiguous
+- next action
+
+```bash
+python scripts/jobsearch.py import-simplify --file data/imports/simplify/YYYY-MM-DD.csv
+python scripts/jobsearch.py dashboard
+```
+
+## 6. Networking lane
+
+For **core / A** roles: identify 1–3 relevant people. First ask is perspective, not referral.
 
 ## 7. Follow through
 
-Track OA deadlines, follow-ups, interview preparation, thank-you messages, and next actions. Do not leave an active row without a next action.
+Invest deep prep when OA/interview arrives—especially for broad/practice lanes that were low-effort at apply time.
 
 ## 8. Learn weekly
 
-Measure funnel movement, not just volume. Review response rate by source, role cluster, and resume version with sample sizes.
+Compare OA/interview rates by lane, sponsorship signal, source, and resume version. Keep practice lane near 15–25% of applied volume unless data says otherwise.

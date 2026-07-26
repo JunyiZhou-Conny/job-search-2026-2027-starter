@@ -1,0 +1,129 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[pdftex]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{mathptmx}
+\usepackage{csquotes}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\oddsidemargin}{-0.530in}
+\addtolength{\evensidemargin}{-0.375in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-0.5in}
+\addtolength{\textheight}{1.1in}
+
+\urlstyle{rm}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{
+  \vspace{-10pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-6pt}]
+
+\newcommand{\resumeItem}[2]{
+  \item{
+    \textbf{#1}{: #2 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{#3} & \textit{#4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\renewcommand{\labelitemii}{$\circ$}
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}\vspace{-2pt}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-6pt}}
+
+\begin{document}
+
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \textbf{\Large Junyi (Conny) Zhou} & Tel: (404) 663-5601 \\
+  Boston, MA 02215 & Email: \href{mailto:junyizhou@hsph.harvard.edu}{junyizhou@hsph.harvard.edu} \\
+  \href{https://github.com/JunyiZhou-Conny}{github.com/JunyiZhou-Conny} &
+  \href{https://www.linkedin.com/in/junyi-zhou-270208247}{linkedin.com/in/junyi-zhou-270208247} \\
+\end{tabular*}
+
+\section{Education}
+\resumeSubHeadingListStart
+  \resumeSubheading
+  {Harvard T.H. Chan School of Public Health}{Boston, MA}
+  {M.S. in Health Data Science}{August 2025 -- December 2026}
+  \resumeItemListStart
+    \item Coursework: Deep Learning, Healthcare Machine Learning
+  \resumeItemListEnd
+  \resumeSubheading
+  {Emory University, College of Arts and Sciences}{Atlanta, GA}
+  {B.S. in Applied Mathematics and Statistics; Minor in Computer Informatics; GPA: 3.925}{August 2021 -- May 2025}
+  \resumeItemListStart
+    \item Honors: Dean's List Spring 2022, Spring 2023
+    \item Coursework: Machine Learning, NLP, Probability and Statistics, Data Structures, Database Systems
+  \resumeItemListEnd
+\resumeSubHeadingListEnd
+
+\section{Technical Skills}
+\resumeSubHeadingListStart
+  \resumeItem{Languages}{Python, R, SQL, C++, Java, JavaScript}
+  \resumeItem{Health / ML Stack}{PyTorch, TensorFlow, Hugging Face, scikit-learn, scanpy, AlphaFold tooling}
+  \resumeItem{LLM in Clinical Settings}{RAG, agentic pipelines, prompt/context management, HIPAA-aware application design}
+  \resumeItem{Data \& Cloud}{MongoDB, PostgreSQL, MySQL, AWS, Spark, HPC GPU workflows}
+  \resumeItem{Certifications}{AWS AI Practitioner; AWS Machine Learning Associate; AWS Cloud Practitioner}
+\resumeSubHeadingListEnd
+
+\section{Selected Experience}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {Airway Management Simulation Chatbot}{Atlanta, GA}
+    {Full-Stack Engineer \& Scrum Master | Emory Pediatric Hospital}{January 2024 -- Present}
+    \resumeItemListStart
+      \item Architected a clinical \textbf{agentic LLM + RAG} system with OpenAI models to support airway-management training while controlling hallucinations and protecting sensitive simulation data.
+      \item Built a \textbf{HIPAA-conscious} full-stack platform (Python/Flask, React, MongoDB, AWS) with real-time analytics of resident performance.
+      \item Used prompt engineering and context-window management for rapid-cycle deliberate practice scenarios.
+      \item Led a team of 6 with clinician feedback loops. Demo: \href{https://d3g1qw60hz7yw7.cloudfront.net}{CloudFront}.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Cross-Species Drug Translation with Generative AI}{Boston, MA}
+    {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
+    \resumeItemListStart
+      \item Developing Optimal Transport, VAE, and diffusion-based frameworks to model animal-to-human translation using scRNA-seq atlases.
+      \item Implementing custom \textbf{PyTorch} CellOT methods and scanpy pipelines for cell-type labeling and subpopulation matching (e.g., T-cell subsets).
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {AlphaFold Protein--Nucleic Acid Interaction Prediction}{Atlanta, GA}
+    {Data Analyst | Bou-Nader Lab, Emory Department of Biochemistry}{February 2025 -- August 2025}
+    \resumeItemListStart
+      \item Built pipelines integrating AlphaFold-Multimer / AlphaFold3 for protein--nucleic acid complex prediction; automated GPU inference on HPC.
+      \item Filtered structures with pLDDT/PAE metrics for wet-lab follow-up; wrote CLI tools for non-computational researchers.
+      \item \href{https://github.com/JunyiZhou-Conny/AlphaFold-Bou-Nader-Lab}{GitHub}.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Transformer Architecture Reimplementation}{Atlanta, GA}
+    {Machine Learning Researcher | Emory Department of Computer Science}{October 2024 -- January 2025}
+    \resumeItemListStart
+      \item Implemented Transformer components in PyTorch from scratch; achieved 9.38 BLEU on EN→DE translation after tuning.
+      \item \href{https://github.com/JunyiZhou-Conny/Reimplementation-of-Transformer}{GitHub}.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+\end{document}
