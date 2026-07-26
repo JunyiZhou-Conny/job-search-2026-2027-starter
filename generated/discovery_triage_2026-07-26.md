@@ -33,7 +33,7 @@
 
 - Fully remote (`remote`): 5
 - Non-target QA, IT support, coordinator, or technician work (`non_target_role`): 4
-- Explicit citizenship/clearance/PhD or start-date gate (`hard_gate`): 3
+- Explicit citizenship/clearance/PhD or start-date gate (`hard_gate`): 4
 - Some rows fire more than one theme.
 
 ## Needs attention
