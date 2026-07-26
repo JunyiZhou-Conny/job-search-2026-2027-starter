@@ -39,3 +39,12 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Daily scripts generate files only; never send outreach or submit applications.
 - Calendar defaults to dry-run (`generate_calendar.py --write` to emit ICS).
 - Knowledge files live under `knowledge/`; do not store sensitive ID documents.
+
+## Cursor Cloud specific instructions
+
+- Runtime is system Python 3 (3.12 present). The **core** pipeline uses only the standard library — no venv, build step, or install is needed to run scripts, tests, or the CLI. Run scripts directly, e.g. `python3 scripts/daily_job_search.py`, `python3 scripts/validate_data.py`, `python3 scripts/jobsearch.py dashboard`. Standard commands are in `README.md`.
+- Tests: `python3 -m unittest tests/test_core.py` (stdlib only, no fixtures needed). There is no configured linter or git hook; `python3 -m py_compile scripts/*.py scripts/automation/*.py tests/*.py` is a quick syntax sanity check.
+- Running the pipeline/CLI **mutates tracked files**: `data/applications.csv`, `data/activity_log.csv` (appended), and `generated/*` (dashboards, daily/outreach plans). `migrate_schema.py` also writes `data/backups/` and `data/discovery/*.csv` (both gitignored). After ad-hoc/test runs, `git checkout -- data/ generated/` before committing so test data isn't committed.
+- `validate_data.py` prints data-quality `error`/`warn` lines but exits 0 — that is expected repo data noise, not a setup failure.
+- `daily_job_search.py` reports `max_exit=1` when the optional automation discovery step can't run; the core pipeline still completes. Inspect the per-run log at `generated/logs/daily_*.log`.
+- Automation tier (`scripts/automation/*`) is **optional**: `requirements-automation.txt` (playwright + python-dotenv) is installed by the startup update script, but browsers are not — run `python3 -m playwright install chromium` first. It also needs `secrets/.env` (copy from `secrets/.env.example`) and saved session JSON to log into Simplify/Jobright. The public Jobright feed (`export_jobright_discovery.py`) works without credentials.
