@@ -8,8 +8,8 @@ Use `ineligible` only when at least one of these is true and verified from the p
 
 - U.S. citizenship required
 - Active security clearance required
-- Internship requires return-to-school after the internship, and you graduate December 2026
-- Start date conflicts with available work authorization timing
+- Internship requires return-to-school / a graduation window that matches **neither** real date: I-20 program end **2026-12-18** (December 2026 completion) **nor** commencement / school listing **March 2027**
+- Start date conflicts with available work authorization timing (planned earliest FT **2027-01-18** from program end + OPT; confirm with HIO)
 - Location / work model is actually unacceptable
 - Role cannot be reasonably connected to your background (Health Data Science + target clusters)
 
@@ -29,6 +29,15 @@ Values: `verified` | `likely` | `unclear` | `no`
 | `core` | Strong fit; sponsor verified/likely/unclear but company plausibly sponsors | Tailor, network, dossier if A |
 | `broad` | Strong tech fit; sponsor `no` or weak; still may yield OA/interview | Nearest cluster resume; 1–2 bullets max |
 | `practice` | Low conversion expected; used for interview reps | Cap at ~15–25% of applied volume |
+
+## Dual graduation dates (both real)
+
+| Date | Meaning | Use for |
+|---|---|---|
+| **2026-12-18** | I-20 / SEVIS program end | OPT, earliest FT, default resume, most “graduation / program end” forms |
+| **2027-03** | Commencement / some Harvard listings | JD/forms that explicitly want Spring 2027 / March graduation |
+
+Default resume: December 2026 program completion. Dual-date resume line when the posting needs March/Spring wording — still mention December program completion. Do not present only March as if program end were March.
 
 ## Work-authorization answers (typical for post-grad OPT)
 

@@ -3,9 +3,17 @@
 
 current_status: "F-1"
 expected_opt_level: "master's"
-expected_program_end_date: "2026-12"
+
+# Dual academic dates (both real — different meanings):
+# - program_end_date: I-20 / SEVIS program end → OPT filing + earliest FT planning
+# - commencement_date: ceremony / some Harvard system listings
+program_end_date: "2026-12-18"
+expected_program_end_date: "2026-12-18"
+commencement_date: "2027-03"
+resume_grad_default: "program_end"
+
 expected_opt_start_window: "2027-01-18 onward"
-expected_ead_ready: "2027-01-18"  # planned; confirm against actual EAD dates
+expected_ead_ready: "2027-01-18"  # planned from program end; confirm against actual EAD / HIO
 earliest_full_time_start: "2027-01-18"
 preferred_full_time_start: "2027-01-18 ideal; any later 2027 date including Summer OK"
 future_sponsorship_required: true
@@ -18,14 +26,20 @@ standard_question_answers:
   will_require_sponsorship_now_or_future:
     typical_answer: "Yes"
     condition: "Future H-1B or other employer sponsorship expected"
+  program_end_or_graduation_date:
+    typical_answer: "Program completion / I-20 end: December 18, 2026; commencement March 2027"
+    default_short_answer: "December 2026"
+    when_form_asks_commencement_or_spring_2027: "March 2027 (program completed December 2026)"
   never_lie_to_bypass_ats: true
 
 questions_requiring_manual_review:
   - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"
   - "Questions asking if you need sponsorship 'to begin work' when OPT covers start"
+  - "Forms that ask only 'graduation date' without distinguishing program end vs commencement — prefer December 2026 / 2026-12-18 unless they explicitly mean ceremony"
   - "Any wording you are unsure about — save verbatim Q&A and ask HIO if needed"
 
 hard_constraints:
   - "No fully remote roles"
-  - "Full-time start must be on or after 2027-01-18"
+  - "Full-time start must be on or after 2027-01-18 (planned; confirm with HIO)"
   - "Do not treat no/unclear sponsorship as hard ineligibility"
+  - "Do not invent a single false graduation month; use program_end vs commencement accurately"

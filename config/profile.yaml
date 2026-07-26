@@ -11,13 +11,28 @@ location: "Boston, MA"
 
 school: "Harvard T.H. Chan School of Public Health"
 degree: "SM in Health Data Science"
-graduation_date: "2026-12"
-graduation: "December 2026"  # legacy alias
+# Dual dates (both real; different meanings — do not collapse):
+# - program_end = I-20 / SEVIS project end → OPT + earliest FT + default resume
+# - commencement = ceremony / some Harvard listings (March)
+program_end_date: "2026-12-18"
+commencement_date: "2027-03"
+graduation_date: "2026-12"  # legacy alias → program end month
+graduation: "December 2026"  # legacy alias → program completion (not ceremony-only)
+resume_grad_default: "program_end"  # default resume: Dec 2026 completion
+resume_grad_variants:
+  - id: program_end
+    when: "Default; most FT/new-grad; OPT/start-date questions"
+    resume_line: "SM Health Data Science — Expected December 2026 (program completion)"
+  - id: dual_date
+    when: "JD/form explicitly requires Spring 2027 / March graduation wording"
+    resume_line: "SM Health Data Science — Commencement March 2027 (program completion December 2026)"
 
 education_history:
   - school: "Harvard T.H. Chan School of Public Health"
     degree: "SM in Health Data Science"
-    end: "2026-12"
+    end: "2026-12"  # program completion / I-20 end month
+    program_end_date: "2026-12-18"
+    commencement_date: "2027-03"
   - school: "Emory University"
     degree: "B.S. Applied Mathematics and Statistics; Minor Computer Informatics"
     end: "2025-05"
@@ -72,8 +87,8 @@ search:
     - id: internship_if_eligible
       priority: co_primary
       discovery_weight: 0.5
-      description: "Internships / off-cycle / co-op when graduation eligibility can be verified for a December 2026 graduate"
-      start_flexibility: "Any start date if eligible — including summer — after verifying return-to-school and graduation-window rules"
+      description: "Internships / off-cycle / co-op when eligible given I-20 program end 2026-12-18 and commencement 2027-03"
+      start_flexibility: "Any start date if eligible — including summer — after verifying return-to-school and graduation-window rules against BOTH program_end and commencement"
       discovery_sources: ["jobright_matches", "intern_list"]
   # Both tracks active; discovery volume should be roughly balanced, not new-grad-only.
   primary_track: "new_grad_2027_start"
@@ -88,14 +103,16 @@ search:
 
 constraints:
   - "Hard eligibility ≠ sponsorship. Never self-reject only because sponsorship is no/unclear."
-  - "Verify graduation eligibility for every internship; do not assume Summer 2027 internships accept December 2026 graduates."
+  - "Two real dates: I-20 program end 2026-12-18 (OPT/start default) AND commencement/school listing March 2027. Do not treat them as contradictory lies."
+  - "Default resume/auth answers use program completion December 2026. Use dual-date resume only when JD/form needs Spring 2027 / March wording."
+  - "Triage: do not hard-skip solely for Spring 2027 / March graduation wording; do not hard-skip solely for December 2026 program-end wording. Skip only if BOTH real dates miss a hard window."
+  - "Verify internship return-to-school / graduation windows against program_end and commencement; do not assume every Summer 2027 intern posting fits."
   - "Track sponsorship evidence separately from hard eligibility."
   - "Tracks are co-primary: balance discovery across 2027 new-grad AND eligible internships (~50/50 volume intent)."
-  - "Still verify graduation eligibility per internship; do not assume every Summer 2027 intern posting accepts December 2026 grads."
   - "Answer work-auth questions truthfully; save verbatim Q&A when forms conflate OPT/EAD/H-1B."
   - "Simplify is the base ledger; this repo is the strategy layer via one-way CSV import."
   - "Prefer in-person; do not pursue fully remote roles."
-  - "Full-time start must be on or after 2027-01-18. Do not reject Summer 2027 or later new-grad starts."
+  - "Full-time start must be on or after 2027-01-18 (planned from program end + OPT; confirm with HIO). Do not reject Summer 2027 or later new-grad starts."
   - "Location: any US city acceptable; Boston preferred."
   - "Manual labels (label_source=manual) must not be auto-overwritten."
 

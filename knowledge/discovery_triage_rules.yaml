@@ -5,12 +5,15 @@
 # Decisions: keep | later | skip
 # Only user-confirmed keep rows should be ingested into data/applications.csv.
 
-version: 1
-updated: 2026-07-23
+version: 2
+updated: 2026-07-26
 
 profile_anchors:
-  graduation: "December 2026"
-  earliest_ft_start: "2027-01-18"
+  # Dual dates — both real; do not collapse into one fake month.
+  program_end_date: "2026-12-18"          # I-20 / SEVIS → OPT + earliest FT + default resume
+  commencement_date: "2027-03"            # ceremony / some Harvard listings
+  graduation_display_default: "December 2026 (program completion)"
+  earliest_ft_start: "2027-01-18"         # planned from program end; confirm with HIO
   remote_ok: false
   preferred_work_mode: "in-person or hybrid"
   tracks: ["internship_if_eligible", "new_grad_2027_start"]  # co-primary
@@ -44,6 +47,7 @@ outputs:
     - confidence
     - reason
     - evidence_basis   # board_fields | board_plus_url_skim | unknown
+    - grad_display_hint  # program_end | dual_date | either | n/a
     - user_confirm     # leave blank for human
 
 decision_meanings:
@@ -74,10 +78,15 @@ guide_rules:
     default_decision: skip
     guidance: >
       Skip only when board text clearly shows an incompatible hard gate:
-      PhD-only, polygraph/TS-SCI when not viable, exclusive graduation window
-      the candidate cannot meet (e.g. must graduate Dec 2027–Jun 2028),
-      or must return to / continue school after the internship in a way that
-      conflicts with graduating December 2026. Soft/vague windows → do not skip.
+      PhD-only, polygraph/TS-SCI when not viable, or a graduation/enrollment
+      window that matches NEITHER real date:
+        (A) program end 2026-12-18 / December 2026 completion, NOR
+        (B) commencement / school-listed March 2027.
+      Examples that should NOT auto-skip: "graduating Spring 2027",
+      "December 2026 graduates", "currently pursuing a degree".
+      Soft/vague windows → do not skip. Return-to-school after internship:
+      evaluate against still being a student through program end and ceremony
+      timing; if unclear, prefer later/keep over skip and note uncertainty.
 
   - id: timing_expired
     severity: hard
@@ -85,7 +94,8 @@ guide_rules:
     guidance: >
       If the role requires a term already over relative to today's date
       (e.g. Summer 2026 internship when today is mid/late July 2026), skip
-      for timing. Fall 2026 / Summer 2027 internships are generally OK.
+      for timing. Fall 2026 / Summer 2027 internships are generally OK to keep
+      for review (then check hard_gate / return-to-school).
 
   - id: traditional_student_coop
     severity: soft
@@ -93,15 +103,25 @@ guide_rules:
     guidance: >
       Heavy "must be enrolled full-time undergrad / credit-hour co-op" framing
       with weak SWE fit → skip or later. Do not skip strong SWE/ML internships
-      merely because they say "currently pursuing a degree" — candidate is still
-      a student until Dec 2026.
+      merely because they say "currently pursuing a degree" — candidate remains
+      in program through December 2026 program end (commencement March 2027).
 
   - id: intern_ok
     severity: policy
     default_decision: allow_keep
     guidance: >
       Internships are acceptable (co-primary with new-grad). Prefer keep/later
-      over skip when uncertain on graduation wording.
+      over skip when uncertain on graduation wording. Use grad_display_hint:
+      program_end (default), dual_date (Spring/March wording), or either.
+
+  - id: dual_grad_dates
+    severity: policy
+    default_decision: allow_keep
+    guidance: >
+      Program end (I-20) Dec 2026 and commencement March 2027 are both real.
+      Do not hard-skip only because the posting says March/Spring 2027, and do
+      not hard-skip only because it says December 2026. Set grad_display_hint
+      so the user knows which resume line to use at apply time.
 
   - id: fit_priority
     severity: soft
@@ -116,5 +136,6 @@ process:
   - Read data/discovery/YYYY-MM-DD_all.csv (every row).
   - For each row, choose keep|later|skip using guide_rules; write reason with rule id(s).
   - Set evidence_basis honestly (usually board_fields).
+  - Set grad_display_hint: program_end | dual_date | either | n/a.
   - Write CSV + short MD summary with counts.
   - Do NOT write applications.csv until user confirms keep rows.

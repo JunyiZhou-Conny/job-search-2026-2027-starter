@@ -22,7 +22,7 @@ You do **not** need to erase Health Data Science. You need to stop leading with 
 
 | Item | Conflict | Action needed |
 |---|---|---|
-| Graduation | Confirmed: December 2026 | Aligned in profile + resumes |
+| Graduation | Dual real dates: I-20 program end **2026-12-18**; commencement **2027-03** | Default resume = Dec 2026 completion; dual-date line when JD needs Spring/March |
 | Demo credentials | Resume footnote includes a live test password | Remove from all public resumes; share privately if needed |
 | Internship auth | CPT availability still `unknown` in profile | Confirm before pursuing pre-grad internships |
 

@@ -45,8 +45,14 @@ You do not send LinkedIn/email outreach.
 You do not invent application outcomes, sponsorship facts, or JD requirements.
 
 Candidate profile anchors (do not contradict):
-- Name: Junyi Zhou; Harvard SM Health Data Science; graduation December 2026
-- Earliest full-time start: 2027-01-18 (OPT timing); Summer 2027 FT starts OK
+- Name: Junyi Zhou; Harvard SM Health Data Science
+- Dual dates (BOTH real — different meanings; never invent a third month):
+  - I-20 / program end: 2026-12-18 → default resume + OPT + earliest FT planning
+  - Commencement / some Harvard listings: March 2027
+- Earliest full-time start: 2027-01-18 planned from program end + OPT (confirm HIO); Summer 2027 FT OK
+- Do NOT hard-skip only for “December 2026” wording OR only for “Spring/March 2027” wording
+- Skip graduation windows only if they match NEITHER real date
+- Set grad_display_hint on each keep: program_end | dual_date | either | n/a
 - Tracks are CO-PRIMARY: 2027 new-grad AND internships (internships are acceptable)
 - remote_ok: false → fully remote roles should be skip
 - Preferred: in-person/hybrid, any US city (Boston preferred)
@@ -175,22 +181,22 @@ For each row assign exactly one: keep | later | skip
    unrelated non-tech). Adjacent cyber/quant → later, not auto-skip.
 
 3) hard_gate (hard → skip only if explicit on board text)
-   PhD-only; polygraph/TS-SCI; exclusive graduation window candidate cannot meet
-   (e.g. must graduate Dec 2027–Jun 2028); must continue/return to school after
-   internship in a way that conflicts with graduating December 2026.
-   Soft/vague “currently pursuing a degree” → NOT skip (still a student until Dec 2026).
+   PhD-only; polygraph/TS-SCI; exclusive graduation/enrollment window that matches
+   NEITHER (A) program end 2026-12-18 / Dec 2026 completion NOR (B) commencement March 2027
+   (e.g. must graduate Dec 2027–Jun 2028 only). Soft/vague “currently pursuing a degree”
+   → NOT skip. Return-to-school conflicts: if unclear, prefer later/keep and note uncertainty.
 
 4) timing_expired (hard → skip)
    Term already over vs run date (e.g. Summer 2026 when run date is mid/late July 2026+).
-   Fall 2026 / Summer 2027 generally OK.
+   Fall 2026 / Summer 2027 generally OK for review.
 
 5) traditional_student_coop (soft)
    Heavy undergrad credit-hour co-op + weak SWE fit → skip or later.
    Do not skip strong SWE/ML internships just for “enrolled student” language.
 
-6) intern_ok (policy)
+6) intern_ok + dual_grad_dates (policy)
    Internships are acceptable (co-primary with new-grad). Prefer keep/later over skip
-   when graduation wording is uncertain.
+   when graduation wording is uncertain. Always set grad_display_hint for keeps.
 
 7) fit_priority (soft)
    Prefer keep: cloud_swe / data_ml / AI infra / agents / inference / strong new-grad SWE.
@@ -209,9 +215,9 @@ For each row assign exactly one: keep | later | skip
   Required columns:
   decision, company, role, url, source, track, work_model, location,
   posted_relative, fetched_at, suggested_lane, suggested_cluster,
-  confidence, reason, evidence_basis, user_confirm
+  confidence, reason, evidence_basis, grad_display_hint, user_confirm
 - generated/discovery_triage_${DAY}.md
-  Counts + KEEP list with links + short SKIP themes
+  Counts + KEEP list with links + grad_display_hint + short SKIP themes
 
 Optional:
 ```bash
@@ -244,8 +250,9 @@ Write a concise report:
   - jobs/inbox/daily-${DAY}.md
 
 ### KEEP (actionable)
-Numbered list: Company — Role — lane/cluster — url
+Numbered list: Company — Role — lane/cluster — grad_display_hint — url
 (If >20 keep, show top 15 by fit and say “see CSV for rest”)
+grad_display_hint: program_end (default Dec resume) | dual_date (Mar+Dec line) | either
 
 ### Needs attention
 Session/login failures, empty boards, parse anomalies, suspected duplicate URLs vs data/applications.csv
