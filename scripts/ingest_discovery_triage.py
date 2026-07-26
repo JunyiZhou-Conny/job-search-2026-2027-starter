@@ -16,7 +16,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from js_lib import (  # noqa: E402
+from js_lib import (
+    DATA,  # noqa: E402
     ACTIVITY,
     APP_FIELDS,
     APPLICATIONS,
@@ -75,6 +76,26 @@ def canon(url: str) -> str:
     return (url or "").strip().split("?")[0]
 
 
+
+def passed_urls() -> set[str]:
+    path = DATA / "job_decisions.csv"
+    if not path.exists():
+        return set()
+    out = set()
+    for r in read_rows(path):
+        if (r.get("decision") or "").lower() == "pass":
+            u = canon(r.get("url", ""))
+            if u:
+                out.add(u)
+    # applications already passed
+    if APPLICATIONS.exists():
+        for r in read_rows(APPLICATIONS):
+            if (r.get("status") or "").lower() == "passed":
+                u = canon(r.get("job_url") or r.get("posting_url") or "")
+                if u:
+                    out.add(u)
+    return out
+
 def existing_urls(apps: list[dict]) -> set[str]:
     out = set()
     for a in apps:
@@ -130,7 +151,7 @@ def main() -> int:
     # lightweight backup
     write_rows(BACKUPS / f"applications_before_triage_ingest_{stamp}.csv", APP_FIELDS, apps)
 
-    seen = existing_urls(apps)
+    seen = existing_urls(apps) | passed_urls()
     today = date.today().isoformat()
     created = []
     skipped = []

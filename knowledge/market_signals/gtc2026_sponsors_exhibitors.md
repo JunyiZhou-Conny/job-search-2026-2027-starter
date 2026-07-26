@@ -1,0 +1,463 @@
+# NVIDIA GTC 2026 Sponsors & Exhibitors
+
+Source: https://www.nvidia.com/gtc/sponsors/
+Total unique companies: **435**
+
+## Elite (8)
+
+- Amazon Web Services
+- CoreWeave
+- Dell Technologies
+- Google Cloud
+- HPE
+- Microsoft Azure
+- Nebius
+- Oracle
+
+## Diamond (19)
+
+- Aivres Systems
+- ASUS
+- Cisco
+- DDN
+- Delta Electronics
+- Ernst & Young
+- Foxconn
+- GIGABYTE
+- Lenovo
+- Nscale
+- PNY Technologies
+- QCT
+- Schneider Electric
+- Supermicro
+- Tata Consultancy Services (TCS)
+- Together AI
+- Vertiv
+- Wistron & Wiwynn
+- World Wide Technology
+
+## Platinum (22)
+
+- Accenture
+- AHEAD
+- Akamai Technologies
+- CoolIT Systems
+- CrowdStrike
+- Crusoe Energy
+- Deloitte
+- Firmus
+- HP
+- IBM
+- IREN
+- Lambda
+- Micron Technology
+- Mistral AI
+- NetApp
+- Radiant
+- Samsung Semiconductor
+- SAP
+- ServiceNow
+- SK hynix
+- VAST Data
+- Vultr
+
+## Gold (33)
+
+- Advantech
+- Agile Robots SE
+- Baseten
+- Cadence
+- Capital One
+- CDW
+- Cloudflare
+- Core42 (A G42 Company)
+- Databricks, Inc.
+- Eaton
+- Equinix, Inc.
+- Everpure
+- Fireworks AI
+- Global AI
+- HCLTech
+- Hitachi
+- Hyve Solutions
+- Infosys
+- Inventec Corporation
+- Lightning AI
+- Lightwheel
+- LITEON Technology
+- Meta
+- MSI
+- Nokia
+- PEGATRON
+- Penguin Solutions
+- SHI International Corp.
+- Simplismart
+- SoftServe
+- Synopsys
+- Weka
+- Yotta Data Services
+
+## Silver (58)
+
+- ABB
+- Anaconda
+- Arrow
+- ASROCK RACK INC.
+- Astera Labs
+- Astris AI, A Lockheed Martin Company
+- Capgemini
+- Centific
+- Cirrascale Cloud Services
+- ClickHouse
+- Cognizant
+- CommScope
+- Compal Electronics, Inc.
+- Core Scientific
+- Cursor
+- Dataiku
+- DDC Solutions (a member of Daikin group)
+- EDB
+- EdgeConneX
+- EDOM Technology Co., Ltd.
+- Elastic
+- ElevenLabs
+- EXL
+- F5, Inc.
+- Glean
+- GMI Cloud
+- Hydra Host
+- Ingram Micro
+- Intel
+- Intelliflex
+- KIOXIA America, Inc.
+- L&T Technology Services
+- Lablup Inc.
+- LiveX AI
+- LTM
+- Marvik
+- MEGMEET
+- MiTAC Computing Technology Corporation
+- Netris
+- NTT DATA
+- Nutanix
+- nVent
+- PwC
+- Quantinuum
+- Rafay
+- Red Hat
+- Sanmina
+- Seagate Technology
+- Siemens
+- Silicon Motion Inc.
+- Solidigm
+- Spectro Cloud
+- Tech Mahindra
+- TrendAI
+- vCluster
+- WD
+- Wipro
+- ZutaCore®
+
+## A La Carte (4)
+
+- MediaTek
+- Pellera Technologies
+- Salesforce
+- TSMC
+
+## Exhibitor (235)
+
+- 5C
+- AAEON
+- Abridge
+- Accelsius
+- Adaption
+- ADLINK Technology, Inc.
+- Aetina Corporation
+- AI Pub by Ten: Making Every GPU Count
+- AI-RAN Alliance
+- AI21
+- AIBLE
+- AIC Inc.
+- AInvest
+- Alembic: AI-Powered Causal Platform
+- Aligned Data Systems
+- Altos Computing Inc.
+- AMAX
+- Amdocs
+- Amphenol
+- Analog Devices
+- Applied Digital
+- APPRO Photoelectron Inc.
+- Arango
+- Arize AI
+- Arrcus
+- AUMOVIO
+- Aurora
+- AVerMedia Technologies, Inc.
+- Aviz Networks
+- Axiomtek Co., Ltd.
+- Barco
+- Basler
+- Beamr
+- Bechtel
+- Beehe Electric(Taicang) Co., Ltd.
+- Bellwether Electronic Corp.
+- Berkeley Communications
+- Bitdeer AI
+- BizLink Technology, Inc.
+- BNY
+- Bones Studio
+- Booz Allen
+- Boyd
+- Bria
+- Bulk Infrastructure
+- Canonical
+- Carahsoft Technology Corp.
+- Cerebro
+- Chai Discovery
+- Check Point
+- Chenbro
+- Classiq Technologies Inc.
+- ClearML
+- Clockwork.io
+- Cloudian
+- Cohere
+- Cohere Technologies
+- Cohesity
+- Connect Tech
+- Contextual AI
+- CPC (Colder Products Company)
+- Cyborg
+- D3 Embedded
+- Dassault Systèmes
+- DataRobot
+- Decart
+- Deepchecks
+- Deepgram
+- DeepHow
+- Deeproute AI Co Ltd
+- Deepwave
+- Delos Data
+- Deutsche Telekom AG
+- DG Matrix
+- DigitalOcean, LLC
+- Distributional
+- Docker
+- Domino Data Lab
+- Dyna Robotics
+- Dynatrace
+- e-con Systems
+- E2E Networks
+- EIZO Rugged Solutions
+- Emerald AI
+- Enactic, Inc.
+- Encord
+- EverFocus
+- Exxact
+- Fiddler AI
+- Field AI
+- Flex
+- Flexcompute
+- Fogsphere
+- Fortanix
+- FPT
+- FriendliAI
+- Frore Systems
+- Fu2re
+- Future Tech
+- GALBOT
+- Gatik
+- Gcore
+- GE VERNOVA
+- Geely Auto Group
+- Graid Technology
+- H2O.ai
+- Hammerspace
+- Hexagon Robotics
+- Idealworks
+- Ignitarium
+- Infleqtion
+- Innoactive GmbH
+- Innodisk Corporation
+- Instrumental
+- IQM Quantum Computers
+- IQVIA
+- Jacobs
+- Jump Trading
+- Keysight
+- KION
+- KX
+- Lanner Electronics
+- Latitude.sh
+- Lattice Semiconductor
+- LEM Surgical
+- Leopard Imaging
+- Lightricks
+- Lila Sciences
+- LILT
+- Linker Vision
+- Liqid
+- Lucid
+- Luminary
+- Lyzr.ai
+- Manycore Tech
+- Mark III Systems
+- Microway
+- Milestone Systems
+- MinIO
+- Mirantis
+- Mitsubishi Heavy Industries, Ltd.
+- Modular
+- Multiverse Computing
+- Murata
+- Nanyang Biologics
+- Neousys Technology America, Inc.
+- Neural Concept
+- NEXCOM International Co., Ltd.
+- Noble Machines
+- ODINN
+- One Stop Systems
+- onsemi
+- Onyx Healthcare, Inc.
+- OpenEvidence
+- OpenNebula Systems
+- Opentrons
+- Parallel Domain
+- Pasqal
+- PC Partner Technology Pte. Ltd.
+- Peritas AI
+- Persona AI
+- Personal AI
+- Phaidra
+- Phison Technology
+- Physicl
+- PlusAI
+- Premio Inc
+- ProHawk AI
+- Protopia AI
+- PsiQuantum
+- PTC
+- Q-CTRL
+- Qblox
+- Qodo
+- Qt Group
+- Quantum Machines
+- Quobyte
+- Reflection
+- Rescale
+- Richtech Robotics
+- Rigetti Computing
+- Roboflow
+- Rockwell Automation
+- ScaleFlux
+- SecEdge Inc.
+- Seeed Studio
+- Sharpa
+- Silicon Highway
+- SimScale
+- Singtel RE:AI
+- SoftBank Corp.
+- Solomon Technology Corporation
+- SoundHound AI
+- Source Code
+- SqueezeBits
+- StarBot Inc.
+- Sterling
+- StudyFetch
+- SUSE
+- Switch
+- Sword Health, Inc.
+- Tailscale
+- TD Synnex
+- Telit
+- TELUS
+- Tensor
+- Tensormesh
+- Teradata
+- Teradyne
+- Texas Instruments
+- Thermo Fisher Scientific
+- Thoughtworks
+- Trane
+- Trinity
+- Tulip
+- UL Solutions
+- Union.ai
+- Unitree Robotics
+- Unstructured
+- Upscale AI
+- Utilidata
+- VDURA
+- Vecow
+- Vention
+- VESSL AI
+- Visteon Corporation
+- VITURE
+- Voxel51
+- Wayvw
+- WeRide
+- WOLF Advanced Technology
+- xpander.ai
+- XRlabs LTD
+- YUAN High-Tech Development Co., Ltd.
+- Zadara, Inc.
+
+## Inception Startup (56)
+
+- Adaptive ML
+- Aigen Inc.
+- ALLSIDES
+- AlphaZ
+- Aqrose Technology: AI-Powered Solutions for Industrial Inspection Challenges
+- AuraML
+- Avrio AI
+- Biofy
+- CAMB.AI
+- CATCHES AI
+- ceramic.ai
+- CodeRabbit
+- Deep Infra
+- Deepdub
+- Factory
+- FlexAI
+- Flox
+- Generative Bionics
+- Genspark
+- H Company
+- Haptikos
+- Heidi
+- HUMANOID
+- Krinwave Technology
+- lakeFS
+- Lexlegis.Ai
+- Manus
+- Marketeam.ai
+- MetAI
+- Mirror Security
+- Modal
+- Panthalassa
+- Photoroom
+- Plurai
+- PYLER
+- Quantum Brilliance
+- Rox
+- San Francisco Compute Company
+- SkillReal LTD
+- Skymeric Technologies LLC
+- Spingence Technology
+- SpiralAI
+- SpiralDB
+- SuperAnnotate
+- Superb AI, Inc
+- SurrealDB
+- SynaXG
+- Tripo
+- Type One Energy
+- Tzafon
+- Verobotics
+- Vortex Imaging
+- Whale
+- WideBot AI
+- WisdomAI
+- ZEDEDA

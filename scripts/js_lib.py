@@ -75,8 +75,9 @@ VALID_STATUSES = {
     "discovered", "saved", "researching", "preparing", "ready_to_apply", "referral_requested",
     "applied", "oa", "recruiter_screen", "technical_screen", "onsite", "final_round",
     "offer", "accepted", "withdrawn", "rejected", "closed",
+    "passed",  # user reviewed JD and chose not to pursue (not an employer rejection)
 }
-TERMINAL = {"offer", "accepted", "withdrawn", "rejected", "closed"}
+TERMINAL = {"offer", "accepted", "withdrawn", "rejected", "closed", "passed"}
 INTERVIEW_PLUS = {"oa", "recruiter_screen", "technical_screen", "onsite", "final_round", "offer", "accepted"}
 APPLIED_PLUS = {"applied"} | INTERVIEW_PLUS | {"rejected"}
 

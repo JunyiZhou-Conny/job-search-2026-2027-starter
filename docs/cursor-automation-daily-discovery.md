@@ -49,7 +49,11 @@ Candidate profile anchors (do not contradict):
 - Dual dates (BOTH real — different meanings; never invent a third month):
   - I-20 / program end: 2026-12-18 → default resume + OPT + earliest FT planning
   - Commencement / some Harvard listings: March 2027
-- Earliest full-time start: 2027-01-18 planned from program end + OPT (confirm HIO); Summer 2027 FT OK
+- Work window: Summer 2027 internships (primary intern target) + FT on/after 2027-01-18
+- HARD SKIP any role whose TERM/START is 2026 (Summer/Fall/Spring 2026 intern,
+  "2026 Intern", start before 2027-01-18). Do not keep Fall 2026 internships.
+- Do NOT skip only because text mentions candidate graduation December 2026
+  (that is the person, not the job cycle).
 - Do NOT hard-skip only for “December 2026” wording OR only for “Spring/March 2027” wording
 - Skip graduation windows only if they match NEITHER real date
 - Set grad_display_hint on each keep: program_end | dual_date | either | n/a
@@ -186,19 +190,25 @@ For each row assign exactly one: keep | later | skip
    (e.g. must graduate Dec 2027–Jun 2028 only). Soft/vague “currently pursuing a degree”
    → NOT skip. Return-to-school conflicts: if unclear, prefer later/keep and note uncertainty.
 
-4) timing_expired (hard → skip)
-   Term already over vs run date (e.g. Summer 2026 when run date is mid/late July 2026+).
-   Fall 2026 / Summer 2027 generally OK for review.
+4) start_date_conflict (hard → skip)
+   Job term/start in 2026 → skip (Summer/Fall/Spring 2026 intern, 2026 Intern,
+   FT start before 2027-01-18). Target = Summer 2027 intern + 2027 FT.
+   Exception: do not skip only for “graduate December 2026” (candidate date).
 
-5) traditional_student_coop (soft)
+5) timing_expired (hard → skip)
+   Treat all 2026 internship cycles as out of scope → skip.
+   Summer 2027+ intern → OK to review.
+
+6) traditional_student_coop (soft)
    Heavy undergrad credit-hour co-op + weak SWE fit → skip or later.
    Do not skip strong SWE/ML internships just for “enrolled student” language.
 
-6) intern_ok + dual_grad_dates (policy)
-   Internships are acceptable (co-primary with new-grad). Prefer keep/later over skip
-   when graduation wording is uncertain. Always set grad_display_hint for keeps.
+7) intern_ok + dual_grad_dates (policy)
+   Internships are co-primary only for 2027 cycles (esp. Summer 2027).
+   Never override start_date_conflict / timing_expired for 2026 terms.
+   Always set grad_display_hint for keeps.
 
-7) fit_priority (soft)
+8) fit_priority (soft)
    Prefer keep: cloud_swe / data_ml / AI infra / agents / inference / strong new-grad SWE.
    Use later: generic front-end, QA automation, light analytics.
    suggested_lane: core | broad | practice

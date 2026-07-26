@@ -5,7 +5,7 @@
 # Decisions: keep | later | skip
 # Only user-confirmed keep rows should be ingested into data/applications.csv.
 
-version: 2
+version: 3
 updated: 2026-07-26
 
 profile_anchors:
@@ -14,6 +14,8 @@ profile_anchors:
   commencement_date: "2027-03"            # ceremony / some Harvard listings
   graduation_display_default: "December 2026 (program completion)"
   earliest_ft_start: "2027-01-18"         # planned from program end; confirm with HIO
+  preferred_intern_term: "Summer 2027"
+  skip_job_cycles: ["2026"]               # any 2026 intern/FT start term — not candidate grad year
   remote_ok: false
   preferred_work_mode: "in-person or hybrid"
   tracks: ["internship_if_eligible", "new_grad_2027_start"]  # co-primary
@@ -88,14 +90,28 @@ guide_rules:
       evaluate against still being a student through program end and ceremony
       timing; if unclear, prefer later/keep over skip and note uncertainty.
 
+  - id: start_date_conflict
+    severity: hard
+    default_decision: skip
+    guidance: >
+      Candidate target work window: internships starting Summer 2027 (preferred),
+      and full-time on/after 2027-01-18. SKIP when the ROLE TERM / START is in 2026:
+      - "Summer 2026", "Fall 2026", "Spring 2026", "Winter 2026" intern/co-op
+      - "2026 Intern", "Intern 2026", "new grad 2026 start", start Jun–Dec 2026
+      - Any clear employment start before 2027-01-18
+      KEEP/review targets: Summer 2027 intern, Fall 2027 if relevant, 2027 FT.
+      IMPORTANT — do NOT skip only because text mentions the candidate's
+      graduation / program end "December 2026" / "2026-12-18". That is the
+      person's date, not the job's start year. Skip on job-cycle/start-year 2026.
+
   - id: timing_expired
     severity: hard
     default_decision: skip
     guidance: >
-      If the role requires a term already over relative to today's date
-      (e.g. Summer 2026 internship when today is mid/late July 2026), skip
-      for timing. Fall 2026 / Summer 2027 internships are generally OK to keep
-      for review (then check hard_gate / return-to-school).
+      Same policy as start_date_conflict for intern cycles: any 2026 internship
+      term is out of scope (not only "already over"). Prefer skip when the
+      posting is a 2026 intern/new-grad cycle. Summer 2027+ is the default keep
+      window for internships.
 
   - id: traditional_student_coop
     severity: soft
@@ -110,8 +126,10 @@ guide_rules:
     severity: policy
     default_decision: allow_keep
     guidance: >
-      Internships are acceptable (co-primary with new-grad). Prefer keep/later
-      over skip when uncertain on graduation wording. Use grad_display_hint:
+      Internships remain co-primary with new-grad, but only for 2027 cycles
+      (esp. Summer 2027). 2026 internship terms are NOT ok — use
+      start_date_conflict / timing_expired. Prefer keep/later when graduation
+      wording is uncertain but the term is clearly 2027. Use grad_display_hint:
       program_end (default), dual_date (Spring/March wording), or either.
 
   - id: dual_grad_dates

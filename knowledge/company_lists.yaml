@@ -1,0 +1,145 @@
+# Lightweight company class hints for apply-queue sorting/filters.
+# Judgment call — edit freely. Unknown companies default by heuristics in the script.
+# Precedence in classifier: big_tech → biotech → startup → other
+
+big_tech:
+  - Google
+  - Alphabet
+  - Gemini  # Google DeepMind product branding on some boards
+  - Amazon
+  - AWS
+  - Meta
+  - Facebook
+  - Apple
+  - Microsoft
+  - Netflix
+  - NVIDIA
+  - Nvidia
+  - OpenAI
+  - Anthropic
+  - Uber
+  - Lyft
+  - Airbnb
+  - Stripe
+  - Shopify
+  - Salesforce
+  - Oracle
+  - Adobe
+  - Intel
+  - AMD
+  - Qualcomm
+  - MaxLinear
+  - Broadcom
+  - Cisco
+  - IBM
+  - ByteDance
+  - TikTok
+  - LinkedIn
+  - Snap
+  - Twitter
+  - Tesla
+  - SpaceX
+
+# Bio / health / medtech / life-science employers (user domain overlap)
+biotech:
+  - Neuralink
+  - Lila Sciences
+  - Boston Scientific
+  - Moderna
+  - BioNTech
+  - Pfizer
+  - Genentech
+  - Roche
+  - Amgen
+  - Gilead
+  - Regeneron
+  - Vertex
+  - Biogen
+  - Illumina
+  - 10x Genomics
+  - Tempus
+  - Recursion
+  - Insitro
+  - Benchling
+  - Ginkgo
+  - Ginkgo Bioworks
+  - Flagship
+  - Flagship Pioneering
+  - Color Health
+  - Flatiron Health
+  - Oscar Health
+  - UnitedHealth
+  - Optum
+  - UST HealthProof
+  - HealthProof
+  - Philips
+  - Medtronic
+  - Abbott
+  - Thermo Fisher
+  - IQVIA
+  - Guardant
+  - Exact Sciences
+  - PathAI
+  - Insitro
+  - Nuro
+  - Freenome
+  - GRAIL
+  - Butterfly Network
+
+# Well-known / high-signal tech companies that are not classic FAANG-scale "big tech"
+# and not primarily biotech/health.
+startup_or_scaleup:
+  - Together AI
+  - Together
+  - PlusAI
+  - Plus AI
+  - Etched
+  - Hadrian
+  - HyperLight
+  - Exowatt
+  - Bild AI
+  - Traba
+  - FieldAI
+  - Field AI
+  - Waystar
+  - Ramp
+  - Scale AI
+  - Databricks
+  - Snowflake
+  - Hugging Face
+  - Cohere
+  - Perplexity
+  - Cursor
+  - Anyscale
+  - Cerebras
+  - SambaNova
+  - Groq
+  - Adept
+  - Character.AI
+  - Inflection
+  - Runway
+  - Midjourney
+  - Plaid
+  - Figma
+  - Notion
+  - Canva
+  - Discord
+  - Roblox
+  - Rivian
+  - Anduril
+  - Palantir
+  - Datadog
+  - Cloudflare
+  - Twitch
+
+# Traditional / non-core-tech employers (still may be good jobs)
+other_examples:
+  - Plymouth Rock
+  - Copart
+  - Publix
+  - Westfield
+  - Hunter Industries
+  - AEG
+  - WD
+  - Western Digital
+  - Optiver  # trading — treat as other unless moved

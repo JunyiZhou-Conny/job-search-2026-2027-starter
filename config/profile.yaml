@@ -88,7 +88,7 @@ search:
       priority: co_primary
       discovery_weight: 0.5
       description: "Internships / off-cycle / co-op when eligible given I-20 program end 2026-12-18 and commencement 2027-03"
-      start_flexibility: "Any start date if eligible — including summer — after verifying return-to-school and graduation-window rules against BOTH program_end and commencement"
+      start_flexibility: "Prefer Summer 2027 internships; skip 2026 intern/job cycles (Summer/Fall/Spring 2026). Verify return-to-school against program_end + commencement."
       discovery_sources: ["jobright_matches", "intern_list"]
   # Both tracks active; discovery volume should be roughly balanced, not new-grad-only.
   primary_track: "new_grad_2027_start"
