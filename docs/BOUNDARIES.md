@@ -26,15 +26,25 @@ Persistent context comes from:
 
 The model does not remember your skills across chats unless these files are present and loaded.
 
-## 3. Daily auto-run needs an OS scheduler
+## 3. Daily discovery runs as a Cursor Automation, from a committed file
 
-`.cursor/rules` and `.cursor/commands` do **not** fire on a timer.
+`.cursor/rules` and `.cursor/commands` do **not** fire on a timer. The scheduled
+run is a **Cursor Automation** ("Daily Job Discovery") on a weekday cron.
 
-- Phase 1: `python3 scripts/daily_job_search.py` via launchd / Task Scheduler / cron (`docs/automation_*.md`)
-- Phase 2 (later): Cursor CLI / Background Agents / MCP — still proposal-first, private repo, no secrets
+- The Automations UI holds only the short pointer in `docs/automation/UI_POINTER.md`.
+- The real instructions live in `docs/automation/DAILY_JOB_DISCOVERY.md`; rule changes
+  are a git push, not a UI edit.
+- The Automation runs in a fresh cloud checkout of `main`. Anything uncommitted is invisible to it,
+  including `secrets/` — so personalized Jobright Matches may be unavailable and the public
+  board tables carry the run.
+- It writes discovery + triage artifacts only. It never submits an application, sends outreach,
+  or ingests into `applications.csv` without explicit confirmation in that run.
+
+Local scripts (`scripts/daily_job_search.py` and friends) are run by hand when wanted; no OS
+scheduler is wired.
 
 ## 4. Credentials never enter chat or git
 
 - Do **not** paste Jobright/Simplify/LinkedIn passwords, 2FA codes, or cookies into Cursor.
-- Browser automation experiments use **local** saved sessions you create (`secrets/`, gitignored).
-- See `docs/automation-experiment.md` for the safe experiment ladder (A→E).
+- Browser automation uses **local** saved sessions you create (`secrets/`, gitignored).
+- See `docs/archive/local-browser-automation.md` for the local session setup.

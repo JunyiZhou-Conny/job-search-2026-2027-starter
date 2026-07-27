@@ -1,6 +1,6 @@
 ---
-description: Calendar dry-run and scheduler boundaries
-globs: "{scripts/generate_calendar.py,generated/calendar/**,docs/automation_*.md}"
+description: Calendar dry-run and scheduled-automation boundaries
+globs: "{scripts/generate_calendar.py,generated/calendar/**,docs/automation/**}"
 alwaysApply: false
 ---
 
@@ -8,5 +8,7 @@ alwaysApply: false
 
 - ICS defaults to dry-run; `--write` only after user confirmation.
 - Stable UIDs; only deadlines, confirmed meetings, time blocks, important follow-ups.
-- OS schedulers run `daily_job_search.py` — rules/commands are not timers.
+- Scheduled discovery is a **Cursor Automation** reading `docs/automation/DAILY_JOB_DISCOVERY.md`;
+  rules/commands are not timers and no OS scheduler is wired.
+- Automation edits must be committed to `main` — the cloud run uses a fresh checkout.
 - No Google Calendar writes without explicit OAuth setup and confirmation.

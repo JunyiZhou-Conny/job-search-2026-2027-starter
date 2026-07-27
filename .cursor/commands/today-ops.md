@@ -4,7 +4,7 @@ Run today's job-search operations with the three boundaries:
 
 1. Labels are suggestions until confirmed.
 2. Skills come only from repo knowledge files.
-3. This command does not schedule itself — user or launchd triggers it.
+3. This command does not schedule itself — the user triggers it. Scheduled discovery is a separate Cursor Automation (`docs/automation/DAILY_JOB_DISCOVERY.md`).
 
 ## Steps
 

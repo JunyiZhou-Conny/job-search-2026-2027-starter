@@ -4,7 +4,7 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 
 ## Core behavior
 
-- Treat `data/applications.csv`, `data/networking.csv`, and `data/activity_log.csv` as structured records.
+- Treat `data/applications.csv`, `data/job_decisions.csv`, and `data/activity_log.csv` as structured records.
 - Never invent application status, recruiter responses, sponsorship facts, graduation eligibility, dates, metrics, or referral outcomes.
 - Distinguish verified facts from inference and unknowns.
 - Preserve existing IDs and append history rather than rewriting it.
@@ -30,7 +30,9 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 
 1. **Labels are suggestions** until the user confirms (`confirm_labels.py` / `label_job.py --apply`).
 2. **Skills live in the repo** (`knowledge/evidence_bank.yaml` + profile) — not in chat memory.
-3. **Daily auto-run needs an OS scheduler** (`docs/automation_*.md`); rules/commands are not timers.
+3. **Scheduled discovery is a Cursor Automation**, driven by `docs/automation/DAILY_JOB_DISCOVERY.md`
+   in a fresh cloud checkout of `main`. Rules and commands are not timers, and no OS scheduler is
+   wired — uncommitted work is invisible to the run.
 
 ## Automation safety
 

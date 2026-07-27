@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-"""Local live Apply Queue — Pass writes into the repo immediately.
+"""Local live Apply Queue — clicks write into the repo immediately.
 
 Usage:
-  python3 scripts/serve_apply_queue.py --date 2026-07-26
+  python3 scripts/serve_apply_queue.py --date 2026-07-27
   open http://127.0.0.1:8765/
 
-Do NOT open the static .html file if you want live writes — use this server URL.
+Open the served URL, not the static .html file, if you want live writes.
+
+Endpoints:
+  GET  /                → queue page in LIVE mode
+  GET  /api/state       → {passed: [...], applied: [...]} to hydrate the page
+  POST /api/pass        → archive Pass + status=passed
+  POST /api/applied     → status=applied (creates the row if needed)
 """
 
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import sys
 from datetime import date
@@ -24,7 +29,13 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import generate_apply_queue as gaq  # noqa: E402
 from js_lib import now_iso  # noqa: E402
-from sync_queue_decisions import update_applications, upsert_decisions  # noqa: E402
+from queue_writeback import (  # noqa: E402
+    applied_urls,
+    canon,
+    passed_records,
+    record_applied,
+    record_pass,
+)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -42,15 +53,22 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _json(self, code: int, obj: object) -> None:
-        raw = json.dumps(obj, ensure_ascii=False).encode("utf-8")
-        self._send(code, raw, "application/json; charset=utf-8")
+        self._send(
+            code,
+            json.dumps(obj, ensure_ascii=False).encode("utf-8"),
+            "application/json; charset=utf-8",
+        )
+
+    def _payload(self) -> dict:
+        length = int(self.headers.get("Content-Length") or 0)
+        raw = self.rfile.read(length) if length else b"{}"
+        return json.loads(raw.decode("utf-8") or "{}")
 
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
         if path in {"/", "/index.html", "/queue"}:
             items = gaq.collect(self.day)
             html = gaq.render_html(self.day, items)
-            # Inject live flag before script logic
             html = html.replace(
                 "<script>\nconst KEY",
                 "<script>\nwindow.APPLY_QUEUE_LIVE = true;\nconst KEY",
@@ -58,14 +76,14 @@ class Handler(BaseHTTPRequestHandler):
             )
             self._send(200, html.encode("utf-8"), "text/html; charset=utf-8")
             return
-        if path == "/api/passes":
-            rows = []
-            if gaq.JOB_DECISIONS.exists():
-                with gaq.JOB_DECISIONS.open(newline="", encoding="utf-8") as f:
-                    for r in csv.DictReader(f):
-                        if (r.get("decision") or "").lower() == "pass":
-                            rows.append(dict(r))
-            self._json(200, {"decisions": rows})
+        if path == "/api/state":
+            self._json(
+                200,
+                {
+                    "passed": passed_records(),
+                    "applied": sorted(applied_urls()),
+                },
+            )
             return
         if path == "/api/health":
             self._json(200, {"ok": True, "day": self.day})
@@ -74,43 +92,32 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
-        length = int(self.headers.get("Content-Length") or 0)
-        raw = self.rfile.read(length) if length else b"{}"
         try:
-            payload = json.loads(raw.decode("utf-8") or "{}")
+            payload = self._payload()
         except json.JSONDecodeError:
             self._json(400, {"error": "invalid json"})
-            return
-
-        if path != "/api/pass":
-            self._json(404, {"error": "not found"})
             return
 
         url = (payload.get("url") or "").strip()
         if not url:
             self._json(400, {"error": "url required"})
             return
-        row = {
-            "url": url,
-            "company": payload.get("company") or "",
-            "role": payload.get("role") or "",
-            "job_id": payload.get("job_id") or "",
-            "decision": "pass",
-            "reason": (payload.get("reason") or "").strip(),
-            "decided_at": payload.get("decided_at") or now_iso(),
-            "source": "apply_queue_live",
-        }
-        added, updated = upsert_decisions([row])
-        app_n = update_applications([row])
-        self._json(
-            200,
-            {
-                "ok": True,
-                "job_decisions": {"added": added, "updated": updated},
-                "applications_updated": app_n,
-                "decision": row,
-            },
-        )
+        payload.setdefault("decided_at", now_iso())
+
+        if path == "/api/pass":
+            payload["decision"] = "pass"
+            payload["source"] = "apply_queue_live"
+            result = record_pass([payload])
+            self._json(200, {"ok": True, **result, "url": canon(url)})
+            return
+
+        if path == "/api/applied":
+            payload["source"] = payload.get("source") or "apply_queue_live"
+            result = record_applied([payload])
+            self._json(200, {"ok": True, **result, "url": canon(url)})
+            return
+
+        self._json(404, {"error": "not found"})
 
 
 def main() -> int:
@@ -132,8 +139,9 @@ def main() -> int:
     Handler.day = args.date
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     print(f"Apply queue (LIVE): http://{args.host}:{args.port}/")
-    print(f"date={args.date}")
-    print("Pass → immediate write to data/job_decisions.csv (+ applications when matched)")
+    print(f"date={args.date}  roles={len(items)}")
+    print("Applied → status=applied in data/applications.csv")
+    print("Pass    → data/job_decisions.csv + status=passed")
     print("Ctrl+C to stop")
     try:
         server.serve_forever()

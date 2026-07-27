@@ -1,13 +1,32 @@
 ---
-description: Networking recommendations without auto-send
-globs: "{data/contacts.csv,data/networking.csv,data/networking_interactions.csv,data/outreach_templates.csv,generated/outreach/**}"
+description: Networking and referral workflow — company-level, triggered, never auto-sent
+globs: "{data/contacts.csv,data/networking*.csv,data/outreach_templates.csv,generated/outreach/**,templates/*message*.md,prompts/prepare-coffee-chat.md}"
 alwaysApply: false
 ---
 
-# Networking
+# Networking and referrals
 
-- Recommend people, draft messages, schedule follow-ups — never auto-send.
-- Prefer alumni/team relevance over seniority.
-- First ask is usually perspective, not referral.
-- Caps: 2–3 first outreach, 1–2 follow-ups, ≤1 referral ask/day.
+## Never auto-send
+- Recommend people, draft messages, schedule follow-ups — the user sends.
+- Never claim a relationship, referral, or conversation happened unless the user recorded it.
+
+## Referrals are company-level, not per job
+- One warm contact at a company covers every current and future role there.
+- Do not propose a referral ask for each posting; that guarantees zero asks.
+
+## When to propose an ask
+- `pursuit_lane = core`, and
+- big tech / biotech / GTC-sponsor company, and
+- Boston/MA or Bay Area, and
+- that company has no outreach record yet.
+- Cap ~3 new companies per week.
+
+## How to ask
+- Tie it to a specific team, role, event, shared affiliation, or technical topic.
+- Ask for perspective first; do not open by asking a stranger for a referral.
+- Keep it short and easy to answer; one real reason for contacting that person.
 - Do not re-contact the same person within 7 days.
+
+## What to record
+- Outreach, follow-up date, response, conversation notes, referral outcome — tracked separately.
+- After a coffee chat: useful facts, follow-up commitment, possible introduction, next action.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """One-shot discovery run: Jobright matches + board lists + merge.
 
-Intended cadence (see docs/automation_macos.md):
+Intended cadence (see docs/automation/DAILY_JOB_DISCOVERY.md):
   - Morning (~08:30): full discovery
   - Afternoon (~16:00): optional refresh for late HR postings
   - True real-time on every new posting: not yet; experiment later

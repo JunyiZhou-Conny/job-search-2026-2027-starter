@@ -1,52 +1,78 @@
 # Job Search 2026–2027 Operating System
 
-Local strategy layer on top of Simplify / discovery tools.  
-**Audit:** `docs/AUDIT_PHASE0.md` · **Migration:** `docs/MIGRATION.md` · **Delivery:** `docs/DELIVERY.md`
+Strategy and memory layer on top of Simplify and discovery tools. Simplify is the
+application ledger of record; this repo holds *why* — resume version, pursuit lane,
+sponsorship signal, work-authorization answers, networking, and next actions.
 
-## Daily loop
+**Target:** Summer 2027 internships and 2027 new-grad roles. Earliest full-time start
+`2027-01-18` (I-20 program end `2026-12-18`, commencement March 2027). No fully remote roles.
+
+## The one-hour daily loop
+
+**Overnight — automatic.** The "Daily Job Discovery" Cursor Automation scrapes the intern
+and new-grad boards, triages every row, and writes `generated/discovery_triage_YYYY-MM-DD.{csv,md}`
+plus `jobs/inbox/daily-YYYY-MM-DD.md`. Rules live in `docs/automation/DAILY_JOB_DISCOVERY.md` —
+edit that file and push; the Automations UI only holds the pointer in `docs/automation/UI_POINTER.md`.
+
+**Your hour — the apply queue.**
 
 ```bash
-# After applying via Simplify, drop export here:
-# data/imports/simplify/YYYY-MM-DD.csv
-
-python3 scripts/daily_job_search.py
+python3 scripts/serve_apply_queue.py --date $(date +%F)
+# then open http://127.0.0.1:8765/
 ```
 
-Then open:
+Open a role → read the JD → apply via Simplify → tick **Applied**, or click **Pass**.
+Both write to the repo immediately:
 
-- `generated/daily/YYYY-MM-DD.md`
-- `generated/outreach/YYYY-MM-DD.md`
-- `generated/dashboard.md`
-- `generated/analytics/dashboard.md`
+| Action | Writes |
+|---|---|
+| Applied | `status=applied` + `date_applied` + `resume_version` (creates the row if the role was triage-only) |
+| Pass | `data/job_decisions.csv` + `status=passed`, and the role stops reappearing |
 
-## Core commands
+Filters: GTC 2026 sponsor · Boston/MA · Bay Area/SF · big tech / biotech / startup · queue freshness.
+
+Open the served URL, not the static HTML file — the file version can only hold decisions in
+browser storage, which then need `scripts/sync_queue_decisions.py`.
+
+**Weekly.** Drop a Simplify export in `data/imports/simplify/YYYY-MM-DD.csv`, then reconcile:
 
 ```bash
-python3 scripts/migrate_schema.py
-python3 scripts/validate_data.py
-python3 scripts/dedupe_applications.py
 python3 scripts/jobsearch.py import-simplify --file data/imports/simplify/YYYY-MM-DD.csv
-python3 scripts/label_job.py --job-id J... --jd-text "..."
-python3 scripts/label_job.py --job-id J... --jd-text "..." --apply   # after you confirm
-python3 scripts/generate_calendar.py          # dry-run
-python3 scripts/generate_calendar.py --write
-python3 -m unittest tests/test_core.py
-./scripts/compile_resume.sh
+python3 scripts/dedupe_applications.py
+python3 scripts/validate_data.py
+python3 scripts/refresh_resume_stats.py     # which resume version actually converts
+python3 scripts/jobsearch.py dashboard
 ```
 
-## Resumes (do not dilute base)
+## Layout
 
-- Quality baseline: `resumes/base/JZ_resume.tex`
-- Active clusters: `*_v1.1.pdf` under `cloud_swe` / `data_ml` / `health_ai`
-- Versions registry: `data/resume_versions.csv`
+| Path | Holds |
+|---|---|
+| `config/profile.yaml` | Canonical profile, dual graduation dates, tracks, lanes |
+| `knowledge/` | Evidence bank, triage rules, company classes, market signals |
+| `data/applications.csv` | The ledger |
+| `data/job_decisions.csv` | Passed roles (URL archive, prevents resurfacing) |
+| `generated/` | Machine output — triage packs, apply queue, dashboards |
+| `resumes/` | Base + cluster resumes; registry in `data/resume_versions.csv` |
+| `docs/` | Current policy; `docs/archive/` is history, not current state |
 
-## Rules
+## Non-negotiables
 
-- Sponsorship ≠ hard eligibility
-- Manual labels (`label_source=manual`) are not auto-overwritten
-- No auto-send of applications, LinkedIn, email, or calendar events without confirmation
-- No sensitive ID documents or passwords in the repo
+- Nothing is submitted or sent without explicit confirmation.
+- Sponsorship `unclear` / `no` is never hard ineligibility — route via `pursuit_lane`.
+- Never invent statuses, dates, metrics, referrals, or JD requirements.
+- `label_source=manual` is not auto-overwritten.
+- No passwords, ID documents, or session files in git (`secrets/` is ignored).
+
+## Resumes
+
+- Baseline: `resumes/base/JZ_resume.tex`
+- Clusters: `cloud_swe` / `data_ml` / `health_ai`
+- Default resume line is **December 2026 program completion**; use the dual-date line
+  (March 2027 commencement + December 2026 completion) only when a posting demands
+  Spring 2027 wording. See `docs/eligibility.md`.
 
 ## Cursor commands
 
-See `.cursor/commands/` (`daily-plan`, `sync-simplify`, `label-job`, `validate-data`, `audit-system`).
+`.cursor/commands/` — `apply-queue`, `triage-discovery`, `sync-simplify`, `label-job`,
+`validate-data`, `weekly-review`, `tailor-resume`, `audit-system`.

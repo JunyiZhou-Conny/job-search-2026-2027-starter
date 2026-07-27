@@ -26,4 +26,5 @@ resumes/**/*.fls
 resumes/**/*.fdb_latexmk
 resumes/**/*.synctex.gz
 generated/logs/
+generated/apply_queue/*.html
 .venv/

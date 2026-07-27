@@ -505,9 +505,12 @@ def render_html(day: str, items: list[dict]) -> str:
           data-url="{html.escape(it['url'])}"
           data-company="{html.escape(it['company'])}"
           data-role="{html.escape(it['role'])}"
-          data-job-id="{html.escape(it.get('job_id') or '')}">
+          data-job-id="{html.escape(it.get('job_id') or '')}"
+          data-cluster="{html.escape(it.get('cluster') or '')}"
+          data-lane="{html.escape(it.get('lane') or '')}"
+          data-location="{html.escape(it.get('location') or '')}">
         <label class="check">
-          <input type="checkbox" data-key="{html.escape(norm_url(it['url']))}" title="Applied this session" />
+          <input type="checkbox" data-key="{html.escape(norm_url(it['url']))}" title="Mark applied — writes status=applied" />
           <span class="badges">
             {"<span class=\"badge gtc\">GTC sponsor</span>" if it.get("gtc_sponsor") == "yes" else ""}
             <span class="badge geo-{html.escape(it['geo'])}">{html.escape(it['geo_label'])}</span>
@@ -595,6 +598,7 @@ def render_html(day: str, items: list[dict]) -> str:
   }}
   .item.hidden {{ display: none; }}
   .item.done {{ opacity: 0.45; }}
+  .item.logged .title::after {{ content: ' · logged'; color: var(--accent); font-size: 0.75em; letter-spacing: 0.04em; }}
   .item.done .title {{ text-decoration: line-through; color: var(--done); }}
   .check {{ display: grid; grid-template-columns: auto 1fr; gap: 0.55rem; align-items: start; }}
   .badges {{ display: none; }}
@@ -631,12 +635,14 @@ def render_html(day: str, items: list[dict]) -> str:
 <header>
   <h1>Apply queue — {html.escape(day)}</h1>
   <p class="sub">
-    <strong>Open</strong> → 看 JD → 合适就 Simplify 投递后勾选；不合适点 <strong>Pass</strong>（封存）。
-    想要实时写入仓库：用 <code>python3 scripts/serve_apply_queue.py</code> 打开本页（LIVE），不要双击静态 HTML。
+    <strong>Open</strong> → read the JD → apply via Simplify, then tick <strong>Applied</strong>.
+    Not for you? <strong>Pass</strong> (archived, not deleted).
   </p>
   <p class="legend">
-    勾选 = 本轮已投。<strong>Pass</strong> = 不投并封存。LIVE 模式点 Pass 立刻写
-    <code>data/job_decisions.csv</code>（有 applications 行则 <code>status=passed</code>）。
+    In LIVE mode both actions write to the repo immediately:
+    <strong>Applied</strong> → <code>status=applied</code> in <code>data/applications.csv</code> (row is created if new),
+    <strong>Pass</strong> → <code>data/job_decisions.csv</code> + <code>status=passed</code>.
+    Start LIVE with <code>python3 scripts/serve_apply_queue.py</code> — do not open the static HTML file.
   </p>
   <div class="filters" id="geoFilters">
     <span id="counts">GTC {n_gtc} · Boston/MA {n_bos} · Bay Area {n_bay} · Big tech {n_big} · Biotech {n_bio} · Startup {n_st} · All {len(items)}</span>
@@ -647,7 +653,7 @@ def render_html(day: str, items: list[dict]) -> str:
   <div class="filters" id="passFilters"></div>
   <div class="controls">
     <button class="primary" id="openNext" type="button">Open next (visible)</button>
-    <button id="exportPasses" type="button">Export passes</button>
+    <button id="exportPasses" type="button">Export decisions</button>
     <button id="reset" type="button">Reset checks</button>
     <span id="progress"></span>
   </div>
@@ -659,8 +665,8 @@ def render_html(day: str, items: list[dict]) -> str:
   </ol>
 </main>
 <footer>
-  After Export: <code>python3 scripts/sync_queue_decisions.py --file ~/Downloads/queue_decisions_....json</code>
-  then regenerate this page.
+  Static-file mode only: <code>python3 scripts/sync_queue_decisions.py --file ~/Downloads/queue_decisions_....json</code>,
+  then regenerate. Company classes live in <code>knowledge/company_lists.yaml</code>.
 </footer>
 <script>
 const KEY = "apply-queue-v2-{html.escape(day)}";
@@ -668,9 +674,22 @@ const PASS_KEY = "apply-queue-pass-v1-{html.escape(day)}";
 const LIVE = (typeof window !== 'undefined' && window.APPLY_QUEUE_LIVE === true);
 const items = [...document.querySelectorAll('.item')];
 const boxes = [...document.querySelectorAll('input[type=checkbox]')];
-const saved = JSON.parse(localStorage.getItem(KEY) || "{{}}");
+let saved = JSON.parse(localStorage.getItem(KEY) || "{{}}");
 let passes = JSON.parse(localStorage.getItem(PASS_KEY) || "{{}}");
 const state = {{ geo: 'all', company: 'all', tier: 'all', gtc: 'all', pass: 'active' }};
+
+function rowPayload(item) {{
+  return {{
+    url: item.dataset.url,
+    company: item.dataset.company,
+    role: item.dataset.role,
+    job_id: item.dataset.jobId || '',
+    cluster: item.dataset.cluster || '',
+    lane: item.dataset.lane || '',
+    location: item.dataset.location || '',
+    resume_version: item.dataset.resume || '',
+  }};
+}}
 
 function mkFilters(el, key, opts) {{
   opts.forEach(([val, label]) => {{
@@ -765,6 +784,7 @@ function paint() {{
     const on = !!saved[b.dataset.key];
     b.checked = on;
     b.closest('.item').classList.toggle('done', on);
+    if (LIVE && on) b.disabled = true;
     if (on) done += 1;
   }});
   const vis = boxes.filter((b) => !b.closest('.item').classList.contains('hidden'));
@@ -774,22 +794,60 @@ function paint() {{
     visDone + ' / ' + vis.length + ' visible checked · passed ' + nPass;
   const bar = document.getElementById('syncbar');
   if (LIVE) {{
-    bar.innerHTML = nPass
-      ? ('<strong>LIVE</strong> · ' + nPass + ' passed written to repo')
-      : '<strong>LIVE</strong> · Pass writes to data/job_decisions.csv immediately';
+    bar.innerHTML =
+      '<strong>LIVE</strong> · written to repo: ' + done + ' applied · ' + nPass + ' passed';
     const exp = document.getElementById('exportPasses');
     if (exp) exp.style.display = 'none';
   }} else {{
-    bar.innerHTML = nPass
-      ? ('<strong>' + nPass + ' passed</strong> pending export → Export passes, then sync_queue_decisions.py')
-      : 'Static file mode · for instant Pass, run: python3 scripts/serve_apply_queue.py --date {html.escape(day)}';
+    bar.innerHTML =
+      '<strong>Static file</strong> · ' + done + ' applied / ' + nPass +
+      ' passed held in this browser only. Export decisions, then run sync_queue_decisions.py — ' +
+      'or start LIVE: python3 scripts/serve_apply_queue.py --date {html.escape(day)}';
   }}
 }}
 
-boxes.forEach((b) => b.addEventListener('change', () => {{
-  saved[b.dataset.key] = b.checked;
-  localStorage.setItem(KEY, JSON.stringify(saved));
-  paint();
+async function recordApplied(item) {{
+  const res = await fetch('/api/applied', {{
+    method: 'POST',
+    headers: {{ 'Content-Type': 'application/json' }},
+    body: JSON.stringify(Object.assign(rowPayload(item), {{ decided_at: new Date().toISOString() }})),
+  }});
+  if (!res.ok) throw new Error('applied write failed');
+  return res.json();
+}}
+
+boxes.forEach((b) => b.addEventListener('change', async () => {{
+  const item = b.closest('.item');
+  const key = b.dataset.key;
+
+  if (!LIVE) {{
+    saved[key] = b.checked;
+    localStorage.setItem(KEY, JSON.stringify(saved));
+    paint();
+    return;
+  }}
+
+  if (!b.checked) {{
+    // Un-applying is a real ledger change; do it deliberately, not by mis-click.
+    b.checked = true;
+    alert('Already recorded as applied. To undo, edit data/applications.csv directly.');
+    return;
+  }}
+
+  b.disabled = true;
+  try {{
+    const data = await recordApplied(item);
+    saved[key] = true;
+    if (data.created && data.created.length) {{
+      item.dataset.jobId = data.created[0];
+    }}
+    item.classList.add('logged');
+    paint();
+  }} catch (err) {{
+    b.checked = false;
+    b.disabled = false;
+    alert('Could not save "applied" to the repo. Is serve_apply_queue.py still running?');
+  }}
 }}));
 
 async function recordPass(item, reason) {{
@@ -846,8 +904,12 @@ document.getElementById('openNext').onclick = () => {{
 }};
 document.getElementById('exportPasses').onclick = () => {{
   const decisions = Object.values(passes);
-  if (!decisions.length) {{ alert('No passes yet.'); return; }}
-  const blob = new Blob([JSON.stringify({{ exported_at: new Date().toISOString(), decisions }}, null, 2)], {{ type: 'application/json' }});
+  const applied = items
+    .filter((item) => saved[urlKey(item)])
+    .map((item) => Object.assign(rowPayload(item), {{ decided_at: new Date().toISOString() }}));
+  if (!decisions.length && !applied.length) {{ alert('Nothing to export yet.'); return; }}
+  const payload = {{ exported_at: new Date().toISOString(), decisions, applied }};
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {{ type: 'application/json' }});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'queue_decisions_{html.escape(day)}.json';
@@ -855,19 +917,27 @@ document.getElementById('exportPasses').onclick = () => {{
   URL.revokeObjectURL(a.href);
 }};
 
+function normKey(raw) {{
+  let u = (raw || '').split('?')[0];
+  while (u.endsWith('/')) u = u.slice(0, -1);
+  return u.toLowerCase();
+}}
+
 async function boot() {{
   if (LIVE) {{
     try {{
-      const res = await fetch('/api/passes');
+      const res = await fetch('/api/state');
       const data = await res.json();
-      const map = {{}};
-      (data.decisions || []).forEach((d) => {{
-        let u = (d.url || '').split('?')[0];
-        while (u.endsWith('/')) u = u.slice(0, -1);
-        map[u.toLowerCase()] = d;
-      }});
-      passes = map;
-    }} catch (e) {{}}
+      const passMap = {{}};
+      (data.passed || []).forEach((d) => {{ passMap[normKey(d.url)] = d; }});
+      passes = passMap;
+      // Repo is the source of truth for "applied" in LIVE mode.
+      const appliedMap = {{}};
+      (data.applied || []).forEach((u) => {{ appliedMap[normKey(u)] = true; }});
+      saved = appliedMap;
+    }} catch (e) {{
+      console.warn('could not load repo state', e);
+    }}
   }}
   applyFilters();
 }}

@@ -145,6 +145,20 @@ def parse_iso(value: str) -> Optional[date]:
         return None
 
 
+def next_id(prefix: str, rows: Iterable[Dict[str, str]], field: str) -> str:
+    day = date.today().strftime("%Y%m%d")
+    stem = f"{prefix}{day}-"
+    nums = []
+    for row in rows:
+        value = row.get(field) or row.get("id") or ""
+        if value.startswith(stem):
+            try:
+                nums.append(int(value.rsplit("-", 1)[1]))
+            except ValueError:
+                pass
+    return f"{stem}{max(nums, default=0) + 1:03d}"
+
+
 def today_iso() -> str:
     return date.today().isoformat()
 
