@@ -7,11 +7,13 @@ alwaysApply: false
 # Application record rules
 
 - Required fields: `id`, `company`, `role`, `posting_url`, `date_found`, `status`, `eligibility`, `priority`, `next_action`, `last_update`.
-- Valid statuses: discovered, researching, referral_requested, ready_to_apply, applied, oa, recruiter_screen, technical_screen, onsite, offer, rejected, withdrawn, closed.
+- Valid statuses: discovered, saved, researching, ready_to_apply, referral_requested, applied, oa, recruiter_screen, technical_screen, onsite, final_round, offer, accepted, rejected, withdrawn, closed, **passed**.
+- `passed` = the user read the JD and chose not to apply. It is not an employer rejection, and the apply queue hides these so discovery cannot resurface them. See `docs/status-definitions.md`.
 - Valid priorities: A, B, C.
 - Valid pursuit lanes: core, broad, practice.
-- Valid eligibility values: verified, likely, unclear, ineligible.
-- Valid sponsorship_signal values: verified, likely, unclear, no.
+- Valid `hard_eligibility` values: eligible, uncertain, ineligible.
+- Valid `sponsorship_signal` values: supportive, historically_possible, unclear, unlikely, explicit_no.
+  Legacy inputs (verified / likely / no) are accepted and normalized by `scripts/js_lib.py`.
 
 ## Hard eligibility ≠ sponsorship
 
@@ -36,8 +38,8 @@ alwaysApply: false
 
 ## Other
 
-- A role is not `applied` until the user confirms submission.
-- Record the exact resume version used after applying.
+- A role is not `applied` until the user confirms submission — ticking **Applied** in the apply queue counts as that confirmation and writes `status=applied` plus `date_applied` and `resume_version`.
+- Record the exact resume version used after applying; `scripts/refresh_resume_stats.py` rolls those into `data/resume_versions.csv`.
 - For graduation-sensitive internships, capture the stated graduation window and set hard eligibility conservatively.
 - Do not overwrite the original posting URL with an aggregator URL when the company career-page URL is available.
 - Create a `jobs/` dossier only for A-core roles, OA/interview stages, active employee help, or job-specific resumes.
