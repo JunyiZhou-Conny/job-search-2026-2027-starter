@@ -22,8 +22,8 @@
 
 ## Skip themes
 
-- Explicit 2026 internship terms (`start_date_conflict`, `timing_expired`): 5
-- Explicit PhD, undergraduate-only, citizenship, or clearance gates (`hard_gate`): 10
+- Explicit 2026 internship terms (`start_date_conflict`, `timing_expired`): 4
+- Explicit PhD, undergraduate-only, citizenship, or clearance gates (`hard_gate`): 11
 - Fully remote roles (`remote`): 3
 - General IT/support work outside target clusters (`non_target_role`): 2
 - Some rows fire more than one theme.
