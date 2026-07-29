@@ -1,7 +1,7 @@
 # Discovery triage — 2026-07-29
 
 - Merged unique URLs: **57**
-- Decisions: **keep=19, later=25, skip=13**
+- Decisions: **keep=19, later=24, skip=14**
 - Sources: Jobright public feed 13; newgrad_swe 22; intern_swe 22
 - Personalized Matches session unavailable because `jobright_storage.json` was absent; the exporter used the public feed.
 
@@ -30,7 +30,7 @@ Top 15 by fit (see CSV for all 19):
 - `start_date_conflict` / `timing_expired`: explicit Fall 2026 internships (3)
 - `remote`: fully remote internship (1)
 - `non_target_role`: product lead, talent acquisition, data-center technician, IT asset, and microscopy roles (6)
-- `hard_gate`: incompatible degree/status or duration requirements (3)
+- `hard_gate`: incompatible degree/status or duration requirements (4)
 
 ## Attention
 
