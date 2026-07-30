@@ -22,7 +22,7 @@ You do **not** need to erase Health Data Science. You need to stop leading with 
 
 | Item | Conflict | Action needed |
 |---|---|---|
-| Graduation | Dual real dates: I-20 program end **2026-12-18**; commencement **2027-03** | Default resume = Dec 2026 completion; dual-date line when JD needs Spring/March |
+| Graduation | Dual real dates: I-20 program end **2026-12-18**; commencement **2027-03** | RESOLVED 2026-07-29 — resume now carries both: date column reads Aug 2025 – Mar 2027, with a bullet stating completion December 2026 and availability January 2027. Single-field ATS forms still answer December 2026. |
 | Demo credentials | Resume footnote includes a live test password | Remove from all public resumes; share privately if needed |
 | Internship auth | CPT availability still `unknown` in profile | Confirm before pursuing pre-grad internships |
 
@@ -73,8 +73,11 @@ You do **not** need to erase Health Data Science. You need to stop leading with 
 - Harvard: SM Health Data Science; Deep Learning, Healthcare ML coursework
 - Languages: Python, C++, Java, SQL, R, JavaScript
 - ML: PyTorch, TensorFlow, Keras, sklearn, XGBoost/LightGBM, HF Transformers
-- Data/infra: MySQL, PostgreSQL, MongoDB, Pinecone, Hadoop, Spark
-- Tools: Claude Code, Cursor, Git, Docker, Kubernetes, Jupyter
+- Data/infra: MySQL, PostgreSQL, MongoDB, MongoDB Atlas Vector Search, Hadoop, Spark
+- Tools: Git, Docker, Jupyter, SLURM/HPC
+- **Removed 2026-07-27:** Pinecone (never used — the RAG store is MongoDB Atlas Vector Search) and
+  Kubernetes (never used — the chatbot runs on Elastic Beanstalk with Docker). See
+  `knowledge/evidence_bank.yaml` for the full claim guidance.
 - Cloud: AWS (SageMaker, Lambda, EC2, S3, Redshift), Snowflake, BigQuery
 - Certs: AWS Cloud Practitioner, AWS AI Practitioner, AWS ML Associate
 

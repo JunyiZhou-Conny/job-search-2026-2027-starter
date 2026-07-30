@@ -63,25 +63,57 @@ Today’s date for timing rules: use the actual run date in America/New_York.
 - Do NOT skip solely because sponsorship is unclear/no
 - Do NOT commit secrets, passwords, or storage_state JSON
 
-# Approved discovery sources (v1 scope — do not expand unless asked)
+# Approved discovery sources (v2 scope — expanded 2026-07-28)
 
 A. Jobright Matches (personalized), if session available:
    - Prefer: https://jobright.ai/jobs/recommend
    - Needs secrets/jobright_storage.json when present
    - Cards may lack work_model/location — that is OK; leave blank
 
-B. New Grad US SWE board (Jobright minisite table):
-   - https://jobright.ai/minisites-jobs/newgrad/us/swe?embed=true
-   - source label: newgrad_jobs
-   - track label: new_grad_2027_start
+B. Jobright minisite category boards, both tracks:
+   - URL shape: https://jobright.ai/minisites-jobs/{newgrad|intern}/us/{slug}?embed=true
+   - newgrad → source `newgrad_jobs`, track `new_grad_2027_start`
+   - intern  → source `intern_list`,  track `internship_if_eligible`
 
-C. Intern US SWE board (Jobright minisite table):
-   - https://jobright.ai/minisites-jobs/intern/us/swe?embed=true
-   - source label: intern_list
-   - track label: internship_if_eligible
+   Enabled category slugs (verified 2026-07-28):
 
-Do NOT scrape marketing/HR/finance boards in v1.
-Do NOT dump entire 30k openings — only these surfaces, first loaded table pages (scroll a few screens, no infinite scrape).
+   | slug | board label on intern-list | cluster hint | typical kept rows/board |
+   |---|---|---|---|
+   | `swe` | Software Engineering | cloud_swe | ~18 |
+   | `ml_ai` | Machine Learning and AI | data_ml | ~19 |
+   | `data_science` | Data Science | data_ml | ~17 |
+   | `data_analysis` | Data Analysis | data_ml | ~6–11 |
+   | `healthcare` | Healthcare | health_ai | ~0 (see note) |
+
+   `product_management` resolves but is disabled — off-target for all three clusters.
+
+**Slug gotcha:** the `?k=` value in an intern-list.com URL is NOT the minisite
+slug. `?k=aiml` → `ml_ai`, `?k=hc` → `healthcare`, `?k=da` → `data_analysis`,
+`?k=pm` → `product_management`. Every minisite path returns HTTP 200 even for
+nonsense, so a status check cannot validate a slug. Verify a new category with:
+
+    .venv/bin/python scripts/automation/probe_board_categories.py
+
+**Healthcare note:** this board is expected to yield ~0 after filtering. Its
+page-one content is clinical (pharmacy/anesthesia interns, clinical research
+coordinators, and bulk-duplicated health-records postings), not health tech.
+Zero rows there is normal, not a scrape failure. Real health-tech roles arrive
+through `swe` / `ml_ai` / `data_science` at health companies instead.
+
+## Filtering (scripts/automation/export_board_lists.py)
+
+A row is kept when `DOMAIN` matches and either `DROP` does not match or `STRONG`
+overrides it. `DOMAIN` deliberately excludes seniority words (`intern`,
+`new grad`, `entry level`): including them meant every row on an intern board
+matched the domain gate, so the gate passed everything. That was invisible while
+only `swe` was scraped and would have flooded triage with clinical roles.
+
+`STRONG` exists so "Radiology AI Engineer" survives while "Radiologic
+Technologist" does not.
+
+Do NOT dump entire 30k openings — only these surfaces, first loaded table pages
+(scroll a few screens, no infinite scrape). Use `--cap N` per board if a run
+produces more than triage can honestly review.
 
 # Execution plan (follow in order)
 
@@ -105,17 +137,24 @@ Or one-shot:
 
 .venv/bin/python scripts/automation/run_discovery.py
 
-Expected per-source outputs (names may vary slightly by script):
+Expected per-source outputs — one CSV per (track x category):
 - data/discovery/${DAY}_jobright.csv
-- data/discovery/${DAY}_newgrad_swe.csv
-- data/discovery/${DAY}_intern_swe.csv
+- data/discovery/${DAY}_{newgrad,intern}_{swe,ml_ai,data_science,data_analysis,healthcare}.csv
 - data/discovery/${DAY}_all.csv   ← merged unique URLs
 - jobs/inbox/daily-${DAY}.md      ← human inbox
 
+Ten board files is normal under v2 scope. Expect ~110–130 unique rows after
+dedupe (the swe-only v1 scope produced ~37). The two `_healthcare.csv` files are
+normally 0 rows — that is expected, not a failure.
+
 Each row should carry when possible:
-company, role, url, source, track, date_discovered, fetched_at,
+company, role, url, source, track, category, date_discovered, fetched_at,
 posted_relative, location, work_model, notes
 (and board extras if available)
+
+`category` is the board slug the row came from. Use it as a prior for
+`suggested_cluster` during triage, not as the answer — an `ml_ai` board carries
+plenty of rows that belong in `cloud_swe`.
 
 If Jobright Matches fails due to login/session:
 - Continue with board tables B+C

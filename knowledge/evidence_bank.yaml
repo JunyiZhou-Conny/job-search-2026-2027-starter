@@ -6,14 +6,18 @@ projects:
     title: "Airway Management Simulation Chatbot"
     org: "Emory Pediatric Hospital"
     role: "Full-Stack Engineer, Scrum Master"
-    dates: "2024-01 — present"
+    dates: "2024-01 — 2025-08"
+    dates_status: >-
+      2026-07-26: user confirmed the project ended August 2025; resume corrected from "Present".
+      Public repo last commit is 2024-12-11, so the final ~8 months are not visible publicly.
     source_file: "resumes/base/JZ_resume.tex"
     source_url: "https://github.com/JunyiZhou-Conny/Airway-Management-Assistant"
-    technologies: ["Python", "Flask", "REST APIs", "React", "Auth0", "MongoDB", "AWS Elastic Beanstalk", "AWS CloudFront", "OpenAI", "RAG", "LLM agents"]
+    technologies: ["Python", "Flask", "REST APIs", "React", "Auth0", "MongoDB", "MongoDB Atlas Vector Search", "Docker", "AWS Elastic Beanstalk", "AWS CloudFront", "OpenAI", "RAG", "LLM agents"]
     software_engineering_evidence:
       - "React frontend communicates with Flask REST endpoints; MongoDB provides application persistence"
+      - "Retrieval layer runs on MongoDB Atlas Vector Search, sharing one datastore with application persistence"
       - "Auth0 authentication protects application access"
-      - "Backend deployed through AWS Elastic Beanstalk; frontend delivered through CloudFront with SSL/DNS configuration"
+      - "Backend deployed through AWS Elastic Beanstalk (Docker platform); frontend delivered through CloudFront with SSL/DNS configuration"
       - "Agile team of 6; code reviews and clinician feedback loop"
     measurable_results:
       - "Deployed AWS demo; Agile team of 6; HIPAA-conscious clinical simulation platform"
@@ -36,10 +40,23 @@ projects:
     role: "Graduate Researcher"
     dates: "2026-02 — present"
     source_file: "resumes/base/JZ_resume.tex"
-    technologies: ["PyTorch", "VAE", "diffusion", "Optimal Transport", "CellOT", "scanpy"]
+    technologies: ["PyTorch", "TensorFlow", "ICNN", "VAE", "Optimal Transport", "unbalanced Optimal Transport", "CellOT", "scGen", "scanpy", "Harvard Research Compute / FASRC Cannon", "GPU"]
+    not_yet_built:
+      - "diffusion models — 2026-07-26: user confirmed PLANNED but NOT yet implemented.
+         Removed from the resume bullet and replaced with unbalanced OT, which is real.
+         Do not reinstate until the user confirms a diffusion model was actually trained."
     measurable_results:
       - "Custom CellOT; OOD subpopulation matching (e.g., T-cell subsets)"
+      - "Porting a 2018 CPU-only TensorFlow reference implementation to modern PyTorch with Input Convex Neural Networks, GPU-enabled, to reproduce the published benchmark"
+      # Real measured results from the frozen A–D ablation (Stage 1), per
+      # scgen-cellot-autoresearch/results/insights.md. Currently on no resume.
+      - "scGen split (rat in train): 0.85-0.90 R^2 across all genes"
+      - "Bunne out-of-distribution split: 0.65-0.67 R^2 — quantifying the OOD generalization gap"
+      - "Found the gene-space effect sign-flips with split: 6,619 orthologs wins R^2-all on the scGen split, while 1k HVG wins on all metrics under OOD — so no split-independent recommendation holds"
     interview_depth: moderate
+    notes: >-
+      2026-07-26: current resume bullet ("custom PyTorch CellOT implementation from scratch") undersells this.
+      The real story is legacy-framework migration + CPU→GPU modernization + benchmark reproduction.
 
   alphafold_pipeline:
     title: "AlphaFold Protein–Nucleic Acid Interaction Prediction"
@@ -51,6 +68,201 @@ projects:
     measurable_results:
       - "GPU parallel inference; pLDDT/PAE filtering; CLI for non-ML users"
     interview_depth: moderate
+
+  # ---------------------------------------------------------------------------
+  # Added 2026-07-26 from public GitHub READMEs. Not previously on any resume.
+  # All metrics below are transcribed from the repos, not inferred.
+  # ---------------------------------------------------------------------------
+
+  autoresearch_cellot:
+    title: "Autonomous Ablation-Search Agent for scGen vs CellOT"
+    org: "Personal / Wyss-adjacent (FASRC Cannon cluster)"
+    role: "Sole author"
+    dates: "2026-06 — present"
+    source_url: "https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch"
+    control_logic: >-
+      2026-07-26: user confirmed the reflect/decide steps are RULE-BASED (deterministic stop rules and
+      thresholds in YAML), NOT LLM-driven. Do not describe this project as "agentic" or as an LLM agent —
+      that implies a model in the loop and will not survive a technical screen. Use "autonomous",
+      "closed-loop", or "self-directed". This project does NOT strengthen the LLM-agent skill bucket;
+      airway_chatbot and vlm_textvqa_lora carry that.
+
+      2026-07-29 SUPERSEDES THE ABOVE, PARTIALLY. Five weeks of uncommitted work was recovered from the
+      Cannon working tree. The system now has three layers: L1 substrate (fixed tier ladder), L2
+      `proposer.py` (deterministic adaptive one-delta search over `space.yaml`, gated by
+      `policy.validate()`), and L3 `director.py` (state snapshot -> trigger detection -> agenda, with a
+      PLUGGABLE reasoner). `llm_client.py` implements a real LLM policy (Anthropic/OpenAI, env-var
+      credentials only) with per-call token accounting, estimated cost logging, and a hard cumulative
+      spend ceiling that raises and falls back to the free rule reasoner.
+      CRITICAL BOUNDARY, verified 2026-07-29: the LLM path has NEVER been exercised on real runs.
+      insights.md contains exactly one director episode and it is tagged `(rule)`; research_agenda.json
+      records `"reasoner": "rule"`; no LLM usage ledger file exists, so `complete()` has never logged a
+      call. CLAIM: "built an optional LLM planner with cost controls and automatic fallback; the
+      deterministic planner drove every run to date." DO NOT claim an LLM directed the experiments.
+      The honest headline is graceful degradation and cost awareness as DESIGN, which is what applied-AI
+      and agent-infra JDs screen for — not an LLM-in-the-loop result.
+    technologies: ["Python", "SLURM", "FASRC Cannon", "closed-loop automation", "YAML-driven config", "job arrays", "checkpoint/resume", "Anthropic API", "OpenAI API", "token/cost accounting", "cost ceiling + graceful fallback", "agenda checkpointing", "schema migration"]
+    software_engineering_evidence:
+      - "Self-pacing autonomous loop: submit → watch → reflect → decide → continue → synthesize"
+      - "Fairshare-aware cluster budgeting; single cluster.yaml policy drives all SLURM resourcing"
+      - "Deliberately schedules CPU over GPU because GPU costs 200–500x fairshare for small MLPs"
+      - "Checkpoint/resume on serial_requeue so preemption is near-free; capped concurrency via job-array %K"
+      - "sshare floor makes the loop back off when the lab over-uses its share"
+      - "Paired single-factor ablations: each run changes exactly one field from a frozen baseline"
+      - "Modular pipeline: orchestrator, run_one_experiment (idempotent), reflect, synthesize, triage_errors"
+    measurable_results:
+      # Measured 2026-07-29 directly from results/experiments.csv in the Cannon working tree
+      # (/n/holylabs/mooney_lab/Lab/junyizhou/speciesOT/scgen-cellot-autoresearch). Counted, not estimated.
+      - "338 experiments executed; 318 status=ok, 20 status=error:CalledProcessError (94.1% completion)"
+      - "79.3 hours cumulative wall-clock compute; mean run 844 s, longest run 43,254 s (12.0 h)"
+      - "12 experiment tiers, 2 data splits (scgen 202 / bunne_ood 136), 7 gene-space settings (250-6,619)"
+      - "experiments.csv schema migrated mid-flight from 26 to 33 columns (7 new metric fields) with safe append"
+      - "L3 director: 1 logged episode, reasoner=rule. LLM reasoner implemented but never invoked (no usage ledger)."
+      - "21 proposal records in results/proposals.jsonl, each carrying an explicit hypothesis and rationale"
+    execution_status: >-
+      2026-07-29 RESOLVED. The gap was not that the loop had not run — it was that five weeks of work
+      (338 experiments plus an entire L2/L3 architecture) sat uncommitted in the Cannon working tree while
+      the public repo showed a June 22 snapshot with a header-only experiments.csv.
+      Infrastructure was committed and pushed as 5d1a7d9 on 2026-07-29: director.py, proposer.py,
+      policy.py, llm_client.py, honest_metrics.py, explore.py, space.yaml, AUTONOMOUS_DESIGN.md (440
+      lines), ae_study/ (15 files), and 12 new SLURM scripts — 45 files, ~7,500 insertions.
+      DELIBERATELY WITHHELD from the public repo per user decision: results/experiments.csv,
+      results/insights.md, results/proposals.jsonl, results/research_agenda.json, and adaptations.yaml.
+      All five quote unpublished Mooney/Alvarez-Melis findings. The README now states execution totals
+      (338 runs / 79.3 h) WITHOUT the findings, which fixes the "abandoned repo" problem while keeping
+      pre-publication science private. Also excluded: results/runs/ (196 GB), results/icnn_ot/ (205 MB),
+      ae_study/results/ (366 MB), .gpu_libs/, meeting_david/ (lab decks).
+      OPEN: adaptations.yaml is infra-only by design but quotes two convergence figures from insights.md.
+      Held back for consistency; add it if the user clears publication.
+    claim_guidance: >-
+      The 200-500x fairshare figure is FASRC cluster cost policy motivating a design decision, NOT a measured
+      optimization the user achieved. Claim it as design rationale ("routed to CPU partitions where GPU carries
+      200-500x fairshare cost"), never as "reduced cost 200-500x".
+      2026-07-29 UPDATE: experiment counts and compute hours ARE now defensible — counted from
+      experiments.csv (338 runs, 318 ok, 79.3 h). Savings and throughput remain NOT defensible; no
+      before/after baseline was ever measured.
+      Still NOT defensible: that an LLM planned or directed any experiment (see control_logic).
+      Interview risk to rehearse: the public repo no longer contains experiments.csv, so an interviewer
+      cannot verify the 338 figure from GitHub. Be ready to explain that results are withheld
+      pre-publication and to walk through the architecture, which IS public.
+    interview_depth: strong
+    notes: >-
+      Strongest match to the ml_systems_ai_infrastructure emerging cluster in knowledge/target_roles.yaml.
+      Hits agentic pipelines, distributed scheduling, and resource-efficiency design simultaneously.
+
+  cv_caltech101:
+    title: "Image Classification on Caltech-101: Classical ML vs CNNs vs Vision Transformers"
+    org: "Harvard SHBT-261 (course project)"
+    role: "Sole author"
+    dates: "2026-03"
+    source_url: "https://github.com/JunyiZhou-Conny/SHBT-261_Image-Classification-on-Caltech-101-Classical-ML-CNNs-and-Vision-Transformers"
+    technologies: ["PyTorch", "ViT-B/16", "ResNet-18", "HOG", "Random Forest", "transfer learning"]
+    measurable_results:
+      - "8,677 images / 101 categories"
+      - "ViT-B/16 fine-tuned: 0.972 test top-1, 0.998 top-5 (4,737 s on T4)"
+      - "ResNet-18 fine-tuned: 0.953 test top-1 (508 s on T4)"
+      - "HOG + Random Forest baseline: 0.507 test top-1 (876 s CPU)"
+      - "Transfer learning improved over classical baseline by ~45 percentage points"
+      - "Ablations: minimal augmentation and SGD beat heavy regularization and adaptive optimizers"
+    interview_depth: strong
+    notes: "Closes the computer-vision gap. Course project — must be labeled as such."
+
+  cv_segmentation_voc:
+    title: "Semantic Segmentation on Pascal VOC 2007: U-Net vs ViT-Tiny vs DeepLabV3+"
+    org: "Harvard (course project, repo `mini2`)"
+    role: "Sole author"
+    dates: "2026-04"
+    source_url: "https://github.com/JunyiZhou-Conny/mini2"
+    technologies: ["PyTorch", "DeepLabV3+", "U-Net", "ViT-Tiny", "segmentation-models-pytorch", "albumentations"]
+    measurable_results:
+      - "DeepLabV3+ (ResNet-50, COCO-pretrained): 0.640 mIoU, 0.760 Dice, HD95 18.20, 0.928 pixel accuracy"
+      - "ViT-Tiny frozen encoder + 814K-param decoder head: 0.304 mIoU in 105 s"
+      - "U-Net (ResNet-34): 0.062 mIoU; mode collapse to 4 of 21 classes on 209 training images"
+      - "Ablations over encoder backbone size and loss function"
+    interview_depth: strong
+
+  vlm_textvqa_lora:
+    title: "TextVQA with BLIP-2: Zero-shot, Prompt Engineering, and LoRA Fine-tuning"
+    org: "Harvard AI in Medicine, Spring 2026 (final project, repo `mini3`)"
+    role: "Sole author"
+    dates: "2026-05"
+    source_url: "https://github.com/JunyiZhou-Conny/mini3"
+    technologies: ["BLIP-2 OPT-2.7B", "LoRA / PEFT", "Hugging Face", "prompt engineering", "OCR-augmented prompting", "A100"]
+    measurable_results:
+      - "Zero-shot baseline: 0.078 TextVQA accuracy"
+      - "InstructBLIP OCR-augmented prompt: 0.106 (prompt engineering alone, +36% relative)"
+      - "LoRA r=8 OCR-aware fine-tune: 0.213 — nearly 3x the zero-shot headline accuracy"
+      - "Trained 2.62M params (~0.07% of model) in ~8 min on a single A100"
+      - "LoRA rank ablation over r in {4, 8, 16}"
+    interview_depth: strong
+    notes: >-
+      Strongest single piece of evidence for the JD cluster around prompt engineering,
+      fine-tuning, PEFT, and model evaluation. Currently absent from every resume.
+
+  cv_pneumonia:
+    title: "Pneumonia Detection from Chest Radiographs"
+    org: "Harvard BST-261 (course Kaggle competition)"
+    role: "Sole author"
+    dates: "2026-05"
+    source_url: "https://github.com/JunyiZhou-Conny/BST-261-2026-Pneumonia-Chest-X-Ray-Classification"
+    technologies: ["PyTorch", "DenseNet-121", "ResNet-50", "ConvNeXt-Tiny", "EfficientNet-B0", "Mixup", "transfer learning", "medical imaging"]
+    measurable_results:
+      # Transcribed from reflection.md (repo has no README, but reflection.md is detailed).
+      - "Kaggle leaderboard: 0.959 public score (best)"
+      - "Diagnosed a 14-point generalization gap: 99%+ validation vs 85% leaderboard, traced to memorization of ~4,700 training images"
+      - "Aggressive domain-aware augmentation lifted leaderboard 85% -> ~96%"
+      - "Architecture comparison on leaderboard: DenseNet-121 95.6%, ConvNeXt-Tiny 94.9%, EfficientNet-B0 94.9%, 3-model ensemble 95.4%, ResNet-50 93.8%"
+      - "Key finding: freezing early layers vs full fine-tuning mattered MORE than architecture choice (85% -> 95%+)"
+      - "Regularization stack: dropout 0.3, label smoothing 0.1, AdamW weight decay 0.01, Mixup alpha 0.2"
+      - "Domain reasoning: excluded vertical flips (chest X-rays have fixed orientation), capped rotation at 15 degrees"
+    interview_depth: strong
+    notes: >-
+      Strong debugging/generalization narrative and the only project validated against an external
+      held-out leaderboard rather than self-reported splits. Good answer to JD asks for
+      "strong analytical thinking and debugging skills".
+
+  compleg_uk_nz:
+    title: "Computational Legislative Studies: UK and New Zealand Parliamentary Data"
+    org: "Emory University (Carrubba and Estrada)"
+    role: "Research Assistant"
+    dates: "2023-12 — 2024-05"
+    source_url: "https://github.com/JunyiZhou-Conny/Comput-Leg-UK-NZ"
+    technologies:
+      ["Python", "Jupyter", "ETL", "web scraping", "Selenium", "curl_cffi", "Cloudflare bypass",
+       "Emory QTM cluster", "conda", "batch scheduling", "AWS S3", "AWS EC2", "boto3",
+       "relational schema design", "PDF text extraction"]
+    software_engineering_evidence:
+      - "Scrapers + ETL across 12 UK Parliament entity families: Bills (all stages, latest-by-date,
+         latest-by-id, combined), Bill type/stage identifiers, Amendments, Members, Common Divisions
+         (aye/no tellers, per-member), Constituency, Hansard, Oral Questions, Publications, WrittenQA"
+      - "10 normalized member tables (biography, experience, committee memberships, elections contested,
+         government posts, house memberships, opposition posts, other posts, party affiliations, representations)"
+      - "Relational schema designed up front — repo contains an ER diagram and a flow/missing-components chart"
+      - "Cloudflare bot mitigation diagnosed from `cf-mitigated: challenge` 403 headers; solved with
+         Insomnia inspection, curl_cffi TLS impersonation, and Selenium"
+      - "Batch submission scripts (submit_*.sh) against Emory's QTM cluster with a dedicated conda env"
+      - "AWS EC2 setup + S3 upload/download via boto3 for data staging"
+      - "Hansard PDF -> text transformation pipeline"
+      - "UK-to-New-Zealand transition document written for handoff"
+    measurable_results:
+      # Row counts measured directly from the committed CSVs on 2026-07-29.
+      - "22,606 member-level division (roll-call) vote records"
+      - "12,703 committee membership records"
+      - "5,457 party affiliation records"
+      - "4,791 MPs"
+      - "4,108 bills"
+      - "3,875 unique constituencies"
+      - "3,626 government post records"
+      - "57,000+ records across the seven tables measured; further tables not counted"
+      - "59 commits over ~6 months; ~58 MB repository"
+    interview_depth: strong
+    notes: >-
+      2026-07-29: user did not remember details ("several years ago") and asked for invented numbers.
+      Declined; instead recovered real figures by reading the repo's 31 KB README and counting rows in
+      the committed CSVs. Every number above is measured, not estimated.
+      This entry is much stronger than its original two qualitative bullets suggested: it is the
+      earliest evidence of cluster batch scheduling (predating alphafold_pipeline by over a year),
+      and the only evidence of web scraping, anti-bot debugging, and AWS EC2/S3 hands-on use.
 
 skills:
   python:
@@ -124,16 +336,153 @@ skills:
         source_file: "resumes/base/JZ_resume.tex"
     notes: "AWS Cloud Practitioner, AI Practitioner, ML Associate certifications listed on resume"
 
-  docker_k8s:
-    name: Docker / Kubernetes
+  docker:
+    name: Docker
     category: tools
-    level: exposure
+    level: working
+    verified: true
+    resume_eligible: true
+    interview_depth: moderate
+    last_used: "2026"
+    evidence:
+      - project_id: airway_chatbot
+        description: "Flask backend containerized and deployed on the Elastic Beanstalk Docker platform"
+        technologies: ["Docker", "AWS Elastic Beanstalk"]
+        measurable_result: "Deployed demo environment"
+        source_file: "resumes/base/JZ_resume.tex"
+
+  kubernetes:
+    name: Kubernetes
+    category: tools
+    level: none
     verified: false
     resume_eligible: false
     interview_depth: weak
-    last_used: "unknown"
+    last_used: "never"
     evidence: []
-    notes: "Listed on resume skills; needs stronger project evidence before claiming as core. Keep resume_eligible false until verified."
+    notes: >-
+      2026-07-26: user confirmed the airway chatbot runs on Elastic Beanstalk with Docker, not Kubernetes;
+      the earlier listing was container/orchestration conflation. Removed from resumes/base.
+      Still present in cluster variants pending cleanup. Named gap: JDs ask for it frequently.
+
+  vector_search:
+    name: Vector search / embeddings retrieval
+    category: applied_ai
+    level: working
+    verified: true
+    resume_eligible: true
+    interview_depth: moderate
+    last_used: "2026"
+    evidence:
+      - project_id: airway_chatbot
+        description: "RAG retrieval layer built on MongoDB Atlas Vector Search"
+        technologies: ["MongoDB Atlas Vector Search", "embeddings", "RAG"]
+        measurable_result: "unknown — need corpus size / retrieval quality figures"
+        source_file: "resumes/base/JZ_resume.tex"
+    notes: >-
+      2026-07-26: Pinecone was listed across all resume variants but is NOT the store in use.
+      Correct claim is MongoDB Atlas Vector Search. Pinecone still needs removal from cluster resumes.
+
+  hpc_gpu:
+    name: HPC scheduling and GPU workload optimization
+    category: systems
+    level: working
+    verified: true
+    resume_eligible: true
+    interview_depth: moderate
+    last_used: "2026"
+    evidence:
+      - project_id: alphafold_pipeline
+        description: "SLURM scheduling and parallelism management for high-throughput structure prediction; batch-size correction to improve GPU utilization"
+        technologies: ["SLURM", "HPC", "GPU"]
+        measurable_result: "unknown — need throughput / utilization before-after figures"
+        source_file: "resumes/base/JZ_resume.tex"
+      - project_id: cellot_wyss
+        description: "Porting a 2018 CPU-only TensorFlow reference implementation to PyTorch with Input Convex Neural Networks, GPU-enabled, on Harvard Research Compute"
+        technologies: ["PyTorch", "TensorFlow", "ICNN", "GPU", "Harvard Research Compute"]
+        measurable_result: "unknown — reproducing published benchmark, target number TBD"
+        source_file: "resumes/base/JZ_resume.tex"
+    notes: >-
+      Does NOT include CUDA/Triton kernel authoring. Do not list bare "CUDA" as a skill.
+      Claim the specific work (utilization profiling, batch-size tuning, CPU→GPU migration) in bullets instead.
+
+  cpp:
+    name: C++
+    category: language
+    level: exposure
+    verified: true
+    resume_eligible: true
+    interview_depth: weak
+    last_used: "unknown"
+    evidence:
+      - project_id: null
+        description: "Coursework only (data structures / algorithms). No project implementation."
+        technologies: ["C++"]
+        measurable_result: "none"
+        source_file: "user confirmation 2026-07-28"
+    notes: >-
+      2026-07-28: user confirmed COURSEWORK ONLY, no project. May stay on the Technical Skills
+      Languages line, but must NOT appear in any bullet and must not be described as
+      proficiency. Several target JDs ask for C++ ("Proficiency in Python is essential.
+      C++ also valuable") — treat as the weakest claim on the resume and expect to be
+      tested if a systems/GPU role screens on it.
+
+  javascript:
+    name: JavaScript
+    category: language
+    level: working
+    verified: true
+    resume_eligible: true
+    interview_depth: moderate
+    last_used: "2025"
+    evidence:
+      - project_id: airway_chatbot
+        description: "React frontend (UI/UX) for the clinical simulation platform; JavaScript is the repo's primary language"
+        technologies: ["JavaScript", "React"]
+        measurable_result: "Deployed UI behind CloudFront with Auth0 login"
+        source_file: "resumes/base/JZ_resume.tex"
+    notes: >-
+      2026-07-29: user confirmed authorship. Already evidenced on the resume via "React" in the
+      airway_chatbot bullet — the bank entry was the gap, not the evidence.
+      Deliberately de-emphasized for AI/ML postings, where RAG, LLM APIs, and data preprocessing
+      are the interesting claims. SURFACE IT for vanilla SWE / frontend / full-stack JDs that name
+      JavaScript, TypeScript, or React explicitly. This is a tailoring lever, not a new claim.
+
+  r_lang:
+    name: R
+    category: language
+    level: exposure
+    verified: true
+    resume_eligible: true
+    interview_depth: weak
+    last_used: "2025"
+    evidence:
+      - project_id: null
+        description: "Harvard BST coursework only (bst-260-pset4 repo is HTML, consistent with knitted R Markdown). No independent project."
+        technologies: ["R"]
+        measurable_result: "none"
+        source_file: "user confirmation 2026-07-29"
+    notes: >-
+      2026-07-29: user confirmed COURSEWORK ONLY. Fine on the Languages line; must not appear in a
+      bullet or be described as proficiency.
+
+  java:
+    name: Java
+    category: language
+    level: exposure
+    verified: true
+    resume_eligible: true
+    interview_depth: weak
+    last_used: "unknown"
+    evidence:
+      - project_id: null
+        description: "School coursework only, basic language use. No project implementation."
+        technologies: ["Java"]
+        measurable_result: "none"
+        source_file: "user confirmation 2026-07-29"
+    notes: >-
+      2026-07-29: user confirmed COURSEWORK ONLY. Fine on the Languages line; must not appear in a
+      bullet or be described as proficiency. Weakest of the language claims alongside C++.
 
   sql:
     name: SQL
@@ -154,3 +503,33 @@ rules:
   - "Do not invent skills or upgrade exposure→strong without user confirmation."
   - "Only verified + resume_eligible skills should be actively pushed into new bullets."
   - "Prefer linking bullets to project_ids above."
+
+# Recorded 2026-07-29 after an explicit discussion about how far tailoring may go.
+tailoring_policy:
+  encouraged:
+    - "Surface real work the resume currently hides. The strongest example: JavaScript/React was
+       always true of airway_chatbot but was de-emphasized because AI/ML postings care about RAG
+       and LLM APIs instead. When a JD names JavaScript/TypeScript/React, promote it."
+    - "Reorder sections and entries so the most relevant cluster leads (scripts/build_clusters.py)."
+    - "Re-describe real work in the JD's vocabulary — e.g. the same SLURM orchestrator is
+       'distributed scheduling', 'resource-efficiency optimization', or 'experiment infrastructure'
+       depending on who is reading."
+    - "List coursework-level languages on the Technical Skills line (C++, Java, R). Normal for a
+       new grad and honest, provided they never appear in a bullet as accomplishments."
+    - "Close a real gap by building something small and real, then claim it. Kubernetes is the
+       standing example."
+  not_permitted:
+    - "Adding experience, projects, tools, metrics, or outcomes that did not happen, for any JD."
+  rationale: >-
+    Fabricated skills do not fail randomly — they fail hardest at the companies that care most
+    about them, which are the same companies the fabrication attracts you toward. Concrete case
+    from the 2026-07-28 discovery run: ZEDEDA posted "SWE - AI & Edge Kubernetes Orchestration"
+    and Nirmata is a Kubernetes-policy company. Had Kubernetes stayed on the skills line, those
+    are the postings that would have looked most attractive and the screens that would have been
+    conducted by Kubernetes specialists. Wolverine's entry-level C++ role is the same shape.
+    Separately, 17 already-submitted applications carry the removed Pinecone/Kubernetes claims,
+    so the cost of the earlier versions is already live rather than hypothetical.
+  standing_note: >-
+    The recurring finding across sessions is that this candidate's resume UNDERSTATES the
+    evidence. Six substantial projects with ~25 measured results were sitting unlisted in public
+    GitHub as of 2026-07-26. Check the bank and the repos before concluding a gap is real.

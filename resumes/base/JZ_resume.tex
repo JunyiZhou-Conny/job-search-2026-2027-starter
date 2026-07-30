@@ -65,6 +65,7 @@
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
   \textbf{\Large Junyi (Conny) Zhou} & Tel: (404) 663-5601 \\
   Boston, MA 02215 & Email: \href{mailto:junyizhou@hsph.harvard.edu}{junyizhou@hsph.harvard.edu} \\
+  \href{https://github.com/JunyiZhou-Conny}{github.com/JunyiZhou-Conny} & \href{https://www.linkedin.com/in/junyi-zhou-270208247}{linkedin.com/in/junyi-zhou-270208247} \\
 \end{tabular*}
 
 % Education
@@ -72,72 +73,137 @@
 \resumeSubHeadingListStart
   \resumeSubheading
   {Harvard University}{Boston, MA}
-  {M.S. in Health Data Science}{August 2025 -- December 2026}
+  {M.S. in Health Data Science}{August 2025 -- March 2027}
   \resumeItemListStart
-    \item Coursework: Deep Learning, Healthcare Machine Learning
+    \item Program requirements complete December 2026 (commencement March 2027); available for full-time start January 2027
+    \item Coursework: Deep Learning, AI in Medicine, Healthcare Machine Learning, Data Science
   \resumeItemListEnd
   \resumeSubheading
   {Emory University, College of Arts and Sciences}{Atlanta, GA}
   {B.S. in Applied Mathematics and Statistics; Minor in Computer Informatics; GPA: 3.925}{August 2021 -- May 2025}
   \resumeItemListStart
-    \item Honors: Dean’s List Spring 2022, Spring 2023
     \item Coursework: Probability and Statistics, Machine Learning, NLP, Data Structures, Database Systems
   \resumeItemListEnd
 \resumeSubHeadingListEnd
 
-% Programming Skills
-\section{Programming Skills}
+% Technical Skills
+\section{Technical Skills}
 \resumeSubHeadingListStart
   \resumeItem{Languages}{Python, C++, Java, SQL, R, JavaScript}
-  \resumeItem{ML Frameworks}{PyTorch, TensorFlow, Keras, scikit-learn, XGBoost, LightGBM, Hugging Face Transformers}
-  \resumeItem{Databases}{MySQL, PostgreSQL, MongoDB, Pinecone (Vector DB), Hadoop, Spark}
-  \resumeItem{Tools}{Claude Code, Cursor, Git, Docker, Kubernetes, Jupyter}
-  \resumeItem{Cloud}{AWS (SageMaker, Lambda, EC2, S3, Redshift), Snowflake, BigQuery}
+  \resumeItem{ML \& Deep Learning}{PyTorch, TensorFlow, Keras, scikit-learn, XGBoost, LightGBM, Hugging Face Transformers}
+  \resumeItem{LLM \& Applied AI}{RAG, agentic pipelines, prompt engineering, embeddings \& vector search, OpenAI API, MongoDB Atlas Vector Search}
+  \resumeItem{Backend \& DevOps}{Flask, REST APIs, React, Docker, Auth0, Git}
+  \resumeItem{Data \& Compute}{PostgreSQL, MySQL, MongoDB, Spark, Hadoop, SLURM/HPC, multi-GPU job scheduling}
+  \resumeItem{Cloud}{AWS (SageMaker, Lambda, EC2, S3, Redshift, Elastic Beanstalk, CloudFront), Snowflake, BigQuery}
   \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
 \resumeSubHeadingListEnd
 
-% Research Projects
-\section{Research Projects}
+% Research Experience
+\section{Research Experience}
 \resumeSubHeadingListStart
-
-  \resumeSubheading
-    {Airway Management Simulation Chatbot}{Atlanta, GA}
-    {Full-Stack Engineer, Scrum Master | Emory Pediatric Hospital}{January 2024 -- Present}
-    \resumeItemListStart
-      \item Architected a clinical \textbf{agentic LLM pipeline} via a \textbf{RAG} system and \textbf{OpenAI models}, minimizing hallucinations and ensuring high data privacy for simulations.
-      \item Built a \textbf{HIPAA-compliant} full-stack platform (\textbf{Python/Flask}, React, MongoDB, AWS) tracking resident performance metrics via secure, real-time analytics.
-      \item Implemented \textbf{Prompt Engineering} and context window management to drive dynamic scenario generation for rapid cycle deliberate practice clinical training.
-      \item Led an Agile team of 6, facilitating code reviews and integrating clinician feedback to continually refine the NLP pipeline. \footnote{\url{https://d3g1qw60hz7yw7.cloudfront.net}}
-    \resumeItemListEnd
 
   \resumeSubheading
     {Cross-Species Drug Translation using Optimal Transport \& Generative AI}{Boston, MA}
     {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
     \resumeItemListStart
-      \item Spearheaded computational frameworks using \textbf{Optimal Transport}, \textbf{VAEs}, and \textbf{diffusion models} to predict animal-to-human clinical trial translation via scRNA-seq atlases.
-      \item Engineered a custom \textbf{PyTorch} CellOT implementation from scratch, modeling complex species and treatment effects directly within VAE latent spaces.
-      \item Designed \textbf{scanpy} pipelines for automated cell-type labeling, integrating massive public and lab-generated scRNA-seq datasets for cancer and autoimmunity applications.
-      \item Trained out-of-distribution models mapping cellular subpopulations (e.g., regulatory vs. helper T cells) across species, evaluating GENOT to optimize T cell matching.
+      \item Built \textbf{Optimal Transport} models (\textbf{VAEs}, \textbf{unbalanced OT}) predicting animal-to-human trial translation from \textbf{scRNA-seq} atlases, with \textbf{scanpy} pipelines automating cell-type labeling and dataset integration.
+      \item Ported a 2018 CPU-only \textbf{TensorFlow} reference implementation to \textbf{PyTorch}, reimplementing the \textbf{Input Convex Neural Networks} behind the optimal-transport dual and enabling GPU training on Harvard's \textbf{FASRC Cannon} cluster.
+      \item Benchmarked \textbf{CellOT} against \textbf{scGen} on cross-species perturbation prediction, measuring 0.85--0.90 $R^2$ with the source species in training versus 0.65--0.67 on the held-out-species split.
+      \item Established through \textbf{paired single-factor ablations} that gene-space choice reverses with split --- 6,619 orthologs wins in-distribution while 1,000 HVGs wins on every out-of-distribution metric --- ruling out a split-independent default.
     \resumeItemListEnd
 
   \resumeSubheading
-    {Reimplementation of Transformer Architecture}{Atlanta, GA}
-    {Machine Learning Researcher | Emory Dept. of Computer Science}{October 2024 -- January 2025}
-    \resumeItemListStart
-      \item Implemented a Transformer in \textbf{PyTorch} from scratch, building \textbf{Multi-Head Self-Attention}, \textbf{Positional Encodings}, and \textbf{Layer Normalization} to reproduce benchmarks.
-      \item Conducted extensive hyperparameter tuning and optimized the \textbf{Cross-Entropy Loss} function, achieving a 9.38 BLEU score on English-to-German translation.
-      \item Benchmarked custom implementation against standard \texttt{nn.Transformer} modules to strictly validate architectural correctness and training efficiency. \footnote{\url{https://github.com/JunyiZhou-Conny/Reimplementation-of-Transformer}}
-    \resumeItemListEnd
-
-  \resumeSubheading
-    {AlphaFold Protein--Nucleic Acid Interaction Prediction}{Atlanta, GA}
+    {AlphaFold Protein--Nucleic Acid Interaction Prediction \href{https://github.com/JunyiZhou-Conny/AlphaFold-Bou-Nader-Lab}{\normalfont\small [GitHub]}}{Atlanta, GA}
     {Data Analyst | Bou-Nader Lab, Emory Dept. of Biochemistry}{February 2025 -- August 2025}
     \resumeItemListStart
-      \item Engineered a pipeline integrating \textbf{AlphaFold-Multimer} and \textbf{AlphaFold3} architectures to predict complex protein--nucleic acid interactions using \textbf{MSA} data.
-      \item Automated high-throughput inference on \textbf{HPC} clusters with \textbf{parallel scheduling} to efficiently process structural predictions across GPU nodes.
-      \item Developed \textbf{Python} scripts (PyMOL, ChimeraX) filtering predicted structures via \textbf{pLDDT} and \textbf{PAE} scores, selecting top-performing complexes for wet-lab validation.
-      \item Authored CLI tools and technical documentation to democratize advanced ML inference tools for non-technical researchers. \footnote{\url{https://github.com/JunyiZhou-Conny/AlphaFold-Bou-Nader-Lab}}
+      \item Engineered a pipeline integrating \textbf{AlphaFold-Multimer} and \textbf{AlphaFold3} to predict protein--nucleic acid interactions from \textbf{MSA} data.
+      \item Automated high-throughput inference across GPU nodes with \textbf{SLURM} parallel scheduling, tuning batch size to raise GPU utilization on shared \textbf{HPC} clusters.
+      \item Built \textbf{Python} tooling (PyMOL, ChimeraX) ranking structures by \textbf{pLDDT} and \textbf{PAE} score, shipped as a documented CLI so non-technical researchers could run inference and triage results independently.
     \resumeItemListEnd
-    
+
+  \resumeSubheading
+    {Computational Legislative Studies: UK \& New Zealand Parliamentary Data \href{https://github.com/JunyiZhou-Conny/Comput-Leg-UK-NZ}{\normalfont\small [GitHub]}}{Atlanta, GA}
+    {Research Assistant | Emory University (Carrubba \& Estrada)}{December 2023 -- May 2024}
+    \resumeItemListStart
+      \item Built \textbf{Python} scrapers and \textbf{ETL} pipelines over UK Parliament open data, normalizing bills, members, divisions, and Hansard proceedings into a relational schema covering 22,606 member-level division votes, 4,791 MPs, 4,108 bills, and 3,875 constituencies.
+      \item Diagnosed \textbf{Cloudflare} bot mitigation (403 challenge responses) and restored collection using TLS-impersonating requests (\texttt{curl\_cffi}) and \textbf{Selenium} against an otherwise blocked source.
+      \item Ran long scrapes as batch jobs on Emory's \textbf{QTM cluster} with isolated conda environments, staging data through \textbf{AWS S3/EC2} and documenting the pipeline for a UK-to-New-Zealand handoff.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+% Engineering Projects
+\section{Engineering Projects}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {Autonomous Ablation-Search Agent for Cluster-Scale ML Experimentation \href{https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Independent Project | Harvard FASRC Cannon Cluster}{June 2026 -- Present}
+    \resumeItemListStart
+      \item Built a \textbf{self-directed experiment harness} (submit $\rightarrow$ watch $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ synthesize) that plans, launches, and triages \textbf{SLURM} ablation studies unattended --- \textbf{338 runs}, 318 clean and 20 with handled errors, over \textbf{79 hours} of compute.
+      \item Split the planner from the execution substrate and \textbf{checkpointed each agenda to disk}, so the cluster keeps running the last plan while the planner is offline; an adaptive one-delta proposer clears a \textbf{validation gate} before every submit.
+      \item Designed a \textbf{fairshare-aware scheduler} routing small-MLP training to CPU partitions, where GPU carries 200--500$\times$ the fairshare cost, and made runs \textbf{preemption-tolerant} on \texttt{serial\_requeue} via checkpoint/resume and capped job arrays.
+      \item Wired an optional \textbf{LLM planner} behind that interface with per-call \textbf{token and cost accounting} and a spend ceiling that degrades to the deterministic planner on breach or API failure.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Airway Management Simulation Chatbot \href{https://d3g1qw60hz7yw7.cloudfront.net}{\normalfont\small [Live Demo]}}{Atlanta, GA}
+    {Full-Stack Engineer, Scrum Master | Emory Pediatric Hospital}{January 2024 -- August 2025}
+    \resumeItemListStart
+      \item Architected a clinical \textbf{agentic LLM pipeline} pairing \textbf{RAG} retrieval over \textbf{MongoDB Atlas Vector Search} with \textbf{prompt engineering} and context-window management to generate multi-turn training scenarios from \textbf{OpenAI} models.
+      \item Built a \textbf{HIPAA-conscious} full-stack platform (\textbf{Python/Flask} REST API, React, MongoDB, \textbf{Auth0}) deployed on \textbf{AWS} Elastic Beanstalk and CloudFront, tracking resident performance metrics.
+      \item Led an Agile team of 6, running code reviews and folding clinician feedback into successive releases.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Reimplementation of Transformer Architecture \href{https://github.com/JunyiZhou-Conny/Reimplementation-of-Transformer}{\normalfont\small [GitHub]}}{Atlanta, GA}
+    {Machine Learning Researcher | Emory Dept. of Computer Science}{October 2024 -- January 2025}
+    \resumeItemListStart
+      \item Implemented a Transformer in \textbf{PyTorch} from scratch --- \textbf{Multi-Head Self-Attention}, \textbf{Positional Encodings}, \textbf{Layer Normalization} --- validating architectural correctness against \texttt{nn.Transformer}.
+      \item Tuned hyperparameters and the \textbf{Cross-Entropy} objective to reach a 9.38 BLEU score on English-to-German translation.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+% Machine Learning Coursework Projects
+\section{Machine Learning Coursework Projects}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {Parameter-Efficient Fine-Tuning of BLIP-2 for Visual Question Answering \href{https://github.com/JunyiZhou-Conny/mini3}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Harvard SHBT-261}{Spring 2026}
+    \resumeItemListStart
+      \item Fine-tuned \textbf{BLIP-2} (OPT-2.7B) on \textbf{TextVQA} using \textbf{LoRA}, lifting accuracy from 0.078 zero-shot to 0.213 --- nearly 3$\times$ --- while training 2.62M parameters (0.07\% of the model) in 8 minutes on a single \textbf{A100}.
+      \item Isolated the contribution of \textbf{prompt engineering} across four templates, showing OCR-augmented prompting alone raised zero-shot accuracy to 0.106 before any weight updates.
+      \item Ablated \textbf{LoRA} rank over $r \in \{4, 8, 16\}$ and automated the pipeline end to end, generating every reported figure and \LaTeX{} table directly from result JSONs for reproducibility.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Image Classification Benchmark: Classical ML, CNNs, and Vision Transformers \href{https://github.com/JunyiZhou-Conny/SHBT-261_Image-Classification-on-Caltech-101-Classical-ML-CNNs-and-Vision-Transformers}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Harvard SHBT-261}{Spring 2026}
+    \resumeItemListStart
+      \item Benchmarked \textbf{ViT-B/16}, \textbf{ResNet-18}, and a HOG + Random Forest baseline on \textbf{Caltech-101} (8,677 images, 101 classes), reaching 0.972 top-1 and 0.998 top-5 with ViT against 0.507 for the classical pipeline.
+      \item Quantified the cost of that gain: ViT beat fine-tuned ResNet-18 by 1.8 points at roughly 9$\times$ the training time, making the accuracy-per-GPU-hour tradeoff explicit.
+      \item Established through ablations that light augmentation and \textbf{SGD} outperform heavy regularization and adaptive optimizers when fine-tuning on small datasets.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Semantic Segmentation Benchmark: U-Net, ViT, and DeepLabV3+ \href{https://github.com/JunyiZhou-Conny/mini2}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Harvard SHBT-261}{Spring 2026}
+    \resumeItemListStart
+      \item Benchmarked \textbf{DeepLabV3+}, \textbf{U-Net}, and a frozen \textbf{ViT-Tiny} encoder for semantic segmentation on \textbf{Pascal VOC 2007} (21 classes), reaching 0.640 mIoU and 0.928 pixel accuracy with COCO-pretrained DeepLabV3+.
+      \item Diagnosed \textbf{mode collapse} in U-Net under data scarcity --- 209 training images yielded predictions for only 4 of 21 classes --- isolating pretraining rather than architecture as the dominant factor.
+      \item Reached 0.304 mIoU in 105 s by training only an 814K-parameter decoder head on a frozen encoder, establishing a compute-efficient middle ground.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Pneumonia Detection from Chest Radiographs \href{https://github.com/JunyiZhou-Conny/BST-261-2026-Pneumonia-Chest-X-Ray-Classification}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Harvard BST-261 (Kaggle competition)}{Spring 2026}
+    \resumeItemListStart
+      \item Diagnosed a 14-point generalization gap on a \textbf{Kaggle} chest-radiograph benchmark --- 99\% validation against 85\% leaderboard --- and traced it to memorization of a 4,700-image training set.
+      \item Closed the gap to 96\% with domain-aware augmentation (\textbf{Mixup} $\alpha = 0.2$, RandomResizedCrop, RandomErasing, affine jitter), excluding vertical flips that would render chest radiographs anatomically implausible.
+      \item Found that freezing \textbf{DenseNet-121}'s early layers outweighed architecture choice, beating ResNet-50, ConvNeXt-Tiny, EfficientNet-B0, and a three-model ensemble to reach a 0.959 public score.
+    \resumeItemListEnd
+
 \resumeSubHeadingListEnd
 \end{document}

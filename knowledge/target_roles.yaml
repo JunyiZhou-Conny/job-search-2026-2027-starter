@@ -8,27 +8,50 @@ discovery_sources:
     feeds: [intern, new_grad]
   - id: intern_list
     role: category_board
-    url: https://www.intern-list.com/swe-intern-list
+    url: https://www.intern-list.com/
     track: internship_if_eligible
+    # Scraped via the underlying Jobright minisite, not this front end.
+    categories_enabled: [swe, ml_ai, data_science, data_analysis, healthcare]
   - id: newgrad_jobs
     role: category_board
     url: https://www.newgrad-jobs.com/
     track: new_grad_2027_start
+    categories_enabled: [swe, ml_ai, data_science, data_analysis, healthcare]
   - id: careerin_ai
     role: category_board_ai_ml
     url: https://www.careerin.ai/
     track: either
 
+# Board category scope. Expanded 2026-07-28 from swe-only to five categories,
+# which raised daily unique discovery from ~37 to ~117.
+# The ?k= value on intern-list.com is NOT the minisite slug (?k=aiml -> ml_ai).
+# Verify any new slug with scripts/automation/probe_board_categories.py.
+board_categories:
+  enabled:
+    swe: cloud_swe
+    ml_ai: data_ml
+    data_science: data_ml
+    data_analysis: data_ml
+    healthcare: health_ai
+  disabled:
+    product_management: "resolves, but off-target for all three clusters"
+  notes:
+    healthcare: >-
+      Expected to yield ~0 rows after filtering. Page-one content is clinical
+      (pharmacy/anesthesia interns, clinical research coordinators, bulk-duplicated
+      health-records postings). Health-tech roles arrive via swe/ml_ai/data_science
+      at health companies instead. Kept enabled as cheap insurance.
+
 role_clusters:
   cloud_swe:
     titles: ["Software Engineer", "Backend Engineer", "Platform Engineer", "Cloud Engineer", "Infrastructure Engineer", "New Grad SWE"]
-    default_resume: "2026-07-20_cloud-swe_v1.1"
+    default_resume: "2026-07-27_cloud-swe_v1.2"
   data_ml:
     titles: ["Machine Learning Engineer", "Applied AI", "AI Engineer", "Data Scientist", "Data Engineer", "ML Intern/New Grad"]
-    default_resume: "2026-07-20_data-ml_v1.1"
+    default_resume: "2026-07-27_data-ml_v1.2"
   health_ai:
     titles: ["Healthcare AI", "Clinical Data", "Digital Health", "Health Informatics", "Life Science ML"]
-    default_resume: "2026-07-20_health-ai_v1.1"
+    default_resume: "2026-07-27_health-ai_v1.2"
 
 preferences:
   industries_preferred: ["big tech", "fast-iterating startups", "applied AI / agents", "cloud platforms"]

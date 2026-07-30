@@ -23,6 +23,7 @@ FIELDS = [
     "url",
     "source",
     "track",
+    "category",
     "date_discovered",
     "fetched_at",
     "posted_relative",
@@ -83,6 +84,7 @@ def write_inbox(rows: list[dict], day: str, fetched_note: str) -> Path:
     path = INBOX / f"daily-{day}.md"
     by_source = Counter(r.get("source") or "unknown" for r in rows)
     by_track = Counter(r.get("track") or "unknown" for r in rows)
+    by_category = Counter(r.get("category") or "unknown" for r in rows)
     lines = [
         f"# Discovery inbox — {day}",
         "",
@@ -93,6 +95,7 @@ def write_inbox(rows: list[dict], day: str, fetched_note: str) -> Path:
         f"- Total unique URLs: **{len(rows)}**",
         f"- By source: {dict(by_source)}",
         f"- By track: {dict(by_track)}",
+        f"- By category: {dict(by_category)}",
         "",
         "## How this fits",
         "",

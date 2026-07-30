@@ -18,14 +18,22 @@ program_end_date: "2026-12-18"
 commencement_date: "2027-03"
 graduation_date: "2026-12"  # legacy alias → program end month
 graduation: "December 2026"  # legacy alias → program completion (not ceremony-only)
-resume_grad_default: "program_end"  # default resume: Dec 2026 completion
+# 2026-07-29: user decision — surface commencement (March 2027) on the resume, but keep the
+# December 2026 completion visible so the January 2027 availability signal is not lost.
+# Default therefore moved from program_end to dual_date. Both dates remain real; neither is dropped.
+# NOTE: the user initially said "March 2026" — that is four months in the PAST and was a slip for
+# March 2027. Never write March 2026 anywhere.
+resume_grad_default: "dual_date"
 resume_grad_variants:
-  - id: program_end
-    when: "Default; most FT/new-grad; OPT/start-date questions"
-    resume_line: "SM Health Data Science — Expected December 2026 (program completion)"
   - id: dual_date
-    when: "JD/form explicitly requires Spring 2027 / March graduation wording"
-    resume_line: "SM Health Data Science — Commencement March 2027 (program completion December 2026)"
+    when: "Default on the resume. Satisfies '2027 grad' screens while preserving Jan-2027 availability."
+    resume_line: "Aug 2025 -- Mar 2027; program requirements complete December 2026 (commencement March 2027); available for full-time start January 2027"
+  - id: program_end
+    when: "Forms/ATS asking for a single graduation date without distinguishing ceremony vs completion"
+    resume_line: "SM Health Data Science — Expected December 2026 (program completion)"
+  - id: commencement_only
+    when: "NOT RECOMMENDED alone — a March-2027-only line implies unavailability for Jan/Feb 2027 starts"
+    resume_line: "SM Health Data Science — March 2027"
 
 education_history:
   - school: "Harvard T.H. Chan School of Public Health"

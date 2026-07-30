@@ -10,7 +10,10 @@ expected_opt_level: "master's"
 program_end_date: "2026-12-18"
 expected_program_end_date: "2026-12-18"
 commencement_date: "2027-03"
-resume_grad_default: "program_end"
+# 2026-07-29: resume now carries BOTH dates (see config/profile.yaml resume_grad_variants).
+# Single-field ATS forms still default to December 2026 / 2026-12-18 — see the
+# form_answers guidance below, which is unchanged.
+resume_grad_default: "dual_date"
 
 expected_opt_start_window: "2027-01-18 onward"
 expected_ead_ready: "2027-01-18"  # planned from program end; confirm against actual EAD / HIO

@@ -1,1 +1,16 @@
 entity,id,field,severity,message
+application,J20260720-004,resume_version,error,applied+ missing resume_version
+application,J20260720-004,date_applied,warn,date_applied before date_discovered
+application,J20260720-006,resume_version,error,applied+ missing resume_version
+application,J20260720-006,date_applied,warn,date_applied before date_discovered
+application,J20260720-007,resume_version,error,applied+ missing resume_version
+application,J20260720-007,date_applied,warn,date_applied before date_discovered
+application,J20260720-010,resume_version,error,applied+ missing resume_version
+application,J20260720-010,date_applied,warn,date_applied before date_discovered
+application,J20260720-014,resume_version,error,applied+ missing resume_version
+application,J20260720-015,resume_version,error,applied+ missing resume_version
+application,J20260720-015,date_applied,warn,date_applied before date_discovered
+application,J20260720-016,resume_version,error,applied+ missing resume_version
+application,J20260720-016,date_applied,warn,date_applied before date_discovered
+application,J20260726-001,date_applied,warn,date_applied before date_discovered
+application,J20260726-002,date_applied,warn,date_applied before date_discovered
