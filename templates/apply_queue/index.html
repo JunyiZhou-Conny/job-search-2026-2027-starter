@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<title>Apply queue — __DAY__</title>
+__HEAD_ASSETS__
+</head>
+<body>
+<a class="skip-link" href="#queue">Skip to queue</a>
+
+<header class="chrome" id="chrome">
+  <div class="chrome-inner">
+    <div class="titlebar">
+      <div class="titlebar-text">
+        <h1>Apply queue</h1>
+        <p class="lede" id="lede">Loading…</p>
+      </div>
+      <div class="titlebar-side">
+        <label class="date-picker">
+          <span class="visually-hidden">Queue date</span>
+          <select id="dateSelect"></select>
+        </label>
+        <span class="sync-pill" id="syncPill" data-state="idle">
+          <span class="sync-dot" aria-hidden="true"></span>
+          <span class="sync-text">Ready</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="filters" role="group" aria-label="Filters">
+      <div class="filter-group" id="geoFilters" data-key="geo"></div>
+      <div class="filter-group" id="classFilters" data-key="company"></div>
+      <div class="filter-group" id="gtcFilters" data-key="gtc"></div>
+      <div class="filter-group" id="tierFilters" data-key="tier"></div>
+      <div class="filter-group" id="passFilters" data-key="pass"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-primary" id="openNext" type="button">Open next</button>
+      <button class="btn" id="exportPasses" type="button">Export decisions</button>
+      <span class="progress" id="progress"></span>
+    </div>
+  </div>
+  <div class="chrome-edge" aria-hidden="true"></div>
+</header>
+
+<main>
+  <ol class="queue" id="queue" aria-live="polite"></ol>
+  <p class="empty" id="empty" hidden>Nothing matches these filters.</p>
+</main>
+
+<footer>
+  <p id="modeNote"></p>
+  <p class="shortcuts">
+    <kbd>J</kbd>/<kbd>K</kbd> move · <kbd>O</kbd> open · <kbd>A</kbd> applied · <kbd>P</kbd> pass ·
+    <kbd>U</kbd> undo · <kbd>?</kbd> shortcuts
+  </p>
+</footer>
+
+<div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+
+<script id="queue-bootstrap" type="application/json">__BOOTSTRAP__</script>
+__BODY_ASSETS__
+</body>
+</html>

@@ -28,3 +28,4 @@ resumes/**/*.synctex.gz
 generated/logs/
 generated/apply_queue/*.html
 .venv/
+data/queue_undo_journal.json

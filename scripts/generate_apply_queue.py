@@ -21,6 +21,7 @@ from __future__ import annotations
 import argparse
 import csv
 import html
+import json
 import re
 from datetime import date
 from pathlib import Path
@@ -28,6 +29,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 APPS = ROOT / "data" / "applications.csv"
 OUT_DIR = ROOT / "generated" / "apply_queue"
+TEMPLATE_DIR = ROOT / "templates" / "apply_queue"
+STATIC_DIR = ROOT / "static" / "apply_queue"
+
+DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 LISTS = ROOT / "knowledge" / "company_lists.yaml"
 GTC_SPONSORS = ROOT / "knowledge" / "market_signals" / "gtc2026_sponsors_exhibitors.json"
 JOB_DECISIONS = ROOT / "data" / "job_decisions.csv"
@@ -242,6 +247,13 @@ def latest_triage(day: str | None) -> Path | None:
     return files[0] if files else None
 
 
+def available_dates() -> list[str]:
+    """Dates that have a triage CSV, newest first — drives the date switcher."""
+    gen = ROOT / "generated"
+    days = [p.stem.replace("discovery_triage_", "") for p in gen.glob("discovery_triage_*.csv")]
+    return sorted({d for d in days if DATE_RE.fullmatch(d)}, reverse=True)
+
+
 def load_apps() -> list[dict]:
     if not APPS.exists():
         return []
@@ -356,6 +368,12 @@ def collect(day: str) -> list[dict]:
                         "job_id": "",
                         "source": "triage_keep",
                         "location": r.get("location") or "",
+                        # The triage agent already explained the judgement —
+                        # show it instead of burying it in the CSV.
+                        "reason": (r.get("reason") or "").strip(),
+                        "confidence": (r.get("confidence") or "").strip(),
+                        "track": (r.get("track") or "").strip(),
+                        "posted_relative": (r.get("posted_relative") or "").strip(),
                     },
                     lists,
                     gtc_sponsors,
@@ -386,6 +404,10 @@ def collect(day: str) -> list[dict]:
                     "job_id": r.get("job_id") or "",
                     "source": src,
                     "location": r.get("location") or "",
+                    "reason": (r.get("label_reason") or "").strip(),
+                    "confidence": (r.get("label_confidence") or "").strip(),
+                    "track": (r.get("employment_type") or "").strip(),
+                    "posted_relative": "",
                 },
                 lists,
                 gtc_sponsors,
@@ -493,459 +515,71 @@ def _md_item(i: int, it: dict) -> str:
     )
 
 
-def render_html(day: str, items: list[dict]) -> str:
-    def li(it: dict, idx: int) -> str:
-        return f"""
-      <li class="item tier-{html.escape(it['tier'])}"
-          data-idx="{idx}"
-          data-geo="{html.escape(it['geo'])}"
-          data-class="{html.escape(it['company_class'])}"
-          data-tier="{html.escape(it['tier'])}"
-          data-gtc="{html.escape(it.get('gtc_sponsor') or 'no')}"
-          data-url="{html.escape(it['url'])}"
-          data-company="{html.escape(it['company'])}"
-          data-role="{html.escape(it['role'])}"
-          data-job-id="{html.escape(it.get('job_id') or '')}"
-          data-cluster="{html.escape(it.get('cluster') or '')}"
-          data-lane="{html.escape(it.get('lane') or '')}"
-          data-location="{html.escape(it.get('location') or '')}">
-        <label class="check">
-          <input type="checkbox" data-key="{html.escape(norm_url(it['url']))}" title="Mark applied — writes status=applied" />
-          <span class="badges">
-            {"<span class=\"badge gtc\">GTC sponsor</span>" if it.get("gtc_sponsor") == "yes" else ""}
-            <span class="badge geo-{html.escape(it['geo'])}">{html.escape(it['geo_label'])}</span>
-            <span class="badge class-{html.escape(it['company_class'])}">{html.escape(it['class_label'])}</span>
-            <span class="badge tier">{html.escape(it['tier'])} · {html.escape(it['tier_label'])}</span>
-          </span>
-          <span class="main">
-            <span class="title">{html.escape(it['company'])} — {html.escape(it['role'])}</span>
-            <span class="meta">{html.escape(it['lane'] or '—')} / {html.escape(it['cluster'] or '—')}
-              · resume <code>{html.escape(it['grad'])}</code>
-              · {html.escape(it['location'] or 'location ?')}
-              {" · " + html.escape(it['job_id']) if it['job_id'] else ""}
-            </span>
-          </span>
-        </label>
-        <div class="actions">
-          <a class="open" href="{html.escape(it['url'])}" target="_blank" rel="noopener">Open</a>
-          <button type="button" class="pass" title="Not for me — archive so it will not return">Pass</button>
-        </div>
-      </li>"""
+def _counts(items: list[dict]) -> dict:
+    def n(pred) -> int:
+        return sum(1 for i in items if pred(i))
 
-    body = "\n".join(li(it, i) for i, it in enumerate(items))
-    n_bos = sum(1 for i in items if i["geo"] == "boston_ma")
-    n_bay = sum(1 for i in items if i["geo"] == "bay_area")
-    n_big = sum(1 for i in items if i["company_class"] == "big_tech")
-    n_st = sum(1 for i in items if i["company_class"] == "startup")
-    n_bio = sum(1 for i in items if i["company_class"] == "biotech")
-    n_gtc = sum(1 for i in items if i.get("gtc_sponsor") == "yes")
+    return {
+        "total": len(items),
+        "gtc": n(lambda i: i.get("gtc_sponsor") == "yes"),
+        "boston_ma": n(lambda i: i["geo"] == "boston_ma"),
+        "bay_area": n(lambda i: i["geo"] == "bay_area"),
+        "big_tech": n(lambda i: i["company_class"] == "big_tech"),
+        "biotech": n(lambda i: i["company_class"] == "biotech"),
+        "startup": n(lambda i: i["company_class"] == "startup"),
+    }
 
-    return f"""<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Apply queue — {html.escape(day)}</title>
-<style>
-  :root {{
-    --bg: #f6f3ee; --ink: #1c1a17; --muted: #5c564e; --line: #d9d2c7;
-    --card: #fffdf9; --accent: #0f5c4c; --warn: #8a4b12; --done: #9a948a;
-    --boston: #1f4b7a; --bay: #9a3412; --big: #5b2d8e; --start: #0f5c4c;
-  }}
-  * {{ box-sizing: border-box; }}
-  body {{
-    margin: 0;
-    font: 16px/1.45 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
-    color: var(--ink);
-    background: radial-gradient(1200px 600px at 10% -10%, #e7efe9 0%, transparent 55%), var(--bg);
-  }}
-  header {{
-    position: sticky; top: 0; z-index: 2;
-    backdrop-filter: blur(8px);
-    background: color-mix(in srgb, var(--bg) 86%, white);
-    border-bottom: 1px solid var(--line);
-    padding: 1rem 1.25rem 0.9rem;
-  }}
-  h1 {{ margin: 0 0 0.25rem; font-size: 1.35rem; letter-spacing: -0.02em; }}
-  .sub {{ color: var(--muted); font-size: 0.95rem; max-width: 54rem; }}
-  .legend {{
-    margin-top: 0.55rem; font-size: 0.88rem; color: var(--muted);
-    max-width: 54rem;
-  }}
-  .filters, .controls {{
-    display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center;
-    margin-top: 0.75rem;
-  }}
-  .filters button, .controls button, .open {{
-    font: inherit; cursor: pointer; border-radius: 999px;
-    border: 1px solid var(--line); background: white; color: var(--ink);
-    padding: 0.35rem 0.8rem; text-decoration: none;
-  }}
-  .filters button.active {{
-    border-color: var(--ink); background: var(--ink); color: white;
-  }}
-  .controls button.primary {{
-    border-color: var(--ink); background: var(--ink); color: white;
-  }}
-  #progress {{ color: var(--muted); margin-left: 0.25rem; }}
-  #counts {{ color: var(--muted); font-size: 0.9rem; }}
-  main {{ max-width: 880px; margin: 0 auto; padding: 1.25rem; }}
-  ol {{ list-style: none; margin: 0; padding: 0; display: grid; gap: 0.65rem; }}
-  .item {{
-    display: grid; grid-template-columns: 1fr auto; gap: 0.75rem; align-items: center;
-    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
-    padding: 0.8rem 0.9rem;
-  }}
-  .item.hidden {{ display: none; }}
-  .item.done {{ opacity: 0.45; }}
-  .item.logged .title::after {{ content: ' · logged'; color: var(--accent); font-size: 0.75em; letter-spacing: 0.04em; }}
-  .item.done .title {{ text-decoration: line-through; color: var(--done); }}
-  .check {{ display: grid; grid-template-columns: auto 1fr; gap: 0.55rem; align-items: start; }}
-  .badges {{ display: none; }}
-  .main .title {{ display: block; font-weight: 650; }}
-  .main .meta {{ display: block; color: var(--muted); font-size: 0.88rem; margin-top: 0.2rem; }}
-  .pillrow {{ display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.35rem; }}
-  .badge {{
-    font: 11px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
-    border: 1px solid var(--line); border-radius: 6px; padding: 0.18rem 0.4rem;
-    background: #fff;
-  }}
-  .geo-boston_ma {{ color: var(--boston); border-color: color-mix(in srgb, var(--boston) 35%, var(--line)); }}
-  .geo-bay_area {{ color: var(--bay); border-color: color-mix(in srgb, var(--bay) 35%, var(--line)); }}
-  .class-big_tech {{ color: var(--big); border-color: color-mix(in srgb, var(--big) 35%, var(--line)); }}
-  .class-biotech {{ color: #9f1239; border-color: color-mix(in srgb, #9f1239 35%, var(--line)); }}
-  .class-startup {{ color: var(--start); border-color: color-mix(in srgb, var(--start) 35%, var(--line)); }}
-  .badge.gtc {{ color: #76b900; border-color: color-mix(in srgb, #76b900 45%, var(--line)); font-weight: 700; }}
-  .actions {{ display: flex; flex-direction: column; gap: 0.35rem; align-items: stretch; }}
-  .open {{ color: var(--accent); border-color: var(--accent); text-align: center; }}
-  .pass {{
-    font: inherit; cursor: pointer; border-radius: 999px;
-    border: 1px solid color-mix(in srgb, var(--warn) 55%, var(--line));
-    background: transparent; color: var(--warn); padding: 0.35rem 0.8rem;
-  }}
-  .item.passed {{ opacity: 0.35; }}
-  .item.passed .title {{ text-decoration: line-through; }}
-  .syncbar {{ margin-top: 0.55rem; font-size: 0.9rem; color: var(--warn); }}
-  .syncbar strong {{ color: var(--ink); }}
-  footer {{ max-width: 880px; margin: 0 auto 2rem; padding: 0 1.25rem; color: var(--muted); font-size: 0.9rem; }}
-  code {{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.85em; }}
-</style>
-</head>
-<body>
-<header>
-  <h1>Apply queue — {html.escape(day)}</h1>
-  <p class="sub">
-    <strong>Open</strong> → read the JD → apply via Simplify, then tick <strong>Applied</strong>.
-    Not for you? <strong>Pass</strong> (archived, not deleted).
-  </p>
-  <p class="legend">
-    In LIVE mode both actions write to the repo immediately:
-    <strong>Applied</strong> → <code>status=applied</code> in <code>data/applications.csv</code> (row is created if new),
-    <strong>Pass</strong> → <code>data/job_decisions.csv</code> + <code>status=passed</code>.
-    Start LIVE with <code>python3 scripts/serve_apply_queue.py</code> — do not open the static HTML file.
-  </p>
-  <div class="filters" id="geoFilters">
-    <span id="counts">GTC {n_gtc} · Boston/MA {n_bos} · Bay Area {n_bay} · Big tech {n_big} · Biotech {n_bio} · Startup {n_st} · All {len(items)}</span>
-  </div>
-  <div class="filters" id="classFilters"></div>
-  <div class="filters" id="gtcFilters"></div>
-  <div class="filters" id="tierFilters"></div>
-  <div class="filters" id="passFilters"></div>
-  <div class="controls">
-    <button class="primary" id="openNext" type="button">Open next (visible)</button>
-    <button id="exportPasses" type="button">Export decisions</button>
-    <button id="reset" type="button">Reset checks</button>
-    <span id="progress"></span>
-  </div>
-  <div class="syncbar" id="syncbar"></div>
-</header>
-<main>
-  <ol id="queue">
-{body}
-  </ol>
-</main>
-<footer>
-  Static-file mode only: <code>python3 scripts/sync_queue_decisions.py --file ~/Downloads/queue_decisions_....json</code>,
-  then regenerate. Company classes live in <code>knowledge/company_lists.yaml</code>.
-</footer>
-<script>
-const KEY = "apply-queue-v2-{html.escape(day)}";
-const PASS_KEY = "apply-queue-pass-v1-{html.escape(day)}";
-const LIVE = (typeof window !== 'undefined' && window.APPLY_QUEUE_LIVE === true);
-const items = [...document.querySelectorAll('.item')];
-const boxes = [...document.querySelectorAll('input[type=checkbox]')];
-let saved = JSON.parse(localStorage.getItem(KEY) || "{{}}");
-let passes = JSON.parse(localStorage.getItem(PASS_KEY) || "{{}}");
-const state = {{ geo: 'all', company: 'all', tier: 'all', gtc: 'all', pass: 'active' }};
 
-function rowPayload(item) {{
-  return {{
-    url: item.dataset.url,
-    company: item.dataset.company,
-    role: item.dataset.role,
-    job_id: item.dataset.jobId || '',
-    cluster: item.dataset.cluster || '',
-    lane: item.dataset.lane || '',
-    location: item.dataset.location || '',
-    resume_version: item.dataset.resume || '',
-  }};
-}}
+def bootstrap_payload(day: str, items: list[dict], *, live: bool) -> dict:
+    """Everything the page needs to render without a second request."""
+    payload_items = []
+    for it in items:
+        row = dict(it)
+        row["key"] = norm_url(it.get("url") or "")
+        payload_items.append(row)
+    return {
+        "day": day,
+        "dates": available_dates(),
+        "live": live,
+        "items": payload_items,
+        "counts": _counts(items),
+    }
 
-function mkFilters(el, key, opts) {{
-  opts.forEach(([val, label]) => {{
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.textContent = label;
-    b.dataset.val = val;
-    if (val === 'all') b.classList.add('active');
-    b.onclick = () => {{
-      state[key] = val;
-      [...el.querySelectorAll('button')].forEach(x => x.classList.toggle('active', x.dataset.val === val));
-      applyFilters();
-    }};
-    el.appendChild(b);
-  }});
-}}
 
-mkFilters(document.getElementById('geoFilters'), 'geo', [
-  ['all', 'All locations'],
-  ['boston_ma', 'Boston / MA only'],
-  ['bay_area', 'Bay Area / SF only'],
-  ['other', 'Other US'],
-]);
-mkFilters(document.getElementById('classFilters'), 'company', [
-  ['all', 'All companies'],
-  ['big_tech', 'Big tech'],
-  ['biotech', 'Biotech / health'],
-  ['startup', 'Startup / scaleup'],
-  ['other', 'Other'],
-]);
-mkFilters(document.getElementById('gtcFilters'), 'gtc', [
-  ['all', 'All · GTC any'],
-  ['yes', 'GTC sponsor only'],
-  ['no', 'Not GTC sponsor'],
-]);
-mkFilters(document.getElementById('tierFilters'), 'tier', [
-  ['all', 'All tiers'],
-  ['A', 'A · 今日 KEEP'],
-  ['B', 'B · 积压'],
-  ['C', 'C · 先核实'],
-  ['D', 'D · 旧 saved'],
-]);
-mkFilters(document.getElementById('passFilters'), 'pass', [
-  ['active', 'Active only'],
-  ['passed', 'Passed (archived)'],
-  ['all', 'Active + passed'],
-]);
+def render_html(day: str, items: list[dict], *, live: bool = False, inline: bool = True) -> str:
+    """Render the queue page from templates/apply_queue/index.html.
 
-// inject pillrow into each item from badges
-items.forEach((item) => {{
-  const badges = item.querySelector('.badges');
-  const main = item.querySelector('.main');
-  const row = document.createElement('div');
-  row.className = 'pillrow';
-  row.innerHTML = badges.innerHTML;
-  main.prepend(row);
-}});
+    inline=True  → single self-contained file (static fallback, works via file://)
+    inline=False → links to /static/... so the live server can serve real assets
+    """
+    template = (TEMPLATE_DIR / "index.html").read_text(encoding="utf-8")
+    payload = json.dumps(bootstrap_payload(day, items, live=live), ensure_ascii=False)
+    # Keep the JSON from terminating the surrounding <script> element.
+    payload = payload.replace("</", "<\\/")
 
-function urlKey(item) {{
-  let u = (item.dataset.url || '').split('?')[0];
-  while (u.endsWith('/')) u = u.slice(0, -1);
-  return u.toLowerCase();
-}}
+    if inline:
+        css = (STATIC_DIR / "styles.css").read_text(encoding="utf-8")
+        spring = (STATIC_DIR / "spring.js").read_text(encoding="utf-8")
+        app = (STATIC_DIR / "app.js").read_text(encoding="utf-8")
+        # file:// blocks ES module imports, so inline as one classic script
+        # with the import line stripped and the spring API pulled into scope.
+        app_inline = app.replace(
+            "import { Spring, SPRINGS, project, rubberband, VelocityTracker, prefersReducedMotion } from './spring.js';",
+            "",
+        )
+        spring_inline = spring.replace("export class", "class").replace("export const", "const").replace("export function", "function")
+        head_assets = f"<style>\n{css}\n</style>"
+        body_assets = f"<script>\n{spring_inline}\n{app_inline}\n</script>"
+    else:
+        head_assets = '<link rel="stylesheet" href="/static/apply_queue/styles.css" />'
+        body_assets = '<script type="module" src="/static/apply_queue/app.js"></script>'
 
-function visibleBoxes() {{
-  return boxes.filter((b) => {{
-    const item = b.closest('.item');
-    return !item.classList.contains('hidden') && !item.classList.contains('passed');
-  }});
-}}
-
-function applyFilters() {{
-  items.forEach((item) => {{
-    const key = urlKey(item);
-    const isPassed = !!passes[key];
-    item.classList.toggle('passed', isPassed);
-    const okGeo = state.geo === 'all' || item.dataset.geo === state.geo;
-    const okClass = state.company === 'all' || item.dataset.class === state.company;
-    const okTier = state.tier === 'all' || item.dataset.tier === state.tier;
-    const okGtc = state.gtc === 'all' || item.dataset.gtc === state.gtc;
-    let okPass = true;
-    if (state.pass === 'active') okPass = !isPassed;
-    if (state.pass === 'passed') okPass = isPassed;
-    item.classList.toggle('hidden', !(okGeo && okClass && okTier && okGtc && okPass));
-  }});
-  paint();
-}}
-
-function paint() {{
-  let done = 0;
-  boxes.forEach((b) => {{
-    const on = !!saved[b.dataset.key];
-    b.checked = on;
-    b.closest('.item').classList.toggle('done', on);
-    if (LIVE && on) b.disabled = true;
-    if (on) done += 1;
-  }});
-  const vis = boxes.filter((b) => !b.closest('.item').classList.contains('hidden'));
-  const visDone = vis.filter((b) => b.checked).length;
-  const nPass = Object.keys(passes).length;
-  document.getElementById('progress').textContent =
-    visDone + ' / ' + vis.length + ' visible checked · passed ' + nPass;
-  const bar = document.getElementById('syncbar');
-  if (LIVE) {{
-    bar.innerHTML =
-      '<strong>LIVE</strong> · written to repo: ' + done + ' applied · ' + nPass + ' passed';
-    const exp = document.getElementById('exportPasses');
-    if (exp) exp.style.display = 'none';
-  }} else {{
-    bar.innerHTML =
-      '<strong>Static file</strong> · ' + done + ' applied / ' + nPass +
-      ' passed held in this browser only. Export decisions, then run sync_queue_decisions.py — ' +
-      'or start LIVE: python3 scripts/serve_apply_queue.py --date {html.escape(day)}';
-  }}
-}}
-
-async function recordApplied(item) {{
-  const res = await fetch('/api/applied', {{
-    method: 'POST',
-    headers: {{ 'Content-Type': 'application/json' }},
-    body: JSON.stringify(Object.assign(rowPayload(item), {{ decided_at: new Date().toISOString() }})),
-  }});
-  if (!res.ok) throw new Error('applied write failed');
-  return res.json();
-}}
-
-boxes.forEach((b) => b.addEventListener('change', async () => {{
-  const item = b.closest('.item');
-  const key = b.dataset.key;
-
-  if (!LIVE) {{
-    saved[key] = b.checked;
-    localStorage.setItem(KEY, JSON.stringify(saved));
-    paint();
-    return;
-  }}
-
-  if (!b.checked) {{
-    // Un-applying is a real ledger change; do it deliberately, not by mis-click.
-    b.checked = true;
-    alert('Already recorded as applied. To undo, edit data/applications.csv directly.');
-    return;
-  }}
-
-  b.disabled = true;
-  try {{
-    const data = await recordApplied(item);
-    saved[key] = true;
-    if (data.created && data.created.length) {{
-      item.dataset.jobId = data.created[0];
-    }}
-    item.classList.add('logged');
-    paint();
-  }} catch (err) {{
-    b.checked = false;
-    b.disabled = false;
-    alert('Could not save "applied" to the repo. Is serve_apply_queue.py still running?');
-  }}
-}}));
-
-async function recordPass(item, reason) {{
-  const key = urlKey(item);
-  const row = {{
-    url: item.dataset.url,
-    company: item.dataset.company,
-    role: item.dataset.role,
-    job_id: item.dataset.jobId || '',
-    decision: 'pass',
-    reason: (reason || '').trim(),
-    decided_at: new Date().toISOString(),
-    source: LIVE ? 'apply_queue_live' : 'apply_queue',
-  }};
-  if (LIVE) {{
-    const res = await fetch('/api/pass', {{
-      method: 'POST',
-      headers: {{ 'Content-Type': 'application/json' }},
-      body: JSON.stringify(row),
-    }});
-    if (!res.ok) {{
-      alert('Pass failed to save to repo');
-      return false;
-    }}
-  }} else {{
-    localStorage.setItem(PASS_KEY, JSON.stringify(Object.assign(passes, {{ [key]: row }})));
-  }}
-  passes[key] = row;
-  if (!LIVE) localStorage.setItem(PASS_KEY, JSON.stringify(passes));
-  return true;
-}}
-
-items.forEach((item) => {{
-  item.querySelector('.pass').addEventListener('click', async () => {{
-    const key = urlKey(item);
-    const reason = prompt('Pass reason (optional). e.g. needs 1+ YOE / not interested / clearance', passes[key]?.reason || '');
-    if (reason === null) return;
-    const ok = await recordPass(item, reason);
-    if (ok) applyFilters();
-  }});
-}});
-
-document.getElementById('reset').onclick = () => {{
-  Object.keys(saved).forEach((k) => delete saved[k]);
-  localStorage.setItem(KEY, JSON.stringify(saved));
-  paint();
-}};
-document.getElementById('openNext').onclick = () => {{
-  const next = visibleBoxes().find((b) => !b.checked);
-  if (!next) {{ alert('No active unchecked roles in the current filter.'); return; }}
-  const link = next.closest('.item').querySelector('a.open');
-  window.open(link.href, '_blank', 'noopener');
-  next.focus();
-}};
-document.getElementById('exportPasses').onclick = () => {{
-  const decisions = Object.values(passes);
-  const applied = items
-    .filter((item) => saved[urlKey(item)])
-    .map((item) => Object.assign(rowPayload(item), {{ decided_at: new Date().toISOString() }}));
-  if (!decisions.length && !applied.length) {{ alert('Nothing to export yet.'); return; }}
-  const payload = {{ exported_at: new Date().toISOString(), decisions, applied }};
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {{ type: 'application/json' }});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'queue_decisions_{html.escape(day)}.json';
-  a.click();
-  URL.revokeObjectURL(a.href);
-}};
-
-function normKey(raw) {{
-  let u = (raw || '').split('?')[0];
-  while (u.endsWith('/')) u = u.slice(0, -1);
-  return u.toLowerCase();
-}}
-
-async function boot() {{
-  if (LIVE) {{
-    try {{
-      const res = await fetch('/api/state');
-      const data = await res.json();
-      const passMap = {{}};
-      (data.passed || []).forEach((d) => {{ passMap[normKey(d.url)] = d; }});
-      passes = passMap;
-      // Repo is the source of truth for "applied" in LIVE mode.
-      const appliedMap = {{}};
-      (data.applied || []).forEach((u) => {{ appliedMap[normKey(u)] = true; }});
-      saved = appliedMap;
-    }} catch (e) {{
-      console.warn('could not load repo state', e);
-    }}
-  }}
-  applyFilters();
-}}
-boot();
-</script>
-</body>
-</html>
-"""
+    return (
+        template.replace("__DAY__", html.escape(day))
+        .replace("__HEAD_ASSETS__", head_assets)
+        .replace("__BOOTSTRAP__", payload)
+        .replace("__BODY_ASSETS__", body_assets)
+    )
 
 
 def main() -> int:
