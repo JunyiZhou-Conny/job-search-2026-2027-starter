@@ -53,14 +53,11 @@ const rowNodes = new Map(); // key -> { li, inner, spring }
 
 /* ------------------------------------------------------------- utilities */
 
-function normKey(raw) {
-  let u = (raw || '').split('?')[0];
-  while (u.endsWith('/')) u = u.slice(0, -1);
-  return u.toLowerCase();
-}
-
+/* Identity always comes from the server (js_lib.canonical_url). The browser
+ * must not invent its own rule — that mismatch is exactly what made a saved
+ * role look untouched after it had been written to the ledger. */
 function itemKey(item) {
-  return item.key || normKey(item.url);
+  return item.key || (item.url || '').toLowerCase();
 }
 
 function esc(value) {
@@ -237,6 +234,16 @@ function applyFilters() {
 
 /* --------------------------------------------------------------- rendering */
 
+/* The triage agent writes machine-prefixed reasons ("rules:intern_ok+fit_priority — …",
+ * "fit_priority(8): …"). Strip the prefix for reading; never reword the substance. */
+function readableReason(raw) {
+  let text = (raw || '').trim();
+  text = text.replace(/^rules:[^\s—-]*\s*[—-]\s*/i, '');
+  text = text.replace(/^fit_priority\(\d+\):\s*/i, '');
+  text = text.replace(/^fit_priority:\s*/i, '');
+  return text;
+}
+
 function rowMarkup(item, index) {
   const pills = [];
   if (item.gtc_sponsor === 'yes') {
@@ -244,15 +251,18 @@ function rowMarkup(item, index) {
   }
   if (item.geo_label) pills.push(`<span class="pill pill-geo-${esc(item.geo)}">${esc(item.geo_label)}</span>`);
   if (item.class_label) pills.push(`<span class="pill pill-class-${esc(item.company_class)}">${esc(item.class_label)}</span>`);
-  if (item.tier_label) pills.push(`<span class="pill">${esc(item.tier)} · ${esc(item.tier_label)}</span>`);
+  if (item.tier_label) pills.push(`<span class="pill">${esc(item.tier_label)}</span>`);
+  if (item.grad) pills.push(`<span class="pill" title="Which graduation date to show on this application">grad: ${esc(item.grad)}</span>`);
   if (item.job_id) pills.push(`<span class="pill">${esc(item.job_id)}</span>`);
 
   const meta = [
     item.location || 'location unknown',
-    item.lane ? `${esc(item.lane)} lane` : '',
+    item.lane ? `${item.lane} lane` : '',
     item.cluster || '',
-    item.grad ? `resume ${esc(item.grad)}` : '',
-  ].filter(Boolean).join(' · ');
+    item.posted_relative || '',
+  ].filter(Boolean).map(esc).join(' · ');
+
+  const why = readableReason(item.reason);
 
   return `
     <div class="row-affordance" aria-hidden="true">
@@ -267,13 +277,15 @@ function rowMarkup(item, index) {
           <span class="row-role">— ${esc(item.role)}</span>
         </h2>
         <p class="row-meta">${meta}</p>
-        ${item.reason ? `<p class="row-why">${esc(item.reason)}</p>` : ''}
+        ${why ? `<p class="row-why">${esc(why)}</p>` : ''}
         <div class="pills">${pills.join('')}</div>
       </div>
       <div class="row-actions">
         <a class="action action-open" href="${esc(item.url)}" target="_blank" rel="noopener">Open</a>
-        <button type="button" class="action action-applied" data-act="applied">Applied</button>
-        <button type="button" class="action action-pass" data-act="pass">Pass</button>
+        <div class="row-secondary">
+          <button type="button" class="action action-applied" data-act="applied">Applied</button>
+          <button type="button" class="action action-pass" data-act="pass">Pass</button>
+        </div>
       </div>
     </div>`;
 }
@@ -594,8 +606,8 @@ async function loadState() {
   try {
     const res = await fetch('/api/state');
     const data = await res.json();
-    state.applied = new Set((data.applied || []).map(normKey));
-    state.passed = new Map((data.passed || []).map((d) => [normKey(d.url), d]));
+    state.applied = new Set(data.applied || []);
+    state.passed = new Map((data.passed || []).map((d) => [d.key || (d.url || '').toLowerCase(), d]));
     setSync('synced', 'Synced');
   } catch (err) {
     setSync('offline', 'Server offline');
@@ -719,6 +731,46 @@ function bindScrollEdge() {
 
 /* -------------------------------------------------------------- exporting */
 
+function bindAdvancedFilters() {
+  const toggle = document.getElementById('moreFilters');
+  const panel = document.getElementById('advancedFilters');
+  if (!toggle || !panel) return;
+
+  toggle.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+
+    if (open) {
+      if (prefersReducedMotion()) { panel.hidden = true; return; }
+      const height = panel.scrollHeight;
+      // Exits along the path it entered by.
+      const close = new Spring({
+        from: 1, to: 0, damping: 1, response: 0.28,
+        onUpdate: (v) => {
+          panel.style.height = `${Math.max(0, v) * height}px`;
+          panel.style.opacity = String(Math.max(0, v));
+        },
+        onRest: () => { panel.hidden = true; panel.style.height = ''; panel.style.opacity = ''; },
+      });
+      close.start();
+      return;
+    }
+
+    panel.hidden = false;
+    if (prefersReducedMotion()) return;
+    const height = panel.scrollHeight;
+    const open_ = new Spring({
+      from: 0, to: 1, ...SPRINGS.ui,
+      onUpdate: (v) => {
+        panel.style.height = `${Math.max(0, v) * height}px`;
+        panel.style.opacity = String(Math.min(1, Math.max(0, v)));
+      },
+      onRest: () => { panel.style.height = ''; panel.style.opacity = ''; },
+    });
+    open_.start();
+  });
+}
+
 function bindControls() {
   els.openNext?.addEventListener('click', openNext);
 
@@ -767,6 +819,7 @@ async function boot() {
 
 function bindFilters() {
   buildFilters();
+  bindAdvancedFilters();
 }
 
 boot();

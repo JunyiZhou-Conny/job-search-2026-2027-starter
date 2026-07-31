@@ -30,11 +30,18 @@ __HEAD_ASSETS__
     </div>
 
     <div class="filters" role="group" aria-label="Filters">
-      <div class="filter-group" id="geoFilters" data-key="geo"></div>
-      <div class="filter-group" id="classFilters" data-key="company"></div>
-      <div class="filter-group" id="gtcFilters" data-key="gtc"></div>
-      <div class="filter-group" id="tierFilters" data-key="tier"></div>
-      <div class="filter-group" id="passFilters" data-key="pass"></div>
+      <div class="filter-row">
+        <div class="filter-group" id="geoFilters" data-key="geo"></div>
+        <button class="chip chip-toggle" id="moreFilters" type="button" aria-expanded="false" aria-controls="advancedFilters">
+          More filters
+        </button>
+      </div>
+      <div class="filters-advanced" id="advancedFilters" hidden>
+        <div class="filter-group" id="classFilters" data-key="company"></div>
+        <div class="filter-group" id="gtcFilters" data-key="gtc"></div>
+        <div class="filter-group" id="tierFilters" data-key="tier"></div>
+        <div class="filter-group" id="passFilters" data-key="pass"></div>
+      </div>
     </div>
 
     <div class="controls">

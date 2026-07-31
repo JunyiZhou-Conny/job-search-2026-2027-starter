@@ -23,8 +23,12 @@ import csv
 import html
 import json
 import re
+import sys
 from datetime import date
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from js_lib import canonical_url  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 APPS = ROOT / "data" / "applications.csv"
@@ -266,7 +270,8 @@ def app_url(row: dict) -> str:
 
 
 def norm_url(u: str) -> str:
-    return u.strip().rstrip("/").lower()
+    """Same posting identity the write-back layer uses (see js_lib.canonical_url)."""
+    return canonical_url(u)
 
 
 def load_keeps(path: Path) -> list[dict]:
@@ -309,10 +314,10 @@ def tier_for(company: str, role: str, source: str) -> tuple[str, str]:
 
 
 TIER_LABEL = {
-    "A": "今日 KEEP",
-    "B": "积压未投",
-    "C": "先核实 level",
-    "D": "旧 saved",
+    "A": "Today",
+    "B": "Backlog",
+    "C": "Verify level",
+    "D": "Older",
 }
 CLASS_LABEL = {
     "big_tech": "Big tech",

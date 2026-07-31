@@ -26,6 +26,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from js_lib import (  # noqa: E402
     ACTIVITY,
+    canonical_url,
     APPLICATIONS,
     APP_FIELDS,
     BACKUPS,
@@ -75,7 +76,8 @@ LANE_PRIORITY = {"core": "A", "broad": "B", "practice": "C"}
 
 
 def canon(url: str) -> str:
-    return (url or "").strip().split("?")[0].rstrip("/").lower()
+    """Posting identity. Delegates so the queue and the ledger cannot disagree."""
+    return canonical_url(url)
 
 
 def default_resume_for_cluster(cluster: str) -> str:

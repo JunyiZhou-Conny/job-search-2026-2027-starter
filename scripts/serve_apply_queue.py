@@ -110,7 +110,8 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/state":
-            self._json(200, {"passed": passed_records(), "applied": sorted(applied_urls())})
+            passed = [{**r, "key": canon(r.get("url", ""))} for r in passed_records()]
+            self._json(200, {"passed": passed, "applied": sorted(applied_urls())})
             return
 
         if path == "/api/events":
