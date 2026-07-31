@@ -1,8 +1,24 @@
 # UI direction — Intelligent Career Journal
 
-**Status: reference only. Not implemented.** Filed 2026-07-27 while the apply queue is in
-daily use. Do not start a visual refactor mid-application-cycle; revisit once the resume is
-settled and there is a week of real usage data.
+**Status: partially implemented (2026-07-31).** The apply queue now follows the interaction
+and typography intent described here; the multi-column archive and the editorial vocabulary
+are still just a direction.
+
+Shipped so far, in `templates/apply_queue/` + `static/apply_queue/`:
+
+- HTML/CSS/JS extracted from the Python f-strings (gap 1 below — done)
+- English freshness tiers: Today / Backlog / Verify level / Older (gap 2 — done)
+- an editorial lede above the counts (gap 3 — done)
+- the triage reason surfaced per row as "why it matches" (gap 4 — done)
+- one primary action per row, with Applied/Pass demoted and swipe as the main gesture (gap 5 — done)
+
+Motion follows `emilkowalski/skills → apple-design`: springs parameterised by damping and
+response, pointer-capture drag with the grab offset respected, velocity handed to the spring
+on release, momentum projection for flicks, rubber-banded boundaries, translucent chrome with
+a scroll-edge fade, and reduced-motion / reduced-transparency / high-contrast paths.
+
+Still open: the three-column date archive, the `Today's Edition` vocabulary layer, and the
+per-role detail view.
 
 ## Core premise
 
