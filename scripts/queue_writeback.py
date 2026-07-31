@@ -148,7 +148,7 @@ def log_event(job_id: str, from_status: str, to_status: str, note: str) -> None:
 def _create_app(apps: list[dict], row: dict) -> dict:
     """Create an application row for a role that only existed in a triage CSV."""
     job_id = next_id("J", apps, "id")
-    url = (row.get("url") or "").split("?")[0]
+    url = canon(row.get("url") or "")
     cluster = (row.get("cluster") or "").strip()
     lane = (row.get("lane") or "").strip()
     today = today_iso()
@@ -202,7 +202,7 @@ def record_pass(rows: list[dict]) -> dict:
             continue
         key = canon(url)
         rec = {
-            "url": url.split("?")[0],
+            "url": canon(url),
             "company": row.get("company") or "",
             "role": row.get("role") or "",
             "job_id": row.get("job_id") or "",
