@@ -155,6 +155,7 @@
 - Personalized Jobright Matches had no saved session; the public feed yielded 10 thin rows with blank work model/location/timing fields.
 - The healthcare boards returned 1 new-grad and 2 intern rows; all three were reviewed rather than treated as a scrape failure.
 - Several distinct URLs appear to be duplicate requisitions; lower-priority copies remain in the CSV.
+- One URL already exists in `data/applications.csv`: Cadence — Software Engineering Intern (`693b5c7ab309e37800871f1d`); it is marked `later`, and the ledger was not changed.
 - Board-only triage does not prove application-level eligibility; 2027 internship enrollment/return-to-school details still require verification.
 
 ## What I did NOT do
