@@ -1,0 +1,163 @@
+# Discovery triage — 2026-08-09
+
+## Counts
+
+- Reviewed: **145** unique URLs
+- keep **33** / later **38** / skip **74**
+- Keeps by lane: {'core': 22, 'broad': 11}
+- Keeps by cluster: {'data_ml': 18, 'cloud_swe': 11, 'health_ai': 4}
+
+## KEEP — core lane first
+
+- **Applied Intuition** — Research Intern - Robotic Hardware, Simulation and Data
+  - core / data_ml · On Site · Sunnyvale, CA · grad_hint=either
+  - fit_priority(8): strong target-role fit; intern_ok(7): term is not stated, so eligibility still needs posting-level confirmation
+  - https://jobright.ai/jobs/info/6a55b6a2fdf4fa71202b3da0
+- **ByteDance** — Software Engineer - Applied Machine Learning, Engine
+  - core / data_ml · On Site · San Jose, CA · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit
+  - https://jobright.ai/jobs/info/6a789395a26ccc369f838d63
+- **ByteDance** — Software Engineer Intern (AI Infra Compute) - 2027 Summer
+  - core / cloud_swe · On Site · San Jose, CA · grad_hint=dual_date
+  - fit_priority(8): AI/cloud infrastructure or distributed-systems fit; intern_ok(7)/dual_grad_dates(7): explicit 2027 cycle, with no incompatible board gate
+  - https://jobright.ai/jobs/info/6a78919c67a1ad0bc53cdde4
+- **ByteDance** — Software Engineer Intern (Distributed NoSQL Database Systems) - 2027 Summer
+  - core / cloud_swe · On Site · Seattle, WA · grad_hint=dual_date
+  - fit_priority(8): AI/cloud infrastructure or distributed-systems fit; intern_ok(7)/dual_grad_dates(7): explicit 2027 cycle, with no incompatible board gate
+  - https://jobright.ai/jobs/info/6a734bdfe55c73319eb164fe
+- **Cadence** — Software Engineer I
+  - core / cloud_swe · On Site · Austin, TX; San Jose, CA · grad_hint=dual_date
+  - fit_priority(8): strong software-engineering fit
+  - https://jobright.ai/jobs/info/6981458aabff4c399aa02d1f
+- **Cohere** — Machine Learning Intern/Co-op (Winter 2027)
+  - core / data_ml · On Site · San Francisco, CA · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit; intern_ok(7)/dual_grad_dates(7): explicit 2027 cycle, with no incompatible board gate
+  - https://jobright.ai/jobs/info/6a2a2edd0c4972328e7e7700
+- **ETAP Software** — Power Systems AI/ML Engineer
+  - core / data_ml · Hybrid · Irvine, CA · grad_hint=dual_date
+  - fit_priority(8): strong target-role fit
+  - https://jobright.ai/jobs/info/6a2376c3dedf78312c7ac4d7
+- **FanDuel** — Data Scientist, Experimentation
+  - core / data_ml · Hybrid · New York, NY · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit
+  - https://jobright.ai/jobs/info/6a3d8b8d122f340d29cf12c6
+- **Mass General Brigham** — Bioinformatician I
+  - core / health_ai · On Site · Boston, MA · grad_hint=dual_date
+  - fit_priority(8): health-data/health-AI fit
+  - https://jobright.ai/jobs/info/6a74d75737da8525e8cdadf7
+- **Medpace** — Feasibility Informatics Internship/Co-Op Spring 2027
+  - core / health_ai · On Site · Cincinnati, OH · grad_hint=dual_date
+  - fit_priority(8): health-data/health-AI fit; intern_ok(7)/dual_grad_dates(7): explicit 2027 cycle, with no incompatible board gate
+  - https://jobright.ai/jobs/info/6a2fc044093df201d07ae643
+- **METR** — Platform Engineer, Intern
+  - core / cloud_swe · On Site · Berkeley, CA · grad_hint=either
+  - fit_priority(8): AI/cloud infrastructure or distributed-systems fit; intern_ok(7): term is not stated, so eligibility still needs posting-level confirmation
+  - https://jobright.ai/jobs/info/6a6a69888693c23e7fb7aa3a
+- **Mitsubishi Electric Research Laboratories** — Internship - Embodied AI & Humanoid Robotics
+  - core / data_ml · On Site · Cambridge, MA · grad_hint=either
+  - fit_priority(8): direct ML/AI or data-science fit; intern_ok(7): term is not stated, so eligibility still needs posting-level confirmation
+  - https://jobright.ai/jobs/info/6a7499577b3417772ade0708
+- **Prophet** — AI Engineer Intern — AI Foundry & Digital Growth
+  - core / data_ml · Hybrid · New York, NY · grad_hint=either
+  - fit_priority(8): strong target-role fit; intern_ok(7): term is not stated, so eligibility still needs posting-level confirmation
+  - https://jobright.ai/jobs/info/6a6774fa872eb74f9ead9278
+- **SpaceX** — Kubernetes Platform Infrastructure Engineer (Starlink)
+  - core / cloud_swe · On Site · Redmond, WA · grad_hint=dual_date
+  - fit_priority(8): AI/cloud infrastructure or distributed-systems fit
+  - https://jobright.ai/jobs/info/6a2d6349f1751b183c81ad54
+- **SpaceX** — Simulation Software Engineer (Application Software)
+  - core / cloud_swe · On Site · Hawthorne, CA · grad_hint=dual_date
+  - fit_priority(8): strong software-engineering fit
+  - https://jobright.ai/jobs/info/69cc6713e1921223acc75b2f
+- **SpaceX** — Software Engineer, Applied AI (Starlink)
+  - core / data_ml · On Site · Redmond, WA · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit
+  - https://jobright.ai/jobs/info/6a5c6f8b856af468ab00f107
+- **SpaceX** — Software Engineer, Propulsion Simulation & Data Analysis
+  - core / data_ml · On Site · Hawthorne, CA · grad_hint=dual_date
+  - fit_priority(8): strong software-engineering fit
+  - https://jobright.ai/jobs/info/6a51cb5502522b5b722eb9ff
+- **TikTok** — (General Hire) Software Engineer Intern (Trust and Safety-Engineering) - 2027 Summer
+  - core / cloud_swe · On Site · Seattle, WA · grad_hint=dual_date
+  - fit_priority(8): strong software-engineering fit; intern_ok(7)/dual_grad_dates(7): explicit 2027 cycle, with no incompatible board gate
+  - https://jobright.ai/jobs/info/6a788e9bb17cba5690361ab0
+- **TikTok** — Data Science Intern (TikTok Product) - 2027 Summer
+  - core / data_ml · On Site · San Jose, CA · grad_hint=dual_date
+  - fit_priority(8): strong target-role fit; intern_ok(7)/dual_grad_dates(7): explicit 2027 cycle, with no incompatible board gate
+  - https://jobright.ai/jobs/info/6a7284f8ee751e0c793493e5
+- **TikTok** — Data Scientist Intern (VOD Data) - 2027 Summer
+  - core / data_ml · On Site · San Jose, CA · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit; intern_ok(7)/dual_grad_dates(7): explicit 2027 cycle, with no incompatible board gate
+  - https://jobright.ai/jobs/info/6a72f51b6ffeee418e5b7eac
+- **TikTok** — Multi-modal Machine Learning Engineer (all levels) - Trust and Safety
+  - core / data_ml · On Site · San Jose, CA · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit
+  - https://jobright.ai/jobs/info/6a39bc3106a4fd4b1fabbe0e
+- **Twitch** — Software Engineer, Memberships I
+  - core / cloud_swe · On Site · San Francisco, CA; Seattle, WA · grad_hint=dual_date
+  - fit_priority(8): strong software-engineering fit
+  - https://jobright.ai/jobs/info/6a3ebe9b4d047136e09376bc
+- **AEG** — Associate Data Scientist
+  - broad / data_ml · On Site · Los Angeles, CA · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit
+  - https://jobright.ai/jobs/info/6a3d8ace4d047136e093418a
+- **Brunswick Corporation** — Embedded Software Engineer
+  - broad / cloud_swe · Hybrid · Oshkosh, WI · grad_hint=dual_date
+  - fit_priority(8): strong software-engineering fit
+  - https://jobright.ai/jobs/info/6a25615c757ade085b6b19d1
+- **Cadence** — Software Engineering Intern
+  - broad / cloud_swe · On Site · Pittsburgh, PA · grad_hint=either
+  - fit_priority(8): strong software-engineering fit; intern_ok(7): term is not stated, so eligibility still needs posting-level confirmation
+  - https://jobright.ai/jobs/info/6a554497ae07d60a8d010064
+- **Esri** — Data Scientist I
+  - broad / data_ml · On Site · St. Louis, MO · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit
+  - https://jobright.ai/jobs/info/6a3c3518882f121f56a33ce8
+- **Fanatics** — Data Scientist I
+  - broad / data_ml · Hybrid · Denver, CO; New York, NY · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit
+  - https://jobright.ai/jobs/info/6a63b3768d53603449603c4d
+- **Granules Pharmaceuticals, Inc.** — Data Science Associate
+  - broad / health_ai · On Site · Chantilly, VA · grad_hint=dual_date
+  - fit_priority(8): strong target-role fit
+  - https://jobright.ai/jobs/info/6a765ff6a26ccc369f83520b
+- **Hakkōda, an IBM Company** — Federal Data Scientist Intern 2027
+  - broad / data_ml · On Site · Herndon, VA · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit; intern_ok(7)/dual_grad_dates(7): explicit 2027 cycle, with no incompatible board gate
+  - https://jobright.ai/jobs/info/6a772a197b3417772adea079
+- **Kearney** — Kearney Activate - Data Scientist
+  - broad / data_ml · On Site · Washington, DC; Arlington, VA; Boston, MA; East Coast, United States · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit
+  - https://jobright.ai/jobs/info/6a6d9cf757120971bf3b0a27
+- **Milliman** — Healthcare Data Analyst Intern (Summer 2027) - Indianapolis Health
+  - broad / health_ai · On Site · Indianapolis, IN · grad_hint=dual_date
+  - fit_priority(8): health-data/health-AI fit; intern_ok(7)/dual_grad_dates(7): explicit 2027 cycle, with no incompatible board gate
+  - https://jobright.ai/jobs/info/6a760d46bb6ca93ae5610aa8
+- **Navatech** — Jr Data Scientist
+  - broad / data_ml · On Site · Milwaukee, WI · grad_hint=dual_date
+  - fit_priority(8): direct ML/AI or data-science fit
+  - https://jobright.ai/jobs/info/6a75569abb6ca93ae560e583
+- **SpaceX** — Software Engineer, Design Engineering (Starlink)
+  - broad / cloud_swe · On Site · Redmond, WA · grad_hint=dual_date
+  - fit_priority(8): strong software-engineering fit
+  - https://jobright.ai/jobs/info/6a5c6f91856af468ab00f10a
+
+## SKIP themes
+
+- Fully remote: **33**
+- Explicit hard gate: **16**
+- Non-target or senior role: **15**
+- 2026 term/start: **11**
+- Traditional student/co-op mismatch: **2**
+
+## Needs attention
+
+- Personalized Jobright Matches had no saved session; the public feed yielded 10 thin rows with blank work model/location/timing fields.
+- The healthcare boards returned 1 new-grad and 2 intern rows; all three were reviewed rather than treated as a scrape failure.
+- Several distinct URLs appear to be duplicate requisitions; lower-priority copies remain in the CSV.
+- Board-only triage does not prove application-level eligibility; 2027 internship enrollment/return-to-school details still require verification.
+
+## What I did NOT do
+
+- No applications submitted and no outreach sent.
+- No writes to `data/applications.csv`; ingest requires explicit user confirmation.
