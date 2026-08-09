@@ -8,9 +8,9 @@
 
 1. [Cohere — Machine Learning Intern/Co-op (Winter 2027)](https://jobright.ai/jobs/info/6a2a2edd0c4972328e7e7700) — core/cloud_swe — grad_display_hint: dual_date
 2. [Hakkōda, an IBM Company — Federal Data Scientist Intern 2027](https://jobright.ai/jobs/info/6a772a197b3417772adea079) — broad/data_ml — grad_display_hint: dual_date
-3. [The Nuclear Company — Summer 2027 Data Science Intern](https://jobright.ai/jobs/info/6a762287bb6ca93ae56111cd) — core/cloud_swe — grad_display_hint: dual_date
-4. [TikTok — Data Science Intern (Advertisement Team) - 2026 Start (PhD)](https://jobright.ai/jobs/info/6a73f24d8cd88e7ccbf5ae79) — core/data_ml — grad_display_hint: dual_date
-5. [TikTok — Data Science Intern (TikTok Product) - 2027 Summer](https://jobright.ai/jobs/info/6a7284f8ee751e0c793493e5) — core/data_ml — grad_display_hint: dual_date
+3. [TikTok — (General Hire) Software Engineer Intern (Trust and Safety-Engineering) - 2027 Summer](https://jobright.ai/jobs/info/6a779187b17cba56903606c2) — core/cloud_swe — grad_display_hint: dual_date
+4. [TikTok — Data Science Intern (TikTok Product) - 2027 Summer](https://jobright.ai/jobs/info/6a7284f8ee751e0c793493e5) — core/data_ml — grad_display_hint: dual_date
+5. [TikTok — Data Scientist Intern (VOD Data) - 2027 Summer](https://jobright.ai/jobs/info/6a72f51b6ffeee418e5b7eac) — core/data_ml — grad_display_hint: dual_date
 6. [AEG — Associate Data Scientist](https://jobright.ai/jobs/info/6a3d8ace4d047136e093418a) — broad/data_ml — grad_display_hint: dual_date
 7. [Abridge — Software Engineer - Early Career](https://jobright.ai/jobs/info/6a775daebb6ca93ae56148a3) — core/health_ai — grad_display_hint: dual_date
 8. [Black Kite — Junior DevOps Engineer](https://jobright.ai/jobs/info/6a78594dbb6ca93ae5615dac) — core/cloud_swe — grad_display_hint: dual_date
