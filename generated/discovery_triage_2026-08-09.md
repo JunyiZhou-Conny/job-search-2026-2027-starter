@@ -1,6 +1,6 @@
 # Discovery triage — 2026-08-09
 
-- Total: 126 — keep: 22, later: 40, skip: 64
+- Total: 126 — keep: 22, later: 39, skip: 65
 - Evidence basis: Jobright minisite board fields only
 - Matches unavailable: no authenticated Jobright session was present
 
