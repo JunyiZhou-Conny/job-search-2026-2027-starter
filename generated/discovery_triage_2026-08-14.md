@@ -2,8 +2,8 @@
 
 - Total: 134
 - Keep: 43
-- Later: 43
-- Skip: 48
+- Later: 45
+- Skip: 46
 
 ## KEEP
 
@@ -56,6 +56,6 @@
 - Explicit incompatible degree/enrollment/graduation gates (`hard_gate`): 18
 - Fully remote work (`remote`): 12
 - Explicit 2026 job cycles (`start_date_conflict`; often `timing_expired`): 11
-- Clearly off-target roles (`non_target_role`): 10
+- Clearly off-target roles (`non_target_role`): 8
 
 All judgments use `board_fields` only. `user_confirm` remains blank; no applications were ingested or submitted.
