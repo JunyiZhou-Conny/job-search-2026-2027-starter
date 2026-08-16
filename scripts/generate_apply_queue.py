@@ -354,10 +354,22 @@ def collect(day: str) -> list[dict]:
     triage = latest_triage(day)
     if triage:
         for r in load_keeps(triage):
-            url = (r.get("url") or "").strip()
-            if not url or norm_url(url) in seen:
+            discovery_url = (r.get("url") or "").strip()
+            apply_url = (r.get("apply_url") or "").strip()
+            apply_conf = (r.get("apply_url_confidence") or "").strip().lower()
+            # Prefer the employer ATS link when resolution was confident — Jobright
+            # discovery URLs cannot be applied to (signup wall).
+            usable_apply = apply_url and apply_conf in {"exact", "strong"}
+            open_url = apply_url if usable_apply else discovery_url
+            if not open_url:
                 continue
-            seen.add(norm_url(url))
+            # Hide if either the discovery URL or the resolved apply URL was passed.
+            keys = {norm_url(open_url)}
+            if discovery_url:
+                keys.add(norm_url(discovery_url))
+            if keys & seen:
+                continue
+            seen |= keys
             tier, note = tier_for(r.get("company", ""), r.get("role", ""), "triage_keep")
             items.append(
                 enrich(
@@ -366,7 +378,11 @@ def collect(day: str) -> list[dict]:
                         "note": note,
                         "company": r.get("company") or "",
                         "role": r.get("role") or "",
-                        "url": url,
+                        "url": open_url,
+                        "discovery_url": discovery_url,
+                        "apply_url": apply_url,
+                        "apply_url_confidence": apply_conf,
+                        "apply_ats": (r.get("apply_ats") or "").strip() if usable_apply else "",
                         "lane": r.get("suggested_lane") or "",
                         "cluster": r.get("suggested_cluster") or "",
                         "grad": r.get("grad_display_hint") or "program_end",

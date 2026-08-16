@@ -245,6 +245,28 @@ For each row assign exactly one: keep | later | skip
 Optional:
 .venv/bin/python scripts/triage_discovery.py --date "$DAY"
 
+### Resolve employer apply URLs (required after triage)
+
+Jobright discovery URLs cannot be applied to (signup wall). After writing the
+triage CSV, resolve employer ATS links for every KEEP:
+
+```bash
+python3 scripts/resolve_apply_url.py --date "$DAY" --write-csv
+```
+
+This appends (does not remove) columns:
+  apply_url, apply_url_confidence, apply_ats, apply_matched_title, apply_resolve_evidence
+
+Only `exact` / `strong` matches become `apply_url`. Weak matches stay recorded
+in confidence/evidence but leave apply_url blank — a wrong link is worse than none.
+
+Known boards live in `knowledge/careers_boards.yaml` (Greenhouse / Ashby / Lever /
+Workday CXS). Add verified employers there when you find them.
+
+In the Phase 5 report, include:
+  - KEEP with a resolved apply_url: N
+  - KEEP still on Jobright only: M
+
 ## Phase 4 — Do NOT ingest (default)
 
 Stop before applications.csv.
@@ -269,9 +291,10 @@ Write a concise report:
   - jobs/inbox/daily-${DAY}.md
 
 ### KEEP (actionable)
-Numbered list: Company — Role — lane/cluster — grad_display_hint — url
+Numbered list: Company — Role — lane/cluster — grad_display_hint — **apply_url** (or “unresolved”)
 (If >20 keep, show top 15 by fit and say “see CSV for rest”)
 grad_display_hint: program_end (default Dec resume) | dual_date (Mar+Dec line) | either
+Prefer linking `apply_url` when present; the Jobright `url` is discovery-only.
 
 ### Needs attention
 Session/login failures, empty boards, parse anomalies, suspected duplicate URLs vs data/applications.csv

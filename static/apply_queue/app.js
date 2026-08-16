@@ -252,6 +252,10 @@ function rowMarkup(item, index) {
   if (item.geo_label) pills.push(`<span class="pill pill-geo-${esc(item.geo)}">${esc(item.geo_label)}</span>`);
   if (item.class_label) pills.push(`<span class="pill pill-class-${esc(item.company_class)}">${esc(item.class_label)}</span>`);
   if (item.tier_label) pills.push(`<span class="pill">${esc(item.tier_label)}</span>`);
+  if (item.apply_ats) pills.push(`<span class="pill pill-ats" title="Resolved employer apply URL">${esc(item.apply_ats)}</span>`);
+  else if (item.discovery_url && /jobright\.ai/i.test(item.url || '')) {
+    pills.push(`<span class="pill pill-warn" title="Still a Jobright link — Apply is behind a signup wall">needs apply URL</span>`);
+  }
   if (item.grad) pills.push(`<span class="pill" title="Which graduation date to show on this application">grad: ${esc(item.grad)}</span>`);
   if (item.job_id) pills.push(`<span class="pill">${esc(item.job_id)}</span>`);
 

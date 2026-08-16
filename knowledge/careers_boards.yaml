@@ -1,0 +1,54 @@
+# Known public career-board endpoints for resolve_apply_url.py.
+#
+# Discovery links almost always point at Jobright, whose Apply button is a
+# signup wall. This file maps employers we see repeatedly to the board the
+# employer themselves publish — Greenhouse / Ashby / Lever / Workday CXS, etc.
+#
+# Rules:
+# - Only add boards you have verified return 200 and real postings.
+# - Prefer exact board IDs over guessing; a wrong board is worse than none.
+# - Workday needs host (e.g. cat.wd5), tenant (cat), and site (CaterpillarCareers).
+# - Never invent an apply URL that isn't on the board.
+
+# Greenhouse board token (boards-api.greenhouse.io/v1/boards/{slug}/jobs)
+greenhouse:
+  Apptronik: apptronik
+  Nirmata: nirmata
+  Appian: appian
+  SpaceX: spacex
+  Neuralink: neuralink
+  "Together AI": togetherai
+  Gemini: gemini
+  # Google DeepMind product branding sometimes appears as Gemini on boards
+
+# Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
+ashby:
+  "Bild AI": bild-ai
+  Etched: etched
+  Traba: traba
+  OpenAI: openai
+  "Charta Health": chartahealth
+  Baseten: baseten
+
+# Lever (api.lever.co/v0/postings/{slug})
+lever: {}
+
+# Workday CXS — verified hosts only.
+# apply URL = https://{host}.myworkdayjobs.com/{site}{externalPath}
+workday:
+  "Caterpillar Inc.":
+    host: cat.wd5
+    tenant: cat
+    site: CaterpillarCareers
+  Waystar:
+    host: waystar.wd1
+    tenant: waystar
+    site: Waystar
+  NVIDIA:
+    host: nvidia.wd5
+    tenant: nvidia
+    site: NVIDIAExternalCareerSite
+  Nvidia:
+    host: nvidia.wd5
+    tenant: nvidia
+    site: NVIDIAExternalCareerSite

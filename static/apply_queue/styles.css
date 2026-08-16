@@ -419,6 +419,8 @@ main {
 .pill-class-biotech  { color: #a12b52; border-color: color-mix(in srgb, #a12b52 35%, var(--line)); }
 .pill-class-startup  { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
 .pill-gtc { color: var(--gtc); border-color: color-mix(in srgb, var(--gtc) 45%, var(--line)); font-weight: 700; }
+.pill-ats { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, var(--line)); }
+.pill-warn { color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, var(--line)); }
 
 .row-actions {
   display: flex;
