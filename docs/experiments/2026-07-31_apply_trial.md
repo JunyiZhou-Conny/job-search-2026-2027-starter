@@ -203,3 +203,20 @@ python3 scripts/resolve_apply_url.py --date 2026-07-28 --out /tmp/resolved.json
 
 Screenshots: `/opt/cursor/artifacts/trial/` — `*_1_loaded.png` before autofill,
 `*_2_autofilled.png` after.
+
+
+## 6. Follow-up (same day) — Workday resolver
+
+Shipped in the same session after this report:
+
+- `knowledge/careers_boards.yaml` — verified Workday CXS hosts (Caterpillar, Waystar, NVIDIA)
+- `resolve_apply_url.py` now queries Workday CXS (`/wday/cxs/{tenant}/{site}/jobs`, limit≤20 + paging)
+- Daily discovery docs require `--write-csv` after triage
+- Existing triage CSVs on main enriched; apply queue Open prefers `apply_url`
+
+Verified live: NVIDIA “Software Engineering Intern, Dynamo - Fall 2026” resolves
+`exact` → `https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite/job/...`
+
+A full Simplify autofill pass on Workday was **not** re-run in this follow-up (the
+trial Chromium profile / unpacked extension under `/tmp` was no longer available).
+That remains the next live experiment once the extension harness is restored.
