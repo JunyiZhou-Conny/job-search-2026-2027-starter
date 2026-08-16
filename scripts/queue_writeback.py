@@ -16,6 +16,7 @@ A queue row looks like:
 
 from __future__ import annotations
 
+import json
 import sys
 from datetime import date, timedelta
 from pathlib import Path
@@ -25,6 +26,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from js_lib import (  # noqa: E402
     ACTIVITY,
+    canonical_url,
     APPLICATIONS,
     APP_FIELDS,
     BACKUPS,
@@ -74,7 +76,8 @@ LANE_PRIORITY = {"core": "A", "broad": "B", "practice": "C"}
 
 
 def canon(url: str) -> str:
-    return (url or "").strip().split("?")[0].rstrip("/").lower()
+    """Posting identity. Delegates so the queue and the ledger cannot disagree."""
+    return canonical_url(url)
 
 
 def default_resume_for_cluster(cluster: str) -> str:
@@ -145,7 +148,7 @@ def log_event(job_id: str, from_status: str, to_status: str, note: str) -> None:
 def _create_app(apps: list[dict], row: dict) -> dict:
     """Create an application row for a role that only existed in a triage CSV."""
     job_id = next_id("J", apps, "id")
-    url = (row.get("url") or "").split("?")[0]
+    url = canon(row.get("url") or "")
     cluster = (row.get("cluster") or "").strip()
     lane = (row.get("lane") or "").strip()
     today = today_iso()
@@ -199,7 +202,7 @@ def record_pass(rows: list[dict]) -> dict:
             continue
         key = canon(url)
         rec = {
-            "url": url.split("?")[0],
+            "url": canon(url),
             "company": row.get("company") or "",
             "role": row.get("role") or "",
             "job_id": row.get("job_id") or "",
@@ -239,6 +242,7 @@ def record_pass(rows: list[dict]) -> dict:
                 app["last_update"] = stamp
                 changed += 1
             continue
+        _journal_push("pass", row.get("url") or "", app.get("job_id") or "", _snapshot(app))
         app["status"] = "passed"
         app["application_status"] = "passed"
         app["next_action"] = ""
@@ -285,6 +289,12 @@ def record_applied(rows: list[dict], follow_up_days: int = 7) -> dict:
             or default_resume_for_cluster(cluster)
         )
 
+        _journal_push(
+            "applied",
+            row.get("url") or "",
+            app.get("job_id") or "",
+            None if app.get("job_id") in created else _snapshot(app),
+        )
         app["status"] = "applied"
         app["application_status"] = "applied"
         app["stage_current"] = "applied"
@@ -318,6 +328,166 @@ def record_applied(rows: list[dict], follow_up_days: int = 7) -> dict:
         "applied": updated,
         "already_in_pipeline": unchanged,
     }
+
+
+JOURNAL = DATA / "queue_undo_journal.json"
+JOURNAL_LIMIT = 200
+
+# Every field a queue click can touch. Snapshotted before the write so undo
+# restores the row exactly as it was — not to a guessed "discovered".
+SNAPSHOT_FIELDS = (
+    "status",
+    "application_status",
+    "stage_current",
+    "stage_highest_reached",
+    "date_applied",
+    "resume_version",
+    "role_cluster",
+    "pursuit_lane",
+    "next_action",
+    "next_action_date",
+    "notes",
+    "updated_at",
+    "last_update",
+)
+
+
+def _read_journal() -> list[dict]:
+    if not JOURNAL.exists():
+        return []
+    try:
+        data = json.loads(JOURNAL.read_text(encoding="utf-8"))
+        return data if isinstance(data, list) else []
+    except (json.JSONDecodeError, OSError):
+        return []
+
+
+def _journal_push(action: str, url: str, job_id: str, snapshot: dict | None) -> None:
+    entries = [e for e in _read_journal() if not (e.get("url") == canon(url) and e.get("action") == action)]
+    entries.append(
+        {
+            "action": action,
+            "url": canon(url),
+            "job_id": job_id,
+            "snapshot": snapshot,
+            "recorded_at": now_iso(),
+        }
+    )
+    JOURNAL.parent.mkdir(parents=True, exist_ok=True)
+    JOURNAL.write_text(
+        json.dumps(entries[-JOURNAL_LIMIT:], ensure_ascii=False, indent=1),
+        encoding="utf-8",
+    )
+
+
+def _journal_pop(action: str, url: str) -> dict | None:
+    entries = _read_journal()
+    key = canon(url)
+    match = None
+    kept = []
+    for entry in entries:
+        if entry.get("url") == key and entry.get("action") == action:
+            match = entry
+            continue
+        kept.append(entry)
+    if match is not None:
+        JOURNAL.write_text(json.dumps(kept[-JOURNAL_LIMIT:], ensure_ascii=False, indent=1), encoding="utf-8")
+    return match
+
+
+def _snapshot(app: dict) -> dict:
+    return {field: app.get(field, "") for field in SNAPSHOT_FIELDS}
+
+
+def _restore(app: dict, snapshot: dict) -> None:
+    for field, value in snapshot.items():
+        app[field] = value
+
+
+def _strip_note(app: dict, marker: str) -> None:
+    """Remove a note fragment this module appended, leaving other notes intact."""
+    parts = [p.strip() for p in (app.get("notes") or "").split("|")]
+    kept = [p for p in parts if p and marker not in p]
+    app["notes"] = " | ".join(kept)
+
+
+def undo_applied(url: str) -> dict:
+    """Reverse a queue 'applied' click. Refuses once the role moved further along."""
+    apps = read_rows(APPLICATIONS)
+    app = _find(apps, {"url": url})
+    if app is None:
+        return {"ok": False, "reason": "no application row for that url"}
+
+    status = (app.get("status") or "").strip().lower()
+    if status != "applied":
+        if status in PIPELINE_ACTIVE:
+            return {"ok": False, "reason": f"role is at '{status}' — undo it in the CSV deliberately"}
+        return {"ok": False, "reason": f"status is '{status or 'empty'}', nothing to undo"}
+
+    stamp = now_iso()
+    entry = _journal_pop("applied", url)
+    snapshot = (entry or {}).get("snapshot")
+    created_here = entry is not None and snapshot is None
+
+    if created_here:
+        # The row only exists because of that click — remove it rather than
+        # leaving a phantom "discovered" role the user never triaged.
+        apps = [a for a in apps if a is not app]
+        _save_apps(apps)
+        log_event(app.get("job_id") or "", "applied", "removed", "undo via apply queue (row created by queue)")
+        return {"ok": True, "job_id": app.get("job_id") or "", "status": "removed"}
+
+    if snapshot:
+        _restore(app, snapshot)
+    else:
+        # No journal entry (older action, or journal cleared) — fall back to a
+        # safe, explicit state instead of guessing the previous next_action.
+        app["status"] = "discovered"
+        app["application_status"] = "discovered"
+        app["stage_current"] = "discovered"
+        app["stage_highest_reached"] = "discovered"
+        app["date_applied"] = ""
+        _strip_note(app, "applied via apply queue")
+    app["updated_at"] = stamp
+    app["last_update"] = stamp
+    _save_apps(apps)
+    restored = (app.get("status") or "discovered")
+    log_event(app.get("job_id") or "", "applied", restored, "undo via apply queue")
+    return {"ok": True, "job_id": app.get("job_id") or "", "status": restored}
+
+
+def undo_pass(url: str) -> dict:
+    """Reverse a queue 'pass': drop the decision row and un-archive the role."""
+    ensure_csv(DECISIONS, DECISION_FIELDS)
+    key = canon(url)
+    rows = read_rows(DECISIONS)
+    kept = [r for r in rows if canon(r.get("url", "")) != key]
+    removed = len(rows) - len(kept)
+    if removed:
+        write_rows(DECISIONS, DECISION_FIELDS, kept)
+
+    apps = read_rows(APPLICATIONS)
+    app = _find(apps, {"url": url})
+    restored = False
+    if app is not None and (app.get("status") or "").strip().lower() == "passed":
+        stamp = now_iso()
+        entry = _journal_pop("pass", url)
+        snapshot = (entry or {}).get("snapshot")
+        if snapshot:
+            _restore(app, snapshot)
+        else:
+            app["status"] = "discovered"
+            app["application_status"] = "discovered"
+            _strip_note(app, "passed via apply queue")
+        app["updated_at"] = stamp
+        app["last_update"] = stamp
+        _save_apps(apps)
+        log_event(app.get("job_id") or "", "passed", app.get("status") or "discovered", "undo via apply queue")
+        restored = True
+
+    if not removed and not restored:
+        return {"ok": False, "reason": "nothing recorded for that url"}
+    return {"ok": True, "decisions_removed": removed, "application_restored": restored}
 
 
 def applied_urls() -> set[str]:

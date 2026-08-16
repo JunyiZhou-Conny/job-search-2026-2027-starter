@@ -9,7 +9,7 @@ import sys
 from datetime import date, datetime
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
@@ -126,6 +126,51 @@ def normalize_url(url: str) -> str:
         return ""
     p = urlparse(url)
     return urlunparse(p._replace(fragment="")).rstrip("/").lower()
+
+
+# Tracking parameters carry no identity, but some boards put the job id in the
+# query string (Greenhouse `?token=`, Workday `?jobId=`), so those must survive:
+# dropping the whole query collapses every embedded Greenhouse posting onto one key.
+TRACKING_PARAMS = {
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_term",
+    "utm_content",
+    "utm_id",
+    "gh_src",
+    "source",
+    "src",
+    "ref",
+    "referrer",
+    "trk",
+    "trackingid",
+    "fbclid",
+    "gclid",
+    "mc_cid",
+    "mc_eid",
+}
+
+
+def canonical_url(url: str) -> str:
+    """Identity key for a posting: stable across tracking noise, never lossy.
+
+    One implementation shared by the queue renderer and the write-back layer —
+    they used to disagree, so a role could be written as applied and still come
+    back looking untouched.
+    """
+    raw = (url or "").strip()
+    if not raw:
+        return ""
+    parsed = urlparse(raw)
+    kept = [
+        (k, v)
+        for k, v in parse_qsl(parsed.query, keep_blank_values=False)
+        if k.lower() not in TRACKING_PARAMS and not k.lower().startswith("utm")
+    ]
+    query = urlencode(sorted(kept))
+    cleaned = parsed._replace(query=query, fragment="")
+    return urlunparse(cleaned).rstrip("/").lower()
 
 
 def normalize_text(value: str) -> str:
