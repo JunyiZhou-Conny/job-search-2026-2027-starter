@@ -7,6 +7,13 @@ sponsorship signal, work-authorization answers, networking, and next actions.
 **Target:** Summer 2027 internships and 2027 new-grad roles. Earliest full-time start
 `2027-01-18` (I-20 program end `2026-12-18`, commencement March 2027). No fully remote roles.
 
+## Sharing with friends
+
+Early shared toolkit (scripts + discovery + apply queue). Personal ledgers stay in forks.
+
+→ Start here: **[`docs/FRIENDS_CANVAS.md`](docs/FRIENDS_CANVAS.md)** (progress, architecture, what to edit, how to contribute upstream)  
+→ Contribution rules: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
+
 ## The one-hour daily loop
 
 **Overnight — automatic.** The "Daily Job Discovery" Cursor Automation scrapes the intern
