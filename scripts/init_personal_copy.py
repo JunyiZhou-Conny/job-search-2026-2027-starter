@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import re
 import shutil
 import subprocess
 import sys
@@ -249,6 +250,13 @@ def _top_level_yaml_block(text: str, key: str) -> str:
     return "\n".join(collected)
 
 
+def _contains_anchor_needle(text: str, needle: str) -> bool:
+    """True if needle appears, but YYYY-MM is not a prefix of YYYY-MM-DD."""
+    if re.fullmatch(r"\d{4}-\d{2}", needle):
+        return re.search(re.escape(needle) + r"(?!-\d{2})", text) is not None
+    return needle in text
+
+
 def check_template_owner_strings(root: Path) -> List[str]:
     hits: List[str] = []
     for rel in CHECK_RELATIVE:
@@ -265,7 +273,7 @@ def check_template_owner_strings(root: Path) -> List[str]:
             scan_text = _top_level_yaml_block(text, "profile_anchors")
             needles = (*TEMPLATE_OWNER_NEEDLES, *TEMPLATE_OWNER_ANCHOR_NEEDLES)
         for needle in needles:
-            if needle in scan_text:
+            if _contains_anchor_needle(scan_text, needle):
                 hits.append(f"{rel} contains `{needle}`")
                 break
     return hits

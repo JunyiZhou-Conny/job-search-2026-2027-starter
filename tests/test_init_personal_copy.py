@@ -138,6 +138,39 @@ class TestInitPersonalCopy(unittest.TestCase):
             code = ipc.main(["--root", str(dest), "--check"])
             self.assertEqual(code, 0)
 
+    def test_check_allows_personalized_march_2027_day_dates(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = Path(tmp) / "repo"
+            dest.mkdir()
+            _seed_mini_repo(dest)
+            (dest / "config" / "profile.yaml").write_text('legal_name: "Ada Lovelace"\n', encoding="utf-8")
+            (dest / "resumes" / "base" / "JZ_resume.tex").write_text("% Ada Lovelace\n", encoding="utf-8")
+            (dest / "docs" / "automation" / "DAILY_JOB_DISCOVERY.md").write_text("Name: Ada Lovelace\n", encoding="utf-8")
+            (dest / "knowledge" / "discovery_triage_rules.yaml").write_text(
+                "profile_anchors:\n  program_end_date: \"2027-03-15\"\n"
+                "  earliest_ft_start: \"2027-03-01\"\n"
+                "guide_rules:\n  - id: hard_gate\n",
+                encoding="utf-8",
+            )
+            code = ipc.main(["--root", str(dest), "--check"])
+            self.assertEqual(code, 0)
+
+    def test_check_still_detects_template_commencement_month(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = Path(tmp) / "repo"
+            dest.mkdir()
+            _seed_mini_repo(dest)
+            (dest / "config" / "profile.yaml").write_text('legal_name: "Ada Lovelace"\n', encoding="utf-8")
+            (dest / "resumes" / "base" / "JZ_resume.tex").write_text("% Ada Lovelace\n", encoding="utf-8")
+            (dest / "docs" / "automation" / "DAILY_JOB_DISCOVERY.md").write_text("Name: Ada Lovelace\n", encoding="utf-8")
+            (dest / "knowledge" / "discovery_triage_rules.yaml").write_text(
+                "profile_anchors:\n  commencement_date: \"2027-03\"\n"
+                "guide_rules:\n  - id: hard_gate\n",
+                encoding="utf-8",
+            )
+            code = ipc.main(["--root", str(dest), "--check"])
+            self.assertEqual(code, 1)
+
 
 if __name__ == "__main__":
     unittest.main()
