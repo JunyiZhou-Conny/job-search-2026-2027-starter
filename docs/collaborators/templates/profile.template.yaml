@@ -1,0 +1,108 @@
+# Copy to config/profile.yaml on a personal fork.
+# Fill only facts the human confirmed. Use "unknown" — never invent.
+
+legal_name: "REPLACE_ME"
+preferred_name: "REPLACE_ME"
+name: "REPLACE_ME"  # legacy alias; keep equal to legal_name unless they differ
+phone: "REPLACE_ME"
+email: "REPLACE_ME"
+linkedin: "https://www.linkedin.com/in/REPLACE_ME"
+github: "https://github.com/REPLACE_ME"
+location: "REPLACE_ME"
+
+school: "REPLACE_ME"
+degree: "REPLACE_ME"
+# Dual dates if you have two real ones (program end vs ceremony). Do not invent a second date.
+program_end_date: "YYYY-MM-DD"
+commencement_date: "YYYY-MM"   # or "unknown"
+graduation_date: "YYYY-MM"     # legacy alias → program end month
+graduation: "REPLACE_ME"       # human-readable program completion, e.g. "May 2027"
+resume_grad_default: "program_end"  # or dual_date if both dates are real and you want both on the resume
+resume_grad_variants:
+  - id: program_end
+    when: "Default / single-date ATS forms"
+    resume_line: "REPLACE_ME"
+  - id: dual_date
+    when: "Only if both dates are real AND a posting needs ceremony wording"
+    resume_line: "REPLACE_ME"
+
+education_history:
+  - school: "REPLACE_ME"
+    degree: "REPLACE_ME"
+    end: "YYYY-MM"
+    program_end_date: "YYYY-MM-DD"
+    commencement_date: "YYYY-MM"
+
+certifications: []
+
+earliest_start_date: "YYYY-MM-DD"
+
+work_authorization:
+  current_status: "unknown"          # e.g. F-1, US citizen, LPR, OPT, STEM OPT, H-1B
+  internship_authorization: "unknown"
+  post_graduation_authorization: "unknown"
+  expected_ead_ready: "unknown"
+  earliest_full_time_start: "YYYY-MM-DD"
+  preferred_full_time_start: "unknown"
+  future_sponsorship_needed: "unknown"   # true | false | unknown
+  future_sponsorship_required: "unknown"
+
+search:
+  country: "United States"
+  target_locations: ["any US city"]
+  acceptable_cities: ["any US city"]
+  preferred_cities: []
+  remote_preferences: false
+  remote_ok: false
+  preferred_work_mode: "in-person"
+  role_preferences: []
+  industry_preferences:
+    preferred: []
+    secondary: []
+  role_clusters:
+    - cloud_swe
+    - data_ml
+    - health_ai
+  tracks:
+    - id: new_grad_2027_start
+      priority: unknown
+      discovery_weight: 0.5
+      description: "REPLACE_ME"
+      start_flexibility: "REPLACE_ME"
+      discovery_sources: ["jobright_matches", "newgrad_jobs"]
+    - id: internship_if_eligible
+      priority: unknown
+      discovery_weight: 0.5
+      description: "REPLACE_ME"
+      start_flexibility: "REPLACE_ME"
+      discovery_sources: ["jobright_matches", "intern_list"]
+  primary_track: "unknown"
+  secondary_track: "unknown"
+  track_balance: "unknown"
+  target_start_window: "REPLACE_ME"
+  pursuit_lanes:
+    - core
+    - broad
+    - practice
+  practice_lane_target_share: "0.15-0.25"
+
+constraints:
+  - "Hard eligibility ≠ sponsorship. Never self-reject only because sponsorship is no/unclear."
+  - "Answer work-auth questions truthfully; save verbatim Q&A when forms conflate OPT/EAD/H-1B."
+  - "Simplify is the base ledger; this repo is the strategy layer via one-way CSV import."
+  - "Manual labels (label_source=manual) must not be auto-overwritten."
+  - "Never invent skills, dates, metrics, or application outcomes."
+
+do_not_pursue:
+  roles: []
+  work_models:
+    - remote
+  industries: []
+
+available_hours_per_weekday: 3
+daily_caps:
+  must_do: 3
+  applications: 5
+  first_outreach: 3
+  follow_ups: 2
+  prep_blocks: 1

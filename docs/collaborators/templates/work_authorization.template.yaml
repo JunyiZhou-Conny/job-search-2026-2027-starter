@@ -1,0 +1,41 @@
+# Non-sensitive work-authorization facts for job-search decisions only.
+# Do NOT store passport, SEVIS, SSN, EAD scans, passwords, or ID images.
+# Copy to knowledge/work_authorization.yaml on a personal fork.
+
+current_status: "unknown"          # e.g. F-1, US citizen, LPR
+expected_opt_level: "unknown"      # bachelor's | master's | none | unknown
+
+program_end_date: "YYYY-MM-DD"
+expected_program_end_date: "YYYY-MM-DD"
+commencement_date: "unknown"       # YYYY-MM or unknown — do not invent
+resume_grad_default: "program_end"
+
+expected_opt_start_window: "unknown"
+expected_ead_ready: "unknown"
+earliest_full_time_start: "YYYY-MM-DD"
+preferred_full_time_start: "unknown"
+future_sponsorship_required: "unknown"   # true | false | unknown
+
+standard_question_answers:
+  authorized_to_work_in_us:
+    typical_answer: "unknown"
+    condition: "REPLACE_ME — only after the human confirms the real condition"
+  will_require_sponsorship_now_or_future:
+    typical_answer: "unknown"
+    condition: "REPLACE_ME"
+  program_end_or_graduation_date:
+    typical_answer: "REPLACE_ME"
+    default_short_answer: "REPLACE_ME"
+    when_form_asks_commencement_or_spring: "unknown"
+  never_lie_to_bypass_ats: true
+
+questions_requiring_manual_review:
+  - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"
+  - "Questions asking if you need sponsorship 'to begin work' when OPT covers start"
+  - "Forms that ask only 'graduation date' without distinguishing program end vs commencement"
+  - "Any wording the human is unsure about — save verbatim Q&A"
+
+hard_constraints:
+  - "Do not treat no/unclear sponsorship as hard ineligibility"
+  - "Do not invent a single false graduation month"
+  - "Do not store ID documents in this repo"
