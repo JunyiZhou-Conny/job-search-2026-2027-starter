@@ -55,6 +55,7 @@ LEVEL_MARKERS = frozenset({
     "1", "2", "3", "4", "5",
     "junior", "senior", "staff", "principal",
     "jr", "sr", "intern", "internship",
+    "manager", "director", "lead",
 })
 
 # Family words that do not distinguish one requisition from another.

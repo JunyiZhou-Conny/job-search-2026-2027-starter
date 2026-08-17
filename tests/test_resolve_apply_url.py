@@ -52,6 +52,15 @@ class TestHelpers(unittest.TestCase):
             "weak",
         )
 
+    def test_rejects_leadership_mismatch(self):
+        self.assertFalse(
+            titles_compatible("Software Engineer", "Software Engineering Manager")
+        )
+        self.assertEqual(
+            confidence_for(0.67, "Software Engineer", "Software Engineering Manager"),
+            "weak",
+        )
+
     def test_allows_subset_adjective(self):
         self.assertTrue(
             titles_compatible("Applied AI Inference Engineer", "AI Inference Engineer")
