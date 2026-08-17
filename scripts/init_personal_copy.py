@@ -33,6 +33,15 @@ TEMPLATE_OWNER_NEEDLES = (
     "junyi-zhou-270208247",
     "4046635601",
 )
+# Dates that live in knowledge/discovery_triage_rules.yaml profile_anchors.
+# Do not scan the whole file: the same strings appear in shared guide_rules.
+TEMPLATE_OWNER_ANCHOR_NEEDLES = (
+    "2026-12-18",
+    "2027-03",
+    "2027-01-18",
+    "December 2026 (program completion)",
+)
+TRIAGE_RULES_RELATIVE = "knowledge/discovery_triage_rules.yaml"
 
 IDENTITY_RELATIVE: Sequence[Tuple[str, str]] = (
     ("docs/collaborators/templates/profile.template.yaml", "config/profile.yaml"),
@@ -220,6 +229,26 @@ def apply_reset(root: Path) -> Path:
     return backup_dir
 
 
+def _top_level_yaml_block(text: str, key: str) -> str:
+    """Return a top-level YAML key and its indented body, or empty string."""
+    header = f"{key}:"
+    lines = text.splitlines()
+    start = None
+    for i, line in enumerate(lines):
+        stripped = line.split("#", 1)[0].rstrip()
+        if stripped == header or stripped.startswith(f"{header} "):
+            start = i
+            break
+    if start is None:
+        return ""
+    collected = [lines[start]]
+    for line in lines[start + 1 :]:
+        if line and not line[0].isspace() and not line.lstrip().startswith("#"):
+            break
+        collected.append(line)
+    return "\n".join(collected)
+
+
 def check_template_owner_strings(root: Path) -> List[str]:
     hits: List[str] = []
     for rel in CHECK_RELATIVE:
@@ -230,8 +259,13 @@ def check_template_owner_strings(root: Path) -> List[str]:
             text = path.read_text(encoding="utf-8")
         except UnicodeDecodeError:
             continue
-        for needle in TEMPLATE_OWNER_NEEDLES:
-            if needle in text:
+        needles: Sequence[str] = TEMPLATE_OWNER_NEEDLES
+        scan_text = text
+        if rel == TRIAGE_RULES_RELATIVE:
+            scan_text = _top_level_yaml_block(text, "profile_anchors")
+            needles = (*TEMPLATE_OWNER_NEEDLES, *TEMPLATE_OWNER_ANCHOR_NEEDLES)
+        for needle in needles:
+            if needle in scan_text:
                 hits.append(f"{rel} contains `{needle}`")
                 break
     return hits

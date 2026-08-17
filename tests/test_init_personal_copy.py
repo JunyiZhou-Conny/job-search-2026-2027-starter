@@ -106,6 +106,38 @@ class TestInitPersonalCopy(unittest.TestCase):
             code = ipc.main(["--root", str(dest), "--check"])
             self.assertEqual(code, 1)
 
+    def test_check_detects_leftover_profile_anchors(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = Path(tmp) / "repo"
+            dest.mkdir()
+            _seed_mini_repo(dest)
+            (dest / "config" / "profile.yaml").write_text('legal_name: "Ada Lovelace"\n', encoding="utf-8")
+            (dest / "resumes" / "base" / "JZ_resume.tex").write_text("% Ada Lovelace\n", encoding="utf-8")
+            (dest / "docs" / "automation" / "DAILY_JOB_DISCOVERY.md").write_text("Name: Ada Lovelace\n", encoding="utf-8")
+            (dest / "knowledge" / "discovery_triage_rules.yaml").write_text(
+                "profile_anchors:\n  program_end_date: \"2026-12-18\"\n"
+                "guide_rules:\n  - id: hard_gate\n",
+                encoding="utf-8",
+            )
+            code = ipc.main(["--root", str(dest), "--check"])
+            self.assertEqual(code, 1)
+
+    def test_check_ignores_template_dates_in_guide_rules(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            dest = Path(tmp) / "repo"
+            dest.mkdir()
+            _seed_mini_repo(dest)
+            (dest / "config" / "profile.yaml").write_text('legal_name: "Ada Lovelace"\n', encoding="utf-8")
+            (dest / "resumes" / "base" / "JZ_resume.tex").write_text("% Ada Lovelace\n", encoding="utf-8")
+            (dest / "docs" / "automation" / "DAILY_JOB_DISCOVERY.md").write_text("Name: Ada Lovelace\n", encoding="utf-8")
+            (dest / "knowledge" / "discovery_triage_rules.yaml").write_text(
+                "profile_anchors:\n  program_end_date: \"2028-05-15\"\n"
+                "guide_rules:\n  - id: hard_gate\n    guidance: program end 2026-12-18\n",
+                encoding="utf-8",
+            )
+            code = ipc.main(["--root", str(dest), "--check"])
+            self.assertEqual(code, 0)
+
 
 if __name__ == "__main__":
     unittest.main()
