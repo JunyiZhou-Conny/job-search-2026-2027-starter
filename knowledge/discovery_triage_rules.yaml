@@ -9,6 +9,8 @@ version: 3
 updated: 2026-07-26
 
 profile_anchors:
+  # On a personal fork, rewrite these anchors to match config/profile.yaml.
+  # Do not send identity-specific anchors in an upstream PR.
   # Dual dates — both real; do not collapse into one fake month.
   program_end_date: "2026-12-18"          # I-20 / SEVIS → OPT + earliest FT + default resume
   commencement_date: "2027-03"            # ceremony / some Harvard listings

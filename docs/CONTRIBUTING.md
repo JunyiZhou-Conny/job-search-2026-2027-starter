@@ -2,6 +2,11 @@
 
 This repo is an **early shared toolkit**. Read `docs/FRIENDS_CANVAS.md` first.
 
+**New collaborator?** Have your Cursor agent follow
+[`docs/collaborators/SETUP.md`](collaborators/SETUP.md) (paste
+[`docs/collaborators/AGENT_KICKOFF.md`](collaborators/AGENT_KICKOFF.md) or run
+`/collaborator-setup`). Do not wipe identity files on this upstream repo.
+
 ## Model: one template, many personal copies
 
 1. **Fork** (or keep your own private clone) for personal `config/`, `knowledge/evidence_bank.yaml`, `resumes/`, `data/`.

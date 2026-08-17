@@ -43,6 +43,10 @@ run is a **Cursor Automation** ("Daily Job Discovery") on a weekday cron.
 Local scripts (`scripts/daily_job_search.py` and friends) are run by hand when wanted; no OS
 scheduler is wired.
 
+Collaborators: scheduled discovery must be created on **their** Cursor account
+against **their** fork. Two Pro accounts do not share automations. See
+`docs/collaborators/SETUP.md`.
+
 ## 4. Credentials never enter chat or git
 
 - Do **not** paste Jobright/Simplify/LinkedIn passwords, 2FA codes, or cookies into Cursor.
