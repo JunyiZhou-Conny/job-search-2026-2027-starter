@@ -48,6 +48,29 @@ STOPWORDS = {
     "usa", "us", "united", "states", "remote", "hybrid", "onsite",
 }
 
+# Requisition-level markers. A mismatch here is a different posting
+# ("Database Engineer" vs "Database Engineer II").
+LEVEL_MARKERS = frozenset({
+    "i", "ii", "iii", "iv", "v",
+    "1", "2", "3", "4", "5",
+    "junior", "senior", "staff", "principal",
+    "jr", "sr", "intern", "internship",
+})
+
+# Family words that do not distinguish one requisition from another.
+# Used only for substitution detection, not for scoring.
+_ROLE_GENERIC = frozenset({
+    "engineer", "engineering", "software", "developer",
+    "intern", "internship",
+})
+
+_STEM = {
+    "engineering": "engineer",
+    "engineers": "engineer",
+    "internship": "intern",
+    "internships": "intern",
+}
+
 # Extra columns written by --write-csv (appended; never remove existing ones).
 ENRICH_FIELDS = [
     "apply_url",
@@ -156,7 +179,7 @@ def slugs_for(company: str) -> list[str]:
 
 def title_tokens(title: str) -> set[str]:
     cleaned = re.sub(r"[^a-z0-9+#/ ]", " ", (title or "").lower())
-    return {w for w in cleaned.split() if w and w not in STOPWORDS}
+    return {_STEM.get(w, w) for w in cleaned.split() if w and w not in STOPWORDS}
 
 
 def score_title(wanted: str, candidate: str) -> float:
@@ -164,6 +187,26 @@ def score_title(wanted: str, candidate: str) -> float:
     if not a or not b:
         return 0.0
     return len(a & b) / len(a | b)
+
+
+def titles_compatible(wanted: str, candidate: str) -> bool:
+    """False when titles are different requisitions, even if Jaccard is high.
+
+    Rejects level mismatches (II / senior / intern) and substitutions where
+    each side has a distinctive token the other lacks (Solutions vs Inference).
+    Extra adjectives on one side only are allowed — Jobright often rewrites
+    "AI Inference Engineer" as "Applied AI Inference Engineer".
+    """
+    a, b = title_tokens(wanted), title_tokens(candidate)
+    if not a or not b:
+        return False
+    if (a & LEVEL_MARKERS) != (b & LEVEL_MARKERS):
+        return False
+    distinctive_a = a - _ROLE_GENERIC
+    distinctive_b = b - _ROLE_GENERIC
+    if (distinctive_a - distinctive_b) and (distinctive_b - distinctive_a):
+        return False
+    return True
 
 
 def rank(wanted: str, postings: list[tuple[str, str, str]]) -> tuple[float, tuple[str, str, str]] | None:
@@ -175,14 +218,23 @@ def rank(wanted: str, postings: list[tuple[str, str, str]]) -> tuple[float, tupl
     return best
 
 
-def confidence_for(score: float) -> str | None:
+def confidence_for(score: float, wanted: str = "", candidate: str = "") -> str | None:
     if score >= 0.8:
-        return "exact"
-    if score >= 0.5:
-        return "strong"
-    if score >= 0.3:
+        band = "exact"
+    elif score >= 0.5:
+        band = "strong"
+    elif score >= 0.3:
+        band = "weak"
+    else:
+        return None
+    if (
+        band in {"exact", "strong"}
+        and wanted
+        and candidate
+        and not titles_compatible(wanted, candidate)
+    ):
         return "weak"
-    return None
+    return band
 
 
 # --- board fetchers ---------------------------------------------------------
@@ -311,7 +363,7 @@ def _consider(
     evidence: str,
 ) -> bool:
     """Update result if this candidate is better. Returns True on exact match."""
-    conf = confidence_for(score)
+    conf = confidence_for(score, result.role, title)
     if not conf:
         return False
     if _CONF_RANK[conf] <= _CONF_RANK[result.confidence]:

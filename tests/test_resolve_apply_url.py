@@ -17,6 +17,7 @@ from resolve_apply_url import (  # noqa: E402
     load_board_map,
     score_title,
     slugs_for,
+    titles_compatible,
 )
 
 
@@ -31,6 +32,33 @@ class TestHelpers(unittest.TestCase):
         self.assertGreaterEqual(
             score_title("Software Engineer Intern", "Software Engineering Intern"),
             0.5,
+        )
+
+    def test_rejects_substituted_role(self):
+        self.assertFalse(
+            titles_compatible("AI Solutions Engineer", "AI Inference Engineer")
+        )
+        self.assertEqual(
+            confidence_for(0.50, "AI Solutions Engineer", "AI Inference Engineer"),
+            "weak",
+        )
+
+    def test_rejects_level_mismatch(self):
+        self.assertFalse(
+            titles_compatible("Database Engineer", "Database Engineer II")
+        )
+        self.assertEqual(
+            confidence_for(0.67, "Database Engineer", "Database Engineer II"),
+            "weak",
+        )
+
+    def test_allows_subset_adjective(self):
+        self.assertTrue(
+            titles_compatible("Applied AI Inference Engineer", "AI Inference Engineer")
+        )
+        self.assertEqual(
+            confidence_for(0.75, "Applied AI Inference Engineer", "AI Inference Engineer"),
+            "strong",
         )
 
     def test_slugs(self):
