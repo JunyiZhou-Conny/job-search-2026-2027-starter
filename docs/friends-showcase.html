@@ -6,410 +6,462 @@
 <title>Job Search OS — Friends showcase</title>
 <style>
   :root {
-    --bg: #0e0e0c;
-    --fg: #f4f1ea;
-    --muted: #9a958a;
-    --line: #2a2924;
-    --accent: #e8e2d6;
-    --green: #6dbf8c;
-    --amber: #d4a05a;
-    --card: #171612;
+    --bg0: #0a0b0f;
+    --bg1: #12141c;
+    --fg: #f3f0e8;
+    --muted: #9aa0ae;
+    --line: #2a2e3a;
+    --card: rgba(22, 25, 34, 0.88);
+    --accent: #f0ebe1;
+    --green: #5ecf8e;
+    --amber: #e0a857;
+    --blue: #6aa6ff;
+    --simplify: #2dd4bf;   /* teal-ish, not official claim */
+    --jobright: #7c8cff;
+    --cursor: #f2f2f2;
+    --greenhouse: #36c275;
+    --ashby: #5b8def;
+    --workday: #f5a623;
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0; height: 100%;
-    background: var(--bg); color: var(--fg);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--fg);
+    font-family: "SF Pro Display", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
     overflow: hidden;
+    background:
+      radial-gradient(900px 500px at 12% -10%, rgba(106,166,255,0.14), transparent 55%),
+      radial-gradient(800px 480px at 90% 10%, rgba(45,212,191,0.10), transparent 50%),
+      radial-gradient(700px 400px at 50% 110%, rgba(124,140,255,0.08), transparent 45%),
+      linear-gradient(180deg, var(--bg0), var(--bg1));
   }
   .deck { height: 100%; width: 100%; position: relative; }
   .slide {
     display: none;
     height: 100%;
-    padding: clamp(2rem, 5vw, 4rem) clamp(2rem, 6vw, 5rem);
+    padding: clamp(1.6rem, 4vw, 3.2rem) clamp(1.6rem, 5vw, 4rem) 4.2rem;
     flex-direction: column;
     justify-content: center;
-    gap: 1.25rem;
-    max-width: 1100px;
+    gap: 1.1rem;
+    max-width: 1120px;
     margin: 0 auto;
   }
-  .slide.active { display: flex; animation: in 280ms ease; }
+  .slide.active { display: flex; animation: in 320ms cubic-bezier(.22,.8,.3,1); }
   @keyframes in {
-    from { opacity: 0; transform: translateY(10px); }
+    from { opacity: 0; transform: translateY(14px) scale(0.985); }
     to { opacity: 1; transform: none; }
   }
   .kicker {
     color: var(--muted);
-    letter-spacing: 0.14em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.72rem;
+    font-weight: 650;
   }
   h1 {
-    font-size: clamp(2.2rem, 5vw, 3.6rem);
-    line-height: 1.05;
-    letter-spacing: -0.03em;
+    font-size: clamp(2.3rem, 5.2vw, 3.7rem);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
     margin: 0;
-    font-weight: 650;
-    max-width: 18ch;
+    font-weight: 670;
+    max-width: 16ch;
   }
   h2 {
-    font-size: clamp(1.6rem, 3.2vw, 2.4rem);
-    line-height: 1.15;
-    letter-spacing: -0.025em;
+    font-size: clamp(1.55rem, 3vw, 2.35rem);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
     margin: 0;
     font-weight: 650;
   }
   .lede {
     color: var(--muted);
-    font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+    font-size: clamp(1.02rem, 1.5vw, 1.22rem);
     line-height: 1.5;
-    max-width: 42rem;
+    max-width: 44rem;
     margin: 0;
   }
-  ul {
-    margin: 0; padding: 0; list-style: none;
-    display: grid; gap: 0.7rem;
-    max-width: 44rem;
+  ul.bullets { margin: 0; padding: 0; list-style: none; display: grid; gap: 0.65rem; max-width: 46rem; }
+  ul.bullets li {
+    font-size: 1.12rem; line-height: 1.4; padding-left: 1.05rem; position: relative;
   }
-  li {
-    font-size: 1.15rem;
-    line-height: 1.4;
-    padding-left: 1.1rem;
-    position: relative;
-  }
-  li::before {
-    content: "";
-    position: absolute; left: 0; top: 0.55em;
-    width: 0.4rem; height: 0.4rem; border-radius: 50%;
-    background: var(--accent);
+  ul.bullets li::before {
+    content: ""; position: absolute; left: 0; top: 0.55em;
+    width: 0.35rem; height: 0.35rem; border-radius: 50%; background: var(--accent);
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-    margin-top: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 0.9rem;
   }
   .card {
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 1.1rem 1.2rem;
+    border-radius: 16px;
+    padding: 1.05rem 1.15rem;
+    backdrop-filter: blur(12px);
   }
-  .card h3 {
-    margin: 0 0 0.45rem;
-    font-size: 0.95rem;
-    letter-spacing: 0.02em;
-    color: var(--accent);
-  }
-  .card p, .card li {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.95rem;
-  }
-  .card ul { gap: 0.35rem; margin-top: 0.4rem; }
-  .card li::before { background: var(--muted); width: 0.28rem; height: 0.28rem; }
+  .card h3 { margin: 0 0 0.4rem; font-size: 0.92rem; color: var(--accent); letter-spacing: 0.02em; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.45; }
   .stat {
-    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+    font-weight: 670; letter-spacing: -0.045em; line-height: 1;
+  }
+  .stat span { display:block; color: var(--muted); font-size: 0.92rem; font-weight: 500; letter-spacing: 0; margin-top: 0.4rem; }
+
+  /* Brand pills */
+  .brands { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 0.3rem; }
+  .brand {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.03);
+    border-radius: 999px;
+    padding: 0.42rem 0.8rem 0.42rem 0.55rem;
+    font-size: 0.92rem;
+    font-weight: 600;
+  }
+  .brand i {
+    width: 1.35rem; height: 1.35rem; border-radius: 7px;
+    display: grid; place-items: center;
+    font-style: normal; font-size: 0.72rem; font-weight: 800;
+    color: #0a0b0f;
+  }
+  .brand.jobright i { background: var(--jobright); }
+  .brand.simplify i { background: var(--simplify); }
+  .brand.cursor i { background: var(--cursor); }
+  .brand.greenhouse i { background: var(--greenhouse); }
+  .brand.ashby i { background: var(--ashby); color: #fff; }
+  .brand.workday i { background: var(--workday); }
+  .brand.github i { background: #ddd; }
+
+  /* Flowchart */
+  .flow {
+    display: grid;
+    gap: 0.55rem;
+    margin-top: 0.4rem;
+  }
+  .flow-row {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+  @media (max-width: 720px) {
+    .flow-row { grid-template-columns: 1fr; }
+  }
+  .flow-label {
+    color: var(--muted);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     font-weight: 650;
-    letter-spacing: -0.04em;
-    line-height: 1;
+    display: flex; align-items: center;
   }
-  .stat span { display: block; color: var(--muted); font-size: 0.95rem; letter-spacing: 0; font-weight: 500; margin-top: 0.4rem; }
-  .pipeline {
-    display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
-    margin-top: 0.75rem;
+  .flow-track {
+    display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center;
   }
-  .chip {
+  .node {
     border: 1px solid var(--line);
     background: var(--card);
-    border-radius: 999px;
-    padding: 0.45rem 0.85rem;
+    border-radius: 12px;
+    padding: 0.55rem 0.8rem;
     font-size: 0.92rem;
+    font-weight: 600;
   }
-  .arrow { color: var(--muted); font-size: 1.1rem; }
-  .two {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.25rem;
+  .node.soft { font-weight: 500; color: var(--muted); }
+  .node.jr { border-color: color-mix(in srgb, var(--jobright) 45%, var(--line)); }
+  .node.sm { border-color: color-mix(in srgb, var(--simplify) 45%, var(--line)); }
+  .node.cu { border-color: color-mix(in srgb, var(--cursor) 35%, var(--line)); }
+  .node.gh { border-color: color-mix(in srgb, var(--greenhouse) 45%, var(--line)); }
+  .node.as { border-color: color-mix(in srgb, var(--ashby) 45%, var(--line)); }
+  .node.wd { border-color: color-mix(in srgb, var(--workday) 45%, var(--line)); }
+  .chev { color: var(--muted); opacity: 0.7; font-size: 1rem; }
+
+  .arch {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 1rem;
+    overflow: auto;
   }
+  .arch svg { width: 100%; height: auto; display: block; min-width: 640px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   @media (max-width: 800px) { .two { grid-template-columns: 1fr; } }
   .ok { color: var(--green); }
   .warn { color: var(--amber); }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em; color: #d7e0ff;
+  }
   .footer-nav {
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
+    position: fixed; left: 0; right: 0; bottom: 0;
     display: flex; justify-content: space-between; align-items: center;
-    padding: 0.85rem 1.25rem;
-    background: linear-gradient(to top, rgba(14,14,12,0.95), transparent);
-    color: var(--muted);
-    font-size: 0.85rem;
+    gap: 0.75rem;
+    padding: 0.85rem 1.2rem;
+    background: linear-gradient(to top, rgba(10,11,15,0.96), transparent);
+    color: var(--muted); font-size: 0.82rem;
   }
   .footer-nav button {
     font: inherit; color: var(--fg);
-    background: var(--card);
+    background: rgba(255,255,255,0.04);
     border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0.4rem 0.9rem;
-    cursor: pointer;
+    border-radius: 999px; padding: 0.4rem 0.9rem; cursor: pointer;
   }
-  .footer-nav button:active { transform: scale(0.97); }
-  .dots { display: flex; gap: 0.35rem; }
-  .dots i {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--line); display: block;
-  }
+  .dots { display: flex; gap: 0.35rem; flex: 1; justify-content: center; }
+  .dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--line); display: block; }
   .dots i.on { background: var(--accent); }
-  code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.88em;
-    color: var(--accent);
-  }
-  .big-list li { font-size: 1.2rem; }
-  .split-title { max-width: 22ch; }
 </style>
 </head>
 <body>
 <div class="deck" id="deck">
 
-  <!-- 1 -->
   <section class="slide active">
     <div class="kicker">Friends showcase · Aug 2026</div>
     <h1>Job Search OS</h1>
     <p class="lede">
-      An early shared toolkit: discovery boards → Cursor Cloud Agents → Simplify autofill →
-      human submit. Same pipeline for friends; personal data stays in your own copy.
+      A shared early toolkit: discover on Jobright &amp; new-grad/intern boards,
+      triage with Cursor Cloud Agents, autofill with Simplify, submit as a human.
     </p>
-    <div class="pipeline">
-      <span class="chip">US new-grad + intern lists</span>
-      <span class="arrow">→</span>
-      <span class="chip">Cursor Automation</span>
-      <span class="arrow">→</span>
-      <span class="chip">Apply queue</span>
-      <span class="arrow">→</span>
-      <span class="chip">Simplify</span>
-      <span class="arrow">→</span>
-      <span class="chip">You click Submit</span>
+    <div class="brands">
+      <span class="brand jobright"><i>JR</i> Jobright</span>
+      <span class="brand cursor"><i>C</i> Cursor</span>
+      <span class="brand simplify"><i>S</i> Simplify</span>
+      <span class="brand greenhouse"><i>G</i> Greenhouse</span>
+      <span class="brand ashby"><i>A</i> Ashby</span>
+      <span class="brand workday"><i>W</i> Workday</span>
+      <span class="brand github"><i></i> GitHub</span>
     </div>
   </section>
 
-  <!-- 2 -->
   <section class="slide">
-    <div class="kicker">Why this exists</div>
-    <h2 class="split-title">Not another job board.</h2>
-    <p class="lede">
-      Simplify already tracks applications. This repo remembers <em>why</em> —
-      resume version, lane, auth answers, triage, and next actions — and automates the boring overnight scrape.
-    </p>
-    <div class="grid">
-      <div class="card"><h3>Shared</h3><p>Scripts, docs, board sources, queue UI, experiments</p></div>
-      <div class="card"><h3>Personal</h3><p>Profile, resumes, evidence bank, applications.csv, secrets</p></div>
-      <div class="card"><h3>Honest stage</h3><p>Early. Lots broken. That’s why we’re building it together.</p></div>
-    </div>
-  </section>
-
-  <!-- 3 -->
-  <section class="slide">
-    <div class="kicker">Scoreboard right now</div>
-    <h2>Where we are</h2>
+    <div class="kicker">Scoreboard</div>
+    <h2>Where we are tonight</h2>
     <div class="grid">
       <div class="card"><div class="stat">438<span>unique KEEP jobs on main</span></div></div>
-      <div class="card"><div class="stat">23<span>days of triage files</span></div></div>
-      <div class="card"><div class="stat">10<span>live autofill tabs open for review</span></div></div>
-      <div class="card"><div class="stat">3<span>collaborators on the private repo</span></div></div>
+      <div class="card"><div class="stat">23<span>days of triage packs</span></div></div>
+      <div class="card"><div class="stat">10<span>live ATS tabs open for review</span></div></div>
+      <div class="card"><div class="stat">3<span>people on the private repo</span></div></div>
     </div>
-    <p class="lede" style="margin-top:0.5rem">Jul 20 → Aug 16 discovery backlog merged. ~422 keeps not yet in anyone’s personal tracker.</p>
+    <p class="lede">Same sources we care about: US new-grad + internship lists, Jobright discovery, Simplify as the apply ledger.</p>
   </section>
 
-  <!-- 4 -->
+  <section class="slide">
+    <div class="kicker">Stack</div>
+    <h2>Tools in the loop</h2>
+    <div class="grid">
+      <div class="card">
+        <h3><span class="brand jobright" style="padding:0;border:0;background:transparent"><i>JR</i></span> Jobright</h3>
+        <p>Discovery surface — matches + newgrad/intern boards. Great for finding roles; Apply is often a signup wall.</p>
+      </div>
+      <div class="card">
+        <h3><span class="brand cursor" style="padding:0;border:0;background:transparent"><i>C</i></span> Cursor Cloud Agents</h3>
+        <p>Overnight triage automation + live browser autofill demos on a VM you can Take Control of.</p>
+      </div>
+      <div class="card">
+        <h3><span class="brand simplify" style="padding:0;border:0;background:transparent"><i>S</i></span> Simplify</h3>
+        <p>Autofill extension + application tracker. Profile in Simplify is the fuel for forms.</p>
+      </div>
+      <div class="card">
+        <h3>ATS destinations</h3>
+        <p><span class="brand greenhouse" style="margin:0 0.25rem 0.25rem 0"><i>G</i> Greenhouse</span>
+           <span class="brand ashby" style="margin:0 0.25rem 0.25rem 0"><i>A</i> Ashby</span>
+           <span class="brand workday" style="margin:0 0.25rem 0.25rem 0"><i>W</i> Workday</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Flowchart</div>
+    <h2>How a job moves</h2>
+    <div class="flow">
+      <div class="flow-row">
+        <div class="flow-label">Discover</div>
+        <div class="flow-track">
+          <span class="node jr">Jobright boards</span>
+          <span class="chev">→</span>
+          <span class="node jr">Newgrad / Intern lists</span>
+          <span class="chev">→</span>
+          <span class="node soft">raw postings</span>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-label">Triage</div>
+        <div class="flow-track">
+          <span class="node cu">Cursor Automation</span>
+          <span class="chev">→</span>
+          <span class="node">keep / later / skip</span>
+          <span class="chev">→</span>
+          <span class="node soft">triage CSV on GitHub</span>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-label">Resolve</div>
+        <div class="flow-track">
+          <span class="node">resolve_apply_url</span>
+          <span class="chev">→</span>
+          <span class="node gh">Greenhouse</span>
+          <span class="node as">Ashby</span>
+          <span class="node wd">Workday</span>
+        </div>
+      </div>
+      <div class="flow-row">
+        <div class="flow-label">Apply</div>
+        <div class="flow-track">
+          <span class="node">Apply Queue UI</span>
+          <span class="chev">→</span>
+          <span class="node sm">Simplify autofill</span>
+          <span class="chev">→</span>
+          <span class="node soft">You submit</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="slide">
     <div class="kicker">Architecture</div>
-    <h2>The pipeline</h2>
-    <div class="pipeline" style="flex-direction:column; align-items:stretch; gap:0.75rem;">
-      <div class="card"><h3>1 · Overnight</h3><p>Cursor Automation scrapes US new-grad + internship boards → AI triage → <code>generated/discovery_triage_DATE.csv</code></p></div>
-      <div class="card"><h3>2 · Resolve</h3><p><code>resolve_apply_url.py</code> turns Jobright links into real Greenhouse / Ashby / Workday URLs when possible</p></div>
-      <div class="card"><h3>3 · Apply hour</h3><p>Local queue at <code>localhost:8765</code> → Open → Simplify autofill → <strong>you</strong> submit → tick Applied</p></div>
-      <div class="card"><h3>4 · Weekly</h3><p>Simplify CSV export → <code>import-simplify</code> reconciles the ledger</p></div>
+    <h2>One diagram</h2>
+    <div class="arch">
+      <svg viewBox="0 0 980 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="System architecture flowchart">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#7c8cff" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#6aa6ff" stop-opacity="0.5"/>
+          </linearGradient>
+          <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.95"/>
+            <stop offset="100%" stop-color="#6dbf8c" stop-opacity="0.55"/>
+          </linearGradient>
+          <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/>
+          </marker>
+        </defs>
+
+        <!-- boxes -->
+        <rect x="30" y="40" width="170" height="70" rx="14" fill="#161922" stroke="#7c8cff"/>
+        <text x="115" y="72" text-anchor="middle" fill="#f3f0e8" font-size="15" font-weight="700">Jobright</text>
+        <text x="115" y="92" text-anchor="middle" fill="#9aa0ae" font-size="11">newgrad · intern · matches</text>
+
+        <rect x="30" y="140" width="170" height="70" rx="14" fill="#161922" stroke="#7c8cff"/>
+        <text x="115" y="172" text-anchor="middle" fill="#f3f0e8" font-size="15" font-weight="700">Board lists</text>
+        <text x="115" y="192" text-anchor="middle" fill="#9aa0ae" font-size="11">US new-grad + intern</text>
+
+        <rect x="260" y="90" width="190" height="70" rx="14" fill="#161922" stroke="#f2f2f2"/>
+        <text x="355" y="122" text-anchor="middle" fill="#f3f0e8" font-size="15" font-weight="700">Cursor Cloud Agent</text>
+        <text x="355" y="142" text-anchor="middle" fill="#9aa0ae" font-size="11">daily triage automation</text>
+
+        <rect x="510" y="90" width="180" height="70" rx="14" fill="#161922" stroke="#2a2e3a"/>
+        <text x="600" y="122" text-anchor="middle" fill="#f3f0e8" font-size="15" font-weight="700">Triage CSV</text>
+        <text x="600" y="142" text-anchor="middle" fill="#9aa0ae" font-size="11">keep · later · skip</text>
+
+        <rect x="750" y="40" width="200" height="70" rx="14" fill="#161922" stroke="#36c275"/>
+        <text x="850" y="72" text-anchor="middle" fill="#f3f0e8" font-size="14" font-weight="700">Greenhouse / Ashby</text>
+        <text x="850" y="92" text-anchor="middle" fill="#9aa0ae" font-size="11">employer apply URLs</text>
+
+        <rect x="750" y="140" width="200" height="70" rx="14" fill="#161922" stroke="#f5a623"/>
+        <text x="850" y="172" text-anchor="middle" fill="#f3f0e8" font-size="15" font-weight="700">Workday CXS</text>
+        <text x="850" y="192" text-anchor="middle" fill="#9aa0ae" font-size="11">when mapped</text>
+
+        <rect x="260" y="250" width="190" height="70" rx="14" fill="#161922" stroke="#2a2e3a"/>
+        <text x="355" y="282" text-anchor="middle" fill="#f3f0e8" font-size="15" font-weight="700">Apply Queue</text>
+        <text x="355" y="302" text-anchor="middle" fill="#9aa0ae" font-size="11">localhost:8765</text>
+
+        <rect x="510" y="250" width="180" height="70" rx="14" fill="#161922" stroke="url(#g2)"/>
+        <text x="600" y="282" text-anchor="middle" fill="#f3f0e8" font-size="15" font-weight="700">Simplify</text>
+        <text x="600" y="302" text-anchor="middle" fill="#9aa0ae" font-size="11">autofill extension</text>
+
+        <rect x="750" y="250" width="200" height="70" rx="14" fill="#161922" stroke="#e0a857"/>
+        <text x="850" y="282" text-anchor="middle" fill="#f3f0e8" font-size="15" font-weight="700">You</text>
+        <text x="850" y="302" text-anchor="middle" fill="#9aa0ae" font-size="11">review · Submit · tick Applied</text>
+
+        <rect x="510" y="350" width="180" height="50" rx="12" fill="#161922" stroke="#2a2e3a"/>
+        <text x="600" y="380" text-anchor="middle" fill="#9aa0ae" font-size="12">applications.csv ledger</text>
+
+        <!-- arrows -->
+        <path d="M200 75 H250" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <path d="M200 175 H250" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <path d="M250 110 V175" stroke="#6b7280" stroke-width="1.6" fill="none"/>
+        <path d="M450 125 H500" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <path d="M690 110 H740" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <path d="M690 140 V175 H740" stroke="#6b7280" stroke-width="1.6" fill="none" marker-end="url(#arrow)"/>
+        <path d="M600 160 V240" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <path d="M850 210 V240" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <path d="M450 285 H500" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <path d="M690 285 H740" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arrow)"/>
+        <path d="M600 320 V345" stroke="#6b7280" stroke-width="1.6" marker-end="url(#arrow)"/>
+      </svg>
     </div>
   </section>
 
-  <!-- 5 -->
   <section class="slide">
-    <div class="kicker">Architecture · visual</div>
-    <h2>One picture</h2>
-    <pre style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.25rem 1.4rem;overflow:auto;font-size:0.82rem;line-height:1.45;color:var(--muted);margin:0;">
-Boards (newgrad / intern / Jobright)
-            │
-            ▼
-   Cursor Cloud Automation
-   (DAILY_JOB_DISCOVERY.md)
-            │
-            ▼
-   triage CSV  keep | later | skip
-            │
-            ▼
-   resolve_apply_url.py  ──► careers_boards.yaml
-            │
-            ▼
-   Apply Queue UI  (localhost)
-       │         │
-       │         └── Pass → job_decisions.csv
-       ▼
-   Employer ATS page
-       │
-       ▼
-   Simplify autofill
-       │
-       ▼
-   Human reviews & Submit
-       │
-       ▼
-   applications.csv  ← weekly Simplify export
-    </pre>
-  </section>
-
-  <!-- 6 -->
-  <section class="slide">
-    <div class="kicker">Working on this week</div>
-    <h2>What I’m demoing live</h2>
-    <ul class="big-list">
-      <li><strong class="ok">Cloud Agent browser</strong> with 10 real ATS tabs open</li>
-      <li>Simplify extension autofills from the cleaned profile</li>
-      <li><strong>Stop before Submit</strong> — human owns the click</li>
-      <li>Friends can Take Control and click through the tabs</li>
+    <div class="kicker">Live demo</div>
+    <h2>What you can Take Control of</h2>
+    <ul class="bullets">
+      <li><strong class="ok">10 employer tabs</strong> — Bild, Etched, SpaceX, Traba, Neuralink, Together AI, OpenAI, Nirmata, Appian, Baseten</li>
+      <li><strong>Simplify</strong> sidebar running on those ATS pages (Greenhouse + Ashby)</li>
+      <li><strong>Stop before Submit</strong> — this is a review/demo, not mass apply</li>
+      <li>This slide deck tab — present, then flip to the live applications</li>
     </ul>
-    <p class="lede">This is the “what can an agent actually do?” moment — not a polished auto-apply product yet.</p>
-  </section>
-
-  <!-- 7 -->
-  <section class="slide">
-    <div class="kicker">Reality check</div>
-    <h2>What’s still broken</h2>
-    <div class="two">
-      <div class="card">
-        <h3 class="warn">Hard blockers</h3>
-        <ul>
-          <li>Jobright Apply = signup wall</li>
-          <li>Many employers (Google/Meta/…) have no open board API</li>
-          <li>Captchas / email verification</li>
-          <li>Chrome blocks unpacked extensions in automation</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3 class="ok">Already improving</h3>
-        <ul>
-          <li>Apply-URL resolver + Workday CXS</li>
-          <li>Live apply queue with undo</li>
-          <li>Trial write-up with proposed fixes</li>
-          <li>Friends canvas + contribution guide</li>
-        </ul>
-      </div>
+    <div class="brands" style="margin-top:0.6rem">
+      <span class="brand simplify"><i>S</i> Simplify autofill</span>
+      <span class="brand greenhouse"><i>G</i> Greenhouse forms</span>
+      <span class="brand ashby"><i>A</i> Ashby forms</span>
+      <span class="brand cursor"><i>C</i> Cloud Agent VM</span>
     </div>
   </section>
 
-  <!-- 8 -->
   <section class="slide">
     <div class="kicker">Team model</div>
-    <h2>One template · many personal copies</h2>
-    <p class="lede">Same engine for everyone. Your job search data never mixes with someone else’s.</p>
-    <div class="grid">
-      <div class="card">
-        <h3>Template repo</h3>
-        <p>Scripts, docs, board sources, queue UI — we improve this together</p>
-      </div>
-      <div class="card">
-        <h3>Your fork</h3>
-        <p>Your profile, resumes, evidence bank, applications.csv, Simplify secrets</p>
-      </div>
-      <div class="card">
-        <h3>Pull upstream</h3>
-        <p>You receive engine fixes without rewriting your ledger</p>
-      </div>
-      <div class="card">
-        <h3>PR back upstream</h3>
-        <p>You send script/doc improvements so everyone benefits</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 9 -->
-  <section class="slide">
-    <div class="kicker">How friends help</div>
-    <h2>Pull upstream ≠ contribute</h2>
-    <ul class="big-list">
-      <li><strong>Pull</strong> = get new scripts/UI from the template</li>
-      <li><strong>Help</strong> = change the engine on a branch → open a PR into the template</li>
-      <li>Never PR your passwords, cookies, or personal applications.csv</li>
-    </ul>
-    <p class="lede">Classic open-source loop — applied to a private friends toolkit.</p>
-  </section>
-
-  <!-- 10 -->
-  <section class="slide">
-    <div class="kicker">If you want to start tonight</div>
-    <h2>Files you change for you</h2>
+    <h2>One template · many forks</h2>
     <div class="two">
       <div class="card">
-        <h3>Must personalize</h3>
-        <ul>
-          <li><code>config/profile.yaml</code></li>
-          <li><code>knowledge/evidence_bank.yaml</code></li>
-          <li><code>knowledge/work_authorization.yaml</code></li>
-          <li><code>resumes/</code> + resume registry</li>
-          <li>Fresh <code>data/applications.csv</code></li>
-        </ul>
+        <h3>Shared upstream</h3>
+        <p>Jobright board rules, Cursor automation docs, apply queue, resolver, experiments — improve via PRs.</p>
       </div>
       <div class="card">
-        <h3>Leave / improve via PR</h3>
-        <ul>
-          <li><code>docs/automation/DAILY_JOB_DISCOVERY.md</code></li>
-          <li><code>scripts/</code> + apply queue</li>
-          <li><code>resolve_apply_url.py</code></li>
-          <li><code>knowledge/careers_boards.yaml</code></li>
-        </ul>
+        <h3>Your private fork</h3>
+        <p>Profile, resumes, evidence bank, applications.csv, Simplify login — never mix with someone else’s.</p>
+      </div>
+    </div>
+    <p class="lede" style="margin-top:0.4rem">
+      <strong>Pull upstream</strong> = receive engine fixes.&nbsp;
+      <strong>Open a PR upstream</strong> = help everyone.&nbsp;
+      Same Jobright sources + Simplify + Cursor idea.
+    </p>
+  </section>
+
+  <section class="slide">
+    <div class="kicker">Start here</div>
+    <h2>Files for your copy</h2>
+    <div class="two">
+      <div class="card">
+        <h3>Change for you</h3>
+        <p><code>config/profile.yaml</code><br/>
+           <code>knowledge/evidence_bank.yaml</code><br/>
+           <code>knowledge/work_authorization.yaml</code><br/>
+           <code>resumes/</code> · fresh <code>data/</code></p>
+      </div>
+      <div class="card">
+        <h3>Improve for everyone</h3>
+        <p><code>scripts/</code> · apply queue UI<br/>
+           <code>docs/automation/…</code><br/>
+           <code>knowledge/careers_boards.yaml</code><br/>
+           experiment write-ups (no secrets)</p>
       </div>
     </div>
   </section>
 
-  <!-- 11 -->
-  <section class="slide">
-    <div class="kicker">First-run commands</div>
-    <h2>Minimal path</h2>
-    <pre style="background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.2rem 1.3rem;font-size:0.95rem;line-height:1.55;color:var(--accent);overflow:auto;margin:0;">git clone &lt;your-fork&gt;
-git remote add upstream JunyiZhou-Conny/job-search-2026-2027-starter
-
-# edit profile + evidence bank
-python3 scripts/resolve_apply_url.py --date YYYY-MM-DD --write-csv
-python3 scripts/serve_apply_queue.py --date YYYY-MM-DD
-# open http://127.0.0.1:8765/</pre>
-    <p class="lede">Point Cursor Automations at <strong>your fork</strong>. Use the same newgrad/intern sources. Own Simplify account.</p>
-  </section>
-
-  <!-- 12 -->
-  <section class="slide">
-    <div class="kicker">Future</div>
-    <h2>Near-term roadmap</h2>
-    <ul class="big-list">
-      <li><strong>P0</strong> — Human-in-the-loop submit stays the default</li>
-      <li><strong>P0</strong> — Friend onboarding (this deck + docs)</li>
-      <li><strong>P1</strong> — Better employer URL coverage (Workday map)</li>
-      <li><strong>P1</strong> — Resolve links on every daily automation run</li>
-      <li><strong>P2</strong> — One improvement PR each from friends this week</li>
-    </ul>
-  </section>
-
-  <!-- 13 -->
   <section class="slide">
     <div class="kicker">Ask</div>
-    <h1>Build with me.</h1>
+    <h1>Build with us.</h1>
     <p class="lede">
-      Fork → personalize → run the queue → file Issues → send small upstream PRs.
-      Same sources. Same Simplify + Cursor idea. Separate identities.
+      Fork → personalize → run Jobright discovery + Simplify → file Issues → send small upstream PRs.
+      Watch the live Cloud Agent tabs to see what “auto apply” really means today.
     </p>
-    <div class="grid">
-      <div class="card"><h3>Read</h3><p><code>docs/FRIENDS_CANVAS.md</code><br/><code>docs/CONTRIBUTING.md</code></p></div>
-      <div class="card"><h3>Watch</h3><p>Take Control of the Cloud Agent and click the 10 open ATS tabs</p></div>
-      <div class="card"><h3>Ship</h3><p>One tiny PR: docs, a careers board entry, or a bugfix</p></div>
+    <div class="brands">
+      <span class="brand jobright"><i>JR</i> Discover</span>
+      <span class="brand cursor"><i>C</i> Triage</span>
+      <span class="brand simplify"><i>S</i> Autofill</span>
+      <span class="brand github"><i></i> Contribute</span>
     </div>
   </section>
 
@@ -418,35 +470,31 @@ python3 scripts/serve_apply_queue.py --date YYYY-MM-DD
 <div class="footer-nav">
   <button type="button" id="prev">← Prev</button>
   <div class="dots" id="dots"></div>
-  <div><span id="counter">1</span> · ← → or click</div>
+  <div><span id="counter">1</span> · ← → / click</div>
   <button type="button" id="next">Next →</button>
 </div>
 
 <script>
-const slides = [...document.querySelectorAll('.slide')];
-const dots = document.getElementById('dots');
-const counter = document.getElementById('counter');
-let i = 0;
-slides.forEach((_, idx) => {
-  const d = document.createElement('i');
-  if (idx === 0) d.classList.add('on');
-  dots.appendChild(d);
-});
-function show(n) {
-  i = (n + slides.length) % slides.length;
-  slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
-  [...dots.children].forEach((d, idx) => d.classList.toggle('on', idx === i));
-  counter.textContent = `${i + 1} / ${slides.length}`;
+const slides=[...document.querySelectorAll('.slide')];
+const dots=document.getElementById('dots');
+const counter=document.getElementById('counter');
+let i=0;
+slides.forEach(()=>{const d=document.createElement('i'); dots.appendChild(d);});
+function show(n){
+  i=(n+slides.length)%slides.length;
+  slides.forEach((s,idx)=>s.classList.toggle('active', idx===i));
+  [...dots.children].forEach((d,idx)=>d.classList.toggle('on', idx===i));
+  counter.textContent=`${i+1} / ${slides.length}`;
 }
-document.getElementById('prev').onclick = () => show(i - 1);
-document.getElementById('next').onclick = () => show(i + 1);
-document.body.addEventListener('keydown', (e) => {
-  if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(i + 1); }
-  if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(i - 1); }
+document.getElementById('prev').onclick=()=>show(i-1);
+document.getElementById('next').onclick=()=>show(i+1);
+document.body.addEventListener('keydown',(e)=>{
+  if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();show(i+1);}
+  if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(i-1);}
 });
-document.querySelector('.deck').addEventListener('click', (e) => {
-  if (e.target.closest('button, a, code, pre')) return;
-  show(i + 1);
+document.querySelector('.deck').addEventListener('click',(e)=>{
+  if(e.target.closest('button,a,code,pre,svg')) return;
+  show(i+1);
 });
 show(0);
 </script>
