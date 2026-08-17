@@ -4,6 +4,8 @@
 **Tone:** early-stage, honest, build-together  
 **Last updated:** 2026-08-17
 
+**Slide deck (PowerPoint-style):** open [`friends-showcase.html`](./friends-showcase.html) in a browser — ← → or click to advance.
+
 This is a **shared pipeline**, not a finished product. Lots of things still break.
 That’s fine — the point of inviting friends is so we don’t improve it alone.
 
