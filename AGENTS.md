@@ -41,6 +41,28 @@ Do not overwrite the template owner's identity on upstream `main`.
 Runbook: `docs/collaborators/SETUP.md`. Kickoff: `docs/collaborators/AGENT_KICKOFF.md`.
 Command: `/collaborator-setup`. Reset (fork only): `scripts/init_personal_copy.py`.
 
+## Apply harness (Cloud Agent autofill)
+
+Opening ATS tabs is not enough. Autofill needs Simplify Copilot + a personal
+session in the **computer-use** browser on this VM. That profile is not in git
+and dies with the pod unless the personal environment was snapshotted after a
+human Store install and Simplify login.
+
+Before any 10-tab / autofill run:
+
+```bash
+python3 scripts/automation/check_apply_harness.py
+```
+
+`ready` is Copilot detected by publisher signals (not a pinned folder id) plus
+a Simplify `refresh` cookie or `secrets/simplify_storage.json`. The folder id
+is the package, not the person. `identity_match` is reported separately and is
+usually `unknown` — confirm the dashboard name against `config/profile.yaml`.
+
+If the checker exits 1, stop and follow `docs/automation/APPLY_HARNESS.md`.
+Do not treat Greenhouse’s MyGreenhouse button as Simplify. Do not type
+identity fields by hand to fake a Copilot pass. Do not Submit.
+
 ## Automation safety
 
 - `label_source=manual` must not be auto-overwritten.
