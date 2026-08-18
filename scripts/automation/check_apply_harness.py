@@ -45,6 +45,7 @@ BRANDED_PATH_MARKERS = (
     "/usr/bin/google-chrome",
     "/usr/bin/google-chrome-stable",
 )
+_COOKIE_SIDECARS = ("-wal", "-shm")
 
 
 def _is_branded_browser_path(path: str | None) -> bool:
@@ -57,7 +58,7 @@ def _first_playwright_chromium(home: Path) -> Path | None:
     cache = home / ".cache" / "ms-playwright"
     if not cache.exists():
         return None
-    matches = sorted(cache.glob("chromium-*/chrome-linux64/chrome"))
+    matches = sorted(cache.glob("chromium-*/chrome-linux*/chrome"))
     return matches[-1] if matches else None
 
 
@@ -123,6 +124,16 @@ def _cookie_db_paths(profile: Path) -> list[Path]:
     ]
 
 
+def _sidecar_path(db_path: Path, suffix: str) -> Path:
+    return Path(str(db_path) + suffix)
+
+
+def _unlink_copied_db(dest_path: Path) -> None:
+    dest_path.unlink(missing_ok=True)
+    for suffix in _COOKIE_SIDECARS:
+        _sidecar_path(dest_path, suffix).unlink(missing_ok=True)
+
+
 def _copy_readable(src: Path) -> Path | None:
     if not src.is_file():
         return None
@@ -131,8 +142,16 @@ def _copy_readable(src: Path) -> Path | None:
     dest_path = Path(dest)
     try:
         shutil.copy2(src, dest_path)
+        # Chromium uses WAL; a fresh login cookie may exist only in -wal.
+        for suffix in _COOKIE_SIDECARS:
+            sibling = _sidecar_path(src, suffix)
+            if sibling.is_file():
+                try:
+                    shutil.copy2(sibling, _sidecar_path(dest_path, suffix))
+                except OSError:
+                    continue
     except OSError:
-        dest_path.unlink(missing_ok=True)
+        _unlink_copied_db(dest_path)
         return None
     return dest_path
 
@@ -186,7 +205,7 @@ def inspect_session(profile: Path) -> dict[str, Any]:
             if cookie_db_has_simplify_refresh(copied):
                 return {"status": "present", "reason": "simplify.jobs refresh cookie exists"}
         finally:
-            copied.unlink(missing_ok=True)
+            _unlink_copied_db(copied)
     if not readable:
         return {"status": "unknown", "reason": "Chrome cookie database exists but could not be read"}
     return {"status": "missing", "reason": "no simplify.jobs refresh cookie"}
