@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 import tempfile
 import unittest
@@ -42,6 +43,40 @@ class TestCheckApplyHarness(unittest.TestCase):
         )
         if report["using_branded_chrome"]:
             self.assertTrue(report["ready"])
+
+    def test_chrome_profile_alone_is_not_ready_for_playwright_chromium(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            ext = (
+                home
+                / ".config"
+                / "google-chrome"
+                / "Default"
+                / "Extensions"
+                / harness.SIMPLIFY_EXTENSION_ID
+                / "3.0.0_0"
+            )
+            ext.mkdir(parents=True)
+            fake_chromium = (
+                home
+                / ".cache"
+                / "ms-playwright"
+                / "chromium-1234"
+                / "chrome-linux64"
+                / "chrome"
+            )
+            previous = os.environ.get("CHROME_EXECUTABLE_PATH")
+            os.environ["CHROME_EXECUTABLE_PATH"] = str(fake_chromium)
+            try:
+                report = harness.inspect(home=home)
+            finally:
+                if previous is None:
+                    os.environ.pop("CHROME_EXECUTABLE_PATH", None)
+                else:
+                    os.environ["CHROME_EXECUTABLE_PATH"] = previous
+        self.assertFalse(report["using_branded_chrome"])
+        self.assertTrue(report["profiles"]["google-chrome"]["simplify_installed"])
+        self.assertFalse(report["ready"])
 
 
 if __name__ == "__main__":

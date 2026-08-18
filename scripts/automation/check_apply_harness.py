@@ -92,8 +92,9 @@ def inspect(home: Path | None = None) -> dict[str, Any]:
     if using_branded:
         simplify_visible_to_computer_use = simplify_in_chrome
     else:
+        # Playwright Chromium does not load ~/.config/google-chrome.
         simplify_visible_to_computer_use = (
-            simplify_in_harness or simplify_in_chromium or simplify_in_chrome
+            simplify_in_harness or simplify_in_chromium
         )
 
     ready = bool(simplify_visible_to_computer_use) and not (
