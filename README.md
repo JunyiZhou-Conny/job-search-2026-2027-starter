@@ -11,8 +11,11 @@ sponsorship signal, work-authorization answers, networking, and next actions.
 
 Early shared toolkit (scripts + discovery + apply queue). Personal ledgers stay in forks.
 
-→ Start here: **[`docs/FRIENDS_CANVAS.md`](docs/FRIENDS_CANVAS.md)** (progress, architecture, what to edit, how to contribute upstream)  
-→ Contribution rules: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
+→ **Set up your own copy (you or your Cursor agent):** [`docs/collaborators/SETUP.md`](docs/collaborators/SETUP.md)  
+→ Kickoff prompt to paste into a Cloud Agent: [`docs/collaborators/AGENT_KICKOFF.md`](docs/collaborators/AGENT_KICKOFF.md)  
+→ In Cursor: `/collaborator-setup`  
+→ Progress / architecture: [`docs/FRIENDS_CANVAS.md`](docs/FRIENDS_CANVAS.md)  
+→ Upstream PR rules: [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md)
 
 ## The one-hour daily loop
 
@@ -62,6 +65,7 @@ python3 scripts/jobsearch.py dashboard
 | `generated/` | Machine output — triage packs, apply queue, dashboards |
 | `resumes/` | Base + cluster resumes; registry in `data/resume_versions.csv` |
 | `docs/` | Current policy; `docs/archive/` is history, not current state |
+| `docs/collaborators/` | Friend / future-collaborator setup runbook + identity templates |
 
 ## Non-negotiables
 

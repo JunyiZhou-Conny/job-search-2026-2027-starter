@@ -34,6 +34,13 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
    in a fresh cloud checkout of `main`. Rules and commands are not timers, and no OS scheduler is
    wired — uncommitted work is invisible to the run.
 
+## Collaborators
+
+Friends set up a **personal fork** (own Simplify, own Cloud Agents, own ledger).
+Do not overwrite the template owner's identity on upstream `main`.
+Runbook: `docs/collaborators/SETUP.md`. Kickoff: `docs/collaborators/AGENT_KICKOFF.md`.
+Command: `/collaborator-setup`. Reset (fork only): `scripts/init_personal_copy.py`.
+
 ## Automation safety
 
 - `label_source=manual` must not be auto-overwritten.

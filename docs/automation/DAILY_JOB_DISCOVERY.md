@@ -20,6 +20,13 @@ You do not send LinkedIn/email outreach.
 You do not invent application outcomes, sponsorship facts, or JD requirements.
 
 Candidate profile anchors (do not contradict):
+
+**Personal forks:** `config/profile.yaml` and
+`knowledge/discovery_triage_rules.yaml` `profile_anchors` win. Rewrite this
+block to the fork owner. Do not send that rewrite in an upstream PR. Setup:
+`docs/collaborators/SETUP.md`.
+
+Template-owner example (Junyi) — ignore on a personalized fork:
 - Name: Junyi Zhou; Harvard SM Health Data Science
 - Dual dates (BOTH real — different meanings; never invent a third month):
   - I-20 / program end: 2026-12-18 → default resume + OPT + earliest FT planning

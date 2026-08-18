@@ -1,0 +1,37 @@
+# Skill/project evidence for THIS collaborator only.
+# Copy to knowledge/evidence_bank.yaml on a personal fork.
+# Only verified: true AND resume_eligible: true items may be pushed into new resume bullets.
+# Levels: strong | working | exposure
+# Never invent tools, metrics, employers, titles, or dates. Mark unknowns explicitly.
+
+projects: {}
+  # Example (delete once you add real projects):
+  # my_project:
+  #   title: "Exact public title"
+  #   org: "Employer or school"
+  #   role: "Your title"
+  #   dates: "YYYY-MM — YYYY-MM"
+  #   source_file: "resumes/base/YOUR_resume.tex"
+  #   source_url: "https://github.com/you/repo"   # or omit
+  #   technologies: ["Python"]
+  #   software_engineering_evidence:
+  #     - "Interview-defensible fact you can talk through"
+  #   measurable_results:
+  #     - "Only numbers you can point to in a repo, paper, or screenshot"
+  #   interview_depth: working   # strong | moderate | working | exposure
+  #   notes: "Anything an agent must not upgrade or invent"
+
+skills: {}
+  # Example:
+  # python:
+  #   name: Python
+  #   category: language
+  #   level: strong            # strong | working | exposure
+  #   verified: true
+  #   resume_eligible: true
+  #   interview_depth: working
+  #   last_used: "2026"
+  #   evidence:
+  #     - project_id: my_project
+  #       description: "What you actually did"
+  #       technologies: ["Python"]

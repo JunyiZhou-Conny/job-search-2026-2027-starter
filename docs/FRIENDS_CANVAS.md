@@ -157,6 +157,11 @@ Boards  →  triage CSV  →  resolve apply_url  →  apply queue
 
 ## 5. If you want to start — files to change for *your* usage
 
+**Full agent-executable runbook:** [`docs/collaborators/SETUP.md`](collaborators/SETUP.md)  
+**Paste into your Cursor Cloud Agent:** [`docs/collaborators/AGENT_KICKOFF.md`](collaborators/AGENT_KICKOFF.md)  
+**In Cursor:** `/collaborator-setup`  
+**Reset script (personal fork only):** `python3 scripts/init_personal_copy.py`
+
 Do this on **your own private fork** (recommended), not by overwriting Junyi’s identity on `main`.
 
 ### Must change (your identity)
@@ -179,10 +184,14 @@ Do this on **your own private fork** (recommended), not by overwriting Junyi’s
 
 ### Usually leave alone at first (shared engine)
 
+On a personal fork you **must** rewrite the *candidate / `profile_anchors` dates*
+so Daily Discovery triages for you. Leave the shared *guide_rules* and scripts
+alone unless you are sending an upstream PR. See `docs/collaborators/SETUP.md`.
+
 | Path | Purpose |
 |---|---|
-| `docs/automation/DAILY_JOB_DISCOVERY.md` | Discovery rules (edit via PR if improving for everyone) |
-| `knowledge/discovery_triage_rules.yaml` | Shared triage policy |
+| `docs/automation/DAILY_JOB_DISCOVERY.md` | Discovery rules (identity block is fork-local; engine edits go upstream) |
+| `knowledge/discovery_triage_rules.yaml` | Shared `guide_rules`; rewrite `profile_anchors` on your fork |
 | `scripts/serve_apply_queue.py` + `static/apply_queue/` | Apply queue |
 | `scripts/resolve_apply_url.py` | Employer URL resolver |
 | `knowledge/careers_boards.yaml` | Known Greenhouse/Ashby/Workday boards |
@@ -195,14 +204,15 @@ git clone git@github.com:<you>/job-search-2026-2027-starter.git
 cd job-search-2026-2027-starter
 git remote add upstream git@github.com:JunyiZhou-Conny/job-search-2026-2027-starter.git
 
-# 2) personalize
-#    edit config/profile.yaml
-#    replace knowledge/evidence_bank.yaml with yours (or start sparse)
-#    clear or ignore data/applications.csv and start fresh
+# 2) give Cursor the kickoff prompt in docs/collaborators/AGENT_KICKOFF.md
+#    or run /collaborator-setup
+#    the agent will interview you, then:
+python3 scripts/init_personal_copy.py
+python3 scripts/init_personal_copy.py --i-am-on-a-personal-fork --write
 
 # 3) secrets locally only
 cp secrets/.env.example secrets/.env   # if present
-# put SIMPLIFY_EMAIL / SIMPLIFY_PASSWORD in env or Cursor secrets — never push
+# put SIMPLIFY_EMAIL in env or Cursor secrets — never push; never paste passwords into chat
 
 # 4) run apply queue against an existing triage day (or wait for your automation)
 python3 scripts/resolve_apply_url.py --date YYYY-MM-DD --write-csv
