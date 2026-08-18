@@ -26,6 +26,26 @@ requisitions are gone or no longer exact-match.
 
 Together #9 is a **2026 intern cycle**. It is open only to inspect autofill. Do not apply.
 
+## Live session notes (same Cloud Agent, 2026-08-18)
+
+Tabs 1–10 are open in the VM browser. Forms are visible. **Nothing submitted.**
+
+What is already correct:
+
+- Each tab is the intended employer + role from the table (Apptronik and Together titles are the live replacements).
+- Ashby tabs 1–4 are on the `/application` form, not the Jobright signup wall.
+- Greenhouse tabs 5–10 show the embedded apply form after Apply.
+- EEO untouched. Submit unclicked.
+
+What is not done yet / blocked in this environment:
+
+- This Cloud Agent browser does **not** have the unpacked Simplify Copilot session used on 2026-07-31.
+- Ashby: no Simplify panel, so identity fields are still empty.
+- Greenhouse: the visible **Autofill my application** control is Greenhouse’s own MyGreenhouse login (`my.greenhouse.io`), not Simplify. Clicking it asks for a security code. Do not complete that login from chat.
+- To judge fill quality the way the July 31 trial did, Take Control and run **your** Simplify Copilot (already logged in) on these same tabs.
+
+Until then, monitor requisition match and form structure, not filled-vs-empty identity fields.
+
 ## What to mark on each tab
 
 For each tab, check:
