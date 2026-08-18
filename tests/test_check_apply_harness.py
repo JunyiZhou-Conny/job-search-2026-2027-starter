@@ -88,6 +88,59 @@ class TestSessionCookie(unittest.TestCase):
             report = harness.inspect_session(profile)
         self.assertEqual(report["status"], "missing")
 
+    def test_unreadable_cookie_db_is_unknown(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = Path(tmp)
+            db = profile / "Default" / "Cookies"
+            db.parent.mkdir(parents=True)
+            db.write_bytes(b"not a sqlite database")
+            report = harness.inspect_session(profile)
+        self.assertEqual(report["status"], "unknown")
+
+    def test_torn_wal_does_not_hide_checkpointed_refresh(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = Path(tmp)
+            db = profile / "Default" / "Cookies"
+            db.parent.mkdir(parents=True)
+            con = sqlite3.connect(db)
+            con.execute("PRAGMA journal_mode=WAL")
+            con.execute(
+                "CREATE TABLE cookies (host_key TEXT, name TEXT, value TEXT, encrypted_value BLOB)"
+            )
+            con.execute(
+                "INSERT INTO cookies VALUES (?, ?, ?, ?)",
+                (".simplify.jobs", "refresh", "", b"encrypted-not-a-secret"),
+            )
+            con.commit()
+            con.execute("PRAGMA wal_checkpoint(FULL)")
+            con.close()
+            Path(str(db) + "-wal").write_bytes(b"\x37\x7f\x06\x82" + b"\x00" * 28)
+            report = harness.inspect_session(profile)
+        self.assertEqual(report["status"], "present")
+
+    def test_torn_wal_without_checkpoint_is_unknown_not_missing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            profile = Path(tmp)
+            db = profile / "Default" / "Cookies"
+            db.parent.mkdir(parents=True)
+            con = sqlite3.connect(db)
+            try:
+                con.execute("PRAGMA journal_mode=WAL")
+                con.execute("PRAGMA wal_autocheckpoint=0")
+                con.execute(
+                    "CREATE TABLE cookies (host_key TEXT, name TEXT, value TEXT, encrypted_value BLOB)"
+                )
+                con.execute(
+                    "INSERT INTO cookies VALUES (?, ?, ?, ?)",
+                    (".simplify.jobs", "refresh", "", b"encrypted-not-a-secret"),
+                )
+                con.commit()
+                Path(str(db) + "-wal").write_bytes(b"\x37\x7f\x06\x82" + b"\x00" * 28)
+                report = harness.inspect_session(profile)
+            finally:
+                con.close()
+        self.assertEqual(report["status"], "unknown")
+
 
 class TestInspectReady(unittest.TestCase):
     def test_empty_home_is_not_ready(self):

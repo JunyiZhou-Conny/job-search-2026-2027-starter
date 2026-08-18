@@ -143,29 +143,33 @@ def _copy_readable(src: Path) -> Path | None:
     try:
         shutil.copy2(src, dest_path)
         # Chromium uses WAL; a fresh login cookie may exist only in -wal.
-        for suffix in _COOKIE_SIDECARS:
-            sibling = _sidecar_path(src, suffix)
-            if sibling.is_file():
-                try:
+        # Copy sidecars as a pair. A partial copy can make the snapshot
+        # unreadable even when the main file already has the cookie.
+        try:
+            for suffix in _COOKIE_SIDECARS:
+                sibling = _sidecar_path(src, suffix)
+                if sibling.is_file():
                     shutil.copy2(sibling, _sidecar_path(dest_path, suffix))
-                except OSError:
-                    continue
+        except OSError:
+            for suffix in _COOKIE_SIDECARS:
+                _sidecar_path(dest_path, suffix).unlink(missing_ok=True)
     except OSError:
         _unlink_copied_db(dest_path)
         return None
     return dest_path
 
 
-def cookie_db_has_simplify_refresh(db_path: Path) -> bool:
-    """True if a Simplify ``refresh`` cookie exists. Never returns cookie values."""
+def _cookie_db_query_refresh(db_path: Path) -> bool | None:
+    """True/False if queried; None if this snapshot could not be read."""
     try:
-        con = sqlite3.connect(f"file:{db_path}?mode=ro", uri=True)
+        # Private temp copy: allow SQLite to rebuild -shm from -wal.
+        con = sqlite3.connect(db_path)
     except sqlite3.Error:
-        return False
+        return None
     try:
         cols = {row[1] for row in con.execute("PRAGMA table_info(cookies)")}
         if not {"host_key", "name"} <= cols:
-            return False
+            return None
         select = "SELECT host_key, name, value"
         if "encrypted_value" in cols:
             select += ", encrypted_value"
@@ -184,9 +188,30 @@ def cookie_db_has_simplify_refresh(db_path: Path) -> bool:
                 return True
         return False
     except sqlite3.Error:
-        return False
+        return None
     finally:
         con.close()
+
+
+def cookie_db_has_simplify_refresh(db_path: Path) -> bool | None:
+    """True if a Simplify ``refresh`` cookie exists. Never returns cookie values.
+
+    None means the snapshot could not be queried — not a conclusive miss.
+    """
+    found = _cookie_db_query_refresh(db_path)
+    if found is not None:
+        return found
+    # Drop -shm first so SQLite can rebuild it from -wal; then the WAL
+    # itself if the pair is still unreadable (torn copy while Chrome wrote).
+    for suffix in ("-shm", "-wal"):
+        sidecar = _sidecar_path(db_path, suffix)
+        if not sidecar.is_file():
+            continue
+        sidecar.unlink(missing_ok=True)
+        found = _cookie_db_query_refresh(db_path)
+        if found is not None:
+            return found
+    return None
 
 
 def inspect_session(profile: Path) -> dict[str, Any]:
@@ -201,9 +226,11 @@ def inspect_session(profile: Path) -> dict[str, Any]:
         if copied is None:
             continue
         try:
-            readable = True
-            if cookie_db_has_simplify_refresh(copied):
+            found = cookie_db_has_simplify_refresh(copied)
+            if found:
                 return {"status": "present", "reason": "simplify.jobs refresh cookie exists"}
+            if found is False:
+                readable = True
         finally:
             _unlink_copied_db(copied)
     if not readable:
