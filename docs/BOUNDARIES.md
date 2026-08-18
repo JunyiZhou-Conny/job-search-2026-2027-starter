@@ -52,3 +52,6 @@ against **their** fork. Two Pro accounts do not share automations. See
 - Do **not** paste Jobright/Simplify/LinkedIn passwords, 2FA codes, or cookies into Cursor.
 - Browser automation uses **local** saved sessions you create (`secrets/`, gitignored).
 - See `docs/archive/local-browser-automation.md` for the local session setup.
+- Cloud Agent autofill: `docs/automation/APPLY_HARNESS.md`. Snapshot a
+  logged-in Simplify profile only on a **personal** environment. Never commit
+  the extension or `simplify_storage.json`.

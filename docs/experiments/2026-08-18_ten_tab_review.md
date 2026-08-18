@@ -46,6 +46,10 @@ What is not done yet / blocked in this environment:
 
 Until then, monitor requisition match and form structure, not filled-vs-empty identity fields.
 
+How to keep Copilot on **later** agents: `docs/automation/APPLY_HARNESS.md`.
+This pod will not gain the harness after the fact. Snapshot a personal
+environment only after Take Control installs Copilot on Chromium.
+
 ## What to mark on each tab
 
 For each tab, check:
