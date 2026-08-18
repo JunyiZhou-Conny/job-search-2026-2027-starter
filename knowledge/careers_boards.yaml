@@ -19,6 +19,10 @@ greenhouse:
   Neuralink: neuralink
   "Together AI": togetherai
   Gemini: gemini
+  Blend: blend
+  "Lila Sciences": lilasciences
+  "Relativity Space": relativity
+  Verkada: verkada
   # Google DeepMind product branding sometimes appears as Gemini on boards
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
@@ -29,6 +33,7 @@ ashby:
   OpenAI: openai
   "Charta Health": chartahealth
   Baseten: baseten
+  "Hayden AI": haydenai
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
