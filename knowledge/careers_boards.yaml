@@ -19,6 +19,8 @@ greenhouse:
   Neuralink: neuralink
   "Together AI": togetherai
   Gemini: gemini
+  Discord: discord
+  Roblox: roblox
   # Google DeepMind product branding sometimes appears as Gemini on boards
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
@@ -29,6 +31,7 @@ ashby:
   OpenAI: openai
   "Charta Health": chartahealth
   Baseten: baseten
+  Notion: notion
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
