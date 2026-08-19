@@ -19,6 +19,9 @@ greenhouse:
   Neuralink: neuralink
   "Together AI": togetherai
   Gemini: gemini
+  # Relativity Space uses the greenhouse token `relativity` (verified 2026-08-19;
+  # board content is Terran-R / vehicle / planetary — not Relativity e-discovery).
+  "Relativity Space": relativity
   # Google DeepMind product branding sometimes appears as Gemini on boards
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
@@ -29,6 +32,7 @@ ashby:
   OpenAI: openai
   "Charta Health": chartahealth
   Baseten: baseten
+  "Hayden AI": haydenai
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
