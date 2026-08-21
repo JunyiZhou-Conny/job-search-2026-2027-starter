@@ -16,6 +16,7 @@ greenhouse:
   Nirmata: nirmata
   Appian: appian
   SpaceX: spacex
+  "Babel Street": babelstreet
   Neuralink: neuralink
   "Together AI": togetherai
   Gemini: gemini
@@ -52,3 +53,7 @@ workday:
     host: nvidia.wd5
     tenant: nvidia
     site: NVIDIAExternalCareerSite
+  Philips:
+    host: philips.wd3
+    tenant: philips
+    site: jobs-and-careers
