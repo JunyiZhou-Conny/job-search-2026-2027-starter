@@ -37,14 +37,16 @@ What is already correct:
 - Greenhouse tabs 5–10 show the embedded apply form after Apply.
 - EEO untouched. Submit unclicked.
 
-What is not done yet / blocked in this environment:
+What was blocked on 2026-08-18 (historical — Copilot was missing that day):
 
 - This Cloud Agent browser does **not** have the unpacked Simplify Copilot session used on 2026-07-31.
 - Ashby: no Simplify panel, so identity fields are still empty.
 - Greenhouse: the visible **Autofill my application** control is Greenhouse’s own MyGreenhouse login (`my.greenhouse.io`), not Simplify. Clicking it asks for a security code. Do not complete that login from chat.
 - To judge fill quality the way the July 31 trial did, Take Control and run **your** Simplify Copilot (already logged in) on these same tabs.
 
-Until then, monitor requisition match and form structure, not filled-vs-empty identity fields.
+**Follow-up 2026-08-22:** Chrome + Copilot ran on these same employers.
+See `docs/experiments/2026-08-22_ten_tab_copilot_review.md`. Together Fall
+2026 was closed. Nothing submitted.
 
 How to keep Copilot on **later** agents: `docs/automation/APPLY_HARNESS.md`.
 This pod will not gain the harness after the fact. Snapshot a personal

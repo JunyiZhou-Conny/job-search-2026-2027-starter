@@ -19,3 +19,23 @@ Follow the canonical instructions in this repo — do not improvise a different 
 4. Write the required artifacts and reply in the Phase 5 report format from that file.
 5. Do not submit applications, do not send outreach, and do not ingest into data/applications.csv unless the user explicitly confirms keeps in this run.
 ```
+
+## Weekday apply review (separate Automation)
+
+Do **not** mix this with daily discovery. Paste only if Junyi has created a
+second Automation whose job is autofill review. Canonical file:
+`docs/automation/WEEKDAY_APPLY_AUTOMATION.md`.
+
+```text
+Follow the canonical instructions in this repo — do not improvise a different workflow.
+
+1. Read and obey ALL of:
+   - docs/automation/WEEKDAY_APPLY_AUTOMATION.md
+   - docs/automation/APPLY_HARNESS.md
+   - config/profile.yaml
+2. Run python3 scripts/automation/check_apply_harness.py first. Exit 1 → stop.
+3. Open only rows Junyi already queued for autofill review. Chrome + Copilot only.
+4. Never click Submit. Never use Greenhouse MyGreenhouse. Never invent essays.
+5. If Copilot filled EEO, or work-auth/sponsorship looks wrong for an F-1 profile, block Submit and write the review row.
+6. If anything in chat memory conflicts with those files, the FILES win.
+```
