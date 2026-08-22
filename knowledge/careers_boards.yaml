@@ -29,6 +29,7 @@ ashby:
   OpenAI: openai
   "Charta Health": chartahealth
   Baseten: baseten
+  "Sprinter Health": sprinter-health
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
