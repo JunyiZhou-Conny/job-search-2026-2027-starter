@@ -32,33 +32,33 @@ build still has Copilot and the session — without a second install.
 The 2026-08-19 `PauseContainer` failure was infrastructure. Cookies
 and the extension **did** copy on this try.
 
-## What is still Junyi’s click
-
-`propose-environment-json` was sent with that `buildId`. **Save** in
-the Cloud Agents environment dashboard is required before ordinary
-new agents and Automations boot this image by default.
-
-Until Save, default boot can still be the earlier empty Chrome image
-(`bld-20260819-88dc0b61-ac73-482f-88db-1e40295d0834`).
-
-Environment:
+Junyi Saved the proposal in the Environment panel. Environment:
 https://cursor.com/dashboard/cloud-agents/environments/e/41a15b57-8916-11f1-b532-320a589b8025
+
+## Default boot after Save (2026-08-22)
+
+A new Cloud Agent started from `main` with **no** build-id override.
+Checker source: `origin/cursor/apply-harness-checker-073b`.
+
+- **`ready: true`**
+- Booted [`bld-20260822-be4df1ce-5add-4587-abeb-e4e06c3c9405`](https://cursor.com/dashboard/cloud-agents/builds/bld-20260822-be4df1ce-5add-4587-abeb-e4e06c3c9405)
+  (`SYSTEM` / `CONFIG_CHANGE`, environment version `744792`)
+- Computer-use: branded Chrome `/opt/google/chrome/chrome`
+- Copilot: `pbanhockgagggenencehbnadejlgchfc`
+- Session cookie present
+- No reinstall, Take Control, or ATS tabs
+
+Save made a new default image. That image still has Copilot and the
+session. Ordinary later agents and apply Automations can use this
+harness if they boot this environment.
 
 ## What this does *not* prove
 
-- Dashboard name is Junyi (`identity_match` stayed `unknown` on the
-  clone because that checkout had no `config/profile.yaml`; glance the
+- Dashboard name is Junyi (`identity_match` stayed `unknown` because
+  the probe checkout had no `config/profile.yaml`; glance the
   Simplify dashboard once).
-- Default boot *without* pinning the draft build id (needs Save first).
-- Autofill quality on real ATS tabs.
+- Autofill quality on real ATS tabs (plan step 2).
 - Unattended Submit. Policy remains: stop before Submit unless Junyi
   explicitly changes it.
-
-## After Save
-
-Start one **normal** new agent (no build-id override). Run the 073b
-checker. `ready: true` means later weekday apply Automations can use
-this harness. `ready: false` means default boot is still the empty
-image.
 
 Daily **discovery** Automations do not need this harness.
