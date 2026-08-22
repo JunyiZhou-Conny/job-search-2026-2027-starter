@@ -1,134 +1,80 @@
-# Apply harness — why Simplify vanishes, and how later Cloud Agents keep it
+# Apply harness — Copilot + session, not a folder id
 
-**Audience:** Junyi + any Cloud Agent about to open ATS tabs.  
-**Last updated:** 2026-08-18
+**Audience:** Junyi + any Cloud Agent about to open ATS tabs.
+**Last updated:** 2026-08-22
 
 This is the contract for **autofill review** (open forms, fill identity, stop
 before Submit). Daily discovery does **not** need this harness.
 
 ---
 
-## What we just witnessed (2026-08-18)
+## Three questions (keep them separate)
 
-Opening 10 real ATS tabs on a new Cloud Agent showed the real failure mode:
-
-| Layer | What happened | Why |
+| Question | What proves it | What does not |
 |---|---|---|
-| Discovery → employer URL | Worked | `resolve_apply_url.py` |
-| Form visible | Worked | Ashby `/application`, Greenhouse Apply |
-| Simplify Copilot on the page | **Missing** | New VM, branded Chrome, no snapshot of the July 31 harness |
-| Greenhouse “Autofill my application” | Wrong product | MyGreenhouse login, not Simplify |
-| Identity fields filled | Did not happen | No Copilot + no Simplify session |
+| **Software** — is Copilot in the computer-use browser? | Extension manifest publisher signals: `short_name=Simplify Copilot`, or `author=Simplify Jobs Inc.` + `homepage_url=https://simplify.jobs/` | A pinned Chrome folder id |
+| **Session** — is *someone* logged into Simplify? | `refresh` cookie on `*.simplify.jobs` in that profile, or gitignored `secrets/simplify_storage.json` | Copilot being installed |
+| **Identity** — is it Junyi? | Dashboard name/email vs `config/profile.yaml` (human confirm) | The extension folder id (that is the *package*, not the person) |
+
+`ready` is **software + session** in the profile computer-use will attach to.
+`identity_match` is reported as `unknown` unless a later check can compare
+account email without decrypting cookies. Do not treat a folder id as you.
+
+Chrome Web Store and unpacked `--load-extension` installs get **different**
+ids from the same product. Store ids are a hash of the publisher key and stay
+stable for that listing; unpacked ids follow the load path. The checker must
+not require either id.
+
+---
+
+## Why Copilot “vanishes” on a new Cloud Agent
 
 The July 31 trial only had autofill because **that** VM had a local harness
-under `/tmp/apply_trial/` (unpacked extension + injected cookies). That directory
-is not in git, and Cloud Agent disks do not carry over. A later agent starts
-clean. That is expected, not a regression in the ATS pages.
+(unpacked extension + injected cookies). Cloud Agent disks do not carry over.
+A later agent starts clean unless this **personal** environment was snapshotted
+after a human Store install + Simplify login.
+
+Computer-use on this repo today attaches to **Google Chrome**
+(`/opt/google/chrome/chrome`, profile `~/.config/google-chrome`). Install
+Copilot from the Store in **that** browser. Branded Chrome ignores
+`--load-extension`; a Store install is the path that works here.
 
 ---
 
-## What “the harness” actually is
+## Human once — Take Control on a throwaway agent
 
-Three pieces. Missing any one of them looks like “Simplify is gone.”
-
-| Piece | Must live where | Must not live where |
-|---|---|---|
-| **Chromium** that still honors `--load-extension` | Environment snapshot / `install` | Branded `/opt/google/chrome/chrome` (it silently ignores the flag) |
-| **Simplify Copilot** installed in **that** browser’s profile | Same snapshot (or a gitignored unpacked dir you load once) | The repo, a friends’ shared environment |
-| **Logged-in Simplify session** | Personal snapshot **or** `secrets/simplify_storage.json` / Cursor secret | Git, chat, PRs, collaborator forks |
-
-Computer-use on this repo today attaches to **Google Chrome**. Even if Playwright
-Chromium has the extension, the 10-tab window will not see it unless
-`chromeExecutablePath` (and the profile) point at the harness browser.
+1. Run `python3 scripts/automation/check_apply_harness.py`.
+2. Take Control of the computer-use browser. Open `chrome://extensions` and
+   the Chrome Web Store listing for **Simplify Copilot**.
+3. Install Copilot. Log into **your** Simplify. Complete captcha / 2FA
+   yourself. Do not paste the password into chat.
+4. Confirm the dashboard shows your name. Do **not** click Submit on any ATS.
+5. Re-run the checker. `ready: true` means software + session. Confirm
+   identity yourself against `config/profile.yaml`.
+6. Snapshot this **personal** environment so later agents boot with the
+   profile already on disk. A snapshot with Simplify cookies is a **login**.
+   Do not share that environment with friends. Friends need their own
+   snapshot and their own Simplify login — `docs/collaborators/SETUP.md`.
 
 ---
 
-## Recommended setup (personal environment only)
-
-Do this **once**, then every *new* Cloud Agent that boots from that environment
-build/snapshot already has the harness. This running agent will not gain it
-after the fact.
-
-### 1. Bake tools (safe to share, no login)
-
-In the Cloud Agent environment
-([environment dashboard](https://cursor.com/dashboard/cloud-agents/environments/e/41a15b57-8916-11f1-b532-320a589b8025)):
-
-- `install` (idempotent):
-
-```bash
-python3 -m pip install -r requirements-automation.txt
-python3 -m playwright install chromium
-```
-
-- Set **computer-use Chrome path** to Playwright’s Chromium, not Google Chrome.
-  After install it is typically:
-
-```text
-/home/ubuntu/.cache/ms-playwright/chromium-*/chrome-linux64/chrome
-```
-
-  Confirm with `python3 scripts/automation/check_apply_harness.py`.
-  Cursor field: `chromeExecutablePath` in the environment (dashboard or
-  `.cursor/environment.json`).
-
-Do **not** commit Simplify’s `.crx` or a logged-in profile.
-
-### 2. Human once — Take Control on a throwaway agent
-
-On Chromium (the path above), not Google Chrome:
-
-1. Open `chrome://extensions` and confirm you are not on branded Chrome.
-2. Install **Simplify Copilot** from the Chrome Web Store (or load the unpacked
-   extension if Chromium will not talk to the Store).
-3. Log into **your** Simplify. Complete captcha / 2FA yourself. Do not paste
-   the password into chat.
-4. Open one ATS page and confirm the Copilot panel exists (Ashby: “Start
-   Application”; Greenhouse: “Autofill This Page”).
-5. Do **not** click Submit.
-
-### 3. Snapshot that machine
-
-After step 2 succeeds, snapshot the environment so the next agent boots with
-Chromium + Copilot + session already on disk.
-
-- Personal environment only. A snapshot with your Simplify cookies is a
-  **login**. Do not share that environment with friends or a Cursor Team
-  follow-up setting.
-- Friends need their **own** snapshot and their **own** Simplify login.
-  See `docs/collaborators/SETUP.md`.
-
-### 4. Every later autofill run
-
-The agent must:
+## Every later autofill run
 
 ```bash
 python3 scripts/automation/check_apply_harness.py
+python3 scripts/automation/check_apply_harness.py --json
 ```
 
 - Exit 0 → open ATS tabs, autofill, stop before Submit.
-- Exit 1 → **stop**. Report the missing piece. Do not pretend Greenhouse’s
-  MyGreenhouse button is Simplify. Do not type identity fields by hand to
-  “fake” autofill.
+- Exit 1 → **stop**. Report the missing piece (Copilot vs session vs wrong
+  browser profile). Do not pretend Greenhouse’s MyGreenhouse button is
+  Simplify. Do not type identity fields by hand to “fake” autofill.
 
----
-
-## If you do not want the session inside the snapshot
-
-Keep step 1 (Chromium + Copilot installed, logged out). Store the session as
-a Cursor **runtime secret** or local `secrets/simplify_storage.json` (already
-gitignored). Refresh it with:
-
-```bash
-python3 scripts/automation/save_simplify_session.py
-```
-
-(That script currently launches branded Chrome; after the harness exists,
-point it at the same Chromium + profile as computer-use.)
-
-Sessions expire. Captcha comes back if you log in from a new profile. That is
-why a personal snapshot of an already-logged-in profile is less painful for
-*your* later agents — and why it must stay personal.
+Proven 2026-08-22: a normal new agent (no pinned build) default-booted
+`ready: true` after Junyi Saved the personal environment. Live 10-tab
+quality notes: `docs/experiments/2026-08-22_ten_tab_copilot_review.md`.
+If Copilot fills EEO or marks US-citizen / “no sponsorship” on an F-1
+profile, do not Submit — see `docs/automation/WEEKDAY_APPLY_AUTOMATION.md`.
 
 ---
 
@@ -136,19 +82,7 @@ why a personal snapshot of an already-logged-in profile is less painful for
 
 - Commit `simplify_storage.json`, cookies, or an unpacked Copilot tree.
 - Ask the user to paste a Simplify password into chat.
+- Print cookie or token values.
 - Use `/tmp/apply_trial` as the durable location (it dies with the VM).
-- Open 10-tab autofill on branded Chrome and call a missing panel a surprise.
+- Treat a Chrome extension folder id as proof of who is logged in.
 - Click Submit, fill EEO, or log into MyGreenhouse to “make autofill work.”
-
----
-
-## Check command
-
-```bash
-python3 scripts/automation/check_apply_harness.py
-python3 scripts/automation/check_apply_harness.py --json
-```
-
-Ready means: Chromium (or a browser that can load extensions) + Simplify
-extension id `cdcddpbdpgfipkmobdipjfheopledajg` in the computer-use profile.
-Session is reported separately (present / missing / unknown).
