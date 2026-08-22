@@ -13,7 +13,7 @@ before Submit). Daily discovery does **not** need this harness.
 | Question | What proves it | What does not |
 |---|---|---|
 | **Software** — is Copilot in the computer-use browser? | Extension manifest publisher signals: `short_name=Simplify Copilot`, or `author=Simplify Jobs Inc.` + `homepage_url=https://simplify.jobs/` | A pinned Chrome folder id |
-| **Session** — is *someone* logged into Simplify? | `refresh` cookie on `*.simplify.jobs` in that profile, or gitignored `secrets/simplify_storage.json` | Copilot being installed |
+| **Session** — is *someone* logged into Simplify? | `refresh` cookie on `*.simplify.jobs` in that profile | Copilot being installed; Playwright `secrets/simplify_storage.json` (export-only) |
 | **Identity** — is it Junyi? | Dashboard name/email vs `config/profile.yaml` (human confirm) | The extension folder id (that is the *package*, not the person) |
 
 `ready` is **software + session** in the profile computer-use will attach to.

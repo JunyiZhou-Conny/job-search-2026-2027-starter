@@ -6,8 +6,9 @@ Ready means two things, both in the profile computer-use will attach to:
 1. Software — Simplify Copilot is installed. Detected by publisher signals
    in the extension manifest (short_name / author / homepage), not by a
    pinned Chrome folder id. Store and unpacked installs get different ids.
-2. Session — a Simplify login cookie named ``refresh`` exists, or a
-   gitignored ``secrets/simplify_storage.json`` is present.
+2. Session — a Simplify login cookie named ``refresh`` exists in that
+   profile. Playwright ``secrets/simplify_storage.json`` is export-only
+   and does not count.
 
 A folder id is the extension *package*, not the person. Identity match
 against ``config/profile.yaml`` is reported separately and does not flip
@@ -313,12 +314,8 @@ def inspect(home: Path | None = None) -> dict[str, Any]:
 
     session_file = _storage_state_path()
     cookie_session = inspect_session(attached_profile)
-    if session_file is not None:
-        session_status = "present"
-        session_reason = "secrets/simplify_storage.json exists"
-    else:
-        session_status = cookie_session["status"]
-        session_reason = cookie_session["reason"]
+    session_status = cookie_session["status"]
+    session_reason = cookie_session["reason"]
 
     copilot_visible = bool(copilot_ids)
     session_ok = session_status == "present"
@@ -339,7 +336,7 @@ def inspect(home: Path | None = None) -> dict[str, Any]:
     if session_status == "missing":
         blockers.append(
             "No Simplify session: log into simplify.jobs in the computer-use browser "
-            "(refresh cookie) or add gitignored secrets/simplify_storage.json"
+            "(refresh cookie)"
         )
     elif session_status == "unknown":
         blockers.append(f"Simplify session unknown: {session_reason}")

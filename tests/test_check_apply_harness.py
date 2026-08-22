@@ -178,6 +178,23 @@ class TestInspectReady(unittest.TestCase):
                 ["cdcddpbdpgfipkmobdipjfheopledajg"],
             )
 
+    def test_storage_json_does_not_fake_session_ready(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp)
+            profile = home / ".config" / "google-chrome"
+            _write_extension(profile, "pbanhockgagggenencehbnadejlgchfc", COPILOT_MANIFEST)
+            fake_storage = Path(tmp) / "simplify_storage.json"
+            fake_storage.write_text("{}", encoding="utf-8")
+            previous = harness._storage_state_path
+            harness._storage_state_path = lambda: fake_storage
+            try:
+                report = harness.inspect(home=home)
+            finally:
+                harness._storage_state_path = previous
+        self.assertFalse(report["ready"])
+        self.assertNotEqual(report["session"]["status"], "present")
+        self.assertEqual(report["session"]["storage_state"], str(fake_storage))
+
     def test_copilot_without_session_is_not_ready(self):
         with tempfile.TemporaryDirectory() as tmp:
             home = Path(tmp)
