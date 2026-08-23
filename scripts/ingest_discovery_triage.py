@@ -83,7 +83,7 @@ def passed_urls() -> set[str]:
         return set()
     out = set()
     for r in read_rows(path):
-        if (r.get("decision") or "").lower() == "pass":
+        if (r.get("decision") or "").lower() in {"pass", "closed"}:
             u = canon(r.get("url", ""))
             if u:
                 out.add(u)

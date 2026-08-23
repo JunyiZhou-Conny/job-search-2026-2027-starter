@@ -66,6 +66,10 @@ In apply notes, **Copilot = Simplify Copilot** (Chrome extension), not
 Cursor. The extension does not read this repo. A YAML fact can stay
 unused on the form.
 
+If an apply URL is gone (closed, 404, Greenhouse “no longer open”):
+close that tab, write `decision=closed` in `data/job_decisions.csv`,
+do not pick a sibling from the employer’s current openings.
+
 ## Automation safety
 
 - `label_source=manual` must not be auto-overwritten.

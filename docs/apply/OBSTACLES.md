@@ -19,6 +19,14 @@ When a form blocks full automation, add a `gaps` row in the YAML. Ask
 Junyi later. Write the confirmed value into profile / auth / evidence
 bank. Do not invent GPA, test scores, clearance, or citizenship.
 
+## Closed posting (decisive)
+
+If the apply URL is gone (“no longer open”, Greenhouse `?error=true`
+board, 404): **close the tab**, do not pick a sibling from Current
+openings, and write `decision=closed` in `data/job_decisions.csv`.
+Together AI Fall 2026 (`jobs/5157661007`) is the first logged case.
+This will happen often; high-volume roles close in minutes.
+
 ## Two memories: repo vs Simplify Copilot
 
 **Copilot here means Simplify Copilot** (the Chrome extension), not Cursor

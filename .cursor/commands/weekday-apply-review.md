@@ -14,3 +14,6 @@ python3 scripts/automation/check_apply_harness.py
 Never treat Greenhouse “Autofill my application” as Simplify.
 If Copilot filled EEO or work-auth looks wrong for F-1, block Submit and
 write the review row. Do not invent essays.
+
+If the posting is gone: close that tab, write `decision=closed` in
+`data/job_decisions.csv`, do not open a sibling job.

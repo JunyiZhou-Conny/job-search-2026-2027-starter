@@ -279,13 +279,13 @@ def load_keeps(path: Path) -> list[dict]:
         return [r for r in csv.DictReader(f) if (r.get("decision") or "").lower() == "keep"]
 
 def load_passed_urls() -> set[str]:
-    """URLs the user already passed — do not resurface in the active queue."""
+    """URLs already passed or closed — do not resurface in the active queue."""
     if not JOB_DECISIONS.exists():
         return set()
     out: set[str] = set()
     with JOB_DECISIONS.open(newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
-            if (r.get("decision") or "").strip().lower() == "pass":
+            if (r.get("decision") or "").strip().lower() in {"pass", "closed"}:
                 u = norm_url(r.get("url") or "")
                 if u:
                     out.add(u)

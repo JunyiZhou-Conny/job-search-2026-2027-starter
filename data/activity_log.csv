@@ -35,3 +35,4 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-07-26T11:36:00,J20260726-002,,simplify_import_created,,applied,"Uber — 2027 Software Engineering Internship, Uber Career Prep"
 2026-07-26T11:36:19,J20260723-007,,simplify_reconcile_merge,discovered,applied,Merged J20260726-001 Google MS Simplify row into triage keep; dashboard URL mismatch
 2026-07-26T11:36:19,J20260726-001,,duplicate_closed,applied,closed,Duplicate of J20260723-007
+2026-08-23T13:59:27,,,posting_closed,,closed,Together AI Research Intern Model Shaping Fall 2026 — Greenhouse jobs/5157661007 no longer open
