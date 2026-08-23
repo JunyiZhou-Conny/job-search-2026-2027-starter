@@ -62,6 +62,10 @@ license to invent. Record it in `knowledge/autofill_obstacles.yaml`
 (`docs/apply/OBSTACLES.md`). Ask Junyi later. Do not invent GPA, SAT/ACT,
 clearance, or citizenship.
 
+In apply notes, **Copilot = Simplify Copilot** (Chrome extension), not
+Cursor. The extension does not read this repo. A YAML fact can stay
+unused on the form.
+
 ## Automation safety
 
 - `label_source=manual` must not be auto-overwritten.
