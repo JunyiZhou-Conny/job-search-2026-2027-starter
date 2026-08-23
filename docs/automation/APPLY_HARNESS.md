@@ -76,6 +76,11 @@ quality notes: `docs/experiments/2026-08-22_ten_tab_copilot_review.md`.
 If Copilot fills EEO or marks US-citizen / “no sponsorship” on an F-1
 profile, do not Submit — see `docs/automation/WEEKDAY_APPLY_AUTOMATION.md`.
 
+**Two memories:** Simplify Copilot (the Chrome extension) does not read
+this repo. A value in `config/profile.yaml` (for example Emory GPA 3.925)
+can stay unused on the form. See `docs/apply/OBSTACLES.md`. Do not call
+Cursor “Copilot” in apply notes.
+
 ---
 
 ## What agents must never do

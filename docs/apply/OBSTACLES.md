@@ -19,6 +19,22 @@ When a form blocks full automation, add a `gaps` row in the YAML. Ask
 Junyi later. Write the confirmed value into profile / auth / evidence
 bank. Do not invent GPA, test scores, clearance, or citizenship.
 
+## Two memories: repo vs Simplify Copilot
+
+**Copilot here means Simplify Copilot** (the Chrome extension), not Cursor
+and not this Cloud Agent.
+
+They do not share a profile.
+
+| Memory | What it is | What it filled on SpaceX |
+|---|---|---|
+| Simplify Copilot | Logged-in extension on this VM | Name, school, resume, LinkedIn. Left undergrad GPA blank. |
+| This repo | `config/profile.yaml` and `knowledge/` | Already has Emory GPA **3.925**. Cursor did not type it onto the form. |
+
+A fact in git does not appear on an ATS page unless it is also in the
+Simplify profile, or a later agent types a **verified** repo value on
+purpose. Writing 3.925 only in YAML is not enough for unattended apply.
+
 ## What Junyi confirmed on SpaceX (2026-08-23)
 
 New Graduate Engineer, Software. Copilot ran. Submit unclicked.

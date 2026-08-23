@@ -18,6 +18,33 @@ purpose: >
 last_updated: "2026-08-23"
 last_source: "Junyi Take Control review of SpaceX New Graduate Engineer, Software"
 
+# Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
+#
+# "Copilot" in this file always means Simplify Copilot, the Chrome
+# extension — not Cursor, not the Cloud Agent model.
+#
+# Simplify Copilot fills from the Simplify account / extension profile
+# on this VM. This repo (config/profile.yaml, knowledge/) is a separate
+# memory. They do not sync. A fact in git does not get typed into an ATS
+# unless it is also in Simplify, or a later agent types it on purpose.
+phenomena:
+  - id: two_memories_repo_vs_simplify
+    observed: "2026-08-23"
+    company: SpaceX
+    meaning: >
+      Simplify Copilot left SpaceX undergraduate GPA blank. The same
+      number (Emory 3.925) was already in config/profile.yaml. Cursor
+      did not type the field. The extension did not read the repo.
+    do_not_confuse:
+      - Simplify Copilot = Chrome extension that ran Autofill This Page
+      - Cursor / this agent = model that can read the repo and cannot
+        assume Simplify has the same fields
+    implication: >
+      Putting a fact in the repo is not enough for unattended apply.
+      Either add it to the Simplify profile (human, in the extension),
+      or a later filler must copy a verified repo value into the widget.
+      Do not invent a third number.
+
 positive_signals:
   - id: need_review_matches_empty_fields
     observed: "2026-08-23"
