@@ -16,7 +16,7 @@ purpose: >
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
 last_updated: "2026-08-23"
-last_source: "Junyi Take Control review of SpaceX, then Apptronik Robotics Software Intern"
+last_source: "Junyi Take Control review of SpaceX, Apptronik, then Nirmata AI SWE Intern"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -56,6 +56,14 @@ phenomena:
       EEO autofill is not stable across Greenhouse forms. Do not treat
       one form's EEO answers as proof the next form will match. Still
       block unattended Submit when EEO is touched.
+
+  - id: short_form_autofill_complete
+    observed: "2026-08-23"
+    company: Nirmata
+    meaning: >
+      Sidebar said Autofill complete with nothing left in need-review.
+      Junyi said everything else looked perfect because the form had no
+      long written-response questions.
 
   - id: legal_status_left_for_review_is_ok
     observed: "2026-08-23"
@@ -138,6 +146,18 @@ apptronik_2026-08-23:
         Website field empty. GitHub is already in config/profile.yaml.
         Junyi is considering a personal site for projects. Do not invent
         a URL. Do not start that site unless asked.
+
+nirmata_2026-08-23:
+  role: "AI Software Engineer Intern"
+  ats: Greenhouse
+  submit: unclicked
+  copilot_need_review_count: 0
+  junyi_said: >
+    Autofill complete; nothing missing; rest looks perfect because there
+    are no self-written essay questions.
+  h1b_field: "No"
+  h1b_junyi_wants_this_everywhere: true
+  h1b_rule_written_to: "knowledge/work_authorization.yaml form_strategy.h1b_named_question_only"
 
 gaps:
   - id: emory_undergrad_gpa

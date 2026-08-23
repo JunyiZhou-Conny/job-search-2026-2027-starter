@@ -91,3 +91,15 @@ Leaving them flagged is the desired stop.
 | Disability | filled | filled |
 
 Do not assume the next Greenhouse form will match the last one.
+
+## What Junyi confirmed on Nirmata (2026-08-23)
+
+AI Software Engineer Intern. Sidebar: Autofill complete, nothing in
+need-review. Submit unclicked. Junyi said the rest looks perfect because
+the form has no long written answers.
+
+**H-1B field was No.** Junyi wants that on every form that asks
+specifically “Will you require H-1B sponsorship?” Written as form
+strategy in `knowledge/work_authorization.yaml`. The fact file still
+says future employer sponsorship is expected. Broader “now or in the
+future require sponsorship?” is still Yes / do not answer No.
