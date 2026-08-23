@@ -34,7 +34,7 @@ confirmation.
 | 7 | Nirmata | match | name, email, phone, LinkedIn, resume | none | **filled** (male, not Hispanic, Asian, not veteran; disability section opened) | **H-1B sponsorship No** | unclicked |
 | 8 | Apptronik | match | name, email, phone, Boston, LinkedIn, resume | none | computer-use reported Copilot filled gender/veteran/disability | citizenship / ITAR left in need-review (correct) | unclicked |
 | 9 | Together AI | **posting closed** | n/a | n/a | n/a | n/a | n/a |
-| 10 | SpaceX | match | computer-use reported identity + resume | 13 need review (GPA, tests, clearance, citizenship) | veteran dropdown filled (“not a protected veteran”); disability listed need-review | citizenship listed need-review | unclicked |
+| 10 | SpaceX | match | **Junyi 2026-08-23:** name, email, phone, resume, location, school, Emory math BS, LinkedIn, how-heard LinkedIn | 13 need review; empty form fields match that list | Junyi said gender/race/veteran/disability look correct | citizenship still empty (correct not to pick US citizen) | unclicked |
 
 Together Fall 2026 URL now shows “The job you are looking for is no longer open.”
 No replacement was opened.
@@ -62,6 +62,11 @@ No replacement was opened.
    University Master`. Expected graduation date stayed empty.
 5. **Closed requisitions** — resolver URLs go stale (Together). The apply
    loop must re-resolve or skip, not submit a sibling job.
+6. **SpaceX human pass (2026-08-23)** — Copilot’s 13 “need review” items
+   were the empty GPA / SAT / ACT / clearance / citizenship / essential-
+   functions fields. That alignment is good. Those facts are not all in
+   the repo (and Emory GPA is in the repo but unused). Notebook:
+   `knowledge/autofill_obstacles.yaml` and `docs/apply/OBSTACLES.md`.
 
 ## Artifacts
 

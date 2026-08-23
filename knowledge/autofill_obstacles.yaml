@@ -1,0 +1,125 @@
+# Autofill obstacle notebook
+# Missing facts and Copilot misses that block unattended Submit.
+# Do not invent answers. Do not store SAT/ACT/GPA here until Junyi confirms
+# the exact numbers for this file. Do not store ID documents.
+#
+# Companion (readable): docs/apply/OBSTACLES.md
+# Session evidence: docs/experiments/2026-08-22_ten_tab_copilot_review.md
+
+purpose: >
+  When Copilot leaves fields empty, or the repo has a fact that Copilot did
+  not use, write it here. Later we ask Junyi once, write the confirmed
+  value into profile / work_authorization / evidence_bank, then Copilot
+  or a later filler can use it. Empty "need review" that matches an empty
+  form is working-as-designed, not a Copilot bug.
+
+# status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
+
+last_updated: "2026-08-23"
+last_source: "Junyi Take Control review of SpaceX New Graduate Engineer, Software"
+
+positive_signals:
+  - id: need_review_matches_empty_fields
+    observed: "2026-08-23"
+    company: SpaceX
+    note: >
+      Copilot sidebar said 13 items need review. Those items were empty on
+      the Greenhouse form. Copilot did not silently invent GPA, SAT, ACT,
+      clearance, or citizenship. Keep this behavior.
+
+spacex_2026-08-23:
+  role: "New Graduate Engineer, Software"
+  ats: Greenhouse
+  submit: unclicked
+  copilot_need_review_count: 13
+  filled_and_junyi_said_looks_right:
+    - first_name
+    - last_name
+    - email
+    - phone
+    - resume
+    - location
+    - school
+    - emory_bachelors_mathematics
+    - linkedin
+    - how_heard: LinkedIn
+    - eeo_gender_race: "male; not Hispanic; Asian — Junyi said looks correct"
+    - veteran: "not a protected veteran"
+    - disability: "I do not have a disability"
+  filled_but_not_quite_right:
+    - field: discipline
+      mandatory: false
+      note: "Kind of not correct. Need a preferred SpaceX discipline mapping later."
+  empty_and_aligned_with_need_review:
+    - undergraduate_gpa
+    - graduate_gpa
+    - doctorate_gpa
+    - sat
+    - act
+    - active_security_clearance
+    - spacex_employment_history
+    - essential_functions_without_reasonable_accommodation
+    - citizenship_status
+
+gaps:
+  - id: emory_undergrad_gpa
+    status: in_repo_unused
+    already_in: "config/profile.yaml education_history Emory gpa 3.925"
+    form_effect: "SpaceX undergrad GPA left empty"
+    ask_later: "Confirm 3.925 is still the number to send to ATS, and whether Simplify Profile also has it."
+
+  - id: harvard_graduate_gpa
+    status: missing
+    already_in: null
+    form_effect: "SpaceX graduate GPA empty"
+    ask_later: "Is there a Harvard SM GPA to report, or should this stay blank / N/A?"
+
+  - id: doctorate_gpa
+    status: missing
+    already_in: null
+    form_effect: "SpaceX doctorate GPA empty"
+    ask_later: "Confirm N/A (no doctorate) vs leave blank."
+
+  - id: sat_act
+    status: missing
+    already_in: null
+    form_effect: "SpaceX SAT and ACT empty; Junyi said the Copilot values were weird and that he does have scores"
+    ask_later: "If you want these in the bank, send SAT and/or ACT (and test dates) in a later message. Do not invent."
+
+  - id: security_clearance
+    status: missing
+    already_in: null
+    form_effect: "SpaceX active clearance empty"
+    ask_later: "Confirm none / no active clearance vs some other status. Do not guess."
+
+  - id: essential_functions_accommodation
+    status: missing
+    already_in: null
+    form_effect: "SpaceX essential-functions question empty"
+    ask_later: "How should this yes/no be answered for SpaceX-style forms?"
+
+  - id: citizenship_widget
+    status: in_repo_unused
+    already_in: "knowledge/work_authorization.yaml current_status F-1"
+    form_effect: "SpaceX citizenship left in need-review (empty). Correct not to pick US citizen."
+    ask_later: "Preferred exact SpaceX dropdown value for F-1 (do not pick citizen / green card)."
+
+  - id: spacex_discipline
+    status: needs_human
+    already_in: null
+    form_effect: "Discipline filled but Junyi said it is kind of wrong; optional"
+    ask_later: "What discipline should SpaceX / similar engineering forms use?"
+
+  - id: spacex_employment_history
+    status: missing
+    already_in: null
+    form_effect: "SpaceX + SpaceXAI employment history empty"
+    ask_later: "Confirm never employed there, if that is the fact."
+
+do_not_put_in_this_file:
+  - passport
+  - SEVIS
+  - SSN
+  - EAD or visa scans
+  - Simplify passwords
+  - raw SAT/ACT until Junyi pastes the numbers for the bank

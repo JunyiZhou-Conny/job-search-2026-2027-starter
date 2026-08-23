@@ -57,6 +57,11 @@ If it exits 1, stop and follow `docs/automation/APPLY_HARNESS.md`. Do not
 treat Greenhouse’s MyGreenhouse button as Simplify. Do not type identity
 fields by hand to fake a Copilot pass. Do not Submit.
 
+Copilot “need review” that matches empty form fields is a **gap**, not a
+license to invent. Record it in `knowledge/autofill_obstacles.yaml`
+(`docs/apply/OBSTACLES.md`). Ask Junyi later. Do not invent GPA, SAT/ACT,
+clearance, or citizenship.
+
 ## Automation safety
 
 - `label_source=manual` must not be auto-overwritten.
