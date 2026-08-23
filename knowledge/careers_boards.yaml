@@ -21,6 +21,7 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  Twitch: twitch  # verified 2026-08-23; includes Software Engineer I, Commerce Engineering (SF + Seattle)
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -32,6 +33,7 @@ ashby:
   Baseten: baseten
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   "Hayden AI": haydenai  # verified 2026-08-23
+  "TRM Labs": trm-labs  # verified 2026-08-23; includes University Grad Product Engineer 2026-2027 (LA)
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}

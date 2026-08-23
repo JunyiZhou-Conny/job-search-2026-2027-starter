@@ -1,6 +1,6 @@
 # AI triage pack — 2026-08-23
 
-- Rows: **116**
+- Rows: **129**
 - Input CSV: `generated/discovery_for_triage_2026-08-23.csv`
 - Rules: `knowledge/discovery_triage_rules.yaml`
 - Profile: `config/profile.yaml`
