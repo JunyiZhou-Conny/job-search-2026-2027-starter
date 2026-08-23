@@ -1,0 +1,56 @@
+# Reusable written-response ideology. Not a second ATS.
+# Per-application drafts (what we actually typed or would type) live in
+# docs/apply/written_answers/. Do not invent metrics. Do not mark submitted
+# unless Junyi confirms a named row was submitted.
+
+last_updated: "2026-08-23"
+source: "Junyi Take Control on Traba Software Engineer (AI Agents)"
+
+# Speech-to-text that day said "Trava"; the Ashby tab is Traba.
+
+ideology:
+  decided: "2026-08-23"
+  use_when:
+    - why this company
+    - how I structure a week / get my best results
+    - meaning / purpose / what kind of work I want
+    - in-person vs remote culture prompts
+  points:
+    - id: education_and_self_motivation
+      text: >
+        Show the real education (Harvard SM Health Data Science; Emory B.S.
+        Applied Mathematics and Statistics). Show self-motivation. Do not
+        invent internships or employers.
+    - id: hours_for_a_real_goal
+      text: >
+        Willing to use evenings and some weekend hours when the goal is
+        clear and rewarding. Do whatever it takes to finish that goal.
+        Do not claim I already live "startup hours" as a full-time job.
+        Current situation: student / first intern.
+    - id: ask_questions_in_person
+      text: >
+        I ask questions. I prefer working with people in person over
+        online. Whiteboard / same room beats a long thread.
+    - id: agents_automate_the_boring
+      text: >
+        I like working with agents. The aim is that people spend less
+        time on dumb, redundant work. Automate what we do not love or
+        do not care about. Dedicate the rest of the time to work we
+        love. I want that for myself and for people I care about.
+    - id: meaning_with_purpose
+      text: >
+        Chase meaning, and the meaning has to have a purpose. Automate
+        the boring so the remaining work can be the meaningful part.
+        Be mindful I am F-1 / student — do not write as if I already
+        ran a Series A.
+
+salary_rule:
+  see: "knowledge/form_strategy.yaml always.salary_or_expected_compensation"
+
+relocate_rule:
+  see: "knowledge/form_strategy.yaml always.open_to_relocating"
+  form_answer: "Yes"
+
+how_did_you_hear_rule:
+  see: "knowledge/form_strategy.yaml always.how_did_you_hear"
+  if_copilot_skips: "computer-use clicks LinkedIn Job Board on the same Chrome"

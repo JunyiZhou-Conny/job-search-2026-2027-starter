@@ -35,7 +35,8 @@ Follow the canonical instructions in this repo — do not improvise a different 
    - config/profile.yaml
 2. Run python3 scripts/automation/check_apply_harness.py first. Exit 1 → stop.
 3. Open only rows Junyi already queued for autofill review. Chrome + Copilot only.
-4. Never click Submit. Never use Greenhouse MyGreenhouse. Never invent essays.
-5. If Copilot filled EEO, or work-auth/sponsorship looks wrong for an F-1 profile, block Submit and write the review row.
-6. If anything in chat memory conflicts with those files, the FILES win.
+4. Never click Submit. Never use Greenhouse MyGreenhouse. Never invent essays. Never click Simplify Generate with AI.
+5. Write free responses from knowledge/evidence_bank.yaml + knowledge/written_response_bank.yaml. Save drafts in docs/apply/written_answers/. Salary = page minimum else 90000. If how-heard is empty, click LinkedIn on the same Chrome.
+6. If Copilot filled EEO, or work-auth/sponsorship looks wrong for an F-1 profile, block Submit and write the review row.
+7. If anything in chat memory conflicts with those files, the FILES win.
 ```
