@@ -75,11 +75,15 @@ written_responses:
     bullets: 3–4 concise examples with quantitative metrics already in
     the evidence bank. Do not invent metrics, employers, or outcomes.
   if_evidence_missing: "Leave for Junyi leftover pile. Do not fabricate."
+  never_fill: >
+    salary / expected pay / compensation (numeric or free-text).
+    Leave for Junyi. Do not invent or guess a number.
 
 leave_for_junyi:
   decided: "2026-08-23"
   examples:
     - interest-area / which team or section you prefer
+    - salary / expected pay / compensation (numeric or free-text)
     - any preference Copilot cannot know and evidence_bank does not cover
   later_target: >
     Most short forms filled (and later submitted only if Junyi turns that

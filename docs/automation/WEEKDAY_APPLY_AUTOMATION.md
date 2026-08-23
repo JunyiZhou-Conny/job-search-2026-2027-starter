@@ -75,6 +75,7 @@ Automation idles with “no rows.”
 6. Written responses: Cursor writes from `knowledge/evidence_bank.yaml`.
    **Never** click Simplify “Generate with AI.” Do not invent metrics.
    Preference / interest questions go to the leftover pile.
+   Never type salary / expected pay / compensation. Leave those for Junyi.
 7. Never change EEO answers. If Copilot filled EEO, mark `eeo_touched=true`.
 8. Screenshot identity, work-auth, EEO, consent boxes, and the unclicked Submit control.
 9. Write one review row (below). Next URL.
