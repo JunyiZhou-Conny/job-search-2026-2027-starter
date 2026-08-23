@@ -42,4 +42,94 @@ From `knowledge/form_strategy.yaml` + `knowledge/written_response_bank.yaml`:
 
 ## Results
 
-Filled in during the live pass.
+Live pass on this VM, 2026-08-23. First-round Chrome tabs were closed first.
+Harness still `ready: true`. **Nothing submitted.** Generate with AI not clicked.
+Round-two tabs left open for Take Control.
+
+| # | Company | Requisition | Identity / résumé | Essays / leftovers | EEO | Work auth / sponsorship | Submit |
+|---|---|---|---|---|---|---|---|
+| 1 | MeshyAI | match (Ashby intern, Bay Area on-site) | name, email, `Junyi_Zhou_resume.pdf` | none (short form) | none visible | none visible | unclicked |
+| 2 | CVS Health | Workday account-creation wall | n/a | n/a | n/a | n/a | n/a — tab closed |
+| 3 | Lila Sciences | match | name, Harvard email, phone, resume | **Why Lila** empty (1 need-review). Preferred first name empty | Privacy notice filled | Copilot set sponsorship **No**; computer-use corrected to **Yes** (broad, names H-1B as example). US reside Yes. Relocate Yes | unclicked |
+| 4 | Hayden AI | match | name, email, phone, LinkedIn, resume | Preferred first name empty. Why Hayden empty. First-job leftover. Start date typed **2027-05-18**. Cover letter empty | **filled** (gender, Asian, veteran) | Relocate own-expense Yes. Commute 3x Yes. **Any-employer work auth = Yes (questionable for F-1 — leftover).** Broad sponsorship **Yes** (Copilot had No; corrected) | unclicked. 90/182-day reapply lock |
+| 5 | Baseten | match | name, email, phone, LinkedIn, resume | **2 leftovers:** why Baseten; developer-facing APIs/SDKs/CLI | **filled** (Asian, veteran) | Work auth + visa sponsorship marked completed by Copilot (not re-read as wrong after the pass) | unclicked |
+| 6 | Charta Health | match | identity + resume filled | **5 leftovers:** onsite 5x SF/NYC; office choice; languages; customer-facing exp; Why Charta | not re-read on a still | range on page $90k–$140k | unclicked |
+| 7 | Relativity Space | match | name, Boston, resume, LinkedIn | **2 leftovers:** sponsorship/export explanation; Why Relativity | **filled** (Hispanic No, Asian, veteran, disability) | Copilot set **U.S. Person** (wrong). Corrected to **I am not a U.S. Person.** Broad sponsorship (H-1B/TN-etc) Copilot **No** → **Yes**. Onsite Long Beach 5x **Yes**. Source LinkedIn | unclicked |
+| 8 | Scale AI | match | name, email, phone, location, resume, LinkedIn | **1 leftover:** “If yes, please provide further explanation below” (conditional; left empty) | **filled** (gender, Hispanic, ethnicity Asian, veteran, disability) | Broad sponsorship Copilot **No** → **Yes** | unclicked |
+| 9 | Notion | match (Summer 2027 intern) | name, email, phone, resume, LinkedIn | **7 need-review after Copilot:** Anchor Days; relocate NYC/SF; location interest; sponsorship **type** multi-select; role type; AI tech; Why Notion. Relocate later set **Yes** | **filled** (gender Male; veteran not protected) | Sponsorship is a **type** multi-select (H-1B / OPT / etc.), left unselected | unclicked |
+| 10 | Perplexity | match, but **Belgrade** location | name, email, phone, resume, location, GitHub | **4 leftovers:** past project; why Perplexity; how you use AI; 2-year contact. Exercise **Shared URL** empty (do not invent). Generate with AI visible, not clicked | none visible | Sponsorship is **UK / Germany / Serbia** (not US). Copilot **No**. Office 3x **Yes**. I-agree clicked | unclicked |
+
+CVS is not a closed posting. It is a **do-not-create-accounts** stop. No sibling Workday job was opened.
+
+Perplexity Search ML intern is posted from Belgrade. That is outside `search.country: United States`. Recorded as a pick miss for this test, not as a US apply.
+
+## What Copilot gets right (this round)
+
+- Hits the intended employer + title when the URL is live (9/10; CVS blocked before the form).
+- Fills name, Harvard email, phone, LinkedIn, GitHub (when asked), and `Junyi_Zhou_resume.pdf`.
+- Leaves Why-us / essays empty instead of guessing.
+- Does not click Submit.
+- Hayden human-check (“select the THIRD option”) and “automated script” were filled.
+- Meshy short form: Autofill complete with no need-review.
+
+## What Copilot gets wrong (this round)
+
+1. **Broad sponsorship → No** — Lila, Hayden, Relativity, Scale. All name H-1B as an *example* inside a “now or in the future” question. Standing rule is **Yes**. Computer-use corrected those four.
+2. **U.S. Person** — Relativity Copilot picked the ITAR “U.S. Person” side. Profile is F-1. Corrected to **I am not a U.S. Person.**
+3. **Authorized for any employer** — Hayden Copilot Yes. F-1 is not a blanket any-employer authorization. Do not treat that Yes as verified. Leftover for Junyi.
+4. **Country-specific sponsorship** — Perplexity asks UK / Germany / Serbia, not the US. Copilot No. Do not map that onto the US Yes rule.
+5. **EEO filled** — Hayden, Baseten, Relativity, Scale, Notion. Block unattended Submit.
+6. **How-heard / relocate** — Notion relocate left empty until computer-use set Yes. Relativity source showed LinkedIn completed.
+7. **Workday wall** — CVS asked for an account. Tab closed. No account created.
+
+## Salary numbers on the page (do not invent a higher ask)
+
+| Company | Page / Copilot range | If a salary field appears, type |
+|---|---|---|
+| MeshyAI | $40–$50 / hour | `40` (hourly minimum) |
+| Lila | $108,000–$140,000 | `108000` |
+| Hayden AI | $120,694–$156,920 | `120694` |
+| Baseten | $165,000–$330,000 | `165000` |
+| Charta Health | $90,000–$140,000 | `90000` |
+| Relativity | $115,000–$173,000 | `115000` |
+| Scale AI | $74,400–$93,000 | `74400` |
+| Notion | $57–$61 / hour | `57` |
+| Perplexity | none read on the stills | `90000` if a field appears |
+| CVS | n/a | n/a |
+
+No numeric salary widget was typed on this pass except where a start-date widget existed (Hayden `2027-05-18`).
+
+## Written-answer archives
+
+Drafts from `knowledge/evidence_bank.yaml` + `knowledge/written_response_bank.yaml`.
+`form_status` is `drafted` unless a later pass types them onto the still-open tab.
+
+| File | Leftovers covered |
+|---|---|
+| `docs/apply/written_answers/2026-08-23_lila-swe-i-instrument.md` | Why Lila |
+| `docs/apply/written_answers/2026-08-23_hayden-associate-data-scientist.md` | Why Hayden, preferred name, first job |
+| `docs/apply/written_answers/2026-08-23_baseten-swe-dedicated-inference.md` | Why Baseten, APIs/SDKs/CLI |
+| `docs/apply/written_answers/2026-08-23_charta-forward-deployed-ai.md` | Why Charta, onsite, leftovers |
+| `docs/apply/written_answers/2026-08-23_relativity-ai-swe.md` | Why Relativity, export/sponsorship explanation |
+| `docs/apply/written_answers/2026-08-23_scale-ai-builder-intern.md` | Conditional explanation leftover |
+| `docs/apply/written_answers/2026-08-23_notion-swe-intern-summer-2027.md` | Why Notion, AI tech, role type |
+| `docs/apply/written_answers/2026-08-23_perplexity-search-ml-intern.md` | Project, why Perplexity, AI usage; no exercise URL |
+
+Meshy had no free-response. CVS never reached a form.
+
+## Artifacts
+
+- `/opt/cursor/artifacts/round_two_first_five_tabs.mp4`
+- `/opt/cursor/artifacts/r2_meshy_autofill_complete.webp`
+- `/opt/cursor/artifacts/r2_lila_sponsorship_yes.webp`
+- `/opt/cursor/artifacts/r2_hayden_sponsorship_yes.webp`
+- `/opt/cursor/artifacts/r2_baseten_eeo_two_leftovers.webp`
+- `/opt/cursor/artifacts/r2_relativity_not_us_person_sponsorship_yes.webp`
+- `/opt/cursor/artifacts/r2_scale_one_leftover.webp`
+- `/opt/cursor/artifacts/r2_notion_seven_leftovers.webp`
+- `/opt/cursor/artifacts/r2_perplexity_four_leftovers.webp`
+
+## Next
+
+Tabs stay open. Do not Submit. Take Control can type the archived drafts.
+Do not invent a Perplexity exercise URL. Do not create a Workday account.

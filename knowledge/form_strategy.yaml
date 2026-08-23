@@ -4,7 +4,7 @@
 # Do not Submit unless Junyi explicitly says so for a named row.
 
 last_updated: "2026-08-23"
-source: "Junyi Neuralink review plus Gemini/Nirmata/Apptronik/SpaceX/Traba"
+source: "Junyi Neuralink/Gemini/Nirmata/Apptronik/SpaceX/Traba plus second 10-tab review"
 
 always:
   employed_by_this_company_before:
@@ -134,6 +134,50 @@ consent_checkboxes:
     - "Preferred now: computer-use clicks the visible required checkbox."
     - "Later: a small script that finds required unchecked boxes near Submit and checks them, then stops."
     - "Same Chrome profile as Copilot. Two browsers would miss the filled form."
+
+# Export-control / ITAR "U.S. Person" (Relativity Space 2026-08-23)
+us_person_export_control:
+  decided: "2026-08-23"
+  form_answer: "I am not a U.S. Person"
+  when: >
+    Export compliance / ITAR / EAR dropdown that asks whether the
+    applicant is a U.S. Person (citizen, green card, asylee, refugee).
+  reason: >
+    Junyi is F-1. Copilot picked the U.S. Person side on Relativity.
+    Computer-use must flip it. Do not pick citizen / green card /
+    U.S. Person for this profile.
+
+# "Authorized to work for any employer" (Hayden AI 2026-08-23)
+authorized_for_any_employer:
+  decided: "2026-08-23"
+  form_answer: "leave_for_junyi"
+  when: "Are you authorized to work in the United States for any employer?"
+  reason: >
+    Copilot answered Yes on Hayden. F-1 is not a blanket any-employer
+    authorization. Do not treat that Yes as verified. Do not silently
+    flip it to No. Leftover until Junyi or HIO wording is confirmed.
+
+# Country-named sponsorship is not the US Yes-rule (Perplexity 2026-08-23)
+country_specific_sponsorship:
+  decided: "2026-08-23"
+  when: >
+    Sponsorship question names other countries only (e.g. United
+    Kingdom, Germany, or Serbia) and does not ask about the United
+    States.
+  do_not_use: "will_require_sponsorship_now_or_future (US Yes rule)"
+  reason: >
+    Perplexity Search ML intern asked UK/Germany/Serbia. Copilot No.
+    That is a different question from US H-1B / OPT. Do not auto-Yes.
+
+# Workday / ATS account walls (CVS Health 2026-08-23)
+account_creation_wall:
+  decided: "2026-08-23"
+  do:
+    - Close the tab.
+    - Do not create Workday / Greenhouse / MyGreenhouse accounts.
+    - Do not pick a sibling requisition from the same board.
+    - Log autofill_blocked or similar in data/activity_log.csv.
+  reason: "Junyi: do not create accounts during these supervised tests."
 
 # Closed / vanished postings (Together AI 2026-08-23; will happen often)
 closed_posting:

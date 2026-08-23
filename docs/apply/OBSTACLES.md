@@ -166,3 +166,38 @@ New always-rules / archive:
 
 Never click Simplify **Generate with AI**. Do not Submit this test
 (100-day lock).
+
+## Round two (2026-08-23) — new obstacles
+
+Ten unused employers. Notes:
+`docs/experiments/2026-08-23_ten_tab_round_two.md`. Nothing submitted.
+
+**Workday account wall (CVS Health).** Data Science Analyst
+`R0993501-1` stopped at account creation. Tab closed. No account
+created. This is not a closed posting and not a sibling hunt.
+
+**U.S. Person / ITAR (Relativity Space).** Copilot picked the U.S.
+Person side. Profile is F-1. Computer-use set “I am not a U.S. Person.”
+Standing rule in `knowledge/form_strategy.yaml`.
+
+**Broad sponsorship No (again).** Lila, Hayden, Relativity, and Scale
+all used “now or in the future” with H-1B as an example. Copilot said
+No. Computer-use said Yes. H-1B-**named-only** questions stay No.
+
+**Any-employer work auth (Hayden AI).** Copilot Yes. F-1 is not that.
+Leftover. Do not silently flip it.
+
+**Country-named sponsorship (Perplexity).** UK / Germany / Serbia, role
+in Belgrade. Copilot No. Do not apply the US Yes rule. Also a pick miss:
+Belgrade is outside `search.country: United States`.
+
+**Perplexity exercise URL.** Required shared thread. Left empty. Do not
+invent one.
+
+**Hayden 90 / 182-day lock.** Do not Submit this test.
+
+**EEO filled** on Hayden, Baseten, Relativity, Scale, Notion. Block
+unattended Submit.
+
+**Notion sponsorship type.** Multi-select of visa types, not Yes/No.
+Left unselected.

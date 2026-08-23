@@ -37,3 +37,13 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-07-26T11:36:19,J20260726-001,,duplicate_closed,applied,closed,Duplicate of J20260723-007
 2026-08-23T13:59:27,,,posting_closed,,closed,Together AI Research Intern Model Shaping Fall 2026 — Greenhouse jobs/5157661007 no longer open
 2026-08-23T14:30:00,J20260723-016,,autofill_reviewed,discovered,discovered,Traba Ashby written answers drafted; not submitted (100-day lock)
+2026-08-23T15:13:00,,,autofill_reviewed,,,"Perplexity Search ML Intern — Belgrade posting; UK/DE/RS sponsorship No; I-agree clicked; exercise URL empty; essays drafted; not submitted"
+2026-08-23T15:15:00,,,autofill_reviewed,,,"MeshyAI Fullstack Engineer Intern — Ashby short form; Copilot complete; not submitted"
+2026-08-23T15:16:00,,,autofill_blocked,,,"CVS Health Data Science Analyst R0993501-1 — Workday account-creation wall; tab closed; no account created"
+2026-08-23T15:21:00,,,autofill_reviewed,,,"Hayden AI Associate Data Scientist — sponsorship No→Yes; start 2027-05-18; any-employer leftover; Why Hayden drafted; 90/182-day lock; not submitted"
+2026-08-23T15:23:00,,,autofill_reviewed,,,"Scale AI AI Builder Intern — sponsorship No→Yes; 1 conditional leftover empty; EEO filled; not submitted"
+2026-08-23T15:25:00,,,autofill_reviewed,,,"Notion SWE Intern Summer 2027 — relocate Yes; sponsorship type leftover; Why Notion drafted; not submitted"
+2026-08-23T15:28:00,,,autofill_reviewed,,,"Charta Health Forward Deployed AI Engineer — 5 leftovers drafted; not submitted"
+2026-08-23T15:30:00,,,autofill_reviewed,,,"Baseten SWE Dedicated Inference — 2 leftovers drafted; EEO filled; not submitted"
+2026-08-23T15:32:00,,,autofill_reviewed,,,"Lila Sciences SWE I Instrument Software — sponsorship No→Yes; Why Lila drafted; not submitted"
+2026-08-23T15:33:00,,,autofill_reviewed,,,"Relativity Space AI SWE — U.S. Person corrected; sponsorship No→Yes; Why Relativity drafted; EEO filled; not submitted"

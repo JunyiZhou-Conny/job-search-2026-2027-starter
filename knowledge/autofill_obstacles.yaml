@@ -16,7 +16,7 @@ purpose: >
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
 last_updated: "2026-08-23"
-last_source: "Junyi Take Control on Traba Software Engineer (AI Agents) plus earlier 10-tab review"
+last_source: "Second 10-tab Copilot review (Meshy / CVS / Lila / Hayden / Baseten / Charta / Relativity / Scale / Notion / Perplexity)"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -273,6 +273,57 @@ gaps:
       Traba listed $140K–$200K on the page. Junyi: type the minimum
       (140000). If a later page has no number, type 90000.
     ask_later: "None unless Junyi changes the 90k default."
+
+  - id: workday_account_wall
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml account_creation_wall"
+    form_effect: >
+      CVS Health Workday (Data Science Analyst R0993501-1) stopped at
+      account creation. Tab closed. No account created. Not a closed
+      posting.
+    ask_later: "None. Later agents close Workday walls the same way."
+
+  - id: us_person_export_control
+    status: in_repo_unused
+    already_in: "knowledge/form_strategy.yaml us_person_export_control"
+    form_effect: >
+      Relativity Space Copilot selected the ITAR U.S. Person side.
+      Computer-use set "I am not a U.S. Person."
+    ask_later: "None unless Junyi changes export-control wording."
+
+  - id: copilot_broad_sponsorship_no
+    status: observed_ok
+    already_in: "knowledge/work_authorization.yaml standard_question_answers.will_require_sponsorship_now_or_future"
+    form_effect: >
+      Round two: Lila, Hayden, Relativity, Scale Copilot answered No
+      on broad "now or in the future (e.g. H-1B)" questions. Corrected
+      to Yes. H-1B-named-only questions stay No.
+    ask_later: "None. Later agents flip broad-No to Yes on the same Chrome."
+
+  - id: authorized_for_any_employer
+    status: needs_human
+    already_in: "knowledge/form_strategy.yaml authorized_for_any_employer"
+    form_effect: >
+      Hayden AI Copilot answered Yes to "authorized to work in the
+      United States for any employer." F-1 is not that. Left as leftover.
+    ask_later: "Exact yes/no/wording for any-employer work-auth widgets."
+
+  - id: country_specific_sponsorship
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml country_specific_sponsorship"
+    form_effect: >
+      Perplexity asked sponsorship for the United Kingdom, Germany or
+      Serbia (role location Belgrade). Copilot No. Do not apply the
+      US Yes rule.
+    ask_later: "None unless a later form mixes US + other countries."
+
+  - id: perplexity_exercise_url
+    status: missing
+    already_in: null
+    form_effect: >
+      Perplexity requires a shared Perplexity thread URL (teach a
+      topic or advocate for the application). Left empty. Do not invent.
+    ask_later: "Only after Junyi records a real shared thread URL."
 
 do_not_put_in_this_file:
   - passport
