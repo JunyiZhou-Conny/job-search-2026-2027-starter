@@ -201,3 +201,8 @@ unattended Submit.
 
 **Notion sponsorship type.** Multi-select of visa types, not Yes/No.
 Left unselected.
+
+**Run Autofill Again clears corrections.** After leftover essays were
+typed, a second Autofill reset Lila Yes dropdowns and flipped Baseten
+sponsorship to No. Re-set. Do not click it after a human/computer-use
+pass.

@@ -7,7 +7,7 @@
 | ATS | Ashby |
 | Apply URL | https://jobs.ashbyhq.com/notion/3fba1c39-c5cb-47d7-9ad2-1cec4d7e9d0c |
 | Compensation on page | **$57 – $61** / hour |
-| `form_status` | `drafted` (relocate set Yes; essays and sponsorship type not typed) |
+| `form_status` | `typed_on_form` (Why Notion + AI tech; Anchor Days Yes; relocate Yes). Sponsorship type and role-type checkboxes left unselected. |
 | `submitted` | no |
 | Identity Copilot filled | name, email, phone, resume, LinkedIn |
 | Copilot need-review | 7 after Autofill |

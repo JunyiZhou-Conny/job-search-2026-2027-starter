@@ -7,7 +7,7 @@
 | ATS | Greenhouse |
 | Apply URL | https://job-boards.greenhouse.io/lilasciences/jobs/4186444009 |
 | Compensation on page | **$108,000 – $140,000** / year |
-| `form_status` | `drafted` (not typed onto the tab in this pass) |
+| `form_status` | `typed_on_form` (Why Lila + preferred name; sponsorship/reside/relocate/privacy re-set after a later Autofill cleared them) |
 | `submitted` | no |
 | Identity Copilot filled | name, `Harvard email`, phone, `Junyi_Zhou_resume.pdf` |
 | Copilot need-review | 1 after correction (Why Lila) |

@@ -102,7 +102,12 @@ No numeric salary widget was typed on this pass except where a start-date widget
 ## Written-answer archives
 
 Drafts from `knowledge/evidence_bank.yaml` + `knowledge/written_response_bank.yaml`.
-`form_status` is `drafted` unless a later pass types them onto the still-open tab.
+A later pass on the same Chrome **typed** the leftover Why-us / essays.
+`form_status` is now `typed_on_form`. **Still not submitted.**
+
+Do not click **Run Autofill Again** after corrections. A later Autofill
+cleared Lila's Yes dropdowns back to Select… and flipped Baseten
+sponsorship back to No. Both were re-set.
 
 | File | Leftovers covered |
 |---|---|
@@ -128,8 +133,16 @@ Meshy had no free-response. CVS never reached a form.
 - `/opt/cursor/artifacts/r2_scale_one_leftover.webp`
 - `/opt/cursor/artifacts/r2_notion_seven_leftovers.webp`
 - `/opt/cursor/artifacts/r2_perplexity_four_leftovers.webp`
+- `/opt/cursor/artifacts/r2_lila_why_and_sponsorship_yes.webp`
+- `/opt/cursor/artifacts/r2_baseten_sponsorship_yes_why_typed.webp`
+- `/opt/cursor/artifacts/r2_relativity_why_typed_linkedin.webp`
+- `/opt/cursor/artifacts/r2_hayden_why_typed.webp`
+- `/opt/cursor/artifacts/r2_notion_ai_tech_typed.webp`
 
 ## Next
 
-Tabs stay open. Do not Submit. Take Control can type the archived drafts.
+Tabs stay open for Take Control. Do not Submit. Do not Run Autofill Again.
 Do not invent a Perplexity exercise URL. Do not create a Workday account.
+Leftovers that stay leftovers: Hayden any-employer; Notion sponsorship
+type + role-type checkboxes; Perplexity exercise URL; Charta SF office
+radio; Scale conditional explanation.

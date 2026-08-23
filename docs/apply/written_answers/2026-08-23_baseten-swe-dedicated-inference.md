@@ -7,7 +7,7 @@
 | ATS | Ashby |
 | Apply URL | https://jobs.ashbyhq.com/baseten/fc6e5f2e-eb2d-4a6c-8a51-8422e8662bde |
 | Compensation on page | **$165,000 – $330,000** / year |
-| `form_status` | `drafted` |
+| `form_status` | `typed_on_form` (Why Baseten + APIs Yes). Sponsorship was No after a later Autofill; flipped back to **Yes**. |
 | `submitted` | no |
 | Identity Copilot filled | name, email, phone, LinkedIn, resume |
 | Copilot need-review | 2 (why Baseten; developer-facing APIs/SDKs/CLI) |

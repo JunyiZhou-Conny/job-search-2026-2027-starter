@@ -7,7 +7,7 @@
 | ATS | Greenhouse |
 | Apply URL | https://job-boards.greenhouse.io/scaleai/jobs/4703343005 |
 | Compensation on page | **$74,400 – $93,000** / year |
-| `form_status` | `drafted` (no essay typed; one conditional leftover left empty) |
+| `form_status` | `typed_on_form` (no essay required; conditional explanation left empty) |
 | `submitted` | no |
 | Identity Copilot filled | name, email, phone, location, resume, LinkedIn |
 | Copilot need-review | 1 (“If yes, please provide further explanation below”) |

@@ -169,6 +169,16 @@ country_specific_sponsorship:
     Perplexity Search ML intern asked UK/Germany/Serbia. Copilot No.
     That is a different question from US H-1B / OPT. Do not auto-Yes.
 
+# Do not re-run Copilot after human / computer-use corrections
+do_not_run_autofill_again:
+  decided: "2026-08-23"
+  rule: >
+    After computer-use corrects sponsorship / U.S. Person / relocate,
+    do not click Simplify "Run Autofill Again". A later Autofill on
+    Lila cleared Yes dropdowns to Select… and flipped Baseten
+    sponsorship back to No.
+  reason: "Corrections are not sticky across a second Autofill."
+
 # Workday / ATS account walls (CVS Health 2026-08-23)
 account_creation_wall:
   decided: "2026-08-23"

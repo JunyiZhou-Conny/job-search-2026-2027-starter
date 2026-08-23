@@ -9,7 +9,7 @@
 | Location on page | San Francisco HQ · hybrid · full time |
 | Compensation on page | **$120,694 – $156,920** / year |
 | Application limits | May not apply more than once in any **90** days for any Hayden role. May not re-apply to the **same** role within **182** days. |
-| `form_status` | `drafted` (start date was typed; essays were not) |
+| `form_status` | `typed_on_form` (preferred name Junyi, first job Yes, Why Hayden, start 2027-05-18) |
 | `submitted` | no |
 | Identity Copilot filled | Junyi Zhou, Harvard email, phone, LinkedIn, `Junyi_Zhou_resume.pdf` |
 | Copilot need-review | 4 (preferred name, start date, Why Hayden, first job) |

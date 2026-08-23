@@ -317,6 +317,15 @@ gaps:
       US Yes rule.
     ask_later: "None unless a later form mixes US + other countries."
 
+  - id: run_autofill_again_clears_corrections
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml do_not_run_autofill_again"
+    form_effect: >
+      After leftovers were typed, a later Autofill cleared Lila
+      sponsorship/reside/relocate/privacy back to Select… and set
+      Baseten sponsorship to No. Re-set. Do not click Run Autofill Again.
+    ask_later: "None."
+
   - id: perplexity_exercise_url
     status: missing
     already_in: null

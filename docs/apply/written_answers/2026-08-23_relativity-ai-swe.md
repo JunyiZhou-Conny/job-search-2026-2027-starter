@@ -7,7 +7,7 @@
 | ATS | Greenhouse |
 | Apply URL | https://job-boards.greenhouse.io/relativity/jobs/8726261002 |
 | Compensation on page | **$115,000 – $173,000** / year |
-| `form_status` | `drafted` (export + sponsorship widgets were corrected; essays were not typed) |
+| `form_status` | `typed_on_form` (export, sponsorship Yes, explanation, Why Relativity). How-heard ticked **Job Site (Indeed, Zip, LinkedIn)** — closest LinkedIn option. |
 | `submitted` | no |
 | Identity Copilot filled | name, Boston, resume, LinkedIn |
 | Copilot need-review | 2 (explanation; Why Relativity) |

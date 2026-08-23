@@ -7,7 +7,7 @@
 | ATS | Ashby |
 | Apply URL | https://jobs.ashbyhq.com/chartahealth/3088555d-de93-4236-add1-41005bf0933b |
 | Compensation on page | **$90,000 – $140,000** / year |
-| `form_status` | `drafted` |
+| `form_status` | `typed_on_form` (Why Charta + onsite 5x Yes). Office radio stayed San Francisco (cannot unselect). No separate languages / customer-facing text boxes. |
 | `submitted` | no |
 | Copilot need-review | 5 (onsite 5x SF/NYC; office choice; languages; customer-facing exp; Why Charta) |
 

@@ -7,7 +7,7 @@
 | ATS | Ashby |
 | Apply URL | https://jobs.ashbyhq.com/perplexity/9246cf02-26fd-4ae8-90c5-639c6e85e9e2 |
 | Location on page | **Belgrade** (not a US city) |
-| `form_status` | `drafted` (I-agree clicked; essays not typed; exercise URL empty) |
+| `form_status` | `typed_on_form` (three essays + I-agree). Exercise URL left empty. |
 | `submitted` | no |
 | Identity Copilot filled | name, email, phone, resume, location, GitHub `https://github.com/JunyiZhou-Conny` |
 | Copilot need-review | 4 |
