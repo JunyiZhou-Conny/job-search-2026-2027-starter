@@ -36,3 +36,4 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-07-26T11:36:19,J20260723-007,,simplify_reconcile_merge,discovered,applied,Merged J20260726-001 Google MS Simplify row into triage keep; dashboard URL mismatch
 2026-07-26T11:36:19,J20260726-001,,duplicate_closed,applied,closed,Duplicate of J20260723-007
 2026-08-23T13:59:27,,,posting_closed,,closed,Together AI Research Intern Model Shaping Fall 2026 — Greenhouse jobs/5157661007 no longer open
+2026-08-23T14:30:00,J20260723-016,,autofill_reviewed,discovered,discovered,Traba Ashby written answers drafted; not submitted (100-day lock)

@@ -16,7 +16,7 @@ purpose: >
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
 last_updated: "2026-08-23"
-last_source: "Junyi Take Control review through Neuralink ML Engineer Intern (rules only, no redo)"
+last_source: "Junyi Take Control on Traba Software Engineer (AI Agents) plus earlier 10-tab review"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -257,6 +257,22 @@ gaps:
     already_in: "config/profile.yaml has github, not a personal site"
     form_effect: "Apptronik website empty"
     ask_later: "Only after Junyi has a live site. Do not invent a URL."
+
+  - id: how_heard_checkbox_copilot_skip
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml always.how_did_you_hear"
+    form_effect: >
+      Traba 2026-08-23: Copilot left every "How did you find out about
+      Traba" checkbox empty. Computer-use ticked LinkedIn Job Board.
+    ask_later: "None. Later agents click this on the same Chrome every time."
+
+  - id: salary_expectations
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml always.salary_or_expected_compensation"
+    form_effect: >
+      Traba listed $140K–$200K on the page. Junyi: type the minimum
+      (140000). If a later page has no number, type 90000.
+    ask_later: "None unless Junyi changes the 90k default."
 
 do_not_put_in_this_file:
   - passport

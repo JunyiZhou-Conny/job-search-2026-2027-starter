@@ -70,6 +70,10 @@ If an apply URL is gone (closed, 404, Greenhouse “no longer open”):
 close that tab, write `decision=closed` in `data/job_decisions.csv`,
 do not pick a sibling from the employer’s current openings.
 
+Free-response drafts (why company, week structure, and similar) go in
+`docs/apply/written_answers/`. Reusable ideology:
+`knowledge/written_response_bank.yaml`. A file there is not a submit.
+
 ## Automation safety
 
 - `label_source=manual` must not be auto-overwritten.

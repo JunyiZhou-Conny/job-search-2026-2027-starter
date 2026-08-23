@@ -146,3 +146,23 @@ New always-rules (same file):
 Later target he described: most forms fluent, a leftover set for him,
 then a digest (counts + agent Take Control link). Do not email that
 digest until he confirms send.
+
+## What Junyi confirmed on Traba (2026-08-23) — first written-answer test
+
+Software Engineer (AI Agents), Ashby. Speech-to-text said “Trava.”
+Submit unclicked. Application-limits box: 100-day reapply lock.
+
+New always-rules / archive:
+
+- Salary / expected pay → **JD minimum if the page lists a range**
+  (this page: $140K–$200K → `140000`). If the page has no number →
+  **90000**.
+- Relocate / NYC 5x a week → still **Yes**.
+- Why-company and week-structure essays → Cursor writes them. Archive
+  every draft in `docs/apply/written_answers/`. Ideology:
+  `knowledge/written_response_bank.yaml`.
+- How-heard empty after Copilot → computer-use ticks **LinkedIn Job
+  Board** on the same Chrome. Do not leave it.
+
+Never click Simplify **Generate with AI**. Do not Submit this test
+(100-day lock).

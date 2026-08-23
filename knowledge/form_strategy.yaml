@@ -4,7 +4,7 @@
 # Do not Submit unless Junyi explicitly says so for a named row.
 
 last_updated: "2026-08-23"
-source: "Junyi Neuralink review plus earlier Gemini/Nirmata/Apptronik/SpaceX"
+source: "Junyi Neuralink review plus Gemini/Nirmata/Apptronik/SpaceX/Traba"
 
 always:
   employed_by_this_company_before:
@@ -55,8 +55,16 @@ always:
   how_did_you_hear:
     decided: "2026-08-23"
     form_answer: "LinkedIn"
-    when: "How did you hear about us / this job?"
-    reason: "Junyi: LinkedIn is fine; pick a normal public source, not random junk."
+    prefer_exact: "LinkedIn Job Board (if that checkbox/option exists)"
+    fallback_ok: "LinkedIn / LinkedIn feed / any normal public LinkedIn source"
+    when: "How did you hear about us / this job / this company?"
+    reason: >
+      Junyi: LinkedIn is fine; pick a normal public source, not random junk.
+      Copilot often leaves this empty (Traba 2026-08-23). Computer-use on
+      the same Chrome must click it every time. Do not leave it for later.
+    if_copilot_skips: >
+      Spawn computer-use (same Chrome profile as Copilot). Tick LinkedIn
+      Job Board or the closest LinkedIn option. Then stop. Do not Submit.
 
   ideal_start_date:
     decided: "2026-08-23"
@@ -65,6 +73,18 @@ always:
       Skip 2026 intern cycles (already a discovery hard skip).
     when_jd_has_no_term: "2027-05-18"
     reason: "Junyi: rare no-term case → a date in May; he said May 18."
+
+  salary_or_expected_compensation:
+    decided: "2026-08-23"
+    when: "Salary expectations / expected pay / compensation (numeric or free-text)"
+    if_page_lists_a_range: >
+      Type the listed minimum only (Traba 2026-08-23: page showed
+      $140K–$200K → type 140000). Junyi: asking above the floor is how
+      a company rejects you; do not invent a higher number.
+    if_page_has_no_number: "90000"
+    reason: >
+      Junyi 2026-08-23 on Traba. 90k is the no-information default, not
+      a target when the posting already prints a range.
 
 written_responses:
   decided: "2026-08-23"
@@ -75,15 +95,17 @@ written_responses:
     bullets: 3–4 concise examples with quantitative metrics already in
     the evidence bank. Do not invent metrics, employers, or outcomes.
   if_evidence_missing: "Leave for Junyi leftover pile. Do not fabricate."
-  never_fill: >
-    salary / expected pay / compensation (numeric or free-text).
-    Leave for Junyi. Do not invent or guess a number.
+  archive: >
+    Every draft goes in docs/apply/written_answers/ (one file per
+    company + role + date). Reusable ideology lives in
+    knowledge/written_response_bank.yaml. This is the interview recall
+    file — what we wrote, not a claim that it was submitted.
+  ideology_for_week_or_meaning_questions: "knowledge/written_response_bank.yaml"
 
 leave_for_junyi:
   decided: "2026-08-23"
   examples:
     - interest-area / which team or section you prefer
-    - salary / expected pay / compensation (numeric or free-text)
     - any preference Copilot cannot know and evidence_bank does not cover
   later_target: >
     Most short forms filled (and later submitted only if Junyi turns that
