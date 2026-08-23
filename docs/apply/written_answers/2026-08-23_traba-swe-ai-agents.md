@@ -11,7 +11,7 @@ Speech-to-text said “Trava.” The Ashby tab is **Traba**.
 | Location on page | New York City, NY · full time · in person |
 | Compensation on page | **$140K – $200K** · equity 0.04% – 0.12% |
 | Application limits | Candidates may not apply more than once in any 100-day span. May not re-apply to the same or any role within 100 days if not presented with an offer. |
-| `form_status` | `drafted` (this file). Typing onto the Ashby tab is a separate step. **Not submitted.** |
+| `form_status` | `typed_on_form` (Ashby tab on this VM, 2026-08-23). **Not submitted.** |
 | `submitted` | no |
 | Identity Copilot filled | name, email, LinkedIn, `Junyi_Zhou_resume.pdf` |
 | Copilot need-review | 6 (salary, sponsorship, NYC/in-person, Why Traba, week structure, how-heard) |
@@ -115,3 +115,7 @@ That is the standing how-heard rule.
 - Page compensation is $140K–$200K, so salary is 140000, not the 90k
   no-information default.
 - 100-day reapply lock: a mistaken Submit costs a third of a year.
+- 2026-08-23 later the same day: computer-use typed the drafts above
+  onto the Ashby tab. Salary `140000`, sponsorship Yes, relocate Yes,
+  Why Traba, week structure, LinkedIn Job Board. Submit still unclicked.
+  Ashby/Simplify showed “Refine with AI” on the week box; not clicked.
