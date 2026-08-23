@@ -1,0 +1,45 @@
+# Form-answer rules Junyi confirmed. Not a second ATS.
+# Copilot = Simplify Copilot (Chrome extension). It will not read this file.
+# Cursor / computer-use must apply these after Copilot, or Junyi types them.
+# Do not Submit unless Junyi explicitly says so for a named row.
+
+last_updated: "2026-08-23"
+
+always:
+  employed_by_this_company_before:
+    decided: "2026-08-23"
+    form_answer: "No"
+    when: "Have you been employed by [this company] in the past?"
+    reason: "Junyi: first intern / first job. Always No for prior-employer questions."
+
+  open_to_relocating:
+    decided: "2026-08-23"
+    form_answer: "Yes"
+    when: "Are you open to relocating?"
+    reason: "Junyi: any US city; will move. Always Yes."
+
+  h1b_named_question_only:
+    see: "knowledge/work_authorization.yaml form_strategy.h1b_named_question_only"
+    form_answer: "No"
+
+later_not_this_run:
+  cover_letter: "Empty unless Junyi asks for one."
+  personal_website: "Empty until a live URL exists. GitHub is already in profile.yaml."
+
+# Last gate before Submit. Simplify Copilot often skips these.
+consent_checkboxes:
+  decided: "2026-08-23"
+  rule: >
+    Click required privacy / application-statement / "I agree" squares
+    every time. Do not click Submit after them unless Junyi named that
+    row. Computer-use (or a later Playwright helper on the SAME Chrome
+    profile) does this. Do not invent a new browser.
+  do_not_click:
+    - Submit
+    - Apply (final)
+    - MyGreenhouse login
+    - EEO boxes the agent did not already decide
+  how:
+    - "Preferred now: computer-use clicks the visible required checkbox."
+    - "Later: a small script that finds required unchecked boxes near Submit and checks them, then stops."
+    - "Same Chrome profile as Copilot. Two browsers would miss the filled form."

@@ -103,3 +103,16 @@ specifically “Will you require H-1B sponsorship?” Written as form
 strategy in `knowledge/work_authorization.yaml`. The fact file still
 says future employer sponsorship is expected. Broader “now or in the
 future require sponsorship?” is still Yes / do not answer No.
+
+## What Junyi confirmed on Gemini (2026-08-23)
+
+Design Developer. Cover letter and website empty (expected; later).
+H-1B No (wanted).
+
+New always-rules (`knowledge/form_strategy.yaml`):
+
+- “Have you been employed by this company before?” → **No**
+- “Are you open to relocating?” → **Yes**
+- Required privacy / I-agree squares → **click every time**, then stop.
+  Simplify often skips these. Computer-use (same Chrome as Copilot)
+  clicks them. Do not Submit after the click unless Junyi names that row.

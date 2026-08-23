@@ -16,7 +16,7 @@ purpose: >
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
 last_updated: "2026-08-23"
-last_source: "Junyi Take Control review of SpaceX, Apptronik, then Nirmata AI SWE Intern"
+last_source: "Junyi Take Control review through Gemini Design Developer"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -146,6 +146,17 @@ apptronik_2026-08-23:
         Website field empty. GitHub is already in config/profile.yaml.
         Junyi is considering a personal site for projects. Do not invent
         a URL. Do not start that site unless asked.
+
+gemini_2026-08-23:
+  role: "Design Developer"
+  ats: Greenhouse
+  submit: unclicked
+  junyi_said: >
+    Same pattern as other short forms. Cover letter and website empty
+    (expected). H-1B No is what he wants. Employed by Gemini before →
+    No. Open to relocating to NYC → Yes always. Privacy / application
+    statement checkboxes need an agent click; Simplify often skips them.
+  rules_written_to: "knowledge/form_strategy.yaml"
 
 nirmata_2026-08-23:
   role: "AI Software Engineer Intern"

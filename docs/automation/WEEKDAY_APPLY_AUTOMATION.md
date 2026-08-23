@@ -68,10 +68,12 @@ Automation idles with “no rows.”
 2. Confirm company + title vs the row. Mismatch → skip, log `wrong_requisition`.
 3. Trigger Copilot once (“Start Application” / “Autofill This Page”).
 4. Never click employer Submit / Apply (final). Never click MyGreenhouse.
-5. Never type essay / “why us” / salary / invented answers.
-6. Never change EEO answers. If Copilot filled EEO, mark `eeo_touched=true`.
-7. Screenshot identity, work-auth, EEO, and the unclicked Submit control.
-8. Write one review row (below). Next URL.
+5. Apply `knowledge/form_strategy.yaml`: prior employer No, relocate Yes,
+   H-1B-named No. Click required privacy / I-agree squares. Then stop.
+6. Never type essay / “why us” / salary / invented answers.
+7. Never change EEO answers. If Copilot filled EEO, mark `eeo_touched=true`.
+8. Screenshot identity, work-auth, EEO, consent boxes, and the unclicked Submit control.
+9. Write one review row (below). Next URL.
 
 ---
 
