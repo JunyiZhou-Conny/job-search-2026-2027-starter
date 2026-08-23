@@ -30,6 +30,13 @@ Values: `verified` | `likely` | `unclear` | `no`
 | `broad` | Strong tech fit; sponsor `no` or weak; still may yield OA/interview | Nearest cluster resume; 1–2 bullets max |
 | `practice` | Low conversion expected; used for interview reps | Cap at ~15–25% of applied volume |
 
+## `application_weight` (separate filter)
+
+`regular` vs `prioritized` (GTC 2026 / startup / prestige). Not the letter
+`priority` field. See `knowledge/application_priority.yaml` and
+`docs/apply/PRIORITY.md`. Prioritized: hold public Submit until referral
+risk is checked. Confirm the weight before writing it onto a ledger row.
+
 ## Dual graduation dates (both real)
 
 | Date | Meaning | Use for |

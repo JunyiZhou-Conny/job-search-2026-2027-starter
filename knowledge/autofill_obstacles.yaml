@@ -317,6 +317,15 @@ gaps:
       US Yes rule.
     ask_later: "None unless a later form mixes US + other countries."
 
+  - id: copilot_sidebar_complete_field_empty
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml copilot_sidebar_is_not_the_form"
+    form_effect: >
+      Lila 2026-08-23 evening (Junyi): sidebar marked phone country,
+      phone, and resume complete. The Greenhouse widgets were empty.
+      Trust the page, not the sidebar. Re-check after Autofill Again.
+    ask_later: "None. Later agents look at the widgets."
+
   - id: run_autofill_again_clears_corrections
     status: observed_ok
     already_in: "knowledge/form_strategy.yaml do_not_run_autofill_again"

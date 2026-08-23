@@ -4,7 +4,7 @@
 # Do not Submit unless Junyi explicitly says so for a named row.
 
 last_updated: "2026-08-23"
-source: "Junyi Neuralink/Gemini/Nirmata/Apptronik/SpaceX/Traba plus second 10-tab review"
+source: "Junyi Lila evening review plus earlier 10-tab / Traba rules"
 
 always:
   employed_by_this_company_before:
@@ -88,19 +88,34 @@ always:
 
 written_responses:
   decided: "2026-08-23"
+  revised: "2026-08-23 evening — Junyi rejected the Lila Why-us dump"
   never_click: "Simplify 'Generate with AI' (paid / subscribe). Do not click it."
-  who_writes: "Cursor / this agent, after Copilot, from knowledge/evidence_bank.yaml"
-  style: >
-    Short or long response: write it. For 'exceptional ability' / wow-us
-    bullets: 3–4 concise examples with quantitative metrics already in
-    the evidence bank. Do not invent metrics, employers, or outcomes.
+  who_writes: "Cursor / this agent, after Copilot"
+  answer_the_prompt:
+    rule: >
+      Answer the question that is on the page, in the order it is asked.
+      "Why Lila, why this role, and why at this moment?" means those
+      three things — not a resume, not Cannon 338, not the ideology pack
+      unless that question asked for them.
+    tone: "Ardent, genuine, truthful. First intern / student voice is fine."
+    do_not:
+      - Paste education + three projects into every Why-us
+      - Recite program_end / commencement dates unless the prompt asks
+      - Force the Traba week-structure ideology into a company-why box
+      - Invent instrument, domain, or insider experience
+    metrics_when: >
+      Only when the prompt asks for examples, exceptional ability, or
+      evidence. Then 1–2 evidence-bank facts, not a tour of the bank.
   if_evidence_missing: "Leave for Junyi leftover pile. Do not fabricate."
   archive: >
     Every draft goes in docs/apply/written_answers/ (one file per
-    company + role + date). Reusable ideology lives in
-    knowledge/written_response_bank.yaml. This is the interview recall
-    file — what we wrote, not a claim that it was submitted.
+    company + role + date). If Junyi rejects a draft, keep the typed
+    text as historical and add a revised draft in the same file.
   ideology_for_week_or_meaning_questions: "knowledge/written_response_bank.yaml"
+  prioritized_companies: >
+    Same truth rules, more care. Read the JD. Say why this company and
+    this role. Do not make it longer by dumping projects. See
+    knowledge/application_priority.yaml.
 
 leave_for_junyi:
   decided: "2026-08-23"
@@ -114,8 +129,21 @@ leave_for_junyi:
     Do not send that email until Junyi confirms send. Draft only.
 
 later_not_this_run:
-  cover_letter: "Empty unless Junyi asks for one."
+  cover_letter: >
+    Empty unless Junyi asks for one. Lila 2026-08-23: missing cover
+    letter is expected, not a Copilot miss.
   personal_website: "Empty until a live URL exists. GitHub is already in profile.yaml."
+
+# Trust the visible form, not the Copilot sidebar (Lila 2026-08-23 evening)
+copilot_sidebar_is_not_the_form:
+  decided: "2026-08-23"
+  rule: >
+    "Completed" on phone / phone-country / resume does not mean the
+    Greenhouse widget has a number or a file. Look at the page.
+    After any Run Autofill Again, re-check those three before anything
+    else — Autofill can clear them while the sidebar stays green.
+  especially_on: prioritized
+  do_not: "Mark identity complete from the sidebar alone."
 
 # Last gate before Submit. Simplify Copilot often skips these.
 consent_checkboxes:

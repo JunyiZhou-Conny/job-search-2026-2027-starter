@@ -18,6 +18,11 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Never mark a role `ineligible` only because sponsorship is `no` or `unclear`.
 - Use `pursuit_lane`: `core` | `broad` | `practice`.
 - Keep practice-lane applications roughly 15–25% of applied volume unless funnel data justifies a change.
+- Apply **weight** is separate: `regular` | `prioritized` (GTC 2026 / startup / prestige).
+  See `knowledge/application_priority.yaml`. Prioritized: more Why-us care,
+  JD-tuned resume from the evidence bank only, **hold public Submit**
+  until referral / insider-page risk is checked. Labels stay suggestions
+  until Junyi confirms.
 
 ## Platforms
 
@@ -71,8 +76,13 @@ close that tab, write `decision=closed` in `data/job_decisions.csv`,
 do not pick a sibling from the employer’s current openings.
 
 Free-response drafts (why company, week structure, and similar) go in
-`docs/apply/written_answers/`. Reusable ideology:
-`knowledge/written_response_bank.yaml`. A file there is not a submit.
+`docs/apply/written_answers/`. Answer the prompt on the page. Do not
+paste education + three projects into every Why-us. Ideology in
+`knowledge/written_response_bank.yaml` is for week / meaning / culture
+questions only. A file there is not a submit.
+
+Copilot “Completed” on phone or resume is not proof the widget has a
+value. Look at the page. Especially on prioritized companies.
 
 ## Automation safety
 

@@ -206,3 +206,21 @@ Left unselected.
 typed, a second Autofill reset Lila Yes dropdowns and flipped Baseten
 sponsorship to No. Re-set. Do not click it after a human/computer-use
 pass.
+
+## Lila evening review (2026-08-23) — no re-click
+
+Junyi reviewed the Lila tab. Nothing was re-clicked.
+
+**Sidebar ≠ form.** Copilot said phone country, phone, and resume were
+complete. They were empty. Future pass: look at the widgets. Cover
+letter empty is expected.
+
+**Why Lila was a miss.** The typed draft answered a resume prompt that
+was not on the page. Cause: `written_responses.style` plus the Traba
+ideology pack reused as a Why-company template. New rule: answer the
+prompt, ardent / genuine / truthful, no project dump.
+
+**Lila is prioritized.** GTC 2026 Exhibitor (already in
+`knowledge/market_signals/gtc2026_sponsors_exhibitors.md`) plus Junyi
+emphasis. Hold public Submit until a referral / insider page is checked.
+See `knowledge/application_priority.yaml` and `docs/apply/PRIORITY.md`.
