@@ -116,3 +116,25 @@ New always-rules (`knowledge/form_strategy.yaml`):
 - Required privacy / I-agree squares → **click every time**, then stop.
   Simplify often skips these. Computer-use (same Chrome as Copilot)
   clicks them. Do not Submit after the click unless Junyi names that row.
+
+## What Junyi confirmed on Neuralink (2026-08-23) — rules only, no redo
+
+Machine Learning Engineer Intern. Copilot: 10 need review. Submit
+unclicked. Do not click Simplify **Generate with AI** (paid).
+
+New always-rules (same file):
+
+- Short/long written answers → Cursor writes them from
+  `knowledge/evidence_bank.yaml`. Quantitative, no invented metrics.
+  If evidence is missing, leftover pile.
+- Prior internship/co-op (no company named) → **Yes**
+- Internship/co-op at **this** company or a named affiliate → **No**
+- Graduation year → **2027**
+- On-site / “I understand I must work on-site” → **Yes**
+- Ideal start date → JD term if present, else **2027-05-18**
+- How did you hear → **LinkedIn** is fine
+- Interest / preference questions → leave for Junyi
+
+Later target he described: most forms fluent, a leftover set for him,
+then a digest (counts + agent Take Control link). Do not email that
+digest until he confirms send.

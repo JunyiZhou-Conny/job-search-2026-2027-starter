@@ -4,6 +4,7 @@
 # Do not Submit unless Junyi explicitly says so for a named row.
 
 last_updated: "2026-08-23"
+source: "Junyi Neuralink review plus earlier Gemini/Nirmata/Apptronik/SpaceX"
 
 always:
   employed_by_this_company_before:
@@ -21,6 +22,70 @@ always:
   h1b_named_question_only:
     see: "knowledge/work_authorization.yaml form_strategy.h1b_named_question_only"
     form_answer: "No"
+
+  prior_internship_or_coop_in_general:
+    decided: "2026-08-23"
+    form_answer: "Yes"
+    when: "Do you have prior internship or co-op experience?"
+    reason: "Junyi: always Yes when the company is not named."
+
+  prior_internship_or_coop_at_this_company:
+    decided: "2026-08-23"
+    form_answer: "No"
+    when: >
+      Internship/co-op at a named company, or at this employer / an
+      affiliate of this employer.
+    reason: "Junyi: always No when they name the company."
+
+  graduation_year_on_forms:
+    decided: "2026-08-23"
+    form_answer: "2027"
+    when: "What year will you graduate?"
+    reason: >
+      Junyi: put 2027. Commencement is March 2027. Program end is still
+      2026-12-18 in work_authorization.yaml — do not delete that fact.
+
+  on_site_or_work_on_site:
+    decided: "2026-08-23"
+    form_answer: "Yes"
+    when: "I understand this position requires me to work on-site / on site."
+    speech_to_text_note: "Junyi said 'work on science'; treated as on-site."
+    reason: "Junyi: always Yes; No would screen out."
+
+  how_did_you_hear:
+    decided: "2026-08-23"
+    form_answer: "LinkedIn"
+    when: "How did you hear about us / this job?"
+    reason: "Junyi: LinkedIn is fine; pick a normal public source, not random junk."
+
+  ideal_start_date:
+    decided: "2026-08-23"
+    when_jd_names_a_term: >
+      Use the posting's term (e.g. Fall 2027, Spring 2027, Summer 2027).
+      Skip 2026 intern cycles (already a discovery hard skip).
+    when_jd_has_no_term: "2027-05-18"
+    reason: "Junyi: rare no-term case → a date in May; he said May 18."
+
+written_responses:
+  decided: "2026-08-23"
+  never_click: "Simplify 'Generate with AI' (paid / subscribe). Do not click it."
+  who_writes: "Cursor / this agent, after Copilot, from knowledge/evidence_bank.yaml"
+  style: >
+    Short or long response: write it. For 'exceptional ability' / wow-us
+    bullets: 3–4 concise examples with quantitative metrics already in
+    the evidence bank. Do not invent metrics, employers, or outcomes.
+  if_evidence_missing: "Leave for Junyi leftover pile. Do not fabricate."
+
+leave_for_junyi:
+  decided: "2026-08-23"
+  examples:
+    - interest-area / which team or section you prefer
+    - any preference Copilot cannot know and evidence_bank does not cover
+  later_target: >
+    Most short forms filled (and later submitted only if Junyi turns that
+    on). Preference leftovers stay for him. End-of-day digest: how many
+    fluent, how many leftover, link to the Cloud Agent for Take Control.
+    Do not send that email until Junyi confirms send. Draft only.
 
 later_not_this_run:
   cover_letter: "Empty unless Junyi asks for one."

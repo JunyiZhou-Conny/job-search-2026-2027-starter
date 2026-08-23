@@ -29,7 +29,7 @@ confirmation.
 | 2 | Etched | match | name, email, phone, resume | left empty | none visible | **wrong: US Citizen or Permanent Resident selected** | unclicked |
 | 3 | Bild AI | match | name, email, resume (phone digit not confirmed on a still) | left for review | none visible | computer-use said Copilot completed sponsorship — **unverified** | unclicked |
 | 4 | Traba | match | name, email, LinkedIn, resume | empty (correct) | none visible | left in need-review (correct) | unclicked |
-| 5 | Neuralink | match | first/last, email, phone, Harvard + Emory, resume | 10 fields need review (ability examples, season, start) | none visible on the still | not visible on the identity still | unclicked |
+| 5 | Neuralink | match | identity + resume earlier; **Junyi 2026-08-23 rules only, no redo** | 10 need review: write from evidence bank later; never Simplify Generate-with-AI | — | intern-in-general Yes; at-this-co No; grad year 2027; on-site Yes; start = JD term or 2027-05-18 | unclicked |
 | 6 | Gemini | match | **Junyi 2026-08-23:** cover letter + website empty (expected) | none | — | H-1B No (wanted). Employed before → No. Relocate → Yes. Privacy boxes need agent click | unclicked |
 | 7 | Nirmata | match | **Junyi 2026-08-23:** autofill complete, no need-review; rest looks perfect (no essays) | none | earlier still showed EEO filled | **H-1B No — Junyi wants this on every H-1B-named question** | unclicked |
 | 8 | Apptronik | match | **Junyi 2026-08-23:** LinkedIn filled; website empty; no cover letter | — | disability filled; Hispanic/Latino empty (unlike SpaceX); veteran empty (Junyi: nice) | **3 need-review OK:** lawful status, citizenship, US-gov contract/license eligibility | unclicked |

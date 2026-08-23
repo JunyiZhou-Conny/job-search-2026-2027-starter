@@ -68,9 +68,12 @@ Automation idles with “no rows.”
 2. Confirm company + title vs the row. Mismatch → skip, log `wrong_requisition`.
 3. Trigger Copilot once (“Start Application” / “Autofill This Page”).
 4. Never click employer Submit / Apply (final). Never click MyGreenhouse.
-5. Apply `knowledge/form_strategy.yaml`: prior employer No, relocate Yes,
-   H-1B-named No. Click required privacy / I-agree squares. Then stop.
-6. Never type essay / “why us” / salary / invented answers.
+5. Apply `knowledge/form_strategy.yaml` (prior employer, relocate, H-1B-named,
+   intern-in-general vs at-this-company, grad year 2027, on-site, start date,
+   how-heard). Click required privacy / I-agree squares.
+6. Written responses: Cursor writes from `knowledge/evidence_bank.yaml`.
+   **Never** click Simplify “Generate with AI.” Do not invent metrics.
+   Preference / interest questions go to the leftover pile.
 7. Never change EEO answers. If Copilot filled EEO, mark `eeo_touched=true`.
 8. Screenshot identity, work-auth, EEO, consent boxes, and the unclicked Submit control.
 9. Write one review row (below). Next URL.
@@ -109,6 +112,9 @@ Per run, under `generated/apply_review/YYYY-MM-DD/`:
   sponsorship_value, need_review_count, submit_clicked (must be false),
   blocker, screenshot paths.
 - Screenshots copied into that folder (no cookies, no passwords).
+- `leftovers.md` — preference / missing-evidence questions for Junyi.
+- End-of-day digest draft (counts fluent vs leftover + this agent URL).
+  **Do not send email** until Junyi confirms send.
 - Append `data/activity_log.csv` only for “autofill reviewed, not submitted”
   when a material review happened. Do not write `status=applied`.
 

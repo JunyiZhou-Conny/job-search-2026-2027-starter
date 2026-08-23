@@ -16,7 +16,7 @@ purpose: >
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
 last_updated: "2026-08-23"
-last_source: "Junyi Take Control review through Gemini Design Developer"
+last_source: "Junyi Take Control review through Neuralink ML Engineer Intern (rules only, no redo)"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -146,6 +146,21 @@ apptronik_2026-08-23:
         Website field empty. GitHub is already in config/profile.yaml.
         Junyi is considering a personal site for projects. Do not invent
         a URL. Do not start that site unless asked.
+
+neuralink_2026-08-23:
+  role: "Machine Learning Engineer Intern"
+  ats: Greenhouse
+  submit: unclicked
+  redo: false
+  copilot_need_review_count: 10
+  junyi_said: >
+    Ten need-review items. Do not redo this tab now. Remember the rules
+    for later fills. Do not click Simplify Generate with AI (paid).
+    Agent should write essays from the evidence bank. Internship-in-general
+    Yes; internship-at-this-company No. Grad year 2027. On-site Yes.
+    Interest/preference leave for him. Start date from JD term or 2027-05-18.
+    How-heard LinkedIn is fine.
+  rules_written_to: "knowledge/form_strategy.yaml"
 
 gemini_2026-08-23:
   role: "Design Developer"
