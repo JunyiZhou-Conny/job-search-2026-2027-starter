@@ -20,6 +20,7 @@ greenhouse:
   "Together AI": togetherai
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
+  Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -29,6 +30,8 @@ ashby:
   OpenAI: openai
   "Charta Health": chartahealth
   Baseten: baseten
+  MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
+  "Hayden AI": haydenai  # verified 2026-08-23
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
@@ -52,3 +55,11 @@ workday:
     host: nvidia.wd5
     tenant: nvidia
     site: NVIDIAExternalCareerSite
+  "CVS Health":
+    host: cvshealth.wd1
+    tenant: cvshealth
+    site: CVS_Health_Careers
+  Blackstone:
+    host: blackstone.wd1
+    tenant: blackstone
+    site: Blackstone_Careers
