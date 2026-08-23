@@ -19,8 +19,9 @@ A weekday Cloud Agent that:
 5. Screenshots the form, writes a review row, **stops**.
 6. Leaves Submit for Junyi.
 
-It is not a second Simplify tracker. It does not send outreach. It does not
-invent essays. It does not click Greenhouse MyGreenhouse.
+It is not a second Simplify tracker. It does not send outreach. It does not invent metrics. Written answers come from the evidence bank
+or go to leftovers. It does not click Greenhouse MyGreenhouse. It does
+not click Simplify Generate with AI.
 
 ---
 
@@ -125,8 +126,8 @@ Do not commit Chrome profiles or `simplify_storage.json`.
 ## What this Automation is not
 
 - Not unattended Submit. That needs a later, explicit user sentence.
-- Not a Playwright field-filler. Copilot misses (Etched citizen, EEO, essay
-  gaps) are **review signals**, not a reason to type answers in this version.
+- Not Simplify “Generate with AI.” Essays are written from the evidence bank
+  or left for Junyi. Still not unattended Submit until he says so.
 - Not daily discovery. Discovery stays `docs/automation/DAILY_JOB_DISCOVERY.md`.
 - Not a shared/friends environment. The snapshot is a live Simplify login.
 
