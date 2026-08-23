@@ -1,0 +1,267 @@
+# Autofill obstacle notebook
+# Missing facts and Copilot misses that block unattended Submit.
+# Do not invent answers. Do not store SAT/ACT/GPA here until Junyi confirms
+# the exact numbers for this file. Do not store ID documents.
+#
+# Companion (readable): docs/apply/OBSTACLES.md
+# Session evidence: docs/experiments/2026-08-22_ten_tab_copilot_review.md
+
+purpose: >
+  When Copilot leaves fields empty, or the repo has a fact that Copilot did
+  not use, write it here. Later we ask Junyi once, write the confirmed
+  value into profile / work_authorization / evidence_bank, then Copilot
+  or a later filler can use it. Empty "need review" that matches an empty
+  form is working-as-designed, not a Copilot bug.
+
+# status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
+
+last_updated: "2026-08-23"
+last_source: "Junyi Take Control review through Neuralink ML Engineer Intern (rules only, no redo)"
+
+# Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
+#
+# "Copilot" in this file always means Simplify Copilot, the Chrome
+# extension — not Cursor, not the Cloud Agent model.
+#
+# Simplify Copilot fills from the Simplify account / extension profile
+# on this VM. This repo (config/profile.yaml, knowledge/) is a separate
+# memory. They do not sync. A fact in git does not get typed into an ATS
+# unless it is also in Simplify, or a later agent types it on purpose.
+phenomena:
+  - id: two_memories_repo_vs_simplify
+    observed: "2026-08-23"
+    company: SpaceX
+    meaning: >
+      Simplify Copilot left SpaceX undergraduate GPA blank. The same
+      number (Emory 3.925) was already in config/profile.yaml. Cursor
+      did not type the field. The extension did not read the repo.
+    do_not_confuse:
+      - Simplify Copilot = Chrome extension that ran Autofill This Page
+      - Cursor / this agent = model that can read the repo and cannot
+        assume Simplify has the same fields
+    implication: >
+      Putting a fact in the repo is not enough for unattended apply.
+      Either add it to the Simplify profile (human, in the extension),
+      or a later filler must copy a verified repo value into the widget.
+      Do not invent a third number.
+
+  - id: eeo_inconsistent_across_forms
+    observed: "2026-08-23"
+    meaning: >
+      Same Simplify session, same day. SpaceX Hispanic/Latino was filled
+      (Junyi said it looked correct: not Hispanic). Apptronik Hispanic or
+      Latino was left empty. Disability filled on Apptronik. Veteran left
+      empty on Apptronik (Junyi said that empty veteran field is nice).
+    implication: >
+      EEO autofill is not stable across Greenhouse forms. Do not treat
+      one form's EEO answers as proof the next form will match. Still
+      block unattended Submit when EEO is touched.
+
+  - id: short_form_autofill_complete
+    observed: "2026-08-23"
+    company: Nirmata
+    meaning: >
+      Sidebar said Autofill complete with nothing left in need-review.
+      Junyi said everything else looked perfect because the form had no
+      long written-response questions.
+
+  - id: legal_status_left_for_review_is_ok
+    observed: "2026-08-23"
+    company: Apptronik
+    meaning: >
+      Copilot listed 3 need-review items: lawful / work-authorization
+      status, citizenship, and eligibility to contract with or receive
+      licenses from the US government. Junyi asked if that is OK. Yes.
+      Those questions need more attention than name/email. Leaving them
+      empty and flagged is the desired stop, not a miss.
+
+positive_signals:
+  - id: need_review_matches_empty_fields
+    observed: "2026-08-23"
+    company: SpaceX
+    note: >
+      Copilot sidebar said 13 items need review. Those items were empty on
+      the Greenhouse form. Copilot did not silently invent GPA, SAT, ACT,
+      clearance, or citizenship. Keep this behavior.
+
+spacex_2026-08-23:
+  role: "New Graduate Engineer, Software"
+  ats: Greenhouse
+  submit: unclicked
+  copilot_need_review_count: 13
+  filled_and_junyi_said_looks_right:
+    - first_name
+    - last_name
+    - email
+    - phone
+    - resume
+    - location
+    - school
+    - emory_bachelors_mathematics
+    - linkedin
+    - how_heard: LinkedIn
+    - eeo_gender_race: "male; not Hispanic; Asian — Junyi said looks correct"
+    - veteran: "not a protected veteran"
+    - disability: "I do not have a disability"
+  filled_but_not_quite_right:
+    - field: discipline
+      mandatory: false
+      note: "Kind of not correct. Need a preferred SpaceX discipline mapping later."
+  empty_and_aligned_with_need_review:
+    - undergraduate_gpa
+    - graduate_gpa
+    - doctorate_gpa
+    - sat
+    - act
+    - active_security_clearance
+    - spacex_employment_history
+    - essential_functions_without_reasonable_accommodation
+    - citizenship_status
+
+apptronik_2026-08-23:
+  role: "Robotics Software Intern – Real-Time Controls"
+  ats: Greenhouse
+  submit: unclicked
+  copilot_need_review_count: 3
+  need_review_fields_junyi_named:
+    - lawful_or_work_authorization_status
+    - citizenship
+    - eligible_to_contract_with_or_receive_us_government_licenses
+  need_review_judgment: >
+    OK / desired. These are high-attention legal questions. Do not
+    auto-answer. Junyi confirmed they should stay flagged.
+  filled_and_junyi_noted:
+    - linkedin
+    - disability_status
+  empty_and_junyi_noted:
+    - hispanic_or_latino: "empty here; filled on SpaceX in the same session"
+    - veteran_status: "empty; Junyi said nice (did not invent)"
+    - cover_letter: "empty; expected — no cover letter was requested this run"
+    - website: "empty; Junyi wants a personal project site later, not now"
+  later_work_not_this_run:
+    - id: cover_letters
+      note: "Decide later whether to generate a cover letter per role."
+    - id: personal_website
+      note: >
+        Website field empty. GitHub is already in config/profile.yaml.
+        Junyi is considering a personal site for projects. Do not invent
+        a URL. Do not start that site unless asked.
+
+neuralink_2026-08-23:
+  role: "Machine Learning Engineer Intern"
+  ats: Greenhouse
+  submit: unclicked
+  redo: false
+  copilot_need_review_count: 10
+  junyi_said: >
+    Ten need-review items. Do not redo this tab now. Remember the rules
+    for later fills. Do not click Simplify Generate with AI (paid).
+    Agent should write essays from the evidence bank. Internship-in-general
+    Yes; internship-at-this-company No. Grad year 2027. On-site Yes.
+    Interest/preference leave for him. Start date from JD term or 2027-05-18.
+    How-heard LinkedIn is fine.
+  rules_written_to: "knowledge/form_strategy.yaml"
+
+gemini_2026-08-23:
+  role: "Design Developer"
+  ats: Greenhouse
+  submit: unclicked
+  junyi_said: >
+    Same pattern as other short forms. Cover letter and website empty
+    (expected). H-1B No is what he wants. Employed by Gemini before →
+    No. Open to relocating to NYC → Yes always. Privacy / application
+    statement checkboxes need an agent click; Simplify often skips them.
+  rules_written_to: "knowledge/form_strategy.yaml"
+
+nirmata_2026-08-23:
+  role: "AI Software Engineer Intern"
+  ats: Greenhouse
+  submit: unclicked
+  copilot_need_review_count: 0
+  junyi_said: >
+    Autofill complete; nothing missing; rest looks perfect because there
+    are no self-written essay questions.
+  h1b_field: "No"
+  h1b_junyi_wants_this_everywhere: true
+  h1b_rule_written_to: "knowledge/work_authorization.yaml form_strategy.h1b_named_question_only"
+
+gaps:
+  - id: emory_undergrad_gpa
+    status: in_repo_unused
+    already_in: "config/profile.yaml education_history Emory gpa 3.925"
+    form_effect: "SpaceX undergrad GPA left empty"
+    ask_later: "Confirm 3.925 is still the number to send to ATS, and whether Simplify Profile also has it."
+
+  - id: harvard_graduate_gpa
+    status: missing
+    already_in: null
+    form_effect: "SpaceX graduate GPA empty"
+    ask_later: "Is there a Harvard SM GPA to report, or should this stay blank / N/A?"
+
+  - id: doctorate_gpa
+    status: missing
+    already_in: null
+    form_effect: "SpaceX doctorate GPA empty"
+    ask_later: "Confirm N/A (no doctorate) vs leave blank."
+
+  - id: sat_act
+    status: missing
+    already_in: null
+    form_effect: "SpaceX SAT and ACT empty; Junyi said the Copilot values were weird and that he does have scores"
+    ask_later: "If you want these in the bank, send SAT and/or ACT (and test dates) in a later message. Do not invent."
+
+  - id: security_clearance
+    status: missing
+    already_in: null
+    form_effect: "SpaceX active clearance empty"
+    ask_later: "Confirm none / no active clearance vs some other status. Do not guess."
+
+  - id: essential_functions_accommodation
+    status: missing
+    already_in: null
+    form_effect: "SpaceX essential-functions question empty"
+    ask_later: "How should this yes/no be answered for SpaceX-style forms?"
+
+  - id: citizenship_widget
+    status: in_repo_unused
+    already_in: "knowledge/work_authorization.yaml current_status F-1"
+    form_effect: "SpaceX citizenship left in need-review (empty). Correct not to pick US citizen."
+    ask_later: "Preferred exact SpaceX dropdown value for F-1 (do not pick citizen / green card)."
+
+  - id: spacex_discipline
+    status: needs_human
+    already_in: null
+    form_effect: "Discipline filled but Junyi said it is kind of wrong; optional"
+    ask_later: "What discipline should SpaceX / similar engineering forms use?"
+
+  - id: spacex_employment_history
+    status: missing
+    already_in: null
+    form_effect: "SpaceX + SpaceXAI employment history empty"
+    ask_later: "Confirm never employed there, if that is the fact."
+
+  - id: apptronik_government_contract_eligibility
+    status: needs_human
+    already_in: null
+    form_effect: "Apptronik 'eligible to contract / US government licenses' left in need-review"
+    ask_later: "When ready, the exact yes/no for ITAR / government-contract questions. Do not guess."
+
+  - id: cover_letter
+    status: missing
+    already_in: null
+    form_effect: "Apptronik cover letter empty"
+    ask_later: "Later: whether to write cover letters at all, and for which lanes."
+
+  - id: personal_website_url
+    status: missing
+    already_in: "config/profile.yaml has github, not a personal site"
+    form_effect: "Apptronik website empty"
+    ask_later: "Only after Junyi has a live site. Do not invent a URL."
+
+do_not_put_in_this_file:
+  - passport
+  - SEVIS
+  - SSN
+  - EAD or visa scans
+  - Simplify passwords
+  - raw SAT/ACT until Junyi pastes the numbers for the bank

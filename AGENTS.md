@@ -41,6 +41,31 @@ Do not overwrite the template owner's identity on upstream `main`.
 Runbook: `docs/collaborators/SETUP.md`. Kickoff: `docs/collaborators/AGENT_KICKOFF.md`.
 Command: `/collaborator-setup`. Reset (fork only): `scripts/init_personal_copy.py`.
 
+## Apply harness (Cloud Agent autofill)
+
+Opening ATS tabs is not enough. Autofill needs Chromium + Simplify Copilot +
+a personal session on **this** VM. That harness is not in git and dies with
+the pod unless the personal environment was snapshotted after a human login.
+
+Before any 10-tab / autofill run:
+
+```bash
+python3 scripts/automation/check_apply_harness.py
+```
+
+If it exits 1, stop and follow `docs/automation/APPLY_HARNESS.md`. Do not
+treat Greenhouse’s MyGreenhouse button as Simplify. Do not type identity
+fields by hand to fake a Copilot pass. Do not Submit.
+
+Copilot “need review” that matches empty form fields is a **gap**, not a
+license to invent. Record it in `knowledge/autofill_obstacles.yaml`
+(`docs/apply/OBSTACLES.md`). Ask Junyi later. Do not invent GPA, SAT/ACT,
+clearance, or citizenship.
+
+In apply notes, **Copilot = Simplify Copilot** (Chrome extension), not
+Cursor. The extension does not read this repo. A YAML fact can stay
+unused on the form.
+
 ## Automation safety
 
 - `label_source=manual` must not be auto-overwritten.

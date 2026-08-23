@@ -21,6 +21,22 @@ earliest_full_time_start: "2027-01-18"
 preferred_full_time_start: "2027-01-18 ideal; any later 2027 date including Summer OK"
 future_sponsorship_required: true
 
+# 2026-08-23 Junyi (Nirmata review): on questions that name H-1B only,
+# answer No so the ATS does not auto-reject. This is a form strategy.
+# The fact above is unchanged: future employer sponsorship is still expected.
+form_strategy:
+  h1b_named_question_only:
+    decided: "2026-08-23"
+    form_answer: "No"
+    when: >
+      The question is specifically "Will you require H-1B sponsorship?"
+      or the same idea with H-1B named.
+    do_not_use_when: >
+      The question is "Will you now or in the future require sponsorship?"
+      with no H-1B wording — that still uses
+      will_require_sponsorship_now_or_future (Yes).
+    fact_unchanged: "future_sponsorship_required remains true"
+
 standard_question_answers:
   # Use only after OPT EAD is valid for the employment period being asked about.
   authorized_to_work_in_us:
@@ -33,6 +49,8 @@ standard_question_answers:
     typical_answer: "Program completion / I-20 end: December 18, 2026; commencement March 2027"
     default_short_answer: "December 2026"
     when_form_asks_commencement_or_spring_2027: "March 2027 (program completed December 2026)"
+  # Broad "sponsorship now or in the future" stays Yes. H-1B-named
+  # questions use form_strategy.h1b_named_question_only (No) as of 2026-08-23.
   never_lie_to_bypass_ats: true
 
 questions_requiring_manual_review:
