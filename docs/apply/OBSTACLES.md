@@ -60,3 +60,34 @@ clearance, or citizenship.
 
 Ask-later wording lives in the YAML. Do not paste scores into chat until
 Junyi is ready to put them in the bank.
+
+## What Junyi confirmed on Apptronik (2026-08-23)
+
+Robotics Software Intern – Real-Time Controls. Copilot ran. Submit
+unclicked.
+
+**The 3 need-review items are OK.** They are lawful / work-authorization
+status, citizenship, and eligibility to contract with or receive US
+government licenses. Those need more attention than name and email.
+Leaving them flagged is the desired stop.
+
+**Also noted:**
+
+- LinkedIn filled.
+- Disability filled.
+- Veteran left empty (Junyi: nice — did not invent).
+- Hispanic or Latino empty here, but filled on SpaceX the same day.
+  EEO is not stable across forms.
+- No cover letter. Expected; none was requested. Later decision.
+- Website empty. Junyi may build a personal project site later. Do not
+  invent a URL. GitHub is already in the profile.
+
+## EEO inconsistency (same session)
+
+| Field | SpaceX | Apptronik |
+|---|---|---|
+| Hispanic or Latino | filled (Junyi: looks correct) | empty |
+| Veteran | filled | empty (Junyi: nice) |
+| Disability | filled | filled |
+
+Do not assume the next Greenhouse form will match the last one.

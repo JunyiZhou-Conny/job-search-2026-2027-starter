@@ -32,7 +32,7 @@ confirmation.
 | 5 | Neuralink | match | first/last, email, phone, Harvard + Emory, resume | 10 fields need review (ability examples, season, start) | none visible on the still | not visible on the identity still | unclicked |
 | 6 | Gemini | match | LinkedIn exact, education Master’s, resume | none | none on form | **Work authorization Yes; Visa sponsorship No** | unclicked |
 | 7 | Nirmata | match | name, email, phone, LinkedIn, resume | none | **filled** (male, not Hispanic, Asian, not veteran; disability section opened) | **H-1B sponsorship No** | unclicked |
-| 8 | Apptronik | match | name, email, phone, Boston, LinkedIn, resume | none | computer-use reported Copilot filled gender/veteran/disability | citizenship / ITAR left in need-review (correct) | unclicked |
+| 8 | Apptronik | match | **Junyi 2026-08-23:** LinkedIn filled; website empty; no cover letter | — | disability filled; Hispanic/Latino empty (unlike SpaceX); veteran empty (Junyi: nice) | **3 need-review OK:** lawful status, citizenship, US-gov contract/license eligibility | unclicked |
 | 9 | Together AI | **posting closed** | n/a | n/a | n/a | n/a | n/a |
 | 10 | SpaceX | match | **Junyi 2026-08-23:** name, email, phone, resume, location, school, Emory math BS, LinkedIn, how-heard LinkedIn | 13 need review; empty form fields match that list | Junyi said gender/race/veteran/disability look correct | citizenship still empty (correct not to pick US citizen) | unclicked |
 

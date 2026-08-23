@@ -16,7 +16,7 @@ purpose: >
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
 last_updated: "2026-08-23"
-last_source: "Junyi Take Control review of SpaceX New Graduate Engineer, Software"
+last_source: "Junyi Take Control review of SpaceX, then Apptronik Robotics Software Intern"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -44,6 +44,28 @@ phenomena:
       Either add it to the Simplify profile (human, in the extension),
       or a later filler must copy a verified repo value into the widget.
       Do not invent a third number.
+
+  - id: eeo_inconsistent_across_forms
+    observed: "2026-08-23"
+    meaning: >
+      Same Simplify session, same day. SpaceX Hispanic/Latino was filled
+      (Junyi said it looked correct: not Hispanic). Apptronik Hispanic or
+      Latino was left empty. Disability filled on Apptronik. Veteran left
+      empty on Apptronik (Junyi said that empty veteran field is nice).
+    implication: >
+      EEO autofill is not stable across Greenhouse forms. Do not treat
+      one form's EEO answers as proof the next form will match. Still
+      block unattended Submit when EEO is touched.
+
+  - id: legal_status_left_for_review_is_ok
+    observed: "2026-08-23"
+    company: Apptronik
+    meaning: >
+      Copilot listed 3 need-review items: lawful / work-authorization
+      status, citizenship, and eligibility to contract with or receive
+      licenses from the US government. Junyi asked if that is OK. Yes.
+      Those questions need more attention than name/email. Leaving them
+      empty and flagged is the desired stop, not a miss.
 
 positive_signals:
   - id: need_review_matches_empty_fields
@@ -87,6 +109,35 @@ spacex_2026-08-23:
     - spacex_employment_history
     - essential_functions_without_reasonable_accommodation
     - citizenship_status
+
+apptronik_2026-08-23:
+  role: "Robotics Software Intern – Real-Time Controls"
+  ats: Greenhouse
+  submit: unclicked
+  copilot_need_review_count: 3
+  need_review_fields_junyi_named:
+    - lawful_or_work_authorization_status
+    - citizenship
+    - eligible_to_contract_with_or_receive_us_government_licenses
+  need_review_judgment: >
+    OK / desired. These are high-attention legal questions. Do not
+    auto-answer. Junyi confirmed they should stay flagged.
+  filled_and_junyi_noted:
+    - linkedin
+    - disability_status
+  empty_and_junyi_noted:
+    - hispanic_or_latino: "empty here; filled on SpaceX in the same session"
+    - veteran_status: "empty; Junyi said nice (did not invent)"
+    - cover_letter: "empty; expected — no cover letter was requested this run"
+    - website: "empty; Junyi wants a personal project site later, not now"
+  later_work_not_this_run:
+    - id: cover_letters
+      note: "Decide later whether to generate a cover letter per role."
+    - id: personal_website
+      note: >
+        Website field empty. GitHub is already in config/profile.yaml.
+        Junyi is considering a personal site for projects. Do not invent
+        a URL. Do not start that site unless asked.
 
 gaps:
   - id: emory_undergrad_gpa
@@ -142,6 +193,24 @@ gaps:
     already_in: null
     form_effect: "SpaceX + SpaceXAI employment history empty"
     ask_later: "Confirm never employed there, if that is the fact."
+
+  - id: apptronik_government_contract_eligibility
+    status: needs_human
+    already_in: null
+    form_effect: "Apptronik 'eligible to contract / US government licenses' left in need-review"
+    ask_later: "When ready, the exact yes/no for ITAR / government-contract questions. Do not guess."
+
+  - id: cover_letter
+    status: missing
+    already_in: null
+    form_effect: "Apptronik cover letter empty"
+    ask_later: "Later: whether to write cover letters at all, and for which lanes."
+
+  - id: personal_website_url
+    status: missing
+    already_in: "config/profile.yaml has github, not a personal site"
+    form_effect: "Apptronik website empty"
+    ask_later: "Only after Junyi has a live site. Do not invent a URL."
 
 do_not_put_in_this_file:
   - passport
