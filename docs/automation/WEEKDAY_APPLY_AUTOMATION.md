@@ -96,7 +96,7 @@ From the 2026-08-22 10-tab review
 | “H-1B sponsorship?” named and answered No | Intended as of 2026-08-23. Do not block on that alone. See `knowledge/work_authorization.yaml` `form_strategy`. |
 | Education widgets look like a dumped blob | `education_misfill=true`. Review, do not Submit. |
 | Copilot “need review” matches empty form fields | Expected. Log the empty field names into `knowledge/autofill_obstacles.yaml` if they are new gaps. |
-| Job closed / 404 / “no longer open” | Skip. Re-resolve later. Do not pick a sibling. |
+| Job closed / 404 / “no longer open” | **Close the tab.** Write `decision=closed` in `data/job_decisions.csv` and `posting_closed` in `data/activity_log.csv`. Do not pick a sibling from Current openings. Next URL. |
 | Checker `ready: false` | Stop the run. |
 
 Default remaining policy: **every tab is blocked from Submit** until Junyi

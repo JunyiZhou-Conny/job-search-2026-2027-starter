@@ -112,3 +112,20 @@ consent_checkboxes:
     - "Preferred now: computer-use clicks the visible required checkbox."
     - "Later: a small script that finds required unchecked boxes near Submit and checks them, then stops."
     - "Same Chrome profile as Copilot. Two browsers would miss the filled form."
+
+# Closed / vanished postings (Together AI 2026-08-23; will happen often)
+closed_posting:
+  decided: "2026-08-23"
+  signals:
+    - "The job you are looking for is no longer open"
+    - "Greenhouse ?error=true board dump / Current openings list"
+    - "404 / posting removed"
+  do:
+    - Close that tab. Do not stay on the employer's current-openings list.
+    - Do not open a sibling job from that list.
+    - Append data/job_decisions.csv with decision=closed (not pass).
+    - Append data/activity_log.csv event_type=posting_closed. Do not invent a job_id.
+    - Next queued URL.
+  reason: >
+    High-volume roles often close within minutes. The board list is not
+    an application. Tracking closed URLs stops them from resurfacing.

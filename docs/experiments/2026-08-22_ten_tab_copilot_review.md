@@ -37,7 +37,8 @@ confirmation.
 | 10 | SpaceX | match | **Junyi 2026-08-23:** name, email, phone, resume, location, school, Emory math BS, LinkedIn, how-heard LinkedIn | 13 need review; empty form fields match that list | Junyi said gender/race/veteran/disability look correct | citizenship still empty (correct not to pick US citizen) | unclicked |
 
 Together Fall 2026 URL now shows “The job you are looking for is no longer open.”
-No replacement was opened.
+No replacement was opened. Logged as `decision=closed` in
+`data/job_decisions.csv`. Rule: close the tab; do not stay on Current openings.
 
 ## What Copilot gets right
 

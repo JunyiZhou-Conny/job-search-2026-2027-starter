@@ -17,7 +17,10 @@
 | closed | Posting closed or no longer actionable |
 | passed | User reviewed the JD and chose **not** to apply (experience gate, interest, fit, etc.). Not an employer rejection. Kept for memory so discovery will not resurface it in the apply queue. |
 
-URL-level archive (even before a row exists in `applications.csv`) also lives in `data/job_decisions.csv` (`decision=pass`).
+URL-level archive (even before a row exists in `applications.csv`) also lives in `data/job_decisions.csv`:
+
+- `decision=pass` — Junyi chose not to apply
+- `decision=closed` — posting gone / no longer open (agent or human). Not a user pass. Still do not resurface.
 
 ## Priority
 
