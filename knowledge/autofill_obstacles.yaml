@@ -16,7 +16,7 @@ purpose: >
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
 last_updated: "2026-08-24"
-last_source: "Second 10-tab Copilot review (Meshy / CVS / Lila / Hayden / Baseten / Charta / Relativity / Scale / Notion / Perplexity)"
+last_source: "Ashby isolation Submit (Anyscale Ray Core 2026-08-24) plus second 10-tab Copilot review"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -44,6 +44,19 @@ phenomena:
       Either add it to the Simplify profile (human, in the extension),
       or a later filler must copy a verified repo value into the widget.
       Do not invent a third number.
+
+  - id: current_company_autofilled_harvard
+    observed: "2026-08-24"
+    company: Anyscale
+    meaning: >
+      Isolation Submit on Ashby Software Engineer (Ray Core). Copilot
+      Autofill once put "Harvard University" in Current company. Standing
+      answer is empty (student; do not invent an employer). Computer-use
+      cleared the box before Submit. Additional information / Other were
+      empty and correctly left empty.
+    implication: >
+      Copilot may fill school as current employer. Clear it on student
+      forms. Do not Autofill Again after that correction.
 
   - id: leftover_typing_over_click
     observed: "2026-08-24"

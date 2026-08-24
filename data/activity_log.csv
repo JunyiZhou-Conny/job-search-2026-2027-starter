@@ -63,3 +63,7 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T14:44:20,,,experiment_blocked,,,"Ashby isolation child VM harness ready (Copilot pbanhockgagggenencehbnadejlgchfc) but computerUseSupported=false; Anyscale URL not opened; Submit not clicked; outcome not_run"
 2026-08-24T14:48:00,,,experiment_blocked,,,"Ashby isolation: nested Task cloud child is not enough to Submit; next run must be a dashboard Cloud Agent with computer-use; parent Chrome still must not Submit"
 2026-08-24T14:51:00,,,experiment_started,,,"Ashby isolation second run: dashboard agent bc-b6ea9703-f8db-491d-98ab-52b490155db1; harness ready (Copilot pbanhockgagggenencehbnadejlgchfc); computerUse present; Anyscale still listed; Submit not clicked yet"
+2026-08-24T15:06:35,J20260824-001,,job_added,,discovered,Anyscale — Software Engineer (Ray Core)
+2026-08-24T15:06:37,J20260824-001,,status_changed,discovered,applied,Cloud Chrome isolation Submit succeeded; Ashby thank-you; not a spam wall
+2026-08-24T15:07:00,J20260824-001,,experiment_completed,,,"Ashby isolation second run outcome submitted; Anyscale Ray Core; no pink spam wall; Cloud Submit no longer one-sample failure; do not mass-Submit"
+2026-08-24T15:06:58,J20260824-001,,job_updated,,,Resume filename from Copilot widget; cluster version not verified

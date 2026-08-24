@@ -167,9 +167,23 @@ If Anyscale is closed, use the Meshy Infrastructure Intern backup
 in the experiment doc. Do not open Charta.
 ```
 
-That agent must have computer-use, like this parent. Until it runs,
-the spam cause is still one Cloud sample (Charta) plus one personal
-laptop success.
+That agent must have computer-use, like this parent. It ran as
+`bc-b6ea9703-f8db-491d-98ab-52b490155db1`. Outcome `submitted` (see
+the second-run Result table). Cloud Submit is no longer a one-sample
+failure. Still not a license for mass apply.
+
+## Second-run reading (2026-08-24T14:58Z)
+
+Dashboard agent `bc-b6ea9703-f8db-491d-98ab-52b490155db1` reached
+Submit. Outcome is **`submitted`**: Ashby showed a green success banner
+and Simplify saved the job to the tracker on 8/24/26. No pink spam wall.
+
+Read this as: the parent Chrome session / Charta retries / long Why-us
+were enough to trip the first wall. Cloud Submit is **not** a
+one-sample failure. It is still not proven safe for mass apply.
+
+Do not start a 10-tab Submit pass from this result. Do not retry
+Charta from Cloud Chrome.
 
 ## Result (second run — dashboard Cloud Agent)
 
@@ -178,9 +192,9 @@ laptop success.
 | Child agent URL | https://cursor.com/agents/bc-b6ea9703-f8db-491d-98ab-52b490155db1 |
 | Harness ready | True |
 | Copilot id | pbanhockgagggenencehbnadejlgchfc |
-| Job actually opened | pending |
-| Autofill once | pending |
-| Submit clicked | pending |
-| Outcome | `in_progress` |
-| Page copy (verbatim if error) | pending |
-| Notes | 2026-08-24T14:51Z. Dashboard Cloud Agent (not a nested Task). Name: "Ashby submission isolation". Same personal env `41a15b57-8916-11f1-b532-320a589b8025`. Build `bld-20260823-0cf0d7ec-04ef-4b08-827d-61e44f05e042` (warm fork). `check_apply_harness.py` exit 0; branded Chrome `/opt/google/chrome/chrome`; Copilot `pbanhockgagggenencehbnadejlgchfc` via publisher_signals; Simplify refresh cookie present; identity_match unknown. `computerUse` is in this session's Task catalog. Anyscale board API still lists `73a973b1-6377-4144-a6e5-610b78719882` (`isListed: true`). Did not open Charta or Meshy. Submit not clicked yet. |
+| Job actually opened | yes |
+| Autofill once | yes |
+| Submit clicked | yes (once) |
+| Outcome | `submitted` |
+| Page copy (verbatim if error) | Ashby: "Success. Your application was successfully submitted. We'll contact you if there are next steps." Simplify overlay also said "Application Submitted! Congrats on applying!" No pink spam wall. |
+| Notes | 2026-08-24T14:58Z. Dashboard Cloud Agent (not a nested Task). Name: "Ashby submission isolation". Same personal env `41a15b57-8916-11f1-b532-320a589b8025`. Build `bld-20260823-0cf0d7ec-04ef-4b08-827d-61e44f05e042` (warm fork). One Chrome tab only: `73a973b1-6377-4144-a6e5-610b78719882` Software Engineer (Ray Core). Copilot Autofill once. Current company autofilled "Harvard University" then cleared (student; standing answer empty). Additional information / Twitter / Portfolio / Other left empty. Location Boston, MA, USA. Hybrid Yes. Relocate Yes. Sponsorship No. Resume `Junyi_Zhou_resume.pdf` (Copilot profile; cluster version unknown). Did not Autofill Again. Did not Generate with AI. Did not open Charta or Meshy. Did not retry Submit. Screenshots: filled identity, filled questions, success banner. |

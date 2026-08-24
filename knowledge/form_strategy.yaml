@@ -342,6 +342,12 @@ ashby_spam_isolation_experiment:
     2026-08-24 Task-spawned child bc-7f8a7941 harness ready but
     computerUseSupported=false. Outcome not_run. Next run must be a
     dashboard Cloud Agent with computer-use, not another nested Task.
+  second_run_outcome: >
+    2026-08-24 dashboard agent bc-b6ea9703-f8db-491d-98ab-52b490155db1
+    opened only Anyscale Ray Core, Autofill once, Submit once.
+    Ashby: "Success. Your application was successfully submitted."
+    Outcome submitted. No pink spam wall. Cloud Submit is no longer a
+    one-sample failure; still not a license for mass apply.
   see: "docs/experiments/2026-08-24_ashby_submit_isolation.md"
 
 # Workday / ATS account walls (CVS Health 2026-08-23)
