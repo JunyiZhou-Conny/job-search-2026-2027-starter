@@ -59,9 +59,9 @@ Rejected for this pack (form or truth):
 
 | # | Job | Opened | Autofill once | Submit once | Outcome | Page copy |
 |---|---|---|---|---|---|---|
-| 1 | Meshy Infrastructure Intern | pending | pending | pending | `in_progress` | |
-| 2 | Midjourney QA Analyst | pending | pending | pending | `not_started` | |
-| 3 | Runway FD Finance Partner | pending | pending | pending | `not_started` | |
+| 1 | Meshy Infrastructure Intern | yes | yes | yes | `submitted` (`J20260824-002`) | "Success. Your application was successfully submitted. We'll contact you if there are next steps." |
+| 2 | Midjourney QA Analyst | yes | yes | yes | `submitted` (`J20260824-003`) | same Ashby thank-you; optional essay left empty |
+| 3 | Runway FD Finance Partner | yes | yes | yes | `submitted` (`J20260824-004`) | same Ashby thank-you; both Why-us boxes left empty |
 
 ## How to read
 

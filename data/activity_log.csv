@@ -68,3 +68,10 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T15:06:58,J20260824-001,,job_updated,,,Resume filename from Copilot widget; cluster version not verified
 2026-08-24T15:07:00,J20260824-001,,experiment_completed,,,"Ashby isolation second run outcome submitted; Anyscale Ray Core; no pink spam wall; Cloud Submit no longer one-sample failure; do not mass-Submit"
 2026-08-24T15:12:00,,,experiment_started,,,"Junyi authorized three more trivial Ashby Cloud Submits (Meshy Infrastructure Intern, Midjourney QA Analyst, Runway FD Finance Partner); one tab each; not weekday Automation"
+2026-08-24T15:21:00,,,experiment_completed,,,"Three trivial Ashby Cloud Submits all landed (Meshy intern, Midjourney QA, Runway finance); no pink spam wall; still not weekday Automation or a 10-tab Submit pass"
+2026-08-24T15:31:50,J20260824-002,,job_added,,discovered,MeshyAI — Infrastructure Intern
+2026-08-24T15:31:50,J20260824-003,,job_added,,discovered,Midjourney — QA Analyst
+2026-08-24T15:31:50,J20260824-004,,job_added,,discovered,Runway — Forward Deployed Finance Partner
+2026-08-24T15:32:17,J20260824-002,,status_changed,discovered,applied,Cloud Chrome one-tab Submit; Ashby thank-you; Meshy Infrastructure Intern
+2026-08-24T15:32:17,J20260824-003,,status_changed,discovered,applied,Cloud Chrome one-tab Submit; Ashby thank-you; Midjourney QA Analyst
+2026-08-24T15:32:17,J20260824-004,,status_changed,discovered,applied,Cloud Chrome one-tab Submit; Ashby thank-you; Runway FD Finance Partner
