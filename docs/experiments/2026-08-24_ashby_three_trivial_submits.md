@@ -26,7 +26,7 @@ Fall 2026 intern.
 |---|---|---|---|---|---|
 | 1 | MeshyAI | Infrastructure Intern | Intern at the 10-tab Meshy org; never submitted. Shortest form. Not a prioritized FT SWE. | https://jobs.ashbyhq.com/meshy/c2f596a3-378c-4a57-b2cd-0bccd88866d7 | Name, Email, Resume |
 | 2 | Midjourney | QA Analyst | QA is outside target clusters. Optional “amazing thing you created” left empty. | https://jobs.ashbyhq.com/midjourney/68e8eed8-ba7e-4530-bee1-4baf3d368d55 | Name, Email, Resume |
-| 3 | Runway | Forward Deployed Finance Partner | Finance, not engineering. Optional Why-Runway left empty. | https://jobs.ashbyhq.com/runway/82789f66-9216-4ef3-bfeb-6cef4b416e63 | Name, Email, Resume |
+| 3 | cfo.ai | Forward Deployed Finance Partner | Finance, not engineering. Optional Why-Runway left empty. | https://jobs.ashbyhq.com/runway/82789f66-9216-4ef3-bfeb-6cef4b416e63 | Name, Email, Resume |
 
 Rejected for this pack (form or truth):
 
@@ -61,7 +61,7 @@ Rejected for this pack (form or truth):
 |---|---|---|---|---|---|---|
 | 1 | Meshy Infrastructure Intern | yes | yes | yes | `submitted` (`J20260824-002`) | "Success. Your application was successfully submitted. We'll contact you if there are next steps." |
 | 2 | Midjourney QA Analyst | yes | yes | yes | `submitted` (`J20260824-003`) | same Ashby thank-you; optional essay left empty |
-| 3 | Runway FD Finance Partner | yes | yes | yes | `submitted` (`J20260824-004`) | same Ashby thank-you; both Why-us boxes left empty |
+| 3 | cfo.ai FD Finance Partner | yes | yes | yes | `submitted` (`J20260824-004`) | same Ashby thank-you; both Why-us boxes left empty |
 
 ## How to read
 
