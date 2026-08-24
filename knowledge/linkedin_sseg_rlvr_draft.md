@@ -19,11 +19,18 @@ Facts from the public repo only. No invented metrics. No paper acceptance.
 
 ## About / description (paste)
 
+Match the Wyss LinkedIn card: three bullets, past-tense verb, tools, purpose.
+Do not invent a trained policy or a metric.
+
 ```text
-I am building S-Seg-RLVR, my Health Data Science capstone with mentor Alexander Chowdhury. Pathology instance segmentation usually trains on Dice and IoU. Those overlap scores miss merged nuclei that wreck the count a pathologist actually uses. I am treating instance count, separation, and topology as verifiable rewards for GRPO so the model can learn from point and count labels plus a small fully labeled anchor set.
+• Spearheaded S-Seg-RLVR, a Health Data Science capstone that uses GRPO with verifiable rewards so pathology instance segmentation can optimize instance count, separation, and topology instead of Dice and IoU.
+• Engineered a composite GRPO reward (count, separation, topology, panoptic match) and typed reward interfaces so the model can learn from point and count labels plus a small fully labeled anchor set.
+• Designed the public research stack (proposal, 30-paper literature library, 16-week roadmap) with mentor Alexander Chowdhury, targeting MICCAI 2027.
+```
 
-The public repo already has the proposal, a 30 paper literature library, a 16 week roadmap, and typed reward interfaces. Training on public nuclei and gland sets, and live GRPO runs, are next. Target venue is MICCAI 2027.
+Repo URL (optional under the bullets):
 
+```text
 https://github.com/JunyiZhou-Conny/Structure-Verified-RLVR-for-Label-Efficient-Pathology-Instance-Segmentation
 ```
 
