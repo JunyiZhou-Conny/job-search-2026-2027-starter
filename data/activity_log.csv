@@ -61,3 +61,4 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T14:40:00,,,status_changed,,applied,"Charta Forward Deployed AI Engineer — Junyi submitted from his own computer; Cloud Chrome path had failed"
 2026-08-24T14:41:00,,,experiment_started,,,"Ashby Submit isolation: fresh Cloud VM + Anyscale Ray Core; protocol docs/experiments/2026-08-24_ashby_submit_isolation.md"
 2026-08-24T14:44:20,,,experiment_blocked,,,"Ashby isolation child VM harness ready (Copilot pbanhockgagggenencehbnadejlgchfc) but computerUseSupported=false; Anyscale URL not opened; Submit not clicked; outcome not_run"
+2026-08-24T14:48:00,,,experiment_blocked,,,"Ashby isolation: nested Task cloud child is not enough to Submit; next run must be a dashboard Cloud Agent with computer-use; parent Chrome still must not Submit"

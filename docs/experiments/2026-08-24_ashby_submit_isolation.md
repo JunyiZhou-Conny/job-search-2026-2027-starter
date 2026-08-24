@@ -125,3 +125,48 @@ The isolation is the new pod.
   apply; it is no longer a one-sample failure.
 - **form_blocked / posting_closed** — test did not reach Submit. Do not
   treat that as a spam result.
+- **not_run** — also not a spam result. The Anyscale tab was never
+  opened. This first child proved the harness disk copies and that a
+  Task-spawned Cloud child does **not** get the computer-use clicker.
+
+## Infrastructure finding (2026-08-24)
+
+Parent (this conversation) is a first-class Cloud Agent with
+computer-use. It already hit the Charta spam wall. Do not Submit here.
+
+Child `bc-7f8a7941-3040-5925-84d7-72f1c19c24a7` booted the same personal
+environment, a newer snapshot (`bld-20260823-0cf0d7ec-…`, warm fork),
+and `check_apply_harness.py` → `ready: true` (Chrome + Copilot +
+Simplify cookie). Its tool catalog had **no** `computerUse`. Nested
+`Task environment=cloud` is not enough to click Autofill or Submit.
+
+Do not treat that as “Ashby accepted us” or “Ashby blocked us.”
+Do not improvise Playwright / xdotool on the child (more bot-like).
+Do not click Submit on the parent Chrome to “finish the test.”
+
+## Next run (dashboard Cloud Agent, not a nested Task)
+
+Start a **new** Cloud Agent from the Cursor dashboard on the same
+environment (the same class as the 10-tab / Charta parent). Point it
+at branch `cursor/ashby-submit-isolation-be6f`. Paste:
+
+```text
+Isolation Submit test. Read docs/experiments/2026-08-24_ashby_submit_isolation.md.
+
+One Chrome tab only:
+https://jobs.ashbyhq.com/anyscale/73a973b1-6377-4144-a6e5-610b78719882
+
+Autofill once. Location Boston, MA if empty. Hybrid Mon/Tue/Thu Yes.
+Relocate Yes. Sponsorship No. Additional information empty.
+Do not Autofill Again. Do not Generate with AI.
+
+Click Submit once. Screenshot the result (thank-you or pink spam).
+Stop. Do not retry. Fill the Result table. Commit and push.
+
+If Anyscale is closed, use the Meshy Infrastructure Intern backup
+in the experiment doc. Do not open Charta.
+```
+
+That agent must have computer-use, like this parent. Until it runs,
+the spam cause is still one Cloud sample (Charta) plus one personal
+laptop success.
