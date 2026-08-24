@@ -7,7 +7,7 @@
 | ATS | Ashby |
 | Apply URL | https://jobs.ashbyhq.com/notion/3fba1c39-c5cb-47d7-9ad2-1cec4d7e9d0c |
 | Compensation on page | **$57 – $61** / hour |
-| `form_status` | Junyi 2026-08-24 inspect. Standing answers below. Not submitted. |
+| `form_status` | `typed_on_form` (Why Notion + AI tech; Anchor Days Yes; relocate Yes). Sponsorship type and role-type checkboxes left unselected. Junyi 2026-08-24 standing answers below are prescriptions. Not re-clicked. |
 | `submitted` | no |
 | Identity Copilot filled | name, email, phone, resume, LinkedIn |
 | Copilot need-review | 7 after Autofill |
@@ -64,13 +64,17 @@ Do not leave it empty.
 
 ## Visa type / will you require sponsorship
 
-Two widgets, two answers (Junyi 2026-08-24):
+Two widgets, two standing answers (Junyi 2026-08-24). Last live
+read left sponsorship type unselected. These are prescriptions,
+not the filled values.
 
 - State your visa type → **F-1**
 - Now or in the future require sponsorship → **No** or **None**
 
 If the old multi-select is “which sponsorship will you require” and
 **None** exists, pick None. Do not pick H-1B.
+
+Not re-clicked from this note. Re-read before Submit.
 
 ---
 
