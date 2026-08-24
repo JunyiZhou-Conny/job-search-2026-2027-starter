@@ -50,15 +50,20 @@ ideology:
         Be mindful I am F-1 / student — do not write as if I already
         ran a Series A.
 
-# Why-company shape (Junyi Charta 2026-08-24)
+# Why-company shape (Junyi Charta 2026-08-24; Lila remains the non-ML pattern)
 why_company_shape:
   decided: "2026-08-24"
   reader: "HR may read this before the resume."
   parts:
     - answer every clause in the prompt (why them, why now, why this role)
     - start from their mission / product / culture
-    - then show ability: frontend/backend, deep learning, agents
-    - spell out computer vision, language models, transformers
+    - then show ability that matches this role, not a default DL tour
+    - one or two verified surfaces if they earn their place (not a tour)
+  charta_or_ml_fde:
+    when: "role or prompt is ML / FDE / perception, not instrument or general SWE"
+    parts:
+      - show ability: frontend/backend, deep learning, agents
+      - spell out computer vision, language models, transformers
   ok_to_name:
     - Flask
     - React
@@ -74,6 +79,7 @@ why_company_shape:
     - invent employers or on-site FDE
     - claim FDE / Palantir / Epic-admin work that is not in the bank
     - upgrade Emory to a CS degree
+    - dump computer vision / language models / transformers onto a non-ML Why-us
     - em dashes or hyphen asides in the text that goes on the form
   punctuation:
     decided: "2026-08-24"
@@ -87,8 +93,10 @@ why_company_shape:
       full stack). Official product names that include a hyphen may stay.
     reason: "Junyi: hyphens make the answer look AI-written."
   tone: >
-    Show ability. A little assertiveness is OK. Do not invent jobs.
-    Do not write as a resume footnote. Write like a person.
+    Ardent, genuine, truthful. First intern / student voice is fine.
+    Honest hedges about missing domain experience are OK (Lila).
+    On Charta / ML-FDE, a little assertiveness is OK. Do not invent jobs.
+    Write like a person.
 
 salary_rule:
   see: "knowledge/form_strategy.yaml always.salary_or_expected_compensation"

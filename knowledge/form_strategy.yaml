@@ -121,7 +121,7 @@ always:
 
 written_responses:
   decided: "2026-08-23"
-  revised: "2026-08-24 — Junyi: Why-us is HR-first; spell out DL ideas; show ability"
+  revised: "2026-08-24 — Charta DL spelling is role-specific; Lila hedges stay"
   never_click: "Simplify 'Generate with AI' (paid / subscribe). Do not click it."
   who_writes: "Cursor / this agent, after Copilot"
   answer_the_prompt:
@@ -131,9 +131,9 @@ written_responses:
       three things — not a resume, not Cannon 338, not the ideology pack
       unless that question asked for them.
     tone: >
-      Show ability. HR may read this before the resume. Spell out
-      computer vision, language models, and transformers. A little
-      assertiveness is OK. Do not hedge. Do not invent jobs.
+      Ardent, genuine, truthful. First intern / student voice is fine.
+      Honest hedges about missing domain experience are OK (Lila).
+      Do not invent jobs. Do not dump a DL tour onto a non-ML Why-us.
     do_not:
       - Paste education + three projects into every Why-us
       - Recite program_end / commencement dates unless the prompt asks
@@ -142,6 +142,8 @@ written_responses:
       - Name CellOT, VLM, CV, airway chatbot, or other resume-internal labels
       - Write hedge lines such as "I do not outsource the goal"
       - Use em dashes or hyphen asides in form text (looks AI-written)
+      - Spell out computer vision, language models, and transformers unless
+        the role or prompt is ML / FDE / perception
     metrics_when: >
       Only when the prompt asks for examples, exceptional ability, or
       evidence. Then 1–2 evidence-bank facts, not a tour of the bank.
@@ -157,16 +159,21 @@ written_responses:
     knowledge/application_priority.yaml.
   why_company_direction_2026-08-24: >
     Junyi Hayden + Charta: Why-us is not a one-liner and not a project
-    dump. HR may read it before the resume. Answer every clause. Start
-    from mission / product / culture, then show software-engineering
-    range (frontend and backend) and deep-learning ideas spelled out
-    (computer vision, language models, transformers). Flask, React,
-    Auth0, RAG, Cursor, Claude, Codex are fine to name. Do not name
-    CellOT, VLM, CV, or the Emory airway project. Do not write
-    "I do not outsource the goal." A little assertiveness is OK. Do
-    not invent employers, on-site FDE, or a CS degree. No em dashes
-    or hyphen asides on the form. Write like a person. Example:
-    Charta archive v2 (hyphen pass).
+    dump. If the prompt has two parts (why this company, why now / why
+    this role), answer both. Start from what they do, the mission, and
+    the culture, then integrate Junyi's health-data / research /
+    engineering philosophy. Use only facts he stated or that sit in
+    the evidence bank. Do not invent domain ownership. Do not claim a
+    CS degree (Emory is AMS + informatics minor). Do not claim FDE
+    customer-on-site work already done. Charta / ML-FDE only: HR may
+    read it first. Show frontend/backend and spell out computer vision,
+    language models, transformers. Flask, React, Auth0, RAG, Cursor,
+    Claude, Codex are fine. Do not name CellOT, VLM, CV, or the Emory
+    airway project. Do not write "I do not outsource the goal." Do not
+    copy that DL tour onto instrument, SWE, or other non-ML Why-us
+    (Lila revised archive is the pattern). No em dashes or hyphen
+    asides on the form. Write like a person. Example: Charta archive
+    v2 (hyphen pass).
 
 leave_for_junyi:
   decided: "2026-08-23"

@@ -81,13 +81,10 @@ do not pick a sibling from the employer’s current openings.
 
 Free-response drafts (why company, week structure, and similar) go in
 `docs/apply/written_answers/`. Answer the prompt on the page. Do not
-paste education + three projects into every Why-us. HR may read Why-us
-before the resume: spell out computer vision, language models, and
-transformers; do not name CellOT, VLM, CV, or the Emory airway project.
-Flask, React, Auth0, RAG, Cursor, Claude, Codex are fine. Show ability.
-Do not write hedge lines such as "I do not outsource the goal." Do not
-use em dashes or hyphen asides in the text that goes on the form. Write
-like a person. Ideology in `knowledge/written_response_bank.yaml` is for
+paste education + three projects into every Why-us. Match ability to
+the role; do not dump a DL tour onto a non-ML Why-us. Do not use em
+dashes or hyphen asides in the text that goes on the form. Write like
+a person. Ideology in `knowledge/written_response_bank.yaml` is for
 week / meaning / culture questions only. A file there is not a submit.
 
 Copilot “Completed” on phone or resume is not proof the widget has a
