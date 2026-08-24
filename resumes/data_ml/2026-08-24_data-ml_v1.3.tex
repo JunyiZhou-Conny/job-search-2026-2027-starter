@@ -1,0 +1,150 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[pdftex]{hyperref}
+\usepackage{fancyhdr}
+\usepackage{mathptmx}
+\usepackage{csquotes}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.530in}
+\addtolength{\evensidemargin}{-0.375in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-0.5in}
+\addtolength{\textheight}{1.1in}
+
+\urlstyle{rm}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-10pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-6pt}]
+
+% Custom commands
+\newcommand{\resumeItem}[2]{
+  \item{
+    \textbf{#1}{: #2 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-1pt}\item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{#3} & \textit{#4} \\
+    \end{tabular*}\vspace{-5pt}
+}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{#1}{#2}\vspace{-3pt}}
+
+\renewcommand{\labelitemii}{$\circ$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}\vspace{-2pt}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-6pt}}
+
+\begin{document}
+
+% Heading
+\begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
+  \textbf{\Large Junyi (Conny) Zhou} & Tel: (404) 663-5601 \\
+  Boston, MA 02215 & Email: \href{mailto:[REDACTED]}{[REDACTED]} \\
+  \href{https://github.com/JunyiZhou-Conny}{github.com/JunyiZhou-Conny} & \href{https://www.linkedin.com/in/junyi-zhou-270208247}{linkedin.com/in/junyi-zhou-270208247} \\
+\end{tabular*}
+
+\section{Education}
+\resumeSubHeadingListStart
+  \resumeSubheading
+  {Harvard University}{Boston, MA}
+  {M.S. in Health Data Science}{August 2025 -- March 2027}
+  \resumeItemListStart
+    \item Program requirements complete December 2026 (commencement March 2027); available for full-time start January 2027
+    \item Coursework: Deep Learning, AI in Medicine, Healthcare Machine Learning, Data Science
+  \resumeItemListEnd
+  \resumeSubheading
+  {Emory University, College of Arts and Sciences}{Atlanta, GA}
+  {B.S. in Applied Mathematics and Statistics; Minor in Computer Informatics; GPA: 3.925}{August 2021 -- May 2025}
+  \resumeItemListStart
+    \item Coursework: Probability and Statistics, Machine Learning, NLP, Data Structures, Database Systems
+  \resumeItemListEnd
+\resumeSubHeadingListEnd
+
+% Technical Skills
+\section{Technical Skills}
+\resumeSubHeadingListStart
+  \resumeItem{Languages}{Python, C++, Java, SQL, R, JavaScript}
+  \resumeItem{ML \& Deep Learning}{PyTorch, TensorFlow, Keras, scikit-learn, XGBoost, LightGBM, Hugging Face Transformers}
+  \resumeItem{LLM \& Applied AI}{RAG, agentic pipelines, prompt engineering, embeddings \& vector search, OpenAI API, MongoDB Atlas Vector Search}
+  \resumeItem{Data \& Compute}{PostgreSQL, MySQL, MongoDB, Spark, Hadoop, SLURM/HPC, multi-GPU job scheduling}
+  \resumeItem{Backend \& DevOps}{Flask, REST APIs, React, Docker, Auth0, Git}
+  \resumeItem{Cloud}{AWS (SageMaker, Lambda, EC2, S3, Redshift, Elastic Beanstalk, CloudFront), Snowflake, BigQuery}
+  \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
+\resumeSubHeadingListEnd
+
+% Machine Learning Projects
+\section{Machine Learning Projects}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {Parameter-Efficient Fine-Tuning of BLIP-2 for Visual Question Answering \href{https://github.com/JunyiZhou-Conny/mini3}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Harvard SHBT-261}{Spring 2026}
+    \resumeItemListStart
+      \item Fine-tuned \textbf{BLIP-2} (OPT-2.7B) on \textbf{TextVQA} using \textbf{LoRA}, lifting accuracy from 0.078 zero-shot to 0.213 --- nearly 3$\times$ --- while training 2.62M parameters (0.07\% of the model) in 8 minutes on a single \textbf{A100}.
+      \item Isolated the contribution of \textbf{prompt engineering} across four templates, showing OCR-augmented prompting alone raised zero-shot accuracy to 0.106 before any weight updates.
+      \item Ablated \textbf{LoRA} rank over $r \in \{4, 8, 16\}$ and automated the pipeline end to end, generating every reported figure and \LaTeX{} table directly from result JSONs for reproducibility.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Airway Management Simulation Chatbot \href{https://d3g1qw60hz7yw7.cloudfront.net}{\normalfont\small [Live Demo]}}{Atlanta, GA}
+    {Full-Stack Engineer, Scrum Master | Emory Pediatric Hospital}{January 2024 -- August 2025}
+    \resumeItemListStart
+      \item Architected a clinical \textbf{agentic LLM pipeline} pairing \textbf{RAG} retrieval over \textbf{MongoDB Atlas Vector Search} with \textbf{prompt engineering} and context-window management to generate multi-turn training scenarios from \textbf{OpenAI} models.
+      \item Built a \textbf{HIPAA-conscious} full-stack platform (\textbf{Python/Flask} REST API, React, MongoDB, \textbf{Auth0}) deployed on \textbf{AWS} Elastic Beanstalk and CloudFront, tracking resident performance metrics.
+      \item Led an Agile team of 6, running code reviews and folding clinician feedback into successive releases.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+% Research Experience
+\section{Research Experience}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {Cross-Species Drug Translation using Optimal Transport \& Generative AI}{Boston, MA}
+    {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
+    \resumeItemListStart
+      \item Built \textbf{Optimal Transport} models (\textbf{VAEs}, \textbf{unbalanced OT}) predicting animal-to-human trial translation from \textbf{scRNA-seq} atlases, with \textbf{scanpy} pipelines automating cell-type labeling and dataset integration.
+      \item Ported a 2018 CPU-only \textbf{TensorFlow} reference implementation to \textbf{PyTorch}, reimplementing the \textbf{Input Convex Neural Networks} behind the optimal-transport dual and enabling GPU training on Harvard's \textbf{FASRC Cannon} cluster.
+      \item Benchmarked \textbf{CellOT} against \textbf{scGen} on cross-species perturbation prediction, measuring 0.85--0.90 $R^2$ with the source species in training versus 0.65--0.67 on the held-out-species split.
+      \item Established through \textbf{paired single-factor ablations} that gene-space choice reverses with split --- 6,619 orthologs wins in-distribution while 1,000 HVGs wins on every out-of-distribution metric --- ruling out a split-independent default.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Autonomous Ablation-Search Agent for Cluster-Scale ML Experimentation \href{https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Independent Project | Harvard FASRC Cannon Cluster}{June 2026 -- Present}
+    \resumeItemListStart
+      \item Built a \textbf{self-directed experiment harness} (submit $\rightarrow$ watch $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ synthesize) that plans, launches, and triages \textbf{SLURM} ablation studies unattended --- \textbf{338 runs}, 318 clean and 20 with handled errors, over \textbf{79 hours} of compute.
+      \item Split the planner from the execution substrate and \textbf{checkpointed each agenda to disk}, so the cluster keeps running the last plan while the planner is offline; an adaptive one-delta proposer clears a \textbf{validation gate} before every submit.
+      \item Designed a \textbf{fairshare-aware scheduler} routing small-MLP training to CPU partitions, where GPU carries 200--500$\times$ the fairshare cost, and made runs \textbf{preemption-tolerant} on \texttt{serial\_requeue} via checkpoint/resume and capped job arrays.
+      \item Wired an optional \textbf{LLM planner} behind that interface with per-call \textbf{token and cost accounting} and a spend ceiling that degrades to the deterministic planner on breach or API failure.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\end{document}

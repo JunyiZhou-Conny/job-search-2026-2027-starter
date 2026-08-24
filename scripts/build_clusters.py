@@ -12,17 +12,19 @@ correction made in base propagates everywhere instead of drifting.
 
 from __future__ import annotations
 
+import os
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "resumes" / "base" / "JZ_resume.tex"
-VERSION = "v1.2"
-DATE = "2026-07-27"
+VERSION = "v1.3"
+DATE = "2026-08-24"
 
 # Short id -> distinctive substring of the entry title in base.
 ENTRY_KEYS = {
+    "sseg_rlvr": "Structure-Verified RLVR",
     "wyss": "Cross-Species Drug Translation",
     "alphafold": "AlphaFold Protein",
     "compleg": "Computational Legislative Studies",
@@ -92,8 +94,8 @@ CLUSTERS = {
             "Certifications",
         ],
         "sections": [
-            ("Clinical AI Experience", ["airway", "wyss"]),
-            ("Machine Learning Projects", ["pneumonia", "alphafold"]),
+            ("Clinical AI Experience", ["sseg_rlvr", "airway"]),
+            ("Machine Learning Projects", ["pneumonia", "wyss"]),
         ],
     },
 }
@@ -192,7 +194,13 @@ def main() -> None:
             raise SystemExit(f"unknown cluster {name!r}; choose from {list(CLUSTERS)}")
         spec = CLUSTERS[name]
         out = ROOT / "resumes" / name / f"{DATE}_{spec['slug']}_{VERSION}.tex"
-        out.write_text(render(base, name, spec))
+        text = render(base, name, spec)
+        # New cluster files fail the secret scanner if the Harvard email is
+        # copied from base. Base may still carry it; generated files must not.
+        email = os.environ.get("SIMPLIFY_EMAIL")
+        if email:
+            text = text.replace(email, "[REDACTED]")
+        out.write_text(text)
         n = sum(len(ids) for _, ids in spec["sections"])
         print(f"wrote {out.relative_to(ROOT)}  ({n} entries)")
 
