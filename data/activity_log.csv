@@ -57,3 +57,4 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T14:03:00,,,rule_updated,,,"leftover_typing_one_pass: one paste then stop; extra Charta verify loops were a miss"
 2026-08-24T14:11:00,,,autofill_reviewed,,,"Charta Why-us textarea empty on later inspect; v2 not on the form; no re-click; Junyi can paste before Submit"
 2026-08-24T14:15:00,,,rule_updated,,,"Computer-use leftover prompt is fire-and-forget; parent copies docs/automation/COMPUTER_USE_PROMPT.md"
+2026-08-24T14:24:00,,,autofill_blocked,,,"Charta Ashby Submit flagged as possible spam; application did not land; do not retry from Cloud Chrome"

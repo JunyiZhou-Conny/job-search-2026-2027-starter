@@ -8,12 +8,15 @@
 | Apply URL | https://jobs.ashbyhq.com/chartahealth/3088555d-de93-4236-add1-41005bf0933b |
 | Compensation on page | **$90,000 – $140,000** / year |
 | `form_status` | `needs_retype` (Why Charta box empty as of 2026-08-24 later inspect). Onsite 5x Yes. Office radio San Francisco. |
-| `submitted` | no (Junyi will Submit) |
+| `submitted` | no (Junyi Submit 2026-08-24 blocked: Ashby “possible spam”) |
 | Copilot need-review | 5 (onsite 5x SF/NYC; office choice; languages; customer-facing exp; Why Charta) |
 | `application_weight` | `prioritized` (Junyi 2026-08-24). Subfields: `fde`, startup, biomedical AI. |
 | Public Submit | **hold** — referral / insider page first |
 
-**Not submitted.** If a salary field appears, type `90000` (page minimum).
+**Not submitted.** Ashby blocked Submit: “flagged as possible spam.”
+Retry from a personal browser on a home/mobile network. Pause Simplify.
+Do not retry from this Cloud Chrome. If a salary field appears, type
+`90000` (page minimum).
 
 2026-08-24: first computer-use pass put v2 in the box. Extra verify
 loops after that were a miss. A later leftover pass found the Why

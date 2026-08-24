@@ -301,6 +301,21 @@ do_not_run_autofill_again:
     sponsorship back to No.
   reason: "Corrections are not sticky across a second Autofill."
 
+# Ashby submit-time spam wall (Charta 2026-08-24)
+ashby_spam_submit_block:
+  decided: "2026-08-24"
+  page_copy: "We couldn't submit your application. Your application submission was flagged as possible spam."
+  meaning: "Submit did not land. Not a Why-us length limit."
+  do:
+    - Stop retrying on Cloud Agent Chrome.
+    - Junyi retries from his own machine, no VPN, Copilot paused.
+    - Prefer home or mobile data. Wait a few minutes.
+  do_not:
+    - Keep clicking Submit on this VM
+    - Invent a fingerprint or captcha bypass
+    - Treat this as Ashby's recruiter-only fraud panel (that one is after a successful submit)
+  see: "docs/apply/OBSTACLES.md"
+
 # Workday / ATS account walls (CVS Health 2026-08-23)
 account_creation_wall:
   decided: "2026-08-23"

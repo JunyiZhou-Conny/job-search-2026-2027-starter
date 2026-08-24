@@ -257,3 +257,29 @@ Rule: one paste, one screenshot, stop.
 `knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
 Parent copies `docs/automation/COMPUTER_USE_PROMPT.md`. Do not ask the
 clicker to Ctrl+F or prove a cropped textarea.
+
+## Ashby submit blocked as possible spam (Charta 2026-08-24)
+
+Junyi hit Ashby’s candidate-facing page: “We couldn’t submit your
+application… flagged as possible spam,” with VPN / pause extensions /
+other browser / switch networks.
+
+That is a **submit-time block**. The application did not land. It is
+not a Why-us word limit.
+
+Two different Ashby layers (do not collapse them):
+
+1. **Recruiter fraud detection** (Ashby, 2025-09-16 product): scans
+   device, IP, email, phone after a successful submit. Ashby’s blog
+   says it should not add candidate friction.
+   https://www.ashbyhq.com/blog/all/ashby-launches-the-first-ats-integrated-fraud-detection-system
+2. **This pink error** is a bot/spam wall on Submit. Same wording
+   reported by other applicants (e.g. Norton community). Triggers
+   include VPN/proxy, privacy extensions, odd IP reputation.
+
+This Cloud Chrome is a bad Submit path: datacenter IP, Simplify
+Copilot, computer-use clicks, many ATS tabs.
+
+Do: wait, Submit from Junyi’s own machine, pause Copilot, no VPN,
+prefer home or mobile data. Do not keep retrying on this VM.
+Do not invent a bypass.
