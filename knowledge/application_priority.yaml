@@ -3,8 +3,8 @@
 # Labels are suggestions until Junyi confirms (docs/BOUNDARIES.md).
 # Do not Submit, send LinkedIn, or send 1point3acres/email from this file.
 
-last_updated: "2026-08-23"
-source: "Junyi review of Lila Sciences after the second 10-tab pass"
+last_updated: "2026-08-24"
+source: "Junyi Charta FDE notes plus Lila / Hayden reviews"
 
 # Two chunks
 application_weight:
@@ -32,6 +32,13 @@ application_weight:
         meaning: "Top big tech, biomedical, or research institute Junyi values."
         source: "knowledge/company_lists.yaml big_tech / biotech is a hint only."
         note: "Hint, not a confirmation. Junyi decides."
+      - id: fde
+        meaning: >
+          Forward-deployed engineer / Forward Deployed AI. Palantir-coined
+          on-site last-mile role. See knowledge/role_families.yaml.
+        note: >
+          Junyi 2026-08-24: mark these. Suitable. Charta is the type example
+          in a biomedical AI company. Confirm the row; do not skip them.
 
 # Confirmed by Junyi in chat (2026-08-23). Not a full company census.
 confirmed_prioritized:
@@ -50,6 +57,19 @@ confirmed_prioritized:
       exists"; some Greenhouse referral workflows).
     written_answer: "docs/apply/written_answers/2026-08-23_lila-swe-i-instrument.md"
     resume: "cluster resume is not enough; tailor toward instrument / scientific software using only evidence-bank facts. Do not invent lab-hardware experience."
+
+  - company: "Charta Health"
+    role: "Forward Deployed AI Engineer"
+    apply_url: "https://jobs.ashbyhq.com/chartahealth/3088555d-de93-4236-add1-41005bf0933b"
+    weight: prioritized
+    subfields:
+      - fde
+      - startup
+      - prestige   # biomedical AI; Junyi: type example of FDE in that context
+    public_submit: hold
+    hold_reason: "Prioritized FDE. Check referral / insider page before public Submit."
+    written_answer: "docs/apply/written_answers/2026-08-23_charta-forward-deployed-ai.md"
+    resume: "health_ai cluster plus FDE last-mile wording from evidence bank only. Do not invent customer-on-site FDE."
 
 # Suggested only (GTC hit on the round-two set). Do not treat as confirmed.
 suggested_gtc_on_round_two:

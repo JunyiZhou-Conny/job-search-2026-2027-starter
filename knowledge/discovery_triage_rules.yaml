@@ -151,6 +151,16 @@ guide_rules:
       Use later for weak adjacent (generic front-end, QA automation, light analytics).
       suggested_lane: core | broad | practice.
 
+  - id: fde
+    severity: policy
+    default_decision: keep
+    guidance: >
+      Forward Deployed / Forward-Deployed / FDE / Forward Deployed AI in
+      the title → keep, suggested_lane core, mark application_weight
+      prioritized (subfield fde). See knowledge/role_families.yaml.
+      Junyi 2026-08-24: these are suitable; pick them out, do not skip.
+      Do not invent FDE experience on the resume or in Why-us.
+
 process:
   - Read knowledge/discovery_triage_rules.yaml and config/profile.yaml.
   - Read data/discovery/YYYY-MM-DD_all.csv (every row).

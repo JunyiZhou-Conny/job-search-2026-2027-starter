@@ -21,6 +21,19 @@ ideology:
   do_not_use_when:
     - why this company / why this role / why now
     - any prompt that did not ask for background, week structure, or meaning
+
+# Why-company shape (Junyi Charta 2026-08-24)
+why_company_shape:
+  decided: "2026-08-24"
+  parts:
+    - answer every clause in the prompt (why them, why now, why this role)
+    - start from their mission / product / culture
+    - integrate Junyi's health-data and research/engineering philosophy
+    - one or two verified surfaces if they earn their place (not a tour)
+  do_not:
+    - one-line Why-us on a two-part prompt
+    - claim FDE / Palantir / Epic-admin work that is not in the bank
+    - upgrade Emory to a CS degree
   points:
     - id: education_and_self_motivation
       text: >

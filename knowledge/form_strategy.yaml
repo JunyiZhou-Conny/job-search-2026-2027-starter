@@ -150,11 +150,14 @@ written_responses:
     this role. Do not make it longer by dumping projects. See
     knowledge/application_priority.yaml.
   why_company_direction_2026-08-24: >
-    Junyi Hayden: still too formulaic / too factual. Handle the rewrite
-    later. Direction: germane to what the company does, values, and
-    culture; then integrate Junyi's work / academic / research
-    philosophy. Not a full response of company-about-page, and not a
-    project dump. Do not invent culture facts.
+    Junyi Hayden + Charta: Why-us is not a one-liner and not a project
+    dump. If the prompt has two parts (why this company, why now / why
+    this role), answer both. Start from what they do, the mission, and
+    the culture, then integrate Junyi's health-data / research /
+    engineering philosophy. Use only facts he stated or that sit in
+    the evidence bank. Do not invent domain ownership. Do not claim a
+    CS degree (Emory is AMS + informatics minor). Do not claim FDE
+    customer-on-site work already done. Example rewrite: Charta archive.
 
 leave_for_junyi:
   decided: "2026-08-23"

@@ -21,11 +21,12 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
   `future_sponsorship_required: true` is unchanged.
 - Use `pursuit_lane`: `core` | `broad` | `practice`.
 - Keep practice-lane applications roughly 15–25% of applied volume unless funnel data justifies a change.
-- Apply **weight** is separate: `regular` | `prioritized` (GTC 2026 / startup / prestige).
-  See `knowledge/application_priority.yaml`. Prioritized: more Why-us care,
-  JD-tuned resume from the evidence bank only, **hold public Submit**
+- Apply **weight** is separate: `regular` | `prioritized` (GTC 2026 / startup / prestige / **FDE**).
+  See `knowledge/application_priority.yaml` and `knowledge/role_families.yaml`.
+  Forward Deployed / FDE titles → keep and mark. Prioritized: more Why-us
+  care, JD-tuned resume from the evidence bank only, **hold public Submit**
   until referral / insider-page risk is checked. Labels stay suggestions
-  until Junyi confirms.
+  until Junyi confirms. Do not claim FDE customer-on-site work already done.
 
 ## Platforms
 

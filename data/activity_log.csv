@@ -51,3 +51,4 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-23T18:15:00,,,rule_updated,,,"Junyi Lila review: Why-us dump rejected; Copilot sidebar phone/resume false-complete; Lila marked prioritized; public Submit hold for referral risk; no re-click"
 2026-08-24T12:47:00,,,autofill_reviewed,,,"Hayden AI inspect only — start 05/18/2027 filled by computer-use; years experience empty; sponsorship still Yes (old flip); spoofing radios empty; no re-click"
 2026-08-24T12:50:00,,,rule_updated,,,"Visa sponsorship form answer No I do not need sponsorship; years of experience 2; automated script/spoofing No"
+2026-08-24T13:20:00,,,rule_updated,,,"FDE / Forward Deployed AI marked as prioritized role family; Charta confirmed; Why Charta rewritten from Junyi dictation (not typed)"

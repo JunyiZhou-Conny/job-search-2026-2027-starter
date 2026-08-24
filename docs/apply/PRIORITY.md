@@ -24,6 +24,9 @@ letter `priority` (A / B / C / D).
    `startup_or_scaleup` is a hint, not a confirmation.
 3. **Prestige** — top big tech, biomedical, or research institute Junyi
    values. `big_tech` / `biotech` lists are hints.
+4. **FDE** — Forward Deployed / Forward-Deployed AI. Palantir-coined
+   last-mile role. See `knowledge/role_families.yaml`. Junyi 2026-08-24:
+   mark these; they are suitable. Charta is the type example.
 
 Labels stay suggestions until Junyi confirms.
 
@@ -31,6 +34,9 @@ Labels stay suggestions until Junyi confirms.
 
 - **Lila Sciences — Software Engineer I, Instrument Software** —
   prioritized (`gtc_2026` + Junyi emphasis). Public Submit on hold.
+- **Charta Health — Forward Deployed AI Engineer** — prioritized
+  (`fde` + startup + biomedical AI). Public Submit on hold. Why-us
+  rewrite is in the archive; not typed.
 
 ## Referral / insider page
 
