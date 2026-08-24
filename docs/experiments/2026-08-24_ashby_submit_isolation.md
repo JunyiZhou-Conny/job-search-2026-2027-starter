@@ -107,12 +107,12 @@ The isolation is the new pod.
 | Child agent URL | https://cursor.com/agents/bc-7f8a7941-3040-5925-84d7-72f1c19c24a7 |
 | Harness ready | True |
 | Copilot id | pbanhockgagggenencehbnadejlgchfc |
-| Job actually opened | TBD (computer-use not started) |
-| Autofill once | TBD |
-| Submit clicked | TBD |
-| Outcome | `not_run` (pre-submit checkpoint) |
-| Page copy (verbatim if error) | TBD |
-| Notes | 2026-08-24T14:42Z: `check_apply_harness.py` exit 0; branded Chrome; Copilot via publisher_signals; Simplify refresh cookie present; identity_match unknown. Submit not clicked yet. |
+| Job actually opened | no |
+| Autofill once | no |
+| Submit clicked | no |
+| Outcome | `not_run` |
+| Page copy (verbatim if error) | n/a (Anyscale tab never opened) |
+| Notes | 2026-08-24T14:44Z. Harness: `check_apply_harness.py` exit 0; branded Chrome `/opt/google/chrome/chrome`; Copilot `pbanhockgagggenencehbnadejlgchfc` via publisher_signals; Simplify refresh cookie present; identity_match unknown. Same personal env `41a15b57-8916-11f1-b532-320a589b8025`. This child session has `computerUseSupported: false`; Task / computerUse are not in the tool catalog. Did not improvise Playwright or xdotool. Did not open Charta, Meshy backup, or any other ATS tab. No screenshots. |
 
 ## How to read the outcome
 
