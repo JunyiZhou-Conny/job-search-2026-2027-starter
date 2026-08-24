@@ -357,6 +357,9 @@ country_specific_sponsorship:
 computer_use_context_isolation:
   decided: "2026-08-24"
   cursor_docs: "https://cursor.com/docs/subagents.md"
+  not_the_public_browser_builtin: true
+  public_builtins: [explore, bash, browser]
+  cloud_task_type_we_spawn: computerUse
   parent_writes_the_clicker_prompt: true
   clicker_starts_clean: true
   clicker_does_not_inherit:

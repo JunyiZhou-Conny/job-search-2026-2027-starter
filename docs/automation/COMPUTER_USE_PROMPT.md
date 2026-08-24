@@ -17,12 +17,18 @@ get the parent chat. The parent must put every needed fact in the
 launch prompt
 ([Subagents](https://cursor.com/docs/subagents.md)).
 
-`computerUse` is a reserved built-in. The parent cannot replace its
-unpublished system prompt. Cursor's docs are silent on whether Task
-children auto-load `AGENTS.md`, `.cursor/rules`, skills, or
-`knowledge/*`. Stored clicker transcripts from the 2026-08-24 Ashby
-isolation runs show **one** user message only — the Task string. No
-`AGENTS.md`, no `form_strategy.yaml`, no leftover-typing rule.
+`computerUse` is a reserved Cloud Task type (desktop mouse/keyboard
+on this VM). It is **not** the public **Browser** built-in on
+[subagents](https://cursor.com/docs/subagents.md) or the in-editor
+[Browser tools](https://cursor.com/docs/agent/tools/browser) page.
+Those three public built-ins are Explore, Bash, and Browser.
+
+The parent cannot replace the unpublished `computerUse` system
+prompt. Cursor's docs are silent on whether Task children auto-load
+`AGENTS.md`, `.cursor/rules`, skills, or `knowledge/*`. Stored
+clicker transcripts from the 2026-08-24 Ashby isolation runs show
+**one** user message only — the Task string. No `AGENTS.md`, no
+`form_strategy.yaml`, no leftover-typing rule.
 
 The clicker has:
 
