@@ -348,6 +348,11 @@ ashby_spam_isolation_experiment:
     Ashby: "Success. Your application was successfully submitted."
     Outcome submitted. No pink spam wall. Cloud Submit is no longer a
     one-sample failure; still not a license for mass apply.
+  followup_three_trivial: >
+    2026-08-24 Junyi authorized three more Cloud Submits on named
+    non-pursuit short Ashby forms, one tab at a time. See
+    docs/experiments/2026-08-24_ashby_three_trivial_submits.md.
+    Not the weekday apply Automation.
   see: "docs/experiments/2026-08-24_ashby_submit_isolation.md"
 
 # Workday / ATS account walls (CVS Health 2026-08-23)

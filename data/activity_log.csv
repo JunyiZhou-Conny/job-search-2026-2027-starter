@@ -65,5 +65,6 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T14:51:00,,,experiment_started,,,"Ashby isolation second run: dashboard agent bc-b6ea9703-f8db-491d-98ab-52b490155db1; harness ready (Copilot pbanhockgagggenencehbnadejlgchfc); computerUse present; Anyscale still listed; Submit not clicked yet"
 2026-08-24T15:06:35,J20260824-001,,job_added,,discovered,Anyscale — Software Engineer (Ray Core)
 2026-08-24T15:06:37,J20260824-001,,status_changed,discovered,applied,Cloud Chrome isolation Submit succeeded; Ashby thank-you; not a spam wall
-2026-08-24T15:07:00,J20260824-001,,experiment_completed,,,"Ashby isolation second run outcome submitted; Anyscale Ray Core; no pink spam wall; Cloud Submit no longer one-sample failure; do not mass-Submit"
 2026-08-24T15:06:58,J20260824-001,,job_updated,,,Resume filename from Copilot widget; cluster version not verified
+2026-08-24T15:07:00,J20260824-001,,experiment_completed,,,"Ashby isolation second run outcome submitted; Anyscale Ray Core; no pink spam wall; Cloud Submit no longer one-sample failure; do not mass-Submit"
+2026-08-24T15:12:00,,,experiment_started,,,"Junyi authorized three more trivial Ashby Cloud Submits (Meshy Infrastructure Intern, Midjourney QA Analyst, Runway FD Finance Partner); one tab each; not weekday Automation"
