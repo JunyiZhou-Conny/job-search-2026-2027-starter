@@ -101,6 +101,8 @@ From the 2026-08-22 10-tab review
 | Copilot “need review” matches empty form fields | Expected. Log the empty field names into `knowledge/autofill_obstacles.yaml` if they are new gaps. |
 | Job closed / 404 / “no longer open” | **Close the tab.** Write `decision=closed` in `data/job_decisions.csv` and `posting_closed` in `data/activity_log.csv`. Do not pick a sibling from Current openings. Next URL. |
 | Checker `ready: false` | Stop the run. |
+| Non-US work location (Belgrade, etc.) | `non_us_location`. Close tab. Do not Submit. |
+| Non-standard exercise / external URL not in the profile | `nonstandard_apply_hold`. Do not Submit. Do not invent the artifact. Surface in the daily digest. |
 
 Default remaining policy: **every tab is blocked from Submit** until Junyi
 explicitly changes this file to allow it for a named row. The first shipped

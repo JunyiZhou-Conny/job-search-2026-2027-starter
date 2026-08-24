@@ -7,7 +7,7 @@
 | ATS | Ashby |
 | Apply URL | https://jobs.ashbyhq.com/notion/3fba1c39-c5cb-47d7-9ad2-1cec4d7e9d0c |
 | Compensation on page | **$57 – $61** / hour |
-| `form_status` | `typed_on_form` (Why Notion + AI tech; Anchor Days Yes; relocate Yes). Sponsorship type and role-type checkboxes left unselected. |
+| `form_status` | `typed_on_form` (Why Notion + AI tech; Anchor Days Yes; relocate Yes). Sponsorship type and role-type checkboxes left unselected. Junyi 2026-08-24 standing answers below are prescriptions. Not re-clicked. |
 | `submitted` | no |
 | Identity Copilot filled | name, email, phone, resume, LinkedIn |
 | Copilot need-review | 7 after Autofill |
@@ -33,27 +33,55 @@ Copilot left empty. Computer-use set **Yes**.
 
 ---
 
-## Indicate all locations of interest
+## Graduation date
 
-Preference leftover. Do not invent NYC vs SF.
-
-**Draft:** leave for Junyi.
+Junyi 2026-08-24: Copilot left it empty. Fill **2026-12-18**
+(program end). Year-only widgets stay **2027**.
 
 ---
 
-## For this specific internship, will you require any of the below sponsorship for employment
+## How many prior internships
 
-This is a **type** multi-select (H-1B / OPT / similar), not a Yes/No.
-Left **unselected**. Do not guess a checkbox combination. OPT timing
-and H-1B-named-only No live in `knowledge/work_authorization.yaml`.
+**Draft:** `2`
+
+---
+
+## How did you hear about this opportunity
+
+Prefer LinkedIn. If that option is missing, any listed source that
+unblocks Submit.
+
+---
+
+## Indicate all locations of interest
+
+Junyi 2026-08-24: pick one US option so Submit is not blocked.
+Do not leave it empty.
+
+**Draft:** any listed US office (NYC or SF). First listed US city is fine.
+
+---
+
+## Visa type / will you require sponsorship
+
+Two widgets, two standing answers (Junyi 2026-08-24). Last live
+read left sponsorship type unselected. These are prescriptions,
+not the filled values.
+
+- State your visa type → **F-1**
+- Now or in the future require sponsorship → **No** or **None**
+
+If the old multi-select is “which sponsorship will you require” and
+**None** exists, pick None. Do not pick H-1B.
+
+Not re-clicked from this note. Re-read before Submit.
 
 ---
 
 ## What type of engineering role are you interested in?
 
-Profile `role_preferences`: cloud_swe, backend_platform, data_ml, ml_ai,
-health_ai. Only use those labels if the widget's options match. If the
-options are different, leftover.
+Junyi 2026-08-24: pick the closest fit (backend / platform / cloud /
+ML). If none match, pick any option that does not block Submit.
 
 **Draft if the options include backend / platform / ML:**
 

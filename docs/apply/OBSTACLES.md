@@ -192,15 +192,27 @@ in Belgrade. Copilot No. Do not apply the US Yes rule. Also a pick miss:
 Belgrade is outside `search.country: United States`.
 
 **Perplexity exercise URL.** Required shared thread. Left empty. Do not
-invent one.
+invent one. Junyi 2026-08-24: non-standard apply hold. Do not Submit.
+Daily digest must list these. `knowledge/nonstandard_apply_holds.yaml`.
+
+**Past-project dump.** Perplexity draft listed several projects. Junyi:
+one story, matched to company type. Bank is empty until he writes it.
+`knowledge/project_stories.yaml`.
 
 **Hayden 90 / 182-day lock.** Do not Submit this test.
 
 **EEO filled** on Hayden, Baseten, Relativity, Scale, Notion. Block
 unattended Submit.
 
-**Notion sponsorship type.** Multi-select of visa types, not Yes/No.
-Left unselected.
+**Notion (Ashby) 2026-08-24.** Anchor Days / committed → Yes. Relocate
+→ Yes. Location interest → pick one US option. Visa type → F-1.
+Future sponsorship → No / None. Prior internships → 2. Role type →
+closest fit or any that unblocks. Graduation date → 2026-12-18.
+How-heard → LinkedIn or any option that unblocks.
+
+**Scale AI sponsorship.** Computer-use had flipped the future-
+sponsorship widget to Yes. Junyi 2026-08-24: that is wrong. Standing
+answer is No / None. Not re-clicked from the note.
 
 **Run Autofill Again clears corrections.** After leftover essays were
 typed, a second Autofill reset Lila Yes dropdowns and flipped Baseten
