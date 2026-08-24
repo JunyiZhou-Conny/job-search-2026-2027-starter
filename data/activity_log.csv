@@ -62,3 +62,4 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T14:41:00,,,experiment_started,,,"Ashby Submit isolation: fresh Cloud VM + Anyscale Ray Core; protocol docs/experiments/2026-08-24_ashby_submit_isolation.md"
 2026-08-24T14:44:20,,,experiment_blocked,,,"Ashby isolation child VM harness ready (Copilot pbanhockgagggenencehbnadejlgchfc) but computerUseSupported=false; Anyscale URL not opened; Submit not clicked; outcome not_run"
 2026-08-24T14:48:00,,,experiment_blocked,,,"Ashby isolation: nested Task cloud child is not enough to Submit; next run must be a dashboard Cloud Agent with computer-use; parent Chrome still must not Submit"
+2026-08-24T14:51:00,,,experiment_started,,,"Ashby isolation second run: dashboard agent bc-b6ea9703-f8db-491d-98ab-52b490155db1; harness ready (Copilot pbanhockgagggenencehbnadejlgchfc); computerUse present; Anyscale still listed; Submit not clicked yet"

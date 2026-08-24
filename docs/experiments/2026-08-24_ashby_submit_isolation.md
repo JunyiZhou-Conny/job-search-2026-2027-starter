@@ -170,3 +170,17 @@ in the experiment doc. Do not open Charta.
 That agent must have computer-use, like this parent. Until it runs,
 the spam cause is still one Cloud sample (Charta) plus one personal
 laptop success.
+
+## Result (second run — dashboard Cloud Agent)
+
+| Field | Value |
+|---|---|
+| Child agent URL | https://cursor.com/agents/bc-b6ea9703-f8db-491d-98ab-52b490155db1 |
+| Harness ready | True |
+| Copilot id | pbanhockgagggenencehbnadejlgchfc |
+| Job actually opened | pending |
+| Autofill once | pending |
+| Submit clicked | pending |
+| Outcome | `in_progress` |
+| Page copy (verbatim if error) | pending |
+| Notes | 2026-08-24T14:51Z. Dashboard Cloud Agent (not a nested Task). Name: "Ashby submission isolation". Same personal env `41a15b57-8916-11f1-b532-320a589b8025`. Build `bld-20260823-0cf0d7ec-04ef-4b08-827d-61e44f05e042` (warm fork). `check_apply_harness.py` exit 0; branded Chrome `/opt/google/chrome/chrome`; Copilot `pbanhockgagggenencehbnadejlgchfc` via publisher_signals; Simplify refresh cookie present; identity_match unknown. `computerUse` is in this session's Task catalog. Anyscale board API still lists `73a973b1-6377-4144-a6e5-610b78719882` (`isListed: true`). Did not open Charta or Meshy. Submit not clicked yet. |
