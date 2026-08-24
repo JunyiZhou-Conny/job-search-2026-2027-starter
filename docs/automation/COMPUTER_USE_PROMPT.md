@@ -10,6 +10,37 @@ Ctrl+F, fight autosuggest, and scroll. That is the token burn.
 You cannot inject a custom system prompt into the Computer Use built-in.
 You **can** send this user prompt and nothing else.
 
+## What the clicker can see
+
+Cursor docs: a Task child starts with a **clean context**. It does not
+get the parent chat. The parent must put every needed fact in the
+launch prompt
+([Subagents](https://cursor.com/docs/subagents.md)).
+
+`computerUse` is a reserved built-in. The parent cannot replace its
+unpublished system prompt. Cursor's docs are silent on whether Task
+children auto-load `AGENTS.md`, `.cursor/rules`, skills, or
+`knowledge/*`. Stored clicker transcripts from the 2026-08-24 Ashby
+isolation runs show **one** user message only — the Task string. No
+`AGENTS.md`, no `form_strategy.yaml`, no leftover-typing rule.
+
+The clicker has:
+
+- pixels, mouse, keyboard, the same Chrome on this VM
+- whatever you copied into the Task prompt
+- Cursor's unpublished computer-use prompt (not ours)
+
+The clicker does **not** have:
+
+- this parent conversation
+- `AGENTS.md` / `.cursor/rules` / `knowledge/*` unless you paste them
+- memory of earlier 10-tab reviews unless you write that into the prompt
+
+If you omit a standing rule (no Autofill Again, no verify loop, sponsorship
+No), the child can fall back to retries. That is not a hidden second
+prompt from Junyi's chat. It is a short Task string plus a generic
+clicker. The parent has to compile the rulebook into that string.
+
 ## Parent steps
 
 1. One `Task` with `subagent_type=computerUse`.

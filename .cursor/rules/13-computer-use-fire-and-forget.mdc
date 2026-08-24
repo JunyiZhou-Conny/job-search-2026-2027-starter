@@ -6,8 +6,11 @@ alwaysApply: true
 # Computer-use fire-and-forget
 
 You (the parent) write the `computerUse` Task prompt. Cursor does not
-write a second secret prompt from Junyi's chat. A long verify-heavy
-prompt is how Charta burned tokens.
+write a second secret prompt from Junyi's chat. The clicker starts
+with a clean context: no parent conversation, and no automatic load
+of `AGENTS.md`, `.cursor/rules`, or `knowledge/*`. If a standing
+rule is not in the Task string, the child does not have it. A long
+verify-heavy prompt is how Charta burned tokens.
 
 When Junyi already accepted text and said type it:
 

@@ -352,6 +352,34 @@ country_specific_sponsorship:
     That is a different question from the US visa-sponsorship widget.
     Do not auto-map it.
 
+# Computer-use children do not inherit the parent rulebook
+# (Junyi 2026-08-24: short Task prompts, retries)
+computer_use_context_isolation:
+  decided: "2026-08-24"
+  cursor_docs: "https://cursor.com/docs/subagents.md"
+  parent_writes_the_clicker_prompt: true
+  clicker_starts_clean: true
+  clicker_does_not_inherit:
+    - parent_conversation
+    - agents_md_unless_copied
+    - cursor_rules_unless_copied
+    - knowledge_yaml_unless_copied
+  clicker_does_have:
+    - pixels_mouse_keyboard
+    - same_chrome_on_this_vm
+    - the_task_prompt_only
+    - unpublished_builtin_computer_use_prompt
+  evidence: >
+    Isolation clickers bc-e6b93672, bc-c2329ec6, bc-b1661bf4,
+    bc-f13355c8 each had one user message (1147–2395 chars). None
+    mentioned AGENTS.md, form_strategy.yaml, or leftover_typing.
+    Cursor docs: "Subagents start with a clean context." Built-in
+    computerUse cannot take a custom system prompt.
+  implication: >
+    Short Task prompts are a parent compiler failure, not a child
+    that already read the rulebook. Copy standing rules into the
+    prompt or the child can retry / Autofill Again / verify-loop.
+
 # Leftover typing is one paste (Junyi 2026-08-24, Charta)
 leftover_typing_one_pass:
   decided: "2026-08-24"
