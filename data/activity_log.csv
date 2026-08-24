@@ -76,3 +76,4 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T15:32:17,J20260824-003,,status_changed,discovered,applied,Cloud Chrome one-tab Submit; Ashby thank-you; Midjourney QA Analyst
 2026-08-24T15:32:17,J20260824-004,,status_changed,discovered,applied,Cloud Chrome one-tab Submit; Ashby thank-you; Runway FD Finance Partner
 2026-08-24T18:20:00,,,rule_updated,,,"Prioritized public Submit hold retired; Junyi: insider pages rare, FIFO in the employer queue matters more; still no outreach without confirm"
+2026-08-24T19:25:00,,,rule_updated,,,"Scale/Notion/Perplexity inspect: sponsorship No/None; visa type F-1; graduation date 2026-12-18; intern count 2; non-US location skip; one-project stories empty; Perplexity exercise is nonstandard hold do not Submit"

@@ -7,8 +7,9 @@
 | ATS | Ashby |
 | Apply URL | https://jobs.ashbyhq.com/perplexity/9246cf02-26fd-4ae8-90c5-639c6e85e9e2 |
 | Location on page | **Belgrade** (not a US city) |
-| `form_status` | `typed_on_form` (three essays + I-agree). Exercise URL left empty. |
+| `form_status` | `do_not_submit` — Belgrade (`non_us_location`) plus non-standard exercise URL |
 | `submitted` | no |
+| `nonstandard_apply_hold` | yes — shared Perplexity thread |
 | Identity Copilot filled | name, email, phone, resume, location, GitHub `https://github.com/JunyiZhou-Conny` |
 | Copilot need-review | 4 |
 
@@ -16,7 +17,9 @@
 Do **not** invent a Perplexity shared-thread URL.
 
 This posting is Belgrade. Profile `search.country` is the United States.
-Recorded as a pick miss for this test, not as a US apply.
+Junyi 2026-08-24: automatic no. intern_list failed to filter it; later
+rows with Belgrade or any clear non-US work city are a skip. Perplexity
+is already in `company_lists.yaml` `startup_or_scaleup`. ATS is Ashby.
 
 ---
 
@@ -35,9 +38,12 @@ Copilot **Yes**. Matches on-site rule if the office were in scope.
 
 ## Tell us about a past project you've worked on?
 
-The form asked for unassisted writing. Evidence-bank only.
+Junyi 2026-08-24: the draft below is **wrong for this prompt**. It
+tells several projects. The question wants one story, chosen after
+the company's mission. Stories are not written yet
+(`knowledge/project_stories.yaml`). Do not brainstorm here.
 
-**Draft:**
+**Old draft (do not reuse as-is):**
 
 ```text
 On FASRC Cannon I built a closed-loop experiment runner for scGen vs CellOT ablations. I counted 338 runs and 79.3 hours of wall-clock compute from experiments.csv (318 ok). The live planner is a rule reasoner. I also built an optional LLM planner with a spend ceiling; it has never been used on a real run.
@@ -77,6 +83,10 @@ Required on the page. Option 1: teach a topic in a Perplexity thread.
 Option 2: enlist Perplexity to advocate for the application.
 
 **Left empty.** Do not invent `https://example.com` or any thread URL.
+Junyi 2026-08-24: this is the type example of a **non-standard** apply
+question (external product exercise, not in the profile). Mark. Do not
+Submit. Surface in the daily summary.
+`knowledge/nonstandard_apply_holds.yaml`.
 
 ---
 

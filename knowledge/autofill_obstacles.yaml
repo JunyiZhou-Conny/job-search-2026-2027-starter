@@ -379,11 +379,22 @@ gaps:
 
   - id: perplexity_exercise_url
     status: missing
-    already_in: null
+    already_in: "knowledge/nonstandard_apply_holds.yaml"
     form_effect: >
       Perplexity requires a shared Perplexity thread URL (teach a
       topic or advocate for the application). Left empty. Do not invent.
+      Junyi 2026-08-24: this class of question is a non-standard apply
+      hold. Do not Submit. Surface in the daily summary.
     ask_later: "Only after Junyi records a real shared thread URL."
+
+  - id: one_project_story_not_a_dump
+    status: missing
+    already_in: "knowledge/project_stories.yaml"
+    form_effect: >
+      Perplexity “past project” draft listed Cannon plus the chatbot.
+      Junyi: one story, chosen after the company mission. Types are
+      marked. Stories are not written.
+    ask_later: "Junyi will pick stories later. Do not brainstorm in chat."
 
 do_not_put_in_this_file:
   - passport

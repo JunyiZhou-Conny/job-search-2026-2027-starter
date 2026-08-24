@@ -9,10 +9,11 @@ alwaysApply: false
 - Pull jobs with automation scrapers → `data/discovery/YYYY-MM-DD_all.csv`.
 - `scripts/triage_discovery.py` only prepares a review pack; it must **not** regex-decide keep/later/skip.
 - Decisions come from the **AI agent** reading `knowledge/discovery_triage_rules.yaml` + the CSV.
-- Guide rule themes: remote, non_target_role, hard_gate, start_date_conflict, timing_expired, traditional_student_coop, intern_ok, dual_grad_dates, fit_priority, fde, export_compliance.
+- Guide rule themes: remote, non_target_role, hard_gate, start_date_conflict, timing_expired, traditional_student_coop, intern_ok, dual_grad_dates, fit_priority, fde, export_compliance, non_us_location.
 - Forward Deployed / FDE titles → keep and mark (`knowledge/role_families.yaml`). Do not skip them. Do not invent FDE experience.
 - ITAR / EAR / U.S. Person / export compliance → keep. Do not skip. Low care. No need to submit.
 - Dual dates: program end **2026-12-18** (default) + commencement **2027-03**. Hard-skip graduation windows only if **neither** date fits. Set `grad_display_hint`.
 - Target work window: **Summer 2027 intern** + FT on/after **2027-01-18**. Hard-skip any **2026 job term/start** (including Fall 2026 intern). Do not skip only for candidate graduation “December 2026”.
+- Non-US work location (Belgrade, Serbia, or any clear non-US city/country of work) → skip. `non_us_location`. Any US city is fine. Blank location is not an automatic skip.
 - Write suggestions to `generated/discovery_triage_YYYY-MM-DD.csv` only; user confirms before applications ingest.
 - Do not fabricate JD facts from thin board rows; set `evidence_basis` honestly.

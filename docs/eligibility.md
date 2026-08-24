@@ -10,7 +10,8 @@ Use `ineligible` only when at least one of these is true and verified from the p
 - Active security clearance required
 - Internship requires return-to-school / a graduation window that matches **neither** real date: I-20 program end **2026-12-18** (December 2026 completion) **nor** commencement / school listing **March 2027**
 - Start date conflicts with available work authorization timing (planned earliest FT **2027-01-18** from program end + OPT; confirm with HIO)
-- Location / work model is actually unacceptable
+- Location / work model is actually unacceptable (including a clear
+  non-US work city/country such as Belgrade; `non_us_location`)
 - Role cannot be reasonably connected to your background (Health Data Science + target clusters)
 
 Export compliance / ITAR / U.S. Person on a rocket or defense form is

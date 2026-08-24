@@ -20,9 +20,12 @@ If a salary field appears, type `74400`.
 
 ## Will you now or in the future require company sponsorship…
 
-Broad sponsorship. Copilot **No**. Computer-use **Yes**.
+Broad sponsorship. Copilot **No**. Computer-use flipped to **Yes**
+under the old rule. Junyi 2026-08-24 inspect: that Yes is **wrong**.
 
-**Draft / form value:** `Yes`
+**Standing form answer:** `No` (None if that option exists).
+Fact `future_sponsorship_required` stays true. Re-read before Submit.
+Not re-clicked from this note.
 
 ---
 

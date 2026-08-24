@@ -5,8 +5,8 @@
 # Decisions: keep | later | skip
 # Only user-confirmed keep rows should be ingested into data/applications.csv.
 
-version: 3
-updated: 2026-08-24
+version: 4
+updated: "2026-08-24"
 
 profile_anchors:
   # On a personal fork, rewrite these anchors to match config/profile.yaml.
@@ -160,6 +160,18 @@ guide_rules:
       prioritized (subfield fde). See knowledge/role_families.yaml.
       Junyi 2026-08-24: these are suitable; pick them out, do not skip.
       Do not invent FDE experience on the resume or in Why-us.
+
+  - id: non_us_location
+    severity: hard
+    default_decision: skip
+    guidance: >
+      Skip when the board location is clearly outside the United States
+      (city or country of work). Example: Perplexity Search ML intern
+      listed Belgrade (2026-08-23 intern_list pick miss; Junyi
+      2026-08-24: automatic no). Profile search.country is United
+      States; any US city is fine. Do not skip a US-site row only
+      because the company also has a foreign office. If location is
+      blank, do not assume non-US.
 
   - id: export_compliance
     severity: policy
