@@ -281,5 +281,17 @@ This Cloud Chrome is a bad Submit path: datacenter IP, Simplify
 Copilot, computer-use clicks, many ATS tabs.
 
 Do: wait, Submit from Junyi’s own machine, pause Copilot, no VPN,
-prefer home or mobile data. Do not keep retrying on this VM.
-Do not invent a bypass.
+prefer home or mobile data. Do not keep retrying on the already
+blocked VM. Do not invent a bypass.
+
+2026-08-24: Junyi submitted Charta from his laptop after the Cloud
+block. Isolation test (new pod, different Ashby org, one Submit):
+`docs/experiments/2026-08-24_ashby_submit_isolation.md`.
+
+First nested child: harness ready, no computer-use, `not_run`.
+Dashboard agent `bc-b6ea9703-f8db-491d-98ab-52b490155db1`: Autofill
+once, Submit once on Anyscale Software Engineer (Ray Core). Ashby
+thank-you: “Success. Your application was successfully submitted.”
+No pink spam wall. Outcome `submitted`. Cloud Submit is no longer a
+one-sample failure. Still do not mass-Submit from Cloud Chrome. Do
+not retry Charta on the blocked parent session.
