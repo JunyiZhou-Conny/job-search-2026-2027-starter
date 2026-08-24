@@ -38,7 +38,7 @@ ashby:
   Perplexity: perplexity  # verified 2026-08-23
   Anyscale: anyscale  # verified 2026-08-24; isolation Submit test (Ray Core SF Hybrid)
   Midjourney: midjourney  # verified 2026-08-24; QA Analyst form
-  Runway: runway  # verified 2026-08-24; FD Finance Partner form
+  Runway: runway-ml  # verified 2026-08-24; Runway ML gen-AI board, not cfo.ai slug `runway`
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
