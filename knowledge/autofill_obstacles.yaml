@@ -15,7 +15,7 @@ purpose: >
 
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
-last_updated: "2026-08-23"
+last_updated: "2026-08-24"
 last_source: "Second 10-tab Copilot review (Meshy / CVS / Lila / Hayden / Baseten / Charta / Relativity / Scale / Notion / Perplexity)"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
@@ -44,6 +44,18 @@ phenomena:
       Either add it to the Simplify profile (human, in the extension),
       or a later filler must copy a verified repo value into the widget.
       Do not invent a third number.
+
+  - id: leftover_typing_over_click
+    observed: "2026-08-24"
+    company: Charta Health
+    meaning: >
+      Junyi asked to paste accepted Why-us v2. First computer-use pass
+      put the text in the box. The parent then launched more passes
+      (Ctrl+F verify, blank-line fix). That burned tokens. Not a
+      Copilot miss. See form_strategy leftover_typing_one_pass.
+    implication: >
+      Accepted leftover text is one paste. Do not resume the clicker
+      to verify.
 
   - id: eeo_inconsistent_across_forms
     observed: "2026-08-23"

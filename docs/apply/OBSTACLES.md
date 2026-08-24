@@ -244,3 +244,14 @@ is selected. Future answer: **No**.
 
 **Why Hayden** still formulaic. Rewrite later (company values / culture
 + Junyi’s philosophy). Cover letter empty is fine.
+
+## Leftover typing over-click (Charta 2026-08-24)
+
+Junyi asked to paste accepted Why Charta v2. He would Submit.
+
+The first computer-use pass put the text in the box. The parent then
+started a second pass (Ctrl+F / scroll) and a third (blank line). That
+is the waste. Not a Copilot miss.
+
+Rule: one paste, one screenshot, stop.
+`knowledge/form_strategy.yaml` `leftover_typing_one_pass`.

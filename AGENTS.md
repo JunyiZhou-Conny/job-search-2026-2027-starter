@@ -93,6 +93,11 @@ week / meaning / culture questions only. A file there is not a submit.
 Copilot “Completed” on phone or resume is not proof the widget has a
 value. Look at the page. Especially on prioritized companies.
 
+If Junyi already accepted a draft and said type it: **one paste**. One
+computer-use call. Select all, paste, one screenshot, stop. Do not
+resume the clicker to verify, Ctrl+F, or fix punctuation. See
+`knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
+
 ## Automation safety
 
 - `label_source=manual` must not be auto-overwritten.

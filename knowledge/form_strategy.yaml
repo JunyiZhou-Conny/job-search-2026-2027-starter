@@ -268,6 +268,24 @@ country_specific_sponsorship:
     That is a different question from the US visa-sponsorship widget.
     Do not auto-map it.
 
+# Leftover typing is one paste (Junyi 2026-08-24, Charta)
+leftover_typing_one_pass:
+  decided: "2026-08-24"
+  when: "Junyi already accepted a draft and said type it / he will Submit"
+  do:
+    - One computer-use call.
+    - Find the tab. Click the box. Select all. Paste the accepted text once.
+    - One screenshot. Stop.
+  do_not:
+    - Type the essay character by character when paste works
+    - Resume computer-use to Ctrl+F, Ctrl+End, or hunt phrases
+    - Start a second or third pass to check a blank line or screenshot crop
+    - Start a screen recording unless Junyi asked for a demo
+    - Re-read many screenshots as if this were a UI test
+  reason: >
+    Charta v2 was a copy-paste. Extra verify loops burned tokens and
+    time. Junyi can see the tab. He is about to Submit.
+
 # Do not re-run Copilot after human / computer-use corrections
 do_not_run_autofill_again:
   decided: "2026-08-23"
