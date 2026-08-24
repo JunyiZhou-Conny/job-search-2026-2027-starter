@@ -52,3 +52,5 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T12:47:00,,,autofill_reviewed,,,"Hayden AI inspect only — start 05/18/2027 filled by computer-use; years experience empty; sponsorship still Yes (old flip); spoofing radios empty; no re-click"
 2026-08-24T12:50:00,,,rule_updated,,,"Visa sponsorship form answer No I do not need sponsorship; years of experience 2; automated script/spoofing No"
 2026-08-24T13:20:00,,,rule_updated,,,"FDE / Forward Deployed AI marked as prioritized role family; Charta confirmed; Why Charta rewritten from Junyi dictation (not typed)"
+2026-08-24T13:35:00,,,rule_updated,,,"Export compliance / ITAR / U.S. Person jobs stay in discovery; low care; no need to submit; Relativity Why-us left as is"
+2026-08-24T13:36:00,,,autofill_reviewed,,,"Charta Why-us v2 hyphen pass typing onto Ashby tab; Junyi will Submit; agent does not click Submit"

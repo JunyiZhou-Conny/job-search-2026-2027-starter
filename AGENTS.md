@@ -27,6 +27,9 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
   care, JD-tuned resume from the evidence bank only, **hold public Submit**
   until referral / insider-page risk is checked. Labels stay suggestions
   until Junyi confirms. Do not claim FDE customer-on-site work already done.
+- ITAR / EAR / U.S. Person / export compliance (rocket, defense): keep in
+  discovery. Do not filter out. Care is low. No need to submit. Form
+  answer: I am not a U.S. Person. Do not rewrite Why-us for this family.
 
 ## Platforms
 

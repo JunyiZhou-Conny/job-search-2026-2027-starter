@@ -12,7 +12,12 @@
 | Identity Copilot filled | name, Boston, resume, LinkedIn |
 | Copilot need-review | 2 (explanation; Why Relativity) |
 
-**Not submitted.** EEO filled → block unattended Submit.
+**Not submitted.** Junyi 2026-08-24: no need to submit. Export
+compliance / rocket science family. Keep in mass apply. Do not filter
+out. Care is low. Why Relativity is known bad and left as is. The rest
+of the form fill looked fine.
+
+EEO filled → block unattended Submit.
 If a salary field appears, type `115000`.
 
 ---
@@ -66,3 +71,7 @@ I am a Harvard SM student in Health Data Science (program end 2026-12-18; commen
 
 I will move to Long Beach and work onsite five days a week. I like asking questions in the same room. I like automating the boring watch-and-retry steps so people can keep the work that has a purpose.
 ```
+
+Junyi 2026-08-24: this Why-us is pretty bad. Do not rewrite. Do not
+spend more time. Identity, U.S. Person, relocate, and leftover
+explanation are enough.

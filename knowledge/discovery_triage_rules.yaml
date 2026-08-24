@@ -6,7 +6,7 @@
 # Only user-confirmed keep rows should be ingested into data/applications.csv.
 
 version: 3
-updated: 2026-07-26
+updated: 2026-08-24
 
 profile_anchors:
   # On a personal fork, rewrite these anchors to match config/profile.yaml.
@@ -160,6 +160,18 @@ guide_rules:
       prioritized (subfield fde). See knowledge/role_families.yaml.
       Junyi 2026-08-24: these are suitable; pick them out, do not skip.
       Do not invent FDE experience on the resume or in Why-us.
+
+  - id: export_compliance
+    severity: policy
+    default_decision: keep
+    guidance: >
+      ITAR / EAR / U.S. Person / export compliance on a rocket, defense,
+      or aerospace posting is NOT a skip. Mass apply may still surface
+      these. Junyi 2026-08-24 (Relativity Space): do not filter them
+      out. Do not mark ineligible for this reason alone. Care is low.
+      No need to submit. Do not spend a prioritized Why-us. If a form
+      asks U.S. Person, the answer is I am not a U.S. Person. See
+      knowledge/form_strategy.yaml us_person_export_control.
 
 process:
   - Read knowledge/discovery_triage_rules.yaml and config/profile.yaml.

@@ -7,8 +7,8 @@
 | ATS | Ashby |
 | Apply URL | https://jobs.ashbyhq.com/chartahealth/3088555d-de93-4236-add1-41005bf0933b |
 | Compensation on page | **$90,000 – $140,000** / year |
-| `form_status` | `typed_on_form` (Why Charta + onsite 5x Yes). Office radio stayed San Francisco (cannot unselect). No separate languages / customer-facing text boxes. |
-| `submitted` | no |
+| `form_status` | `typed_on_form` (Why Charta v2 hyphen pass + onsite 5x Yes). Office radio stayed San Francisco (cannot unselect). No separate languages / customer-facing text boxes. |
+| `submitted` | no (Junyi will Submit) |
 | Copilot need-review | 5 (onsite 5x SF/NYC; office choice; languages; customer-facing exp; Why Charta) |
 | `application_weight` | `prioritized` (Junyi 2026-08-24). Subfields: `fde`, startup, biomedical AI. |
 | Public Submit | **hold** — referral / insider page first |
@@ -87,7 +87,7 @@ I am a Harvard SM student in Health Data Science after an Emory B.S. in Applied 
 I will work onsite five days a week. I like asking questions in the room. I like automating the boring steps so the remaining work can have a purpose.
 ```
 
-### Revised draft v2 (accepted 2026-08-24; hyphen pass; not typed)
+### Revised draft v2 (accepted 2026-08-24; hyphen pass; typing onto tab)
 
 ```text
 Why Charta: I come from health data science, and I care about the health of people. That means quality for patients, and better tools for the people who run the work outside the clinic that still decides whether a hospital can function. Charta is building an operating system for modern healthcare organizations: an AI platform across revenue cycle, clinical operations, and administration so providers and payers can move faster and still deliver care. I have been living next to electronic health records. Tools like Epic dominate that world. Those tools are standard, and they are not built for modern AI. They leave last mile gaps: work that could be automated, security that could be tighter, retrieval that still hallucinates. Forward Deployed AI is the job that sits in that gap. I want to sit with a customer's data team, scope the workflow, ship the model and the product, and send the missing platform pieces back to a central engineering team. That is the role I want, and I am ready for it.

@@ -222,8 +222,10 @@ consent_checkboxes:
     - "Same Chrome profile as Copilot. Two browsers would miss the filled form."
 
 # Export-control / ITAR "U.S. Person" (Relativity Space 2026-08-23)
+# Care level: Junyi 2026-08-24. Keep in discovery. Do not filter out.
 us_person_export_control:
   decided: "2026-08-23"
+  revised: "2026-08-24"
   form_answer: "I am not a U.S. Person"
   when: >
     Export compliance / ITAR / EAR dropdown that asks whether the
@@ -232,6 +234,16 @@ us_person_export_control:
     Junyi is F-1. Copilot picked the U.S. Person side on Relativity.
     Computer-use must flip it. Do not pick citizen / green card /
     U.S. Person for this profile.
+  discovery: keep
+  care: low
+  submit: >
+    No need to submit. Mass apply may still open the tab. Do not
+    rewrite Why-us for this family. Relativity Why-us is known bad
+    and left as is. Identity / U.S. Person / relocate fill is enough.
+  do_not:
+    - skip these jobs in discovery because of export compliance
+    - mark ineligible only because the form has ITAR / U.S. Person
+    - spend prioritized Why-us time on rocket / defense export forms
 
 # "Authorized to work for any employer" (Hayden AI 2026-08-23)
 authorized_for_any_employer:

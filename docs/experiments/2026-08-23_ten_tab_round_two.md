@@ -141,8 +141,15 @@ Meshy had no free-response. CVS never reached a form.
 
 ## Next
 
-Tabs stay open for Take Control. Do not Submit. Do not Run Autofill Again.
+Tabs stay open for Take Control. Do not Run Autofill Again.
 Do not invent a Perplexity exercise URL. Do not create a Workday account.
 Leftovers that stay leftovers: Hayden any-employer; Notion sponsorship
 type + role-type checkboxes; Perplexity exercise URL; Charta SF office
 radio; Scale conditional explanation.
+
+Junyi 2026-08-24: Relativity Space is export-compliance / rocket
+science. Keep in mass apply. Do not filter out. No need to submit.
+Why Relativity is known bad and left as is. Form fill otherwise fine.
+
+Junyi 2026-08-24: type Charta Why-us v2 onto the Ashby tab. He will
+Submit that one himself. Agent does not click Submit.

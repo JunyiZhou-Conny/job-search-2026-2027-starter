@@ -13,6 +13,11 @@ Use `ineligible` only when at least one of these is true and verified from the p
 - Location / work model is actually unacceptable
 - Role cannot be reasonably connected to your background (Health Data Science + target clusters)
 
+Export compliance / ITAR / U.S. Person on a rocket or defense form is
+**not** this list. Keep those jobs in discovery. Do not filter them
+out. Care is low. No need to submit. See
+`knowledge/form_strategy.yaml` `us_person_export_control`.
+
 Values: `verified` | `likely` | `unclear` | `ineligible`
 
 ## `sponsorship_signal` = probability, not eligibility
