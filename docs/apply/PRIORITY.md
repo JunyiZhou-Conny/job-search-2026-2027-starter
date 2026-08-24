@@ -12,7 +12,7 @@ letter `priority` (A / B / C / D).
 | Weight | What changes |
 |---|---|
 | `regular` | Mass autofill. Cluster resume. Free response answers the prompt and stops. |
-| `prioritized` | More judgment. JD-tuned resume from the evidence bank only. Why-us actually answers the prompt. **Hold public Submit** until referral / insider-page risk is checked. Coffee-chat drafts only — never send without confirm. |
+| `prioritized` | More judgment. JD-tuned resume from the evidence bank only. Why-us actually answers the prompt. **Public Submit** when the form is ready. Do not wait for a referral / insider page. Coffee-chat drafts only — never send without confirm. |
 
 ## Three subfields under prioritized
 
@@ -33,7 +33,8 @@ Labels stay suggestions until Junyi confirms.
 ## Confirmed so far
 
 - **Lila Sciences — Software Engineer I, Instrument Software** —
-  prioritized (`gtc_2026` + Junyi emphasis). Public Submit on hold.
+  prioritized (`gtc_2026` + Junyi emphasis). Public Submit allowed
+  (hold retired 2026-08-24).
 - **Charta Health — Forward Deployed AI Engineer** — prioritized
   (`fde` + startup + biomedical AI). Why-us v2 accepted. Junyi
   submitted from his own computer 2026-08-24. Cloud Chrome Submit
@@ -41,13 +42,14 @@ Labels stay suggestions until Junyi confirms.
 
 ## Referral / insider page
 
-Junyi: some of these companies have an insider / referral apply page.
-A public apply first can block a later referred apply.
+Some shops have an insider / referral apply page. A public apply first
+can block a later referred apply on some Ashby configs, and is
+company-specific on Greenhouse.
 
-That is company- and ATS-specific. Ashby can refuse a referral if the
-candidate already exists. Greenhouse often attaches a later referral to
-the existing profile — not a guarantee. Treat prioritized public Submit
-as a hold until a named person or Junyi says the public page is the path.
+Junyi 2026-08-24: those pages are rare. The employer pool is closer to
+FIFO, so waiting to verify a referral costs more than it saves. **Do
+not hold public Submit** for that check. If a named person later has a
+real insider URL, record it. Do not rewind a landed public apply.
 
 Do not send LinkedIn, email, or 1point3acres messages without confirm.
 
@@ -69,6 +71,6 @@ channel.
 
 ## What we did not change yet
 
-How a prioritized apply *feels* different beyond hold-Submit, tailored
-resume, and better Why-us is still open. Outreach templates and a
-ledger column for `application_weight` wait for Junyi.
+How a prioritized apply *feels* different beyond tailored resume and
+better Why-us is still open. Outreach templates and a ledger column
+for `application_weight` wait for Junyi. Public-Submit hold is retired.

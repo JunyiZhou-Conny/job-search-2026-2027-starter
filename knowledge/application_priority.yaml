@@ -14,7 +14,9 @@ application_weight:
     meaning: >
       Extra judgment. Tailor resume toward the JD using only evidence-bank
       facts. Free-response gets a real answer to the prompt, not a project
-      dump. Hold public Submit until referral / insider-page risk is checked.
+      dump. Public Submit is allowed. Do not wait for a referral /
+      insider-page check. Junyi 2026-08-24: those pages are rare; the
+      public pool is closer to FIFO, so waiting costs more than it saves.
     subfields:
       - id: gtc_2026
         meaning: "Company appears on NVIDIA GTC 2026 sponsors/exhibitors."
@@ -49,12 +51,11 @@ confirmed_prioritized:
     subfields:
       - gtc_2026   # Exhibitor on the 2026 list — verified in market_signals
       - prestige   # Junyi: particular emphasis; scientific / research
-    public_submit: hold
+    public_submit: allowed
     hold_reason: >
-      Prioritized. Check referral / insider apply page before any public
-      Submit. A public Greenhouse apply can block or weaken a later
-      referral on some ATS configs (especially Ashby "candidate already
-      exists"; some Greenhouse referral workflows).
+      Superseded 2026-08-24. Junyi: do not wait for an insider / referral
+      URL. Public Submit. FIFO in the employer queue matters more than
+      the rare later-referral conflict.
     written_answer: "docs/apply/written_answers/2026-08-23_lila-swe-i-instrument.md"
     resume: "cluster resume is not enough; tailor toward instrument / scientific software using only evidence-bank facts. Do not invent lab-hardware experience."
 
@@ -66,8 +67,10 @@ confirmed_prioritized:
       - fde
       - startup
       - prestige   # biomedical AI; Junyi: type example of FDE in that context
-    public_submit: hold
-    hold_reason: "Prioritized FDE. Check referral / insider page before public Submit."
+    public_submit: already_submitted
+    hold_reason: >
+      Junyi submitted from his laptop 2026-08-24 after Cloud Chrome
+      spam-blocked. Public-Submit hold is retired the same day.
     written_answer: "docs/apply/written_answers/2026-08-23_charta-forward-deployed-ai.md"
     resume: "health_ai cluster plus FDE last-mile wording from evidence bank only. Do not invent customer-on-site FDE."
 
@@ -94,29 +97,31 @@ apply_behavior:
     - Same standing yes/no rules (relocate, sponsorship, salary floor)
     - More time on Why-us / JD-specific writing
     - Visually confirm phone, resume attachment, sponsorship — do not trust Copilot "Completed"
-    - Default next_action: check referral path; do not public-Submit
+    - Default next_action: public Submit when the form is ready; do not wait for a referral URL
     - Draft coffee-chat / LinkedIn only; never send without Junyi confirm
     - 1point3acres is a noisy research source, not an auto-apply channel
 
 referral_risk:
   decided: "2026-08-23"
+  revised: "2026-08-24"
   rule: >
-    For prioritized companies, assume a public apply can close the
-    clean referral path until Junyi or a named employee says otherwise.
+    Public Submit on prioritized rows. Do not hold for a referral or
+    insider-page check. If a named employee later has a real insider
+    URL, record it; do not rewind a landed public apply.
   why: >
-    Junyi: some shops have an insider / referral apply page; applying
-    on the public ATS first can disqualify a later referred apply.
-    Ashby docs: some configs block a referral if the candidate already
-    exists. Greenhouse often attaches a later referral to the existing
-    profile — company-specific, not guaranteed.
+    The 2026-08-23 hold assumed a public apply can close a later
+    referral (Ashby "candidate already exists"; some Greenhouse
+    workflows). Junyi 2026-08-24: those insider pages are rare, and
+    waiting to verify one loses FIFO place in the employer queue.
+    The conflict is real but not worth the delay.
   do:
-    - Hold public Submit on prioritized rows
-    - Ask whether a referral / insider URL exists before clicking Apply
+    - Public Submit when the form and Why-us are ready
     - Record referral_status on the ledger only after a real outcome
   do_not:
-    - Submit the public form "just in case"
-    - Open a sibling job to dodge a referral hold
+    - Hold a ready form while hunting 1point3acres / LinkedIn for 内推
+    - Open a sibling job to dodge a referral
     - Message employees or 1point3acres posters without confirm
+    - Treat this as permission to invent Why-us or skip leftover_typing_one_pass
 
 onepoint3acres:
   decided: "2026-08-23"
