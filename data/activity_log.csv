@@ -58,3 +58,5 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T14:11:00,,,autofill_reviewed,,,"Charta Why-us textarea empty on later inspect; v2 not on the form; no re-click; Junyi can paste before Submit"
 2026-08-24T14:15:00,,,rule_updated,,,"Computer-use leftover prompt is fire-and-forget; parent copies docs/automation/COMPUTER_USE_PROMPT.md"
 2026-08-24T14:24:00,,,autofill_blocked,,,"Charta Ashby Submit flagged as possible spam; application did not land; do not retry from Cloud Chrome"
+2026-08-24T14:40:00,,,status_changed,,applied,"Charta Forward Deployed AI Engineer — Junyi submitted from his own computer; Cloud Chrome path had failed"
+2026-08-24T14:41:00,,,experiment_started,,,"Ashby Submit isolation: fresh Cloud VM + Anyscale Ray Core; protocol docs/experiments/2026-08-24_ashby_submit_isolation.md"

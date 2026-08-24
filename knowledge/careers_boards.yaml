@@ -36,6 +36,7 @@ ashby:
   "Hayden AI": haydenai  # verified 2026-08-23
   Notion: notion  # verified 2026-08-23
   Perplexity: perplexity  # verified 2026-08-23
+  Anyscale: anyscale  # verified 2026-08-24; isolation Submit test (Ray Core SF Hybrid)
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}

@@ -307,14 +307,38 @@ ashby_spam_submit_block:
   page_copy: "We couldn't submit your application. Your application submission was flagged as possible spam."
   meaning: "Submit did not land. Not a Why-us length limit."
   do:
-    - Stop retrying on Cloud Agent Chrome.
+    - Stop retrying on the parent Cloud Chrome that already hit the wall.
     - Junyi retries from his own machine, no VPN, Copilot paused.
     - Prefer home or mobile data. Wait a few minutes.
   do_not:
-    - Keep clicking Submit on this VM
+    - Keep clicking Submit on the already-blocked VM
     - Invent a fingerprint or captcha bypass
     - Treat this as Ashby's recruiter-only fraud panel (that one is after a successful submit)
+  exception_one_fresh_vm: "docs/experiments/2026-08-24_ashby_submit_isolation.md"
   see: "docs/apply/OBSTACLES.md"
+
+# One authorized Cloud Submit on a NEW pod (Junyi 2026-08-24)
+ashby_spam_isolation_experiment:
+  decided: "2026-08-24"
+  when: "Junyi asked for a fresh VM + a different Ashby job + one Submit"
+  child_vm_only: true
+  parent_chrome_still_do_not_submit: true
+  job: "Anyscale Software Engineer (Ray Core)"
+  apply_url: "https://jobs.ashbyhq.com/anyscale/73a973b1-6377-4144-a6e5-610b78719882"
+  do:
+    - New Cloud Agent. One Ashby tab. Autofill once.
+    - Fill hybrid Yes, relocate Yes, sponsorship No, location Boston, MA.
+    - Leave Additional information empty.
+    - Click Submit once. Screenshot. Stop.
+  do_not:
+    - Retry Submit if the pink spam wall appears
+    - Open Charta or the 10-tab set
+    - Use Replit (required project URL we do not have)
+    - Use Abridge (Fall 2026 intern)
+    - Use Hex (currently-based-in-SF/NYC is false)
+    - Invent a Why-us or a project password
+  backup_if_closed: "https://jobs.ashbyhq.com/meshy/c2f596a3-378c-4a57-b2cd-0bccd88866d7"
+  see: "docs/experiments/2026-08-24_ashby_submit_isolation.md"
 
 # Workday / ATS account walls (CVS Health 2026-08-23)
 account_creation_wall:

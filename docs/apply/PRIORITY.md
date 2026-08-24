@@ -35,8 +35,9 @@ Labels stay suggestions until Junyi confirms.
 - **Lila Sciences — Software Engineer I, Instrument Software** —
   prioritized (`gtc_2026` + Junyi emphasis). Public Submit on hold.
 - **Charta Health — Forward Deployed AI Engineer** — prioritized
-  (`fde` + startup + biomedical AI). Why-us v2 accepted. Junyi will
-  Submit on the public page himself after the text is typed.
+  (`fde` + startup + biomedical AI). Why-us v2 accepted. Junyi
+  submitted from his own computer 2026-08-24. Cloud Chrome Submit
+  was blocked as possible spam and did not land.
 
 ## Referral / insider page
 
