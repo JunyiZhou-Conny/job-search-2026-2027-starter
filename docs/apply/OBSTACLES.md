@@ -258,6 +258,12 @@ Rule: one paste, one screenshot, stop.
 Parent copies `docs/automation/COMPUTER_USE_PROMPT.md`. Do not ask the
 clicker to Ctrl+F or prove a cropped textarea.
 
+Other computer-use token sinks (nested Task with no clicker, vision
+full-apply stills, parent screenshot audits, huge screen recordings)
+are listed under `computer_use_token_sinks` in
+`knowledge/form_strategy.yaml`. The Why-us loop has a fix. A DOM fill
+does not.
+
 ## Ashby submit blocked as possible spam (Charta 2026-08-24)
 
 Junyi hit Ashby’s candidate-facing page: “We couldn’t submit your
