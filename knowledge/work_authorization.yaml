@@ -59,7 +59,8 @@ standard_question_answers:
     default_short_answer: "December 2026"
     when_form_asks_commencement_or_spring_2027: "March 2027 (program completed December 2026)"
   # Visa-sponsorship widgets use form_strategy.visa_sponsorship (No) as of 2026-08-24.
-  never_lie_to_bypass_ats: true
+  # That Junyi-confirmed widget No is an ATS-filter exception; do not flip it to Yes.
+  never_lie_to_bypass_ats: false
 
 questions_requiring_manual_review:
   - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"
