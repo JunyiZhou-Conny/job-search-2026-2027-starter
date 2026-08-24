@@ -98,6 +98,9 @@ third computer-use “verify” pass. Do not start a screen recording
 unless he asked for a demo. He can see the tab.
 
 Canonical: `knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
+Parent must copy `docs/automation/COMPUTER_USE_PROMPT.md`. Do not invent
+a verify-heavy Task prompt. You cannot edit the Computer Use built-in
+system prompt. You can only send a short fire-and-forget user prompt.
 
 ---
 

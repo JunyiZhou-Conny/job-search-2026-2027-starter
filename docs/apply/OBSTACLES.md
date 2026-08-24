@@ -255,3 +255,5 @@ is the waste. Not a Copilot miss.
 
 Rule: one paste, one screenshot, stop.
 `knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
+Parent copies `docs/automation/COMPUTER_USE_PROMPT.md`. Do not ask the
+clicker to Ctrl+F or prove a cropped textarea.

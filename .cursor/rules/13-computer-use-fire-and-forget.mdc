@@ -1,0 +1,23 @@
+---
+description: Computer-use leftover typing is fire-and-forget. Parent writes the clicker prompt.
+alwaysApply: true
+---
+
+# Computer-use fire-and-forget
+
+You (the parent) write the `computerUse` Task prompt. Cursor does not
+write a second secret prompt from Junyi's chat. A long verify-heavy
+prompt is how Charta burned tokens.
+
+When Junyi already accepted text and said type it:
+
+1. Read `docs/automation/COMPUTER_USE_PROMPT.md`.
+2. Copy that template. Fill only tab, URL, and the accepted text.
+3. One `computerUse` call. Do not resume it to verify.
+
+Forbidden in the Task prompt: Ctrl+F, Ctrl+End, phrase hunts, dropdown
+cleanup, Down-arrow scrolling, typo debug, "confirm Flask is present",
+screen recording unless he asked.
+
+After paste: one screenshot, stop. Truncated textarea is expected.
+Junyi can see the tab. Do not click Submit. Do not Run Autofill Again.

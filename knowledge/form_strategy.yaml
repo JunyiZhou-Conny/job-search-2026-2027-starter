@@ -272,19 +272,24 @@ country_specific_sponsorship:
 leftover_typing_one_pass:
   decided: "2026-08-24"
   when: "Junyi already accepted a draft and said type it / he will Submit"
+  parent_writes_the_clicker_prompt: true
+  prompt_template: "docs/automation/COMPUTER_USE_PROMPT.md"
   do:
     - One computer-use call.
-    - Find the tab. Click the box. Select all. Paste the accepted text once.
+    - Copy the template. Fill only tab, URL, field, and accepted text.
+    - Find the tab. Click the box. Select all. Paste once.
     - One screenshot. Stop.
   do_not:
     - Type the essay character by character when paste works
-    - Resume computer-use to Ctrl+F, Ctrl+End, or hunt phrases
-    - Start a second or third pass to check a blank line or screenshot crop
+    - Add verify / Ctrl+F / Ctrl+End / phrase-hunt steps to the Task prompt
+    - Fight autosuggest with Escape loops or click-away cleanup
+    - Resume computer-use to scroll a cropped textarea
+    - Start a second or third pass to check a blank line or a typo
     - Start a screen recording unless Junyi asked for a demo
     - Re-read many screenshots as if this were a UI test
   reason: >
-    Charta v2 was a copy-paste. Extra verify loops burned tokens and
-    time. Junyi can see the tab. He is about to Submit.
+    The clicker only sees pixels. Asking it to prove the paste makes it
+    a slow macro recorder. Junyi can see the tab. He is about to Submit.
 
 # Do not re-run Copilot after human / computer-use corrections
 do_not_run_autofill_again:
