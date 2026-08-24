@@ -74,9 +74,21 @@ why_company_shape:
     - invent employers or on-site FDE
     - claim FDE / Palantir / Epic-admin work that is not in the bank
     - upgrade Emory to a CS degree
+    - em dashes or hyphen asides in the text that goes on the form
+  punctuation:
+    decided: "2026-08-24"
+    rule: >
+      Free-response text that will sit on an ATS page must read like a
+      person wrote it. Do not use em dashes. Do not use hyphen asides
+      (backend — Flask — RAG). Do not stack hyphenated compounds
+      (last-mile, mission-driven, non-clinical, Epic-style,
+      Forward-deployed). Write ordinary sentences with periods, commas,
+      and colons. Two words is fine (last mile, Forward Deployed,
+      full stack). Official product names that include a hyphen may stay.
+    reason: "Junyi: hyphens make the answer look AI-written."
   tone: >
     Show ability. A little assertiveness is OK. Do not invent jobs.
-    Do not write as a resume footnote.
+    Do not write as a resume footnote. Write like a person.
 
 salary_rule:
   see: "knowledge/form_strategy.yaml always.salary_or_expected_compensation"

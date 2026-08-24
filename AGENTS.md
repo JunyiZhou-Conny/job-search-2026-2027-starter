@@ -85,9 +85,10 @@ paste education + three projects into every Why-us. HR may read Why-us
 before the resume: spell out computer vision, language models, and
 transformers; do not name CellOT, VLM, CV, or the Emory airway project.
 Flask, React, Auth0, RAG, Cursor, Claude, Codex are fine. Show ability.
-Do not write hedge lines such as "I do not outsource the goal." Ideology
-in `knowledge/written_response_bank.yaml` is for week / meaning / culture
-questions only. A file there is not a submit.
+Do not write hedge lines such as "I do not outsource the goal." Do not
+use em dashes or hyphen asides in the text that goes on the form. Write
+like a person. Ideology in `knowledge/written_response_bank.yaml` is for
+week / meaning / culture questions only. A file there is not a submit.
 
 Copilot “Completed” on phone or resume is not proof the widget has a
 value. Look at the page. Especially on prioritized companies.

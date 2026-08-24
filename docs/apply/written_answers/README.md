@@ -25,7 +25,8 @@ application was submitted.
    language models, and transformers. Do not name CellOT, VLM, CV, or
    the Emory airway project. Flask, React, Auth0, RAG, Cursor, Claude,
    Codex are fine. Show ability. Do not write "I do not outsource the
-   goal." Never click Simplify **Generate with AI**. Prioritized
+   goal." Do not use em dashes or hyphen asides on the form. Write like
+   a person. Never click Simplify **Generate with AI**. Prioritized
    companies: `knowledge/application_priority.yaml`.
 2. Save the draft here **before** or as you type it on the form.
 3. Set `form_status` to `drafted` or `typed_on_form`. Set `submitted` only

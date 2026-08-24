@@ -52,7 +52,7 @@ software with a clinician in the loop.
 **Draft if they want a short yes/no+text:**
 
 ```text
-I have shipped full-stack software with a clinician in the loop — frontend and backend, Auth0, retrieval, and a hosted demo — on a small Agile team. I have not been a vendor engineer sitting on a hospital floor. I am ready for that last-mile work.
+I have shipped full stack software with a clinician in the loop: frontend and backend, Auth0, retrieval, and a hosted demo, on a small Agile team. I have not been a vendor engineer sitting on a hospital floor. I am ready for that last mile work.
 ```
 
 ---
@@ -69,8 +69,11 @@ HR may read this before the resume. Spell out computer vision, language
 models, transformers. Do not name CellOT, VLM, CV, or the Emory airway
 project. Flask, React, Auth0, RAG, Cursor, Claude, Codex are fine.
 Show ability. A little assertiveness is OK. Drop the hedge
-"I do not outsource the goal" — that line was a clumsy way to say
-"I still check the agent." It does not show ability.
+"I do not outsource the goal" (that line was a clumsy way to say
+"I still check the agent"). It does not show ability.
+
+Junyi 2026-08-24: v2 content is accepted. Rewrite the form text
+without em dashes or hyphen asides so it reads like a person wrote it.
 
 ### Typed on the form (do not reuse)
 
@@ -84,10 +87,10 @@ I am a Harvard SM student in Health Data Science after an Emory B.S. in Applied 
 I will work onsite five days a week. I like asking questions in the room. I like automating the boring steps so the remaining work can have a purpose.
 ```
 
-### Revised draft v2 (2026-08-24 later; not typed; not approved)
+### Revised draft v2 (accepted 2026-08-24; hyphen pass; not typed)
 
 ```text
-Why Charta: I come from health data science, and I care about the health of people — quality for patients, and better tools for the people who run the non-clinical work that still decides whether a hospital can function. Charta is building an operating system for modern healthcare organizations: an AI platform across revenue cycle, clinical operations, and administration so providers and payers can move faster and still deliver care. I have been living next to electronic health records that Epic-style stacks dominate. Those tools are standard, and they are not built for modern AI. They leave last-mile gaps: work that could be automated, security that could be tighter, retrieval that still hallucinates. Forward-deployed AI is the job that sits in that gap — embed with a customer's data team, scope the workflow, ship the model and the product, and send the missing platform pieces back to a central engineering team. That is the role I want, and I am ready for it.
+Why Charta: I come from health data science, and I care about the health of people. That means quality for patients, and better tools for the people who run the work outside the clinic that still decides whether a hospital can function. Charta is building an operating system for modern healthcare organizations: an AI platform across revenue cycle, clinical operations, and administration so providers and payers can move faster and still deliver care. I have been living next to electronic health records. Tools like Epic dominate that world. Those tools are standard, and they are not built for modern AI. They leave last mile gaps: work that could be automated, security that could be tighter, retrieval that still hallucinates. Forward Deployed AI is the job that sits in that gap. I want to sit with a customer's data team, scope the workflow, ship the model and the product, and send the missing platform pieces back to a central engineering team. That is the role I want, and I am ready for it.
 
-Why now: I have trained computer vision models, language models, and transformers. I know the training loop, and I know where these models break. I have shipped frontend and backend — Flask, React, Auth0, RAG — and I work across the stack: interface, API, auth, retrieval, and a hosted demo. I use agents every day: Cursor, Claude, Codex. I write careful prompts, I stay on the output, and I build the workflow around them. I want the industry last mile: one customer's data, one broken workflow, one system that has to stay accurate, fast, and reliable. Charta is early and mission-driven. I will move, I will be in the room, and when the goal is real I will use evenings to finish it.
+Why now: I have trained computer vision models, language models, and transformers. I know the training loop, and I know where these models break. I have shipped frontend and backend in Flask, React, Auth0, and RAG, and I work across the stack: interface, API, auth, retrieval, and a hosted demo. I use agents every day: Cursor, Claude, Codex. I write careful prompts, I stay on the output, and I build the workflow around them. I want the industry last mile: one customer's data, one broken workflow, one system that has to stay accurate, fast, and reliable. Charta is early and the mission is real. I will move, I will be in the room, and when the goal is real I will use evenings to finish it.
 ```
