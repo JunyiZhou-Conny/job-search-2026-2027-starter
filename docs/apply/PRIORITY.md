@@ -36,7 +36,7 @@ Labels stay suggestions until Junyi confirms.
   prioritized (`gtc_2026` + Junyi emphasis). Public Submit on hold.
 - **Charta Health — Forward Deployed AI Engineer** — prioritized
   (`fde` + startup + biomedical AI). Public Submit on hold. Why-us
-  rewrite is in the archive; not typed.
+  v2 is in the archive; not typed.
 
 ## Referral / insider page
 

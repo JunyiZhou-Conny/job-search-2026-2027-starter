@@ -121,7 +121,7 @@ always:
 
 written_responses:
   decided: "2026-08-23"
-  revised: "2026-08-23 evening — Junyi rejected the Lila Why-us dump"
+  revised: "2026-08-24 — Junyi: Why-us is HR-first; spell out DL ideas; show ability"
   never_click: "Simplify 'Generate with AI' (paid / subscribe). Do not click it."
   who_writes: "Cursor / this agent, after Copilot"
   answer_the_prompt:
@@ -130,12 +130,17 @@ written_responses:
       "Why Lila, why this role, and why at this moment?" means those
       three things — not a resume, not Cannon 338, not the ideology pack
       unless that question asked for them.
-    tone: "Ardent, genuine, truthful. First intern / student voice is fine."
+    tone: >
+      Show ability. HR may read this before the resume. Spell out
+      computer vision, language models, and transformers. A little
+      assertiveness is OK. Do not hedge. Do not invent jobs.
     do_not:
       - Paste education + three projects into every Why-us
       - Recite program_end / commencement dates unless the prompt asks
       - Force the Traba week-structure ideology into a company-why box
       - Invent instrument, domain, or insider experience
+      - Name CellOT, VLM, CV, airway chatbot, or other resume-internal labels
+      - Write hedge lines such as "I do not outsource the goal"
     metrics_when: >
       Only when the prompt asks for examples, exceptional ability, or
       evidence. Then 1–2 evidence-bank facts, not a tour of the bank.
@@ -151,13 +156,15 @@ written_responses:
     knowledge/application_priority.yaml.
   why_company_direction_2026-08-24: >
     Junyi Hayden + Charta: Why-us is not a one-liner and not a project
-    dump. If the prompt has two parts (why this company, why now / why
-    this role), answer both. Start from what they do, the mission, and
-    the culture, then integrate Junyi's health-data / research /
-    engineering philosophy. Use only facts he stated or that sit in
-    the evidence bank. Do not invent domain ownership. Do not claim a
-    CS degree (Emory is AMS + informatics minor). Do not claim FDE
-    customer-on-site work already done. Example rewrite: Charta archive.
+    dump. HR may read it before the resume. Answer every clause. Start
+    from mission / product / culture, then show software-engineering
+    range (frontend and backend) and deep-learning ideas spelled out
+    (computer vision, language models, transformers). Flask, React,
+    Auth0, RAG, Cursor, Claude, Codex are fine to name. Do not name
+    CellOT, VLM, CV, or the Emory airway project. Do not write
+    "I do not outsource the goal." A little assertiveness is OK. Do
+    not invent employers, on-site FDE, or a CS degree. Example:
+    Charta archive v2.
 
 leave_for_junyi:
   decided: "2026-08-23"

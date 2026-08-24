@@ -37,23 +37,22 @@ Boston is the current city. Do not invent a preference.
 
 ## Languages
 
-If this means programming languages, the evidence bank supports Python,
-plus the stacks on the airway chatbot (Flask, React) and the CV/ML
-course repos (PyTorch). If this means spoken human languages, **leave
-empty** — that fact is not in the repo.
+If this means programming languages: Python, Flask, React, and PyTorch.
+If this means spoken human languages, **leave empty** — that fact is
+not in the repo.
 
 ---
 
 ## Customer-facing experience
 
 Do not invent customer-success or on-site hospital deployment ownership.
-The airway project had a clinician feedback loop on an Agile team of 6.
-That is the honest ceiling.
+Do not name the hospital project. Talk about the skill: full-stack
+software with a clinician in the loop.
 
 **Draft if they want a short yes/no+text:**
 
 ```text
-I have not been a forward-deployed engineer at a vendor. The closest work is the Emory Pediatric Hospital airway-management simulation chatbot: I was full-stack / Scrum Master on an Agile team of 6, with a clinician feedback loop, Auth0, and an AWS-hosted demo. I will not describe that as customer-on-site ownership I did not have.
+I have shipped full-stack software with a clinician in the loop — frontend and backend, Auth0, retrieval, and a hosted demo — on a small Agile team. I have not been a vendor engineer sitting on a hospital floor. I am ready for that last-mile work.
 ```
 
 ---
@@ -66,10 +65,12 @@ Junyi 2026-08-24: the typed draft was one thin paragraph and a project
 dump. Rejected. He dictated a genuine FDE + healthcare-ops answer. Condensed
 below. Not typed onto the tab.
 
-Do not claim Palantir employment, customer-on-site FDE, revenue-cycle
-ownership, or a computer-science degree. Emory is AMS + informatics minor.
-Epic: he described working around Epic-dominated EHR stacks in health data
-science — not administering Epic at a hospital.
+HR may read this before the resume. Spell out computer vision, language
+models, transformers. Do not name CellOT, VLM, CV, or the Emory airway
+project. Flask, React, Auth0, RAG, Cursor, Claude, Codex are fine.
+Show ability. A little assertiveness is OK. Drop the hedge
+"I do not outsource the goal" — that line was a clumsy way to say
+"I still check the agent." It does not show ability.
 
 ### Typed on the form (do not reuse)
 
@@ -83,10 +84,10 @@ I am a Harvard SM student in Health Data Science after an Emory B.S. in Applied 
 I will work onsite five days a week. I like asking questions in the room. I like automating the boring steps so the remaining work can have a purpose.
 ```
 
-### Revised draft (Junyi-dictated, condensed; not typed; not approved)
+### Revised draft v2 (2026-08-24 later; not typed; not approved)
 
 ```text
-Why Charta: I come from health data science, and I care about the health of people — quality for patients, and better tools for the people who run the non-clinical work that still decides whether a hospital can function. Charta's mission is an operating system for modern healthcare organizations: an AI platform across revenue cycle, clinical operations, and administration so providers and payers can move faster and still deliver care. I have been living next to electronic health records that Epic-style stacks dominate. Those tools are standard, and they are not built for modern AI. They leave last-mile gaps: work that could be automated, security that could be tighter, retrieval that still hallucinates. Forward-deployed AI is the job that sits in that gap — embed with a customer's data team, scope the workflow, ship RAG and evals, and send the missing platform pieces back to a central engineering team. That is the role I want.
+Why Charta: I come from health data science, and I care about the health of people — quality for patients, and better tools for the people who run the non-clinical work that still decides whether a hospital can function. Charta is building an operating system for modern healthcare organizations: an AI platform across revenue cycle, clinical operations, and administration so providers and payers can move faster and still deliver care. I have been living next to electronic health records that Epic-style stacks dominate. Those tools are standard, and they are not built for modern AI. They leave last-mile gaps: work that could be automated, security that could be tighter, retrieval that still hallucinates. Forward-deployed AI is the job that sits in that gap — embed with a customer's data team, scope the workflow, ship the model and the product, and send the missing platform pieces back to a central engineering team. That is the role I want, and I am ready for it.
 
-Why now: I have trained models (course CV / VLM work and Wyss CellOT). I know their limits as well as I know the training loop. I have shipped frontend and backend (the Emory airway chatbot: Flask, React, Auth0, RAG). I use agents every day — Cursor, Claude, Codex — and I still watch what they do. I write the harness; I do not outsource the goal. My Harvard and Wyss projects are real and they are small. I want the industry last mile: one customer's data, one broken workflow, one system that has to stay accurate, fast, and boringly reliable. Charta is early and mission-driven. I will move, I will be in the room, and when the goal is real I will use evenings to finish it. I am a student and this would be a first industry stretch. I am not pretending I have already been Palantir-style FDE on a hospital floor. I am saying this is the work I have been aiming at.
+Why now: I have trained computer vision models, language models, and transformers. I know the training loop, and I know where these models break. I have shipped frontend and backend — Flask, React, Auth0, RAG — and I work across the stack: interface, API, auth, retrieval, and a hosted demo. I use agents every day: Cursor, Claude, Codex. I write careful prompts, I stay on the output, and I build the workflow around them. I want the industry last mile: one customer's data, one broken workflow, one system that has to stay accurate, fast, and reliable. Charta is early and mission-driven. I will move, I will be in the room, and when the goal is real I will use evenings to finish it.
 ```

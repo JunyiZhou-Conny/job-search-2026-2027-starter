@@ -3,7 +3,7 @@
 # docs/apply/written_answers/. Do not invent metrics. Do not mark submitted
 # unless Junyi confirms a named row was submitted.
 
-last_updated: "2026-08-23"
+last_updated: "2026-08-24"
 source: "Junyi Lila review — Why-us must answer the prompt, not dump the bank"
 
 # Speech-to-text that day said "Trava"; the Ashby tab is Traba.
@@ -53,15 +53,30 @@ ideology:
 # Why-company shape (Junyi Charta 2026-08-24)
 why_company_shape:
   decided: "2026-08-24"
+  reader: "HR may read this before the resume."
   parts:
     - answer every clause in the prompt (why them, why now, why this role)
     - start from their mission / product / culture
-    - integrate Junyi's health-data and research/engineering philosophy
-    - one or two verified surfaces if they earn their place (not a tour)
+    - then show ability: frontend/backend, deep learning, agents
+    - spell out computer vision, language models, transformers
+  ok_to_name:
+    - Flask
+    - React
+    - Auth0
+    - RAG
+    - Cursor
+    - Claude
+    - Codex
   do_not:
     - one-line Why-us on a two-part prompt
+    - name CellOT, VLM, CV, airway chatbot, or other resume-internal labels
+    - "hedge lines such as: I do not outsource the goal"
+    - invent employers or on-site FDE
     - claim FDE / Palantir / Epic-admin work that is not in the bank
     - upgrade Emory to a CS degree
+  tone: >
+    Show ability. A little assertiveness is OK. Do not invent jobs.
+    Do not write as a resume footnote.
 
 salary_rule:
   see: "knowledge/form_strategy.yaml always.salary_or_expected_compensation"
