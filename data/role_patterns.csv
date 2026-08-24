@@ -2,4 +2,4 @@ pattern_id,role_family,date_first_seen,date_last_seen,jobs_seen,jobs_applied,ave
 P_ml_systems,ml_systems,,,,,0,0,"pytorch;gpu;inference;distributed","partial via data_ml+cloud_swe",false,"Watch for recurring AI infra / inference roles before creating ml_systems_ai_infrastructure cluster"
 P_ai_infra,ai_infrastructure,,,,,0,0,"model serving;gpu;cloud ai;agents","partial",false,"Emerging interest area; do not create cluster from a single job"
 P_inference,inference_systems,,,,,0,0,"serving;batching;latency;hpc","adjacent via alphafold hpc + transformer",false,""
-P_fde,forward_deployed_engineer,2026-08-24,2026-08-24,1,0,,"rag;evals;customer embedding;vector db;fine-tuning","partial via health_ai + data_ml",false,"Junyi: mark FDE / Forward Deployed AI; Charta is the type example; do not invent on-site FDE experience"
+P_fde,forward_deployed_engineer,2026-08-24,2026-08-24,1,0,,,"rag;evals;customer embedding;vector db;fine-tuning","partial via health_ai + data_ml",false,"Junyi: mark FDE / Forward Deployed AI; Charta is the type example; do not invent on-site FDE experience"
