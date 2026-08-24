@@ -104,15 +104,15 @@ The isolation is the new pod.
 
 | Field | Value |
 |---|---|
-| Child agent URL | TBD |
-| Harness ready | TBD |
-| Copilot id | TBD |
-| Job actually opened | TBD |
+| Child agent URL | https://cursor.com/agents/bc-7f8a7941-3040-5925-84d7-72f1c19c24a7 |
+| Harness ready | True |
+| Copilot id | pbanhockgagggenencehbnadejlgchfc |
+| Job actually opened | TBD (computer-use not started) |
 | Autofill once | TBD |
 | Submit clicked | TBD |
-| Outcome | `spam_block` / `submitted` / `form_blocked` / `posting_closed` / `not_run` |
+| Outcome | `not_run` (pre-submit checkpoint) |
 | Page copy (verbatim if error) | TBD |
-| Notes | TBD |
+| Notes | 2026-08-24T14:42Z: `check_apply_harness.py` exit 0; branded Chrome; Copilot via publisher_signals; Simplify refresh cookie present; identity_match unknown. Submit not clicked yet. |
 
 ## How to read the outcome
 
