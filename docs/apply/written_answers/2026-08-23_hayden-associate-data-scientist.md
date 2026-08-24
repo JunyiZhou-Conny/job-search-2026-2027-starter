@@ -12,9 +12,12 @@
 | `form_status` | `typed_on_form` (preferred name Junyi, first job Yes, Why Hayden, start 2027-05-18) |
 | `submitted` | no |
 | Identity Copilot filled | Junyi Zhou, Harvard email, phone, LinkedIn, `Junyi_Zhou_resume.pdf` |
-| Copilot need-review | 4 (preferred name, start date, Why Hayden, first job) |
+| Copilot need-review | Inspect 2026-08-24: **1** leftover — start date. Form already has `05/18/2027` (computer-use, not Copilot). |
+| Years of relevant experience | Empty on inspect. Future answer: **2**. Not typed this pass. |
+| Visa sponsorship on form | **Yes** (old 2026-08-23 flip). Junyi 2026-08-24 wants **No, I do not need sponsorship**. Not re-clicked. |
+| Automated script / spoofing | Sidebar says complete. Inspect: **neither radio selected**. Future answer: **No**. |
 
-**Not submitted.** Generate with AI was visible on Why Hayden; not clicked.
+**Not submitted.** No re-click on 2026-08-24 inspect. Cover letter empty is expected.
 EEO was filled → block unattended Submit.
 
 ---
@@ -56,9 +59,16 @@ authorization. Leftover for Junyi. Do not treat the Copilot Yes as a fact.
 
 ## Will you now or in the future require visa sponsorship?
 
-Broad question. Copilot set **No**. Computer-use set **Yes**.
+Copilot originally **No**. The 2026-08-23 computer-use pass flipped it to
+**Yes** under the old broad-Yes rule. Inspect 2026-08-24: still **Yes**.
 
-**Draft / form value:** `Yes`
+Junyi 2026-08-24: form answer is **No, I do not need sponsorship**.
+Re-read this widget before any Submit. Standing fact
+`future_sponsorship_required` is unchanged.
+
+**On form now:** `Yes` (not re-clicked)
+
+**Later target:** `No` / `No, I do not need sponsorship`
 
 ---
 
@@ -70,12 +80,31 @@ Standing fact: first intern / first job. Not a named prior-employer question.
 
 ---
 
+## How many years of relevant experience do you have?
+
+Empty on 2026-08-24 inspect. Copilot did not list it.
+
+**Later target:** `2`
+
+---
+
+## Are you applying via an automated script or spoofing?
+
+Sidebar marked complete. Inspect: neither Yes nor No selected.
+
+**Later target:** `No`
+
+---
+
 ## Why Hayden AI?
 
-Course CV work is labeled as course work. Do not invent civic / traffic-domain
-experience.
+Junyi 2026-08-24: still formulaic / too factual. Handle the rewrite later.
+Direction: company work, values, culture — then Junyi's academic / research
+philosophy. Not a project dump. Prompt on the page values a genuine response.
 
-**Draft:**
+Visible on inspect (last paragraph only):
+
+**Draft (typed, to rewrite later):**
 
 ```text
 I want to put computer vision on a problem that happens on a street, not only on a course split. Hayden's posting is that: perception work that has to survive a real city. I am not claiming traffic-operations domain experience I do not have.

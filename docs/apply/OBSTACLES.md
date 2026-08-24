@@ -224,3 +224,23 @@ prompt, ardent / genuine / truthful, no project dump.
 `knowledge/market_signals/gtc2026_sponsors_exhibitors.md`) plus Junyi
 emphasis. Hold public Submit until a referral / insider page is checked.
 See `knowledge/application_priority.yaml` and `docs/apply/PRIORITY.md`.
+
+## Hayden inspect (2026-08-24) — no re-click
+
+Junyi reviewed the Hayden AI Associate Data Scientist tab. Screen
+checked only. Nothing clicked.
+
+**Start date rule worked.** Sidebar still flags “When can you start a
+new role” as the one need-review. The widget is `05/18/2027`. Copilot
+did not fill it; computer-use on the same Chrome did (not Playwright).
+
+**Years of relevant experience** is empty. Future answer: **2**.
+
+**Visa sponsorship** widget is **Yes** (old flip). New form answer:
+**No, I do not need sponsorship**. Re-read before any Submit.
+
+**Automated script / spoofing:** sidebar says complete; neither radio
+is selected. Future answer: **No**.
+
+**Why Hayden** still formulaic. Rewrite later (company values / culture
++ Junyi’s philosophy). Cover letter empty is fine.

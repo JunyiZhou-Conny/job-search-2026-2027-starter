@@ -51,7 +51,7 @@ Default resume: December 2026 program completion. Dual-date resume line when the
 Do not invent answers. After OPT EAD is in hand for full-time work:
 
 - "Are you authorized to work in the United States?" → usually **Yes** (with valid EAD)
-- "Will you now or in the future require sponsorship?" → usually **Yes** if future H-1B/employer sponsorship is needed
-- "Will you require **H-1B** sponsorship?" (H-1B named) → **No** as of 2026-08-23 (Junyi, Nirmata review). Form strategy only. `future_sponsorship_required` is still true.
+- "Will you now or in the future require visa sponsorship?" → form answer **No, I do not need sponsorship** as of 2026-08-24 (Junyi, Hayden review). Re-read the widget before any Submit. Standing fact `future_sponsorship_required` is still true.
+- "Will you require **H-1B** sponsorship?" (H-1B named) → **No** as of 2026-08-23. Same fact file.
 
-Do not answer the broad second question **No** to bypass ATS. If the form names only H-1B, use the 2026-08-23 rule in `knowledge/work_authorization.yaml`. If the form conflates OPT/EAD/H-1B under one “sponsorship” line, save the **verbatim question and submitted answer** in `auth_qa_notes`.
+If the form conflates OPT/EAD/H-1B under one “sponsorship” line, save the **verbatim question and submitted answer** in `auth_qa_notes`.

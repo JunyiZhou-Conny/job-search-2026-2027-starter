@@ -95,9 +95,8 @@ From the 2026-08-22 10-tab review
 |---|---|
 | Copilot filled EEO (gender/race/veteran/disability) | `eeo_touched=true`. **Block Submit.** |
 | Work auth is US citizen / green card and profile is F-1 | `work_auth_mismatch=true`. **Block Submit.** |
-| Broad “now or in the future require sponsorship?” answered No | `sponsorship_needs_review=true`. **Block Submit.** Fact is still Yes. |
-| Other non-H-1B sponsorship wording answered No (e.g. Gemini “Visa sponsorship”) | `sponsorship_needs_review=true`. **Block Submit.** Fact is still Yes. |
-| “H-1B sponsorship?” named and answered No | Intended as of 2026-08-23. Do not block on that alone. See `knowledge/work_authorization.yaml` `form_strategy`. |
+| Visa sponsorship / now-or-future sponsorship answered **Yes** | `sponsorship_needs_review=true`. **Block Submit.** Form strategy as of 2026-08-24 is **No, I do not need sponsorship**. Fact file still has `future_sponsorship_required: true`. |
+| “H-1B sponsorship?” named and answered No | Intended. Do not block on that alone. |
 | Education widgets look like a dumped blob | `education_misfill=true`. Review, do not Submit. |
 | Copilot “need review” matches empty form fields | Expected. Log the empty field names into `knowledge/autofill_obstacles.yaml` if they are new gaps. |
 | Job closed / 404 / “no longer open” | **Close the tab.** Write `decision=closed` in `data/job_decisions.csv` and `posting_closed` in `data/activity_log.csv`. Do not pick a sibling from Current openings. Next URL. |

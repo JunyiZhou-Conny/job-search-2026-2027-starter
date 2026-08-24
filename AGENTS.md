@@ -16,6 +16,9 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 
 - Hard eligibility ≠ sponsorship probability. See `docs/eligibility.md`.
 - Never mark a role `ineligible` only because sponsorship is `no` or `unclear`.
+- Visa-sponsorship **form** answer (as of 2026-08-24): **No, I do not need
+  sponsorship**. Re-read the widget before any Submit. The fact
+  `future_sponsorship_required: true` is unchanged.
 - Use `pursuit_lane`: `core` | `broad` | `practice`.
 - Keep practice-lane applications roughly 15–25% of applied volume unless funnel data justifies a change.
 - Apply **weight** is separate: `regular` | `prioritized` (GTC 2026 / startup / prestige).

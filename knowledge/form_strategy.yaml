@@ -3,8 +3,8 @@
 # Cursor / computer-use must apply these after Copilot, or Junyi types them.
 # Do not Submit unless Junyi explicitly says so for a named row.
 
-last_updated: "2026-08-23"
-source: "Junyi Lila evening review plus earlier 10-tab / Traba rules"
+last_updated: "2026-08-24"
+source: "Junyi Hayden AI inspect (no re-click) plus Lila / Traba rules"
 
 always:
   employed_by_this_company_before:
@@ -22,6 +22,39 @@ always:
   h1b_named_question_only:
     see: "knowledge/work_authorization.yaml form_strategy.h1b_named_question_only"
     form_answer: "No"
+
+  visa_sponsorship:
+    decided: "2026-08-24"
+    form_answer: "No, I do not need sponsorship"
+    when: >
+      Will you now or in the future require visa sponsorship? / require
+      sponsorship? / visa sponsorship yes-no. Prefer the exact No wording
+      if the widget is a radio. If it is free text, type the sentence.
+    supersedes: "2026-08-23 broad-Yes flip (Lila/Hayden/Relativity/Scale)"
+    before_any_submit: >
+      Re-read the sponsorship widget. If it is Yes, stop. Junyi: this
+      answer is crucial for not getting filtered out.
+    fact_unchanged: "future_sponsorship_required remains true"
+    reason: >
+      Junyi Hayden review 2026-08-24. Computer-use had flipped Hayden
+      from Copilot No to Yes under the old rule. Form still shows Yes.
+      Not re-clicked. Later pass must set No.
+
+  years_of_relevant_experience:
+    decided: "2026-08-24"
+    form_answer: "2"
+    when: >
+      How many years of relevant / work / professional experience do
+      you have?
+    reason: "Junyi Hayden 2026-08-24: standard answer 2 for this type."
+
+  automated_script_or_spoofing:
+    decided: "2026-08-24"
+    form_answer: "No"
+    when: "Are you applying via an automated script or spoofing?"
+    reason: >
+      Junyi Hayden 2026-08-24: always No. Sidebar may mark it complete
+      while neither radio is selected — look at the widget.
 
   prior_internship_or_coop_in_general:
     decided: "2026-08-23"
@@ -116,6 +149,12 @@ written_responses:
     Same truth rules, more care. Read the JD. Say why this company and
     this role. Do not make it longer by dumping projects. See
     knowledge/application_priority.yaml.
+  why_company_direction_2026-08-24: >
+    Junyi Hayden: still too formulaic / too factual. Handle the rewrite
+    later. Direction: germane to what the company does, values, and
+    culture; then integrate Junyi's work / academic / research
+    philosophy. Not a full response of company-about-page, and not a
+    project dump. Do not invent culture facts.
 
 leave_for_junyi:
   decided: "2026-08-23"
@@ -192,10 +231,11 @@ country_specific_sponsorship:
     Sponsorship question names other countries only (e.g. United
     Kingdom, Germany, or Serbia) and does not ask about the United
     States.
-  do_not_use: "will_require_sponsorship_now_or_future (US Yes rule)"
+  do_not_use: "US visa_sponsorship widget rule"
   reason: >
     Perplexity Search ML intern asked UK/Germany/Serbia. Copilot No.
-    That is a different question from US H-1B / OPT. Do not auto-Yes.
+    That is a different question from the US visa-sponsorship widget.
+    Do not auto-map it.
 
 # Do not re-run Copilot after human / computer-use corrections
 do_not_run_autofill_again:

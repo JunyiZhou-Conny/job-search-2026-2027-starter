@@ -293,12 +293,13 @@ gaps:
 
   - id: copilot_broad_sponsorship_no
     status: observed_ok
-    already_in: "knowledge/work_authorization.yaml standard_question_answers.will_require_sponsorship_now_or_future"
+    already_in: "knowledge/form_strategy.yaml always.visa_sponsorship"
     form_effect: >
-      Round two: Lila, Hayden, Relativity, Scale Copilot answered No
-      on broad "now or in the future (e.g. H-1B)" questions. Corrected
-      to Yes. H-1B-named-only questions stay No.
-    ask_later: "None. Later agents flip broad-No to Yes on the same Chrome."
+      Copilot often answers No on visa-sponsorship widgets. As of
+      2026-08-24 that is the intended form answer (Hayden). The 2026-08-23
+      pass had flipped Hayden/Lila/Relativity/Scale to Yes under the old
+      rule. Hayden form still shows Yes. Do not flip No → Yes.
+    ask_later: "None. Later agents set visa sponsorship to No and re-read before Submit."
 
   - id: authorized_for_any_employer
     status: needs_human
@@ -316,6 +317,22 @@ gaps:
       Serbia (role location Belgrade). Copilot No. Do not apply the
       US Yes rule.
     ask_later: "None unless a later form mixes US + other countries."
+
+  - id: years_of_relevant_experience
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml always.years_of_relevant_experience"
+    form_effect: >
+      Hayden 2026-08-24: "How many years of relevant experience do you
+      have?" empty. Copilot did not list it. Future answer 2.
+    ask_later: "None unless Junyi changes the 2."
+
+  - id: automated_script_or_spoofing
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml always.automated_script_or_spoofing"
+    form_effect: >
+      Hayden: sidebar marked spoofing complete; inspect showed neither
+      Yes nor No selected. Future answer No. Look at the widget.
+    ask_later: "None."
 
   - id: copilot_sidebar_complete_field_empty
     status: observed_ok
