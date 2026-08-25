@@ -174,13 +174,13 @@ always:
   gpa:
     decided: "2026-08-25"
     harvard_masters: "4.0"
-    emory_undergrad: "3.93"
+    emory_undergrad: "3.925"
     if_only_one_gpa_box: "4.0"
     when: "GPA / undergraduate GPA / graduate GPA / current GPA"
     do_not: "Invent any other GPA, SAT, ACT, or a third-school GPA."
     reason: >
       Junyi 2026-08-25: Harvard 4.0 is the current master's GPA and the
-      single-box default. Emory 3.93 is undergrad. These are on his
+      single-box default. Emory 3.925 is undergrad. These are on his
       resume. Real numbers. Not invented.
 
   personal_website:
