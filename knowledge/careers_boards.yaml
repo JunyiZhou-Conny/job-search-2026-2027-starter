@@ -21,6 +21,9 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  "Formation Bio": formationbio  # verified 2026-08-25; Data Scientist, Portfolio Optimization
+  "Lila Sciences": lilasciences  # verified 2026-08-25; ML Scientist I/II Foundation Models
+  Zipline: flyzipline  # verified 2026-08-25; Embedded Software Engineer Intern (Spring 2027)
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -63,3 +66,11 @@ workday:
     host: blackstone.wd1
     tenant: blackstone
     site: Blackstone_Careers
+  Philips:
+    host: philips.wd3
+    tenant: philips
+    site: jobs-and-careers
+  Salesforce:
+    host: salesforce.wd12
+    tenant: salesforce
+    site: External_Career_Site
