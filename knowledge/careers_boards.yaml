@@ -21,6 +21,9 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  "Advanced Space": advancedspace  # verified 2026-08-25; 2027 Machine Learning Summer Internship
+  Kodiak: kodiak  # verified 2026-08-25; Winter 2027 AI/ML intern
+  Tenstorrent: tenstorrent  # verified 2026-08-25; Software Engineer, Metal Runtime (Core Systems)
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -32,6 +35,8 @@ ashby:
   Baseten: baseten
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   "Hayden AI": haydenai  # verified 2026-08-23
+  Clera: clera  # verified 2026-08-25; Founding AI Engineer
+  Lightfield: lightfield  # verified 2026-08-25; Software Engineer, Applied AI (Early Career)
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
