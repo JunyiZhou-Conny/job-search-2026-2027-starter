@@ -39,7 +39,9 @@ Owner: Junyi Zhou. Also called Connie.
 Your job this turn is research, not apply. Clone or open the repo. Read the
 files below. Then return one report. Do not Autofill. Do not Submit. Do not
 send email or LinkedIn. Do not create new Bots. Do not create a routine.
-Do not start a group chat. Do not invent facts, GPA, citizenship, or dates.
+Do not start a group chat. Do not open GitHub issues, pull requests, or
+comments. Do not edit or push the repo. Do not invent facts, GPA,
+citizenship, or dates.
 
 If you cannot see docs/grok-bot-management/ on that branch, say so and stop.
 
@@ -131,5 +133,5 @@ Sources: GitHub JunyiZhou-Conny/job-search-2026-2027-starter, branch
 cursor/poteto-grok-management-3561, folder docs/grok-bot-management/.
 Output: one report. Facts vs paper. Stop lines. One proposed next experiment.
 Never: Autofill, Submit, send, spend, publish, delete, new Bots, routines,
-invented facts.
+GitHub writes, invented facts.
 ```
