@@ -88,13 +88,23 @@ Grok Bot farms the outer loop. pstack, called `/lauren-mode` inside Cursor, is t
 > complaints on X, generating new feature ideas. Grok Bot feeds my "outer
 > loop", where I think about what to point my factory at next.
 
-A chief of staff sits on top in the official product.
+Her retrieved "chief of staff" line is a token-cost tip. A long-lived main bot. Not a 10 to 20 agent org chart.
+
+> my number 1 tip for controlling your grok @bot usage is to avoid scheduled
+> routines that run too frequently. for example, a 15 min routine runs almost
+> 100 times a day, and every run consumes tokens. hourly or a few times a day
+> is usually good enough. the length of the chat with your bot can also make
+> routines much more expensive. for recurring ones, try giving that to a
+> fresh bot, while you continue your chat with your main bots (like a chief
+> of staff). give this post to your bot and ask them to help!
+
+Official product copy has two Chief pictures. Launch posts sell a manager of specialists.
 
 > People inside SpaceXAI often run multiple Bots in parallel, with one to
 > manage the others. A chief of staff sits on top, with a specialist for each
 > lane: inbox management, expenses, recruiting, bug fixes, or operations.
 
-That official desk is inbox, expenses, recruiting, bugs, and ops. It is not an ATS clicker farm.
+The use-cases page sells a digest Bot. That desk is inbox, expenses, recruiting, bugs, and ops, or a morning brief. It is not an ATS clicker farm. Do not treat the @DannyLimanseta Chief tweet on TwiScan as hers.
 
 ## Skill versus routine
 
@@ -125,6 +135,8 @@ A skill is how. A routine is when. Do not schedule Autofill. Do not schedule Sub
 That shop is honest about its failure. The Chief of Staff cooks. Specialists idle. You stay in the loop on every click.
 
 [APPLY_CORP_STRUCTURE.md](APPLY_CORP_STRUCTURE.md) is the first apply trial when you say go. Chief of Staff, Triage, one Ashby mind, Auditor, Ops. Writer on call. Five Bots plus you. Still no Submit from notes.
+
+Git never recorded a choice between those two notes. `TEAM_HIERARCHY.md` still says "what we have now." The apply cell calls that shop too naive for auto-apply. Both sit in the folder. PRs #73 and #75 have no review thread and no linked issue. `job-search-hybrid` is this pass's recommendation, not a recorded pick of yours.
 
 That cell maps her depth-first rule onto ATS work. One cook on one Ashby job. Auditor reads the form. You keep the gates.
 

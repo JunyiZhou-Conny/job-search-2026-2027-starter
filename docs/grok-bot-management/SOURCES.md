@@ -159,15 +159,29 @@ Date on TwiScan: 2026-08-11 17:20
 > It's designed for agents, even the ones who have very little context, to
 > write high quality code by default.
 
-### Later X fragment (TwiScan profile mix)
+### Later X fragments (TwiScan)
 
 Source: https://twiscan.com/en/x/poteto
+Her avatar sits above these two lines.
 
 > just took over the 4th all time spot. 6 more days to go to break the 2k PRs
 > world record
 
-The surrounding TwiScan page mixes other accounts. Treat this line as hers
-only if you open the tweet from her handle.
+> my number 1 tip for controlling your grok @bot usage is to avoid scheduled
+> routines that run too frequently. for example, a 15 min routine runs almost
+> 100 times a day, and every run consumes tokens. hourly or a few times a day
+> is usually good enough. the length of the chat with your bot can also make
+> routines much more expensive. for recurring ones, try giving that to a
+> fresh bot, while you continue your chat with your main bots (like a chief
+> of staff). give this post to your bot and ask them to help!
+
+That is the only retrieved @poteto sentence that uses "chief of staff." It
+names a long-lived main bot in a token-cost tip. It does not say the Chief
+manages 10 to 20 agents.
+
+The first tweet on that TwiScan page is @DannyLimanseta. "Having a Chief of
+Staff really changed the game" is his line, not hers. The page mixes
+accounts. Treat a line as hers only when her handle sits on it.
 
 ### pstack guide (repo docs she ships)
 
@@ -282,8 +296,12 @@ The official growth path:
 6. Create a routine only when retries and failure cases are defined.
 7. Keep consequential external actions behind approval.
 
-Chief of Staff example on that page owns a digest. It does not click ATS
-forms. Start prompt includes "Do not send messages or change meetings."
+The use-cases Chief of Staff owns a digest. It does not click ATS forms.
+Start prompt includes "Do not send messages or change meetings."
+
+Official copy therefore has two Chief pictures. Launch posts sell a manager
+of specialists. The use-cases page sells a source-linked digest. Those two
+are not formally unified.
 
 ### Skill vs routine
 
