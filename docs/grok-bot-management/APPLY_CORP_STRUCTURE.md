@@ -1,10 +1,14 @@
 # Apply project — first corporate structure (brain jar)
 
-Junyi 2026-08-25. Thinking only. Not a runbook to spawn Bots or Submit.
+Junyi 2026-08-25, updated 2026-08-26.
 
-This note turns Junyi's hierarchy complaint into a roster we can
-reason about before spending tokens. Reality still has to test it.
-Tokens are limited, so the first live test must be small.
+The org chart is still the paper roster. The **live order** is in
+[GROK_BOT_HANDOFF.md](GROK_BOT_HANDOFF.md): Chief assigns one Ashby
+job to an existing teammate and that teammate fills. Do not wait for
+a second "go." See [ALIGNMENT.md](ALIGNMENT.md).
+
+This note does not hire the five-Bot cell by itself. Workday stays
+unstaffed until a named study. Submit only when Junyi names the URL.
 
 ## What Junyi is saying
 
@@ -30,8 +34,11 @@ We should not buy unlimited trial-and-error.
 
 - The **10-tab** Copilot work was review-only. No Submit there.
 - Cloud **did** Submit four short Ashby forms (Anyscale + three
-  trivials) as named isolation tests. That is not a 10-tab Submit
-  license. Charta Cloud Submit hit a spam wall and did not land.
+  trivials) as named isolation tests. Junyi 2026-08-26: many more
+  Ashby Submits have landed since. This branch's ledger does not
+  yet list that later volume. Do not invent a count. Charta Cloud
+  Submit hit a spam wall and did not land. Workday is still the
+  hard lane.
 - Ashby-before-Submit is **good enough to be satisfied**, not
   "finished." Leftovers, EEO, Autofill Again, and Submit-time walls
   still exist. See `knowledge/form_strategy.yaml` on later branches.
@@ -152,20 +159,19 @@ Writer is summoned, not seated.
 - Matches xAI's path: one safe task (one Ashby job, stop before
   Submit) before skills or routines.
 
-## Cheap trial (when Junyi says go) — still no Submit
+## Cheap trial (live)
 
-One Ashby URL already in the 10-tab or isolation set. CoS may only
-assign. Ashby mind may only fill. Auditor must catch at least one
-known leftover class (sponsorship widget or current company). Ops
-must return time + thought-chain length.
+The live handoff **is** the go. Chief assigns one Ashby URL to one
+existing teammate. That teammate fills. Auditor (or Chief review)
+checks the visible form. Ops records time + thought-chain length.
 
-Pass: Junyi never had to steer a click. Fail: CoS cooked, or Junyi
-had to babysit the hand.
+Pass: Junyi did not steer a click, and the Chief did not cook.
+Fail: Chief only wrote a report, or Junyi had to babysit the hand.
 
-Workday study is a **later** one-job, no-account, no-Submit pass.
+Submit only if Junyi named that URL and wrote Submit in the same
+turn. Workday study is still later, no account create.
 
 ## Open / not yet
 
-This is a first prototype of a corporate structure. It is not
-permission to spawn the roster. Isolation and `form_strategy.yaml`
-still apply.
+Do not hire N Workday clickers. Isolation and `form_strategy.yaml`
+still apply. The five-Bot paper cell is memory, not an auto-hire.
