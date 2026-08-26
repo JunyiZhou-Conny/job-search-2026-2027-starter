@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<title>Org designer</title>
+<link rel="stylesheet" href="/static/org_designer/styles.css" />
+</head>
+<body>
+<a class="skip-link" href="#tree">Skip to tree</a>
+
+<header class="chrome">
+  <div class="chrome-inner">
+    <div class="titlebar">
+      <div class="titlebar-text">
+        <h1>Org designer</h1>
+        <p class="lede">Build the company as a tree. The page writes a staffing plan. It does not create Bots.</p>
+      </div>
+      <div class="titlebar-side">
+        <span class="sync-pill" id="syncPill" data-state="idle">
+          <span class="sync-dot" aria-hidden="true"></span>
+          <span class="sync-text">Ready</span>
+        </span>
+      </div>
+    </div>
+    <div class="controls">
+      <label class="field field-inline">
+        <span>Start from</span>
+        <select id="templateSelect">
+          <option value="">Empty company</option>
+        </select>
+      </label>
+      <button class="btn" id="loadTemplate" type="button">Load roles</button>
+      <button class="btn" id="addBot" type="button">New bot</button>
+      <button class="btn" id="saveBtn" type="button">Save charter</button>
+      <button class="btn btn-primary" id="exportBtn" type="button">Export brief</button>
+    </div>
+  </div>
+  <div class="chrome-edge" aria-hidden="true"></div>
+</header>
+
+<main class="desk">
+  <section class="panel meta">
+    <label class="field"><span>Company</span><input id="company" type="text" autocomplete="organization" /></label>
+    <label class="field"><span>Project</span><input id="project" type="text" /></label>
+    <label class="field"><span>Date</span><input id="asOf" type="date" /></label>
+  </section>
+
+  <section class="layout">
+    <div class="tree-col">
+      <h2 class="col-title">Reporting tree</h2>
+      <p class="hint">Drag a bot onto another row to change who they listen to. Owner stays at the top.</p>
+      <ol class="tree" id="tree"></ol>
+    </div>
+    <aside class="inspector" id="inspector">
+      <h2 class="col-title" id="inspectorTitle">Owner</h2>
+      <div id="inspectorBody"></div>
+    </aside>
+  </section>
+
+  <section class="issues" id="issues" hidden>
+    <h2 class="col-title">Needs a name or a fix</h2>
+    <ul id="issueList"></ul>
+  </section>
+</main>
+
+<dialog id="addDialog">
+  <form method="dialog" id="addForm">
+    <h2>New bot</h2>
+    <label class="field"><span>Bot name</span><input id="newName" name="name" required autocomplete="off" /></label>
+    <label class="field"><span>Role</span><input id="newRole" name="role" required /></label>
+    <label class="field">
+      <span>Listens to</span>
+      <select id="newParent"></select>
+    </label>
+    <menu>
+      <button class="btn" value="cancel" type="submit">Cancel</button>
+      <button class="btn btn-primary" id="addConfirm" value="add" type="submit">Add</button>
+    </menu>
+  </form>
+</dialog>
+
+<script id="org-bootstrap" type="application/json">__BOOTSTRAP__</script>
+<script type="module" src="/static/org_designer/app.js"></script>
+</body>
+</html>
