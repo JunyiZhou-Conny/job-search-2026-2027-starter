@@ -181,6 +181,25 @@ class TemplateTests(unittest.TestCase):
         writer = next(v for v in draft.vacancies if v.role == "Writer")
         self.assertEqual(writer.staffing.kind, "on_call")
 
+    def test_junyi_sketch_has_architect_and_no_named_bots(self):
+        draft = load_template("junyi-architect-lanes", owner_name="Junyi Zhou")
+        self.assertEqual(draft.seats, ())
+        roles = {v.role for v in draft.vacancies}
+        self.assertIn("Architect", roles)
+        self.assertIn("Ashby Application", roles)
+        self.assertIn("Autofiller / clicker", roles)
+        self.assertIn("Email verification", roles)
+        self.assertIn("Workday", roles)
+        self.assertIn("Miscellaneous / unknown portal", roles)
+        chiefs = [v for v in draft.vacancies if "Chief" in v.role]
+        self.assertEqual(len(chiefs), 4)
+        bench = next(v for v in draft.vacancies if v.role == "Autofiller bench")
+        self.assertEqual(bench.staffing.kind, "later")
+        self.assertIn("x10", bench.staffing.detail)
+        email = next(v for v in draft.vacancies if v.role == "Email verification")
+        self.assertEqual(email.staffing.kind, "on_call")
+        self.assertEqual(draft.talks.owner_talks_only_to, "v-arch")
+
 
 class SaveTests(unittest.TestCase):
     def setUp(self):

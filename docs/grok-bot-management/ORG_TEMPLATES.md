@@ -294,6 +294,52 @@ Fields on every record:
 
 **failure_mode.** Ashby N before Auditor works without Junyi steering clicks.
 
+## junyi-architect-lanes
+
+**id.** junyi-architect-lanes
+
+**name.** Architect lanes (Junyi sketch)
+
+**source_fit.** junyi
+
+**trust_band.** later
+
+**layers.**
+
+1. Human gates. Junyi. Login, email verification, free-response power, Submit, 2FA, new ATS accounts.
+2. Architect. One conversation. Stands up the org from the charter. Never Autofill. Never Submit.
+3. Four chiefs. One apply chief now. Three titles still blank on the page.
+4. ATS desks under the apply chief. Ashby now. Workday later (one study). Unknown portal later.
+5. Ashby stack. One autofiller now. Bench toward × 10 later. Email verification asks Junyi. Writer × 1, maybe 2.
+
+**spawn_count_pilot.** 4 Bots plus Junyi. Architect, apply chief, Ashby lane, one autofiller.
+
+**spawn_count_later.** Toward 10 Ashby cooks if the first cook is trusted. Not 10 first. Workday stays 1 study. Unknown portal unnamed.
+
+**roles.**
+
+- Junyi. Owns login, email codes, free-response power, Submit, 2FA, new ATS accounts. Stop line. Never invent facts for a Bot to paste.
+- Architect. Owns the charter and the chiefs. Stop line. Never Autofill. Never Submit. Never hire unless Junyi authorizes the revision.
+- Chief of ____ (apply). Owns ATS desks. Stop line. Never Autofill. Never Submit.
+- Chief of ____ / open chiefs. Titles blank on the 2026-08-26 sketch.
+- Ashby Application. Owns the Ashby lane. Stop line. Never Submit.
+- Autofiller / clicker. Owns one Ashby job through leftover correction. Stop line. Stop before Submit. Never invent facts.
+- Autofiller bench. Later copies of that cook. Stop line. Do not seat 10 first.
+- Email verification. Parks the job and asks Junyi. Stop line. Never complete 2FA. Never Submit.
+- Writer. Owns a Why-us or leftover essay when asked. Stop line. A file is not a Submit.
+- Workday. One study mind later. Stop line. No account create. Never N.
+- Miscellaneous / unknown portal. Label or skip. Stop line. Never apply on Jobright. Never Submit.
+
+**verification.** Not drawn. Auditor is absent on the page. Junyi still owns gates.
+
+**gates.** Junyi owns login, email verification, free-response power, Submit, send, 2FA, new ATS accounts, MyGreenhouse login.
+
+**when_it_fits.** Junyi's 2026-08-26 hand sketch. See [JUNYI_SKETCH_2026-08-26.md](JUNYI_SKETCH_2026-08-26.md).
+
+**costs.** Shared computer. × 10 Ashby clickers share one login.
+
+**failure_mode.** Staff the × 10 bench before one cook is trusted, or let a Bot complete email verify.
+
 ## Comparison
 
 | id | pilot count | later count | who reviews | who Submits | main failure |
@@ -305,6 +351,7 @@ Fields on every record:
 | outer-loop-plus-factory | 1 Grok farmer | farmer plus apply-cell | pstack in this repo | Junyi | Twenty Grok clickers instead of one farmer. |
 | clip-crew | 10 to 20 | 10 to 20 | Junyi weekly | Junyi | Staffed first on a shared computer. |
 | job-search-hybrid | 5 | 8 to 12 | Auditor, then Junyi | Junyi | Ashby N before Auditor works. |
+| junyi-architect-lanes | 4 | toward 10 Ashby | Not drawn (no Auditor on the page) | Junyi | × 10 before one cook is trusted, or a Bot completes 2FA. |
 
 ## Role charter
 
