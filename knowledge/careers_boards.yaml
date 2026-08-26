@@ -21,6 +21,8 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  "Flatiron Health": flatironhealth  # verified 2026-08-26; Applied AI Data Scientist gh_jid=8010590
+  "Formation Bio": formationbio  # verified 2026-08-26; Data Scientist, Portfolio Optimization 7757667
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
