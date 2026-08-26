@@ -167,7 +167,7 @@ Keep [APPLY_CORP_STRUCTURE.md](APPLY_CORP_STRUCTURE.md) as the first apply trial
 
 Use pstack in this Cursor repo for thinking and verification.
 
-Add one Grok Bot Chief of Staff as the one conversation. The Chief assigns. Autofill stays off. Submit stays off.
+Add one Grok Bot Chief of Staff as the one conversation. The Chief assigns. Autofill stays off. Submit stays off. The paste that points that Bot at this folder is [GROK_BOT_HANDOFF.md](GROK_BOT_HANDOFF.md).
 
 Scale Ashby N only after Auditor works without you steering clicks.
 
