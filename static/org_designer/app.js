@@ -86,6 +86,15 @@ function parentOptions(exceptId) {
   return opts;
 }
 
+function talksOptions() {
+  const opts = parentOptions().filter((p) => p.id !== OWNER);
+  for (const vac of state.draft.vacancies || []) {
+    if (opts.some((p) => p.id === vac.id)) continue;
+    opts.push({ id: vac.id, label: `Unnamed · ${vac.role}` });
+  }
+  return opts;
+}
+
 function applyMetaFromDraft() {
   els.company.value = state.draft.company || '';
   els.project.value = state.draft.project || '';
@@ -246,7 +255,7 @@ function ownerForm() {
     <label class="field"><span>Does</span><textarea id="fOwnerDoes">${esc((o.does || []).join('\n'))}</textarea></label>
     <label class="field"><span>Does not</span><textarea id="fOwnerDoesNot">${esc((o.does_not || []).join('\n'))}</textarea></label>
     <label class="field"><span>Junyi talks only to</span>
-      <select id="fTalksTo">${parentOptions().filter((p) => p.id !== OWNER).map((p) =>
+      <select id="fTalksTo">${talksOptions().map((p) =>
         `<option value="${esc(p.id)}" ${t.owner_talks_only_to === p.id ? 'selected' : ''}>${esc(p.label)}</option>`
       ).join('')}<option value="" ${!t.owner_talks_only_to ? 'selected' : ''}>Not set</option></select>
     </label>

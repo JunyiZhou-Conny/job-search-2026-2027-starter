@@ -213,6 +213,7 @@ def load_template(template_id: str, *, owner_name: str = "", as_of: str = "") ->
     _name, vacancies = TEMPLATES[template_id]
     base = empty_draft(owner_name=owner_name, as_of=as_of)
     talks = base.talks
+    done_when = base.done_when
     if template_id == "junyi-architect-lanes":
         talks = Talks(
             owner_talks_only_to="v-arch",
@@ -220,6 +221,7 @@ def load_template(template_id: str, *, owner_name: str = "", as_of: str = "") ->
             assign_detail="Junyi talks only to the Architect. Chiefs talk to the Architect.",
             team_handoff="Ashby cook returns a visible form. Email and login park for Junyi. Workday and unknown portals stay later.",
         )
+        done_when = ("Pilot seats named. Later seats stay dormant until Junyi says so.",)
     return EditorDraft(
         company=base.company,
         project=_name,
@@ -228,5 +230,5 @@ def load_template(template_id: str, *, owner_name: str = "", as_of: str = "") ->
         seats=(),
         vacancies=vacancies,
         talks=talks,
-        done_when=("Pilot seats named. Later seats stay dormant until Junyi says so.",),
+        done_when=done_when,
     )

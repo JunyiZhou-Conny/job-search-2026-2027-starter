@@ -180,6 +180,8 @@ class TemplateTests(unittest.TestCase):
         self.assertIn("Writer", roles)
         writer = next(v for v in draft.vacancies if v.role == "Writer")
         self.assertEqual(writer.staffing.kind, "on_call")
+        self.assertEqual(draft.done_when, ())
+        self.assertEqual(draft.talks.owner_talks_only_to, "")
 
     def test_junyi_sketch_has_architect_and_no_named_bots(self):
         draft = load_template("junyi-architect-lanes", owner_name="Junyi Zhou")
@@ -199,6 +201,10 @@ class TemplateTests(unittest.TestCase):
         email = next(v for v in draft.vacancies if v.role == "Email verification")
         self.assertEqual(email.staffing.kind, "on_call")
         self.assertEqual(draft.talks.owner_talks_only_to, "v-arch")
+        self.assertEqual(
+            draft.done_when,
+            ("Pilot seats named. Later seats stay dormant until Junyi says so.",),
+        )
 
 
 class SaveTests(unittest.TestCase):
