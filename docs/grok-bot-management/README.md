@@ -18,3 +18,4 @@ If the Chief is frozen, you are on the old research-only paste. Use
 - [SOURCES.md](SOURCES.md) — quote ledger
 - [THINKING.md](THINKING.md) — explanation
 - [ORG_TEMPLATES.md](ORG_TEMPLATES.md) — org-record registry (paper)
+- [ORG_CHART_BLANK.md](ORG_CHART_BLANK.md) — empty chart for Junyi to fill
