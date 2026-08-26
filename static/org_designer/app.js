@@ -77,10 +77,35 @@ function childrenOf(parentId) {
   return { seats, vacancies };
 }
 
+function hasReports(id) {
+  const { seats, vacancies } = childrenOf(id);
+  return seats.length > 0 || vacancies.length > 0;
+}
+
+function parentOf(id) {
+  const seat = state.draft.seats.find((s) => s.id === id);
+  if (seat) return seat.listens_to || OWNER;
+  const vac = (state.draft.vacancies || []).find((v) => v.id === id);
+  return vac ? (vac.listens_to || OWNER) : null;
+}
+
+function wouldCycle(seatId, newParent) {
+  if (!newParent || newParent === OWNER) return false;
+  const seen = new Set();
+  let cur = newParent;
+  while (cur && cur !== OWNER) {
+    if (cur === seatId) return true;
+    if (seen.has(cur)) return true;
+    seen.add(cur);
+    cur = parentOf(cur);
+  }
+  return false;
+}
+
 function parentOptions(exceptId) {
   const opts = [{ id: OWNER, label: `${state.draft.owner.name || 'Owner'} (human)` }];
   for (const seat of state.draft.seats) {
-    if (exceptId && seat.id === exceptId) continue;
+    if (exceptId && wouldCycle(exceptId, seat.id)) continue;
     opts.push({ id: seat.id, label: `${seat.bot_name} · ${seat.role}` });
   }
   return opts;
@@ -126,16 +151,22 @@ function ownerRow() {
   return li;
 }
 
-function branch(parentId) {
+function branch(parentId, seen = new Set()) {
   const ol = document.createElement('ol');
   ol.className = 'tree';
+  if (seen.has(parentId)) return ol;
+  seen.add(parentId);
   const { seats, vacancies } = childrenOf(parentId);
   for (const seat of seats) {
     ol.appendChild(seatRow(seat));
-    const kids = branch(seat.id);
+    const kids = branch(seat.id, seen);
     if (kids.children.length) ol.appendChild(kids);
   }
-  for (const vac of vacancies) ol.appendChild(vacancyRow(vac));
+  for (const vac of vacancies) {
+    ol.appendChild(vacancyRow(vac));
+    const kids = branch(vac.id, seen);
+    if (kids.children.length) ol.appendChild(kids);
+  }
   return ol;
 }
 
@@ -181,14 +212,14 @@ function bindDrag(node, seatId) {
     const move = (ev) => {
       const over = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('.node');
       document.querySelectorAll('.node.is-drop').forEach((el) => el.classList.remove('is-drop'));
-      if (over && over.dataset.id && over.dataset.id !== seatId) over.classList.add('is-drop');
+      if (over && over.dataset.id && !wouldCycle(seatId, over.dataset.id)) over.classList.add('is-drop');
     };
     const up = (ev) => {
       node.classList.remove('is-dragging');
       document.querySelectorAll('.node.is-drop').forEach((el) => el.classList.remove('is-drop'));
       const over = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('.node');
       const target = over?.dataset.id;
-      if (target && target !== seatId && over.dataset.kind !== 'vacancy') {
+      if (target && !wouldCycle(seatId, target) && over.dataset.kind !== 'vacancy') {
         const seat = state.draft.seats.find((s) => s.id === seatId);
         if (seat) seat.listens_to = target;
         select(seatId);
@@ -328,7 +359,7 @@ function bindSeatForm(seat) {
     el.addEventListener('change', pull);
   });
   document.getElementById('fDelete').addEventListener('click', () => {
-    if (state.draft.seats.some((s) => s.listens_to === seat.id)) {
+    if (hasReports(seat.id)) {
       setSync('error', 'Reparent reports first');
       return;
     }
@@ -372,6 +403,10 @@ function bindVacancyForm(vac) {
     render();
   });
   document.getElementById('vDrop').addEventListener('click', () => {
+    if (hasReports(vac.id)) {
+      setSync('error', 'Reparent reports first');
+      return;
+    }
     state.draft.vacancies = state.draft.vacancies.filter((v) => v.id !== vac.id);
     select(OWNER);
     render();
@@ -466,6 +501,10 @@ function openAdd() {
   els.newRole.value = '';
   els.addDialog.showModal();
 }
+
+document.getElementById('addCancel').addEventListener('click', () => {
+  els.addDialog.close();
+});
 
 els.addForm.addEventListener('submit', (event) => {
   const submitter = event.submitter;
