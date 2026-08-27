@@ -181,9 +181,12 @@ clicker_cheap_cuts:
   copilot:
     meaning: "Simplify Copilot sidebar only."
     do:
-      - Click "Autofill This Page" once.
+      - Click "Start Application" or "Autofill This Page" once.
       - Wait until it finishes.
-    if_missing: "Stop and report harness_not_ready."
+    if_missing: >
+      Stop and report harness_not_ready only if neither Copilot CTA is
+      present. Ashby shows "Start Application" first; that is not a
+      missing harness.
   never_click:
     greenhouse_native_autofill: >
       Never click Greenhouse's own "Autofill my application" /
