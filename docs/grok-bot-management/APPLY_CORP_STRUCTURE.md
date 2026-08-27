@@ -161,15 +161,22 @@ Writer is summoned, not seated.
 
 ## Cheap trial (live)
 
-The live handoff **is** the go. Chief assigns one Ashby URL to one
-existing teammate. That teammate fills. Auditor (or Chief review)
-checks the visible form. Ops records time + thought-chain length.
+The live handoff **is** the go. CEO / Chief assigns one Ashby URL to
+one existing Autofiller. That Autofiller **pulls this branch**, reads
+`knowledge/form_strategy.yaml`, compiles a this-job sheet, and gives
+that sheet to its own hand. The hand sees the sheet and the screen,
+not git. Auditor (or CEO review) checks the visible form. Uncatalogued
+leftovers are proposed rules. Junyi confirms before they land in git.
 
-Pass: Junyi did not steer a click, and the Chief did not cook.
-Fail: Chief only wrote a report, or Junyi had to babysit the hand.
+Pass: Junyi did not steer a click, and the CEO did not cook.
+Fail: CEO only wrote a report, or Junyi had to babysit the hand, or
+the Autofiller used a frozen Description instead of git.
 
 Submit only if Junyi named that URL and wrote Submit in the same
 turn. Workday study is still later, no account create.
+
+Do not staff ten Ashby Autofillers for the first trial. Copilot must
+be on the Autofiller's screen, not only on the CEO's.
 
 ## Open / not yet
 
