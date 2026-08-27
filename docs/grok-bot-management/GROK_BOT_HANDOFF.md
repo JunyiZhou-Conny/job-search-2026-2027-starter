@@ -55,6 +55,6 @@ Never invent facts. Read ALIGNMENT.md first.
 ```
 
 Standing Settings paste (Name, Label, Description) is
-[BOT_DESCRIPTIONS.md](BOT_DESCRIPTIONS.md). That file is the apply
-company, not the old Researcher / Writer / Ops shop. It does not
-replace the live block above.
+[BOT_DESCRIPTIONS.md](BOT_DESCRIPTIONS.md). Architect sits outside
+the company and spawns Bots. Chief of Staff runs apply. That file
+does not replace the live block above.
