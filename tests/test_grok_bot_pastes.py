@@ -42,6 +42,32 @@ class ArchitectPasteTests(unittest.TestCase):
         self.assertNotIn("ceo of auto application", lowered)
 
 
+class AutofillerPasteTests(unittest.TestCase):
+    def setUp(self) -> None:
+        blocks = paste_blocks(ORG / "BOT_DESCRIPTIONS.md")
+        cooks = [b for b in blocks if "You are Junyi Zhou's Ashby Autofiller" in b]
+        self.assertEqual(len(cooks), 1)
+        self.paste = cooks[0]
+
+    def test_pulls_working_branch_and_form_strategy(self) -> None:
+        self.assertIn("cursor/grok-shared-computer-5db1", self.paste)
+        self.assertIn("knowledge/form_strategy.yaml", self.paste)
+        self.assertIn("work_authorization.yaml", self.paste)
+        self.assertIn("this-job sheet", self.paste)
+        self.assertIn("hand sees only the sheet", self.paste)
+
+    def test_does_not_freeze_sponsorship_no(self) -> None:
+        self.assertNotIn("sponsorship: No / None", self.paste)
+        self.assertIn("H-1B-named sponsorship is No", self.paste)
+        self.assertIn("no H-1B wording is Yes", self.paste)
+
+    def test_reports_to_ceo_and_stops_without_copilot(self) -> None:
+        self.assertIn("Report to the CEO", self.paste)
+        self.assertIn("harness_not_ready", self.paste)
+        self.assertIn("YOUR screen", self.paste)
+        self.assertIn("do not submit", self.paste.lower())
+
+
 class CeoPasteTests(unittest.TestCase):
     def setUp(self) -> None:
         blocks = paste_blocks(ORG / "BOT_DESCRIPTIONS.md")
@@ -58,6 +84,8 @@ class CeoPasteTests(unittest.TestCase):
         self.assertIn("ONE existing teammate", self.paste)
         self.assertIn("do not spawn bots", self.paste.lower())
         self.assertIn("do not Submit", self.paste)
+        self.assertIn("form_strategy.yaml", self.paste)
+        self.assertIn("You do not start computer-use on the form", self.paste)
 
     def test_architect_is_outside(self) -> None:
         self.assertIn("Architect sits outside this company", self.paste)
@@ -68,7 +96,9 @@ class HandoffPasteTests(unittest.TestCase):
         text = (ORG / "GROK_BOT_HANDOFF.md").read_text(encoding="utf-8")
         self.assertIn("CEO of Auto Application", text)
         self.assertIn("People also call me Conny", text)
+        self.assertIn("form_strategy.yaml", text)
         self.assertNotIn("Connie", text)
+        self.assertNotIn("sponsorship No/None", text)
 
 
 if __name__ == "__main__":
