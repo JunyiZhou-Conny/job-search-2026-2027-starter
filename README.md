@@ -44,6 +44,13 @@ Filters: GTC 2026 sponsor · Boston/MA · Bay Area/SF · big tech / biotech / st
 Open the served URL, not the static HTML file — the file version can only hold decisions in
 browser storage, which then need `scripts/sync_queue_decisions.py`.
 
+**Org designer.** Design the Grok Bot company as a tree. Does not hire Bots.
+
+```bash
+python3 scripts/serve_org_designer.py
+# then open http://127.0.0.1:8766/
+```
+
 **Weekly.** Drop a Simplify export in `data/imports/simplify/YYYY-MM-DD.csv`, then reconcile:
 
 ```bash

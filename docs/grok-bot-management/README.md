@@ -18,4 +18,9 @@ If the Chief is frozen, you are on the old research-only paste. Use
 - [SOURCES.md](SOURCES.md) — quote ledger
 - [THINKING.md](THINKING.md) — explanation
 - [ORG_TEMPLATES.md](ORG_TEMPLATES.md) — org-record registry (paper)
-- [ORG_CHART_BLANK.md](ORG_CHART_BLANK.md) — empty chart for Junyi to fill
+- [ORG_CHART_BLANK.md](ORG_CHART_BLANK.md) — empty paper seed; do not fill by hand
+- [JUNYI_SKETCH_2026-08-26.md](JUNYI_SKETCH_2026-08-26.md) — Architect / chiefs / Ashby × 10 sketch (paper)
+- Visual designer: `python3 scripts/serve_org_designer.py` then open `http://127.0.0.1:8766/`
+  (Start from **Architect lanes (Junyi sketch)** to load that page)
+- After Save the designer writes `ORG_CHART.json` (source of truth) and generated `ORG_CHART.md`
+- After Export it writes `ORG_SPAWN_BRIEF.md` for a CoS or architect. That file is not a hire.
