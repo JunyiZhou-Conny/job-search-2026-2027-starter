@@ -11,6 +11,8 @@ If the Chief is frozen, you are on the old research-only paste. Use
 [GROK_BOT_HANDOFF.md](GROK_BOT_HANDOFF.md).
 
 - [GROK_BOT_HANDOFF.md](GROK_BOT_HANDOFF.md) — **live** Chief paste (assign + Ashby fill)
+- [ARCHITECT.md](ARCHITECT.md) — Architect Settings paste. Outside every company. Spawns Bots. Not apply-only.
+- [BOT_DESCRIPTIONS.md](BOT_DESCRIPTIONS.md) — apply company Settings pastes. Chief of Staff runs this company.
 - [ALIGNMENT.md](ALIGNMENT.md) — why the Chief did nothing, and the fix
 - [TEAM_HIERARCHY.md](TEAM_HIERARCHY.md) — four-person shop (paper)
 - [SHARED_COMPUTER.md](SHARED_COMPUTER.md) — shared-computer fact

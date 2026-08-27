@@ -53,3 +53,8 @@ Ashby: assign one existing teammate to Autofill once + leftovers.
 Workday / new accounts / Jobright walls / send: skip.
 Never invent facts. Read ALIGNMENT.md first.
 ```
+
+Standing Settings pastes: Architect is [ARCHITECT.md](ARCHITECT.md)
+(outside every company). Apply seats are
+[BOT_DESCRIPTIONS.md](BOT_DESCRIPTIONS.md). Neither file replaces the
+live block above.
