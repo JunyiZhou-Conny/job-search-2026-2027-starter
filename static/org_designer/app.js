@@ -99,10 +99,13 @@ function pullMeta() {
 }
 
 function renderTemplates() {
-  const current = els.templateSelect.value;
+  const fromUrl = new URLSearchParams(location.search).get('template') || '';
+  const current = els.templateSelect.value || fromUrl;
   els.templateSelect.innerHTML = '<option value="">Empty company</option>' +
     state.templates.map((t) => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');
-  els.templateSelect.value = current;
+  if ([...els.templateSelect.options].some((o) => o.value === current)) {
+    els.templateSelect.value = current;
+  }
 }
 
 function renderTree() {
@@ -135,7 +138,11 @@ function branch(parentId) {
     const kids = branch(seat.id);
     if (kids.children.length) ol.appendChild(kids);
   }
-  for (const vac of vacancies) ol.appendChild(vacancyRow(vac));
+  for (const vac of vacancies) {
+    ol.appendChild(vacancyRow(vac));
+    const kids = branch(vac.id);
+    if (kids.children.length) ol.appendChild(kids);
+  }
   return ol;
 }
 
@@ -161,15 +168,19 @@ function seatRow(seat) {
 
 function vacancyRow(vac) {
   const li = document.createElement('li');
+  const wave = vac.staffing?.kind || 'pilot';
+  const team = vac.team ? ` · ${esc(vac.team)}` : '';
+  const detail = vac.staffing?.detail ? ` · ${esc(vac.staffing.detail)}` : '';
   li.innerHTML = `<div class="node vacancy" data-kind="vacancy" data-id="${esc(vac.id)}">
     <span class="handle" aria-hidden="true"></span>
-    <span><span class="node-name">Unnamed · ${esc(vac.role)}</span>
-    <span class="node-role">Name this seat before save</span></span>
-    <span class="pill">vacant</span>
+    <span><span class="node-name">${esc(vac.role)}</span>
+    <span class="node-role">Vacant seat${team}${detail}</span></span>
+    <span class="pill pill-${esc(wave)}">${esc(wave)}</span>
   </div>`;
   const node = li.querySelector('.node');
   if (state.selected === vac.id) node.classList.add('is-selected');
   node.addEventListener('click', () => select(vac.id));
+  bindDrop(node, vac.id);
   return li;
 }
 
@@ -340,8 +351,10 @@ function bindSeatForm(seat) {
 }
 
 function vacancyForm(vac) {
+  const wave = vac.staffing?.kind || 'pilot';
+  const detail = vac.staffing?.detail ? ` ${esc(vac.staffing.detail)}` : '';
   return `<div class="stack">
-    <p class="hint">${esc(vac.role)} is a paper role. Give it a bot name to seat it.</p>
+    <p class="hint">${esc(vac.role)} is a paper role (${esc(wave)}).${detail} Give it a bot name to seat it. This page does not hire.</p>
     <label class="field"><span>Bot name</span><input id="vName" required /></label>
     <label class="field"><span>Does</span><textarea id="vDoes">${esc((vac.suggested_does || []).join('\n'))}</textarea></label>
     <label class="field"><span>Does not</span><textarea id="vDoesNot">${esc((vac.suggested_does_not || []).join('\n'))}</textarea></label>
@@ -384,13 +397,20 @@ function lines(text) {
 
 function renderIssues() {
   const all = [...state.issues, ...state.completeness];
-  if (!all.length) {
+  const vacant = all.filter((i) => i.code === 'vacant_role');
+  const other = all.filter((i) => i.code !== 'vacant_role');
+  if (!vacant.length && !other.length) {
     els.issues.hidden = true;
     els.issueList.innerHTML = '';
     return;
   }
   els.issues.hidden = false;
-  els.issueList.innerHTML = all.map((i) => `<li>${esc(i.message)}</li>`).join('');
+  const items = [];
+  if (vacant.length) {
+    items.push(`<li>${vacant.length} vacant seat${vacant.length === 1 ? '' : 's'} from the sketch. Name a bot to seat one. Save stays a paper plan until then.</li>`);
+  }
+  items.push(...other.map((i) => `<li>${esc(i.message)}</li>`));
+  els.issueList.innerHTML = items.join('');
 }
 
 function render() {

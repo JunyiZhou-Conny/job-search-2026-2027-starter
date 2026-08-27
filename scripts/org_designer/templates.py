@@ -221,7 +221,7 @@ def load_template(template_id: str, *, owner_name: str = "", as_of: str = "") ->
             team_handoff="Ashby cook returns a visible form. Email and login park for Junyi. Workday and unknown portals stay later.",
         )
     return EditorDraft(
-        company=base.company,
+        company="Job search" if template_id == "junyi-architect-lanes" else base.company,
         project=_name,
         as_of=base.as_of,
         owner=base.owner,

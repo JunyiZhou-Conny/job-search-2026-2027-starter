@@ -199,6 +199,15 @@ class TemplateTests(unittest.TestCase):
         email = next(v for v in draft.vacancies if v.role == "Email verification")
         self.assertEqual(email.staffing.kind, "on_call")
         self.assertEqual(draft.talks.owner_talks_only_to, "v-arch")
+        self.assertEqual(draft.company, "Job search")
+        arch = next(v for v in draft.vacancies if v.role == "Architect")
+        apply = next(v for v in draft.vacancies if v.id == "v-chief-apply")
+        ashby = next(v for v in draft.vacancies if v.role == "Ashby Application")
+        fill = next(v for v in draft.vacancies if v.role == "Autofiller / clicker")
+        self.assertEqual(arch.listens_to, OWNER)
+        self.assertEqual(apply.listens_to, arch.id)
+        self.assertEqual(ashby.listens_to, apply.id)
+        self.assertEqual(fill.listens_to, ashby.id)
 
 
 class SaveTests(unittest.TestCase):

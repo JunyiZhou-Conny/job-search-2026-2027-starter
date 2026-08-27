@@ -18,6 +18,8 @@ of Staff or architect can spawn from.
 ```bash
 python3 scripts/serve_org_designer.py
 # open http://127.0.0.1:8766/
+# Junyi's 2026-08-26 sketch:
+# open http://127.0.0.1:8766/?template=junyi-architect-lanes
 ```
 
 On the page: set company and project, or start from a paper template

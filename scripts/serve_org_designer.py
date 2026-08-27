@@ -67,7 +67,13 @@ class Handler(BaseHTTPRequestHandler):
         path = parsed.path
         if path in {"/", "/index.html", "/org"}:
             html = TEMPLATE.read_text(encoding="utf-8")
-            snap = self.designer.read()
+            qs = parse_qs(parsed.query)
+            template = (qs.get("template") or [""])[0].strip() or None
+            try:
+                snap = self.designer.read(template)
+            except KeyError:
+                self._json(404, {"error": "unknown template"})
+                return
             boot = json.dumps(snapshot_to_wire(snap), ensure_ascii=False).replace("</", "<\\/")
             html = html.replace("__BOOTSTRAP__", boot)
             self._send(200, html.encode("utf-8"), "text/html; charset=utf-8")
