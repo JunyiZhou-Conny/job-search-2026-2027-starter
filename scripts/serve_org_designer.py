@@ -3,6 +3,9 @@
 
   python3 scripts/serve_org_designer.py
   open http://127.0.0.1:8766/
+
+Binds all interfaces so a Cloud Agent port-forward can attach.
+Laptop Chrome at 127.0.0.1 is the laptop, not this VM.
 """
 
 from __future__ import annotations
@@ -146,7 +149,7 @@ class Handler(BaseHTTPRequestHandler):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--host", default="127.0.0.1")
+    ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=8766)
     ap.add_argument("--root", default=str(ROOT))
     args = ap.parse_args()

@@ -8,6 +8,8 @@ python3 scripts/serve_org_designer.py
 
 Then open `http://127.0.0.1:8766/` — not the apply queue on :8765.
 
+On a Cloud Agent, do not open that URL in your laptop Chrome. Open this agent's **Desktop** (right side of the agent chat), take control, and use Chrome *inside that desktop*. Laptop `127.0.0.1` is your machine; the designer is on the VM.
+
 ## What the page writes
 
 | Action | Writes |

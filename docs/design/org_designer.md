@@ -22,6 +22,11 @@ python3 scripts/serve_org_designer.py
 # open http://127.0.0.1:8766/?template=junyi-architect-lanes
 ```
 
+The server listens on all interfaces (`0.0.0.0:8766`) so a Cloud Agent
+can forward the port. `127.0.0.1` in laptop Chrome is the laptop, not
+the VM. On a Cloud Agent, open the agent's Desktop and use the browser
+there.
+
 On the page: set company and project, or start from a paper template
 (roles land as unnamed vacancies, not invented bot names). Add a bot
 under a parent. Drag a row onto another row to change who they listen
