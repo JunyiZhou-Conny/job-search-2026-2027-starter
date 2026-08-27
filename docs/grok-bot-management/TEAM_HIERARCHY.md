@@ -34,7 +34,7 @@ Where we actually are: one Lightfield apply path, with Junyi's intervention. Ski
 
 Not implemented.
 
-N jobs, N autofill teammates. A chief assigns each teammate exactly one job. Each teammate autofills and returns a reviewable result to the chief. The chief reports to Junyi (Connie / Junyi Zhou), who runs the whole thing. Later the chief might report to a higher chief, for example a company-level chief. That is not the same role as Chief of Staff.
+N jobs, N autofill teammates. A chief assigns each teammate exactly one job. Each teammate autofills and returns a reviewable result to the chief. The chief reports to Junyi (Conny / Junyi Zhou), who runs the whole thing. Later the chief might report to a higher chief, for example a company-level chief. That is not the same role as Chief of Staff.
 
 This is managing a team. I do not want to micromanage each clicker. That is different from how I used Cursor before, one chat or one agent in the loop.
 
