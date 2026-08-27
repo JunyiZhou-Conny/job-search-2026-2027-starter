@@ -21,6 +21,10 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  "Bracebridge Capital, LLC": bracebridgecapital  # verified 2026-08-27; Machine Learning Analyst
+  "Flatiron Health": flatironhealth  # verified 2026-08-27
+  "Formation Bio": formationbio  # verified 2026-08-27
+  "impact.com": impact  # verified 2026-08-27; Full Stack Java Engineer
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -32,6 +36,9 @@ ashby:
   Baseten: baseten
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   "Hayden AI": haydenai  # verified 2026-08-23
+  Brellium: brellium  # verified 2026-08-27; Software Engineer - AI
+  Fieldguide: fieldguide  # verified 2026-08-27; AI Engineer
+  "One Robot (YC W26)": onerobot  # verified 2026-08-27; Machine Learning Intern (exact title)
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
