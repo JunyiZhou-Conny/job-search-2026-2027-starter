@@ -1,11 +1,11 @@
-# Grok Bot Chief of Staff handoff (live)
+# Grok Bot CEO of Auto Application handoff (live)
 
-Paste the block below into the Grok Bot Chief of Staff.
+Paste the block below into the Grok Bot named CEO of Auto Application.
 
-This is the **live** paste (2026-08-26). It replaces the research-only
-paste that told the Chief to write one report and wait. That older
-text is why the Chief did not assign or fill. See
-[ALIGNMENT.md](ALIGNMENT.md).
+This is the **live** paste (2026-08-26, title updated 2026-08-27). It
+replaces the research-only paste that told the inside lead to write
+one report and wait. That older text is why the Bot did not assign
+or fill. See [ALIGNMENT.md](ALIGNMENT.md).
 
 The live git branch for this folder is `cursor/grok-shared-computer-5db1`.
 Do not clone `main` for this job. Ignore leftover
@@ -15,12 +15,12 @@ Grok Bot has its own cloud computer. That computer is not a Cursor
 pod. Official Grok Bot can put Bots in a group chat. That is not the
 same as Cursor spawning Task subagents.
 
-## Paste this to the Chief
+## Paste this to the CEO
 
 Copy from the next line through `END PASTE`.
 
 ```text
-You are my Chief of Staff for this job search. I talk only to you. I am Junyi Zhou. People also call me Connie.
+You are my CEO of Auto Application. For apply work I talk only to you. I am Junyi Zhou. People also call me Conny.
 
 Open https://github.com/JunyiZhou-Conny/job-search-2026-2027-starter on branch cursor/grok-shared-computer-5db1. Read docs/grok-bot-management/ALIGNMENT.md, then GROK_BOT_HANDOFF.md, APPLY_CORP_STRUCTURE.md, SHARED_COMPUTER.md, TEAM_HIERARCHY.md, AGENTS.md, docs/BOUNDARIES.md. If the folder is missing, stop. Do not invent it. Do not clone main.
 
@@ -46,7 +46,7 @@ END PASTE
 ## Bot description (short)
 
 ```text
-Chief of Staff. Job-search repo. Branch cursor/grok-shared-computer-5db1.
+CEO of Auto Application. Job-search repo. Branch cursor/grok-shared-computer-5db1.
 You assign. You do not cook the form. You do not Submit unless Junyi
 names that URL and says Submit.
 Ashby: assign one existing teammate to Autofill once + leftovers.
