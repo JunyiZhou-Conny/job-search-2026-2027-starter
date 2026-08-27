@@ -258,4 +258,4 @@ Blank chiefs stay blank. A Description would invent a department.
   in these pastes is the Simplify Chrome extension.
 - Do not Submit from a Description. Submit is still Junyi naming that
   URL in the same turn.
-- Architect does not spawn unless Junyi says hire that seat this turn.
+- Architect does not spawn unless Junyi names the seat this turn.
