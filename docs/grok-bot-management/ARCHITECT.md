@@ -9,7 +9,8 @@ tied to job search.
 
 The first company Junyi may hand it is the apply company in
 [BOT_DESCRIPTIONS.md](BOT_DESCRIPTIONS.md). That file is one playbook.
-It is not Architect's identity.
+It is not Architect's identity. CEO and Ashby Autofiller Settings
+pastes also live there. The folder map is [README.md](README.md).
 
 ## Settings
 

@@ -67,6 +67,14 @@ class AutofillerPasteTests(unittest.TestCase):
         self.assertIn("YOUR screen", self.paste)
         self.assertIn("do not submit", self.paste.lower())
 
+    def test_checks_copilot_then_tries_store(self) -> None:
+        self.assertIn("chrome://extensions", self.paste)
+        self.assertIn("Simplify Copilot (Simplify Jobs Inc.)", self.paste)
+        self.assertIn("Chrome Web Store", self.paste)
+        self.assertIn("simplify.jobs", self.paste)
+        self.assertIn("Do not ask Junyi to paste a password", self.paste)
+        self.assertIn("Do not use Greenhouse Autofill my application", self.paste)
+
 
 class CeoPasteTests(unittest.TestCase):
     def setUp(self) -> None:
@@ -89,6 +97,17 @@ class CeoPasteTests(unittest.TestCase):
 
     def test_architect_is_outside(self) -> None:
         self.assertIn("Architect sits outside this company", self.paste)
+
+
+class PasteIndexTests(unittest.TestCase):
+    def test_readme_maps_architect_ceo_autofiller(self) -> None:
+        text = (ORG / "README.md").read_text(encoding="utf-8")
+        self.assertIn("Where Settings Descriptions live", text)
+        self.assertIn("ARCHITECT.md", text)
+        self.assertIn("BOT_DESCRIPTIONS.md", text)
+        self.assertIn("CEO of Auto Application", text)
+        self.assertIn("Ashby Autofiller", text)
+        self.assertIn("form_strategy.yaml", text)
 
 
 class HandoffPasteTests(unittest.TestCase):
