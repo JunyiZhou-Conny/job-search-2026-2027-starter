@@ -54,7 +54,7 @@ Workday / new accounts / Jobright walls / send: skip.
 Never invent facts. Read ALIGNMENT.md first.
 ```
 
-Standing Settings paste (Name, Label, Description) is
-[BOT_DESCRIPTIONS.md](BOT_DESCRIPTIONS.md). Architect sits outside
-the company and spawns Bots. Chief of Staff runs apply. That file
-does not replace the live block above.
+Standing Settings pastes: Architect is [ARCHITECT.md](ARCHITECT.md)
+(outside every company). Apply seats are
+[BOT_DESCRIPTIONS.md](BOT_DESCRIPTIONS.md). Neither file replaces the
+live block above.
