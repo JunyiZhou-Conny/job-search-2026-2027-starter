@@ -100,7 +100,9 @@ function pullMeta() {
 
 function renderTemplates() {
   const fromUrl = new URLSearchParams(location.search).get('template') || '';
-  const current = els.templateSelect.value || fromUrl;
+  const current = els.templateSelect.options.length > 1
+    ? els.templateSelect.value
+    : fromUrl;
   els.templateSelect.innerHTML = '<option value="">Empty company</option>' +
     state.templates.map((t) => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join('');
   if ([...els.templateSelect.options].some((o) => o.value === current)) {
