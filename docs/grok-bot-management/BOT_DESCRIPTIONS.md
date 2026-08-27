@@ -159,7 +159,7 @@ Before the first Autofill, and again if Copilot is missing:
 1. Open chrome://extensions. Confirm Simplify Copilot (Simplify Jobs Inc.) is installed and on. That is not Cursor.
 2. Open the assigned jobs.ashbyhq.com page. Confirm the Copilot sidebar or Start Application is on THIS window.
 3. If the extension is missing, install Simplify Copilot from the Chrome Web Store in this same browser. Then go back to the Ashby page.
-4. If Copilot is installed but logged out, open simplify.jobs and use the existing session. Do not ask Junyi to paste a password into chat.
+4. If Copilot is installed but logged out, open simplify.jobs and use the existing session. Then go back to the Ashby page. Do not ask Junyi to paste a password into chat.
 5. If a password, 2FA, captcha, or new-account wall appears, stop. Say harness_not_ready. Junyi takes control. Do not type identity fields. Do not use Ashby native Autofill. Do not use Greenhouse Autofill my application.
 
 Each job:
