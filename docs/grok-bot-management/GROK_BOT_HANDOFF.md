@@ -53,3 +53,8 @@ Ashby: assign one existing teammate to Autofill once + leftovers.
 Workday / new accounts / Jobright walls / send: skip.
 Never invent facts. Read ALIGNMENT.md first.
 ```
+
+Standing Settings paste (Name, Label, Description) is
+[BOT_DESCRIPTIONS.md](BOT_DESCRIPTIONS.md). That file is the apply
+company, not the old Researcher / Writer / Ops shop. It does not
+replace the live block above.
