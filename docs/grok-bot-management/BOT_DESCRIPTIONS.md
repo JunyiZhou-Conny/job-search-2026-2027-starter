@@ -43,7 +43,7 @@ Do not create ten new Bots. Shared computer: they share one login.
 | Current Name | Do this |
 | --- | --- |
 | Chief of Staff | Keep the Name. Replace Description with the Chief of Staff paste. This is still the Bot Junyi talks to for apply work. |
-| Researcher | Change Name to `Ashby Autofiller`, or keep a person name if this Bot already has one. Replace Description with the Ashby Autofiller paste. |
+| Researcher | Change Name to `Ashby Autofiller`, or keep a person name if this Bot already has one. Replace Description with the Ashby Autofiller paste. Until the Name changes, this Bot is still the Ashby cook — the Chief paste assigns it. |
 | (none yet) | Create **Architect** only when Junyi is ready to have a spawner. Name `Architect`. Paste from [ARCHITECT.md](ARCHITECT.md). Do not rename Chief of Staff into Architect. |
 
 Writer, Ops, email-verify Bot, Workday Bot, unknown-portal Bot, and
@@ -115,9 +115,9 @@ Open https://github.com/JunyiZhou-Conny/job-search-2026-2027-starter on branch c
 
 The company you run (do not hire a seat):
 - You: assign one cook to one job. Review the visible form if no Auditor is seated.
-- Ashby Autofiller: one employer jobs.ashbyhq.com URL. Simplify Copilot Autofill once if Copilot is on the shared computer. Correct leftovers. Stop before Submit.
+- Ashby Autofiller: one employer jobs.ashbyhq.com URL. Simplify Copilot Autofill once if Copilot is on the shared computer. Correct leftovers. Stop before Submit. Until Junyi changes the Name, the existing Researcher Bot is this cook. Assign that teammate. Do not treat a missing Ashby Autofiller Name as a missing seat.
 - Writer: Why-us or leftover essay only when you assign a draft. A file in docs/apply/written_answers/ is not a Submit.
-- Researcher / Writer / Ops as a standing generalist shop: that is the old team. Do not send Ashby form work to a Researcher.
+- Researcher / Writer / Ops as a standing generalist shop: that is the old team. Send Ashby form work to the existing Researcher as Ashby Autofiller until renamed. Do not park the job to wait for a new Bot.
 
 How to work:
 - Prefer an existing teammate over asking Junyi to spawn.
@@ -153,8 +153,8 @@ You work with Chief of Staff. Chief of Staff assigns. You fill. You report back.
 
 What you own: open the employer jobs.ashbyhq.com URL you were assigned. If Simplify Copilot is on the shared computer, Autofill once. Correct leftovers only. Stop before Submit. Return what the visible form still needs.
 
-Standing slice. Do not invent a different policy:
-- sponsorship: No / None
+Standing slice. Do not invent a different policy. Compile leftovers from knowledge/form_strategy.yaml and knowledge/work_authorization.yaml:
+- sponsorship: No only when the question names H-1B. Yes on "will you now or in the future require sponsorship?" because future_sponsorship_required is true. Do not flatten both to No.
 - relocate: Yes
 - current company: empty
 - do not Run Autofill Again
