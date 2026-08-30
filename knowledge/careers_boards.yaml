@@ -21,6 +21,11 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  Figma: figma  # verified 2026-08-30; includes Software Engineer Intern (Winter 2027)
+  "Xaira Therapeutics": xairatherapeutics  # verified 2026-08-30; includes AI Scientist Intern, Computational Protein Design
+  CoreWeave: coreweave  # verified 2026-08-30; includes Software Engineer, Inference AI/ML
+  Esri: esri  # verified 2026-08-30; includes Data Scientist I (St. Louis)
+  FanDuel: fanduel  # verified 2026-08-30; includes Data Scientist, Experimentation
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -32,6 +37,8 @@ ashby:
   Baseten: baseten
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   "Hayden AI": haydenai  # verified 2026-08-23
+  Notion: notion  # verified 2026-08-30; includes SWE Intern Summer 2027 + DS Intern Winter 2027
+  Clera: clera  # verified 2026-08-30; multiple Founding AI Engineer SF reqs — title-only match may collide
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
@@ -63,3 +70,7 @@ workday:
     host: blackstone.wd1
     tenant: blackstone
     site: Blackstone_Careers
+  "Booz Allen Hamilton":
+    host: bah.wd1
+    tenant: bah
+    site: BAH_Jobs  # verified 2026-08-30; Summer Games intern family is location-specific
