@@ -21,6 +21,11 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  CoreWeave: coreweave  # verified 2026-08-31; Inference AI/ML gh_jid=4609928006
+  Esri: esri  # verified 2026-08-31; Data Scientist I 5173232007
+  FanDuel: fanduel  # verified 2026-08-31; Data Scientist, Experimentation gh_jid=8028963
+  Point72: point72  # verified 2026-08-31; Data Scientist, Proprietary Research 7695570002
+  Roblox: roblox  # verified 2026-08-31; Software Engineer, Foundation AI gh_jid=8123004
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
