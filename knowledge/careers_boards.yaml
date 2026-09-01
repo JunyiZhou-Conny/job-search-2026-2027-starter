@@ -21,6 +21,10 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  Waymo: waymo  # verified 2026-09-01; 2027 Summer Intern MS/PhD Data Science Commercialization Testing gh_jid=8167323
+  Roblox: roblox  # re-verified 2026-09-01; Software Engineer Foundation AI gh_jid=8123004
+  fairlife: fairlife  # verified 2026-09-01; AI Automation Engineer 5226345007
+  "fairlife, LLC": fairlife
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -32,6 +36,7 @@ ashby:
   Baseten: baseten
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   "Hayden AI": haydenai  # verified 2026-08-23
+  DatologyAI: datologyai  # verified 2026-09-01; SWE Intern Infrastructure Winter 2027 17d51801-5d5f-41ad-baec-f1ac5a255d02
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
