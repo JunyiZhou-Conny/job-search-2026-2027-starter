@@ -21,6 +21,12 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  "Anduril Industries": andurilindustries  # verified 2026-09-01; Agentic AI Engineer, Automation (board is large)
+  Roblox: roblox  # verified 2026-09-01; Early Career 2027 + Foundation AI
+  FanDuel: fanduel  # verified 2026-09-01; Data Scientist NYC
+  Toast: toast  # verified 2026-09-01; Summer 2027 Engineering Intern Boston
+  "Scale AI": scaleai  # verified 2026-09-01; MLRE Agents Enterprise GenAI
+  "Dev Technology Group, Inc.": devtechnology  # verified 2026-09-01; Summer 2027 AI interns
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -55,6 +61,10 @@ workday:
     host: nvidia.wd5
     tenant: nvidia
     site: NVIDIAExternalCareerSite
+  "Booz Allen Hamilton":
+    host: bah.wd1
+    tenant: bah
+    site: BAH_Jobs  # verified 2026-09-01; Data Scientist, Junior
   "CVS Health":
     host: cvshealth.wd1
     tenant: cvshealth
