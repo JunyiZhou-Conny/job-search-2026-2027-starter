@@ -21,6 +21,8 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  Toast: toast  # verified 2026-09-02; Summer 2027 Engineering Intern Boston gh_jid=8171800
+  Nuro: nuro  # verified 2026-09-02; Software Engineer, ML Data Infrastructure gh_jid=7895818
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -32,6 +34,7 @@ ashby:
   Baseten: baseten
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   "Hayden AI": haydenai  # verified 2026-08-23
+  KAYAK: kayak  # verified 2026-09-02; Associate Software Engineer Cambridge 1cd42283-0b84-448f-9aac-ca94b72db320 (Concord twin 8333e351 exists)
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
