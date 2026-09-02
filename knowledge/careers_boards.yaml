@@ -21,6 +21,13 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  FanDuel: fanduel  # verified 2026-09-02; Data Scientist NYC gh_jid=8120545
+  "Scale AI": scaleai  # verified 2026-09-02; ML Research Engineer, Agents 4625344005
+  Twitch: twitch  # verified 2026-09-02; SWE I Commerce is location-split (SF 8457711002 / SEA 8459320002)
+  "Oscar Health": oscar  # verified 2026-09-02; Data Scientist I NYC 7592274
+  "Lila Sciences": lilasciences  # verified 2026-09-02; ML Scientist I/II Foundation Models 4222051009
+  Geotab: geotab  # verified 2026-09-02; board live (Winter 2027 DS intern not listed today)
+  "The Nuclear Company": thenuclearcompany  # verified 2026-09-02; AI Engineer 1 Platform 5285585008
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -63,3 +70,7 @@ workday:
     host: blackstone.wd1
     tenant: blackstone
     site: Blackstone_Careers
+  "Booz Allen Hamilton":
+    host: bah.wd1
+    tenant: bah
+    site: BAH_Jobs  # verified 2026-09-02; Junior DS McLean R0248402 / San Antonio R0247418
