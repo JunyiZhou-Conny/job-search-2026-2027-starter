@@ -3,8 +3,8 @@
 # Cursor / computer-use must apply these after Copilot, or Junyi types them.
 # Do not Submit unless Junyi explicitly says so for a named row.
 
-last_updated: "2026-08-24"
-source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules"
+last_updated: "2026-08-27"
+source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules; Junyi leftover rules after Advanced Space redo 2026-08-25"
 
 always:
   employed_by_this_company_before:
@@ -170,6 +170,23 @@ always:
     reason: >
       Junyi 2026-08-23 on Traba. 90k is the no-information default, not
       a target when the posting already prints a range.
+
+  disability_status:
+    decided: "2026-08-25"
+    form_answer: "No"
+    accept_also:
+      - "I do not have a disability"
+      - "No, I don't have a disability"
+    never_leave: "Select"
+    when: >
+      Disability status / do you have a disability / I do not have a
+      disability.
+    eeo_note: >
+      Disability is not in the leave-alone EEO set. Other EEO (gender,
+      race, veteran) can stay as Copilot set them.
+    reason: >
+      Junyi 2026-08-25. Always No / I do not have a disability. Never
+      leave Select. Other EEO can stay.
 
 # One past-project story (Perplexity 2026-08-24). Do not dump three projects.
 one_project_story:
@@ -537,3 +554,70 @@ closed_posting:
   reason: >
     High-volume roles often close within minutes. The board list is not
     an application. Tracking closed URLs stops them from resurfacing.
+
+# HOW the clicker touches the form — not new identity facts.
+# Junyi leftover rules after Advanced Space redo. Identity answers stay
+# in always: (disability_status) and work_authorization.yaml.
+clicker_cheap_cuts:
+  decided: "2026-08-25"
+  source: "Junyi leftover rules after Advanced Space redo"
+  what: >
+    Clicker mechanics only. Copilot = Simplify Copilot sidebar, not
+    Cursor and not the ATS native Autofill button.
+  copilot:
+    meaning: "Simplify Copilot sidebar only."
+    do:
+      - Click "Start Application" or "Autofill This Page" once.
+      - Wait until it finishes.
+    if_missing: >
+      Stop and report harness_not_ready only if neither Copilot CTA is
+      present. Ashby shows "Start Application" first; that is not a
+      missing harness.
+  never_click:
+    greenhouse_native_autofill: >
+      Never click Greenhouse's own "Autofill my application" /
+      quick-apply. That is a login wall.
+    ashby_native_autofill: >
+      Never click Ashby native "Autofill from resume" / Upload file.
+    mygreenhouse_login: "Never click MyGreenhouse login. Never create an account."
+    run_autofill_again: "Never Run Autofill Again."
+    generate_with_ai: "Never click Generate with AI."
+  do_not_run_autofill_again: true
+  after_copilot:
+    do: >
+      Only touch Simplify sidebar leftovers marked "need review"
+      (plus standing widgets that are actually on screen).
+    do_not: >
+      Do not walk the whole leftover list looking for missing widgets.
+  do_not_audit_the_page:
+    - Do not scroll the form as a UI test.
+    - Do not walk identity fields to prove Copilot worked.
+    - Do not hunt gender / race / veteran just to check them.
+  eeo:
+    disability_is_not_leave_alone: true
+    disability: >
+      Disability is not in the leave-alone EEO set. Always No / I do
+      not have a disability. Answer lives in always.disability_status;
+      do not duplicate it here.
+    leave_alone_as_copilot_set:
+      - gender
+      - race
+      - veteran
+  identity: >
+    Do not type name, email, phone, or resume by hand. Copilot does
+    identity.
+  tabs: "One ATS tab. Do not open a sibling job from a board list."
+  submit: >
+    Stop before Submit unless Junyi names that URL and writes Submit
+    in that turn.
+  parked:
+    - why-us
+    - cover letter
+  do_not_invent:
+    - SAT/ACT
+    - citizenship
+    - stories
+    - project URLs
+  reason: >
+    Cheap cuts after the Advanced Space redo. The clicker fills
+    leftovers; it does not page-audit, native-Autofill, or invent.
