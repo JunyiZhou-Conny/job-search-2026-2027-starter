@@ -21,6 +21,9 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  Waymo: waymo  # verified 2026-09-03; 2027 Summer Intern MS SWE Behavior Test gh_jid=8174504
+  "Ludo Robotics": ludorobotics  # verified 2026-09-03; ML/AI Engineer 8451758002
+  "Oscar Health": oscar  # verified 2026-09-03; Data Scientist I 7592274 (NY). Do not use oscarhealth/hioscar (404).
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -55,6 +58,10 @@ workday:
     host: nvidia.wd5
     tenant: nvidia
     site: NVIDIAExternalCareerSite
+  Chewy:
+    host: chewy.wd5
+    tenant: chewy
+    site: external  # verified 2026-09-03; Backend Software Engineer I Boston R30760-1
   "CVS Health":
     host: cvshealth.wd1
     tenant: cvshealth
