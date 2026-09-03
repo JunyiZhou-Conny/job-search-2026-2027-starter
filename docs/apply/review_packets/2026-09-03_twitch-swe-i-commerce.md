@@ -115,3 +115,28 @@ Must fix before any Submit.
 Still blank and required: Twitch familiarity, prior Amazon application, non-compete, permanent residence elsewhere, export-control country, future opportunities consent.
 
 Readiness after the fill: ready_for_junyi_review, with the citizenship widget as a hard stop.
+
+## 12. Final state after Junyi's answers (2026-09-03 15:10 UTC)
+
+Junyi confirmed in writing: sponsorship No, citizenship China, no permanent residence elsewhere, export-control China, eligible to begin immediately Yes, EEO values preserved. Persisted in `knowledge/work_authorization.yaml` and `knowledge/form_strategy.yaml`. Preflight rerun for run 2026-09-03T14: pass. Attempt `A20260903-002` closed as review_packet.
+
+| Widget | Final value |
+|---|---|
+| Citizenship | China |
+| Permanent resident elsewhere | No |
+| Export-control country | China |
+| Immigration support or sponsorship | No |
+| Eligible to begin immediately | Yes |
+| H-1B held in last 6 years | No |
+| Previously applied to Amazon | No |
+| Non-compete | No |
+| Future opportunities consent | Yes |
+| Relocation | Seattle, WA |
+| Expected base pay | 110500 |
+| Website, LinkedIn | https://connyzhou.com, https://www.linkedin.com/in/junyi-zhou-270208247 |
+| Resume | Junyi_Zhou_resume.pdf (Simplify profile) |
+| EEO | Male, not Hispanic/Latino, Asian, not a protected veteran, no disability |
+| Harvard education | Master's, discipline Other, Aug 2025 to March 2027 (widget reverted the edit to Data Science and December 2026; both dates are real) |
+| Are you familiar with Twitch? | blank. Only Junyi knows. |
+
+Readiness: ready_for_junyi_submit. One dropdown left, then Submit. The tab is open on this VM; Take Control or say "submit it" with the familiarity option and the agent clicks Submit once and verifies.

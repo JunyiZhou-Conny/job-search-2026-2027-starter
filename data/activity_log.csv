@@ -115,3 +115,5 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-09-03T13:56:53,J20260903-032,,job_added,,ready_to_apply,"Twitch — Software Engineer I, Commerce Engineering (discovery_2026-09-03)"
 2026-09-03T13:56:53,J20260903-032,,submit_attempt_started,ready_to_apply,,attempt A20260903-001 gate=G1 weight=prioritized ats=greenhouse
 2026-09-03T14:24:31,J20260903-032,,submit_attempt_finished,ready_to_apply,ready_to_apply,attempt A20260903-001 review_packet
+2026-09-03T15:34:30,J20260903-032,,submit_attempt_started,ready_to_apply,,attempt A20260903-002 gate=G1 weight=prioritized ats=greenhouse
+2026-09-03T15:34:31,J20260903-032,,submit_attempt_finished,ready_to_apply,ready_to_apply,attempt A20260903-002 review_packet

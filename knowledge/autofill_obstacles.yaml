@@ -135,6 +135,21 @@ phenomena:
       profile answers is a question for him, not a fact to infer.
 
 
+  - id: greenhouse_education_widget_reverts_edits
+    observed: "2026-09-03"
+    company: Twitch
+    ats: greenhouse
+    meaning: >
+      After Copilot filled the education block, computer-use changed Harvard
+      discipline to Computer Science and end date to December 2026, and the
+      widget reverted both to Copilot's Other and March 2027 within the same
+      session. The other 20 widgets held their corrections.
+    implication: >
+      Education corrections on Greenhouse are unreliable after autofill. The
+      durable fix is the Simplify profile itself (discipline Data Science,
+      program end December 2026), which only Junyi can edit in the extension.
+      Until then, education leftovers are review items, not blockers.
+
 positive_signals:
   - id: need_review_matches_empty_fields
     observed: "2026-08-23"
