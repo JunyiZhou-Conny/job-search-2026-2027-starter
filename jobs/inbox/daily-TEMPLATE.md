@@ -23,3 +23,9 @@ python3 scripts/jobsearch.py add-job --company "..." --role "..." --url "https:/
 ```
 
 Do **not** put passwords here.
+
+## Non-standard apply holds
+
+Jobs that need an external website / product exercise / shared URL
+not in the profile. Do not Submit. See
+`knowledge/nonstandard_apply_holds.yaml`.

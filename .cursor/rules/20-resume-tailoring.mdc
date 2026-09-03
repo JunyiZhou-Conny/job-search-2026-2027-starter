@@ -8,6 +8,9 @@ alwaysApply: false
 
 - Preserve factual accuracy. Never invent tools, ownership, scale, users, publications, employment, or metrics.
 - Use three layers: master evidence bank, role-cluster resume, then small job-specific edits.
+- `regular` weight: cluster resume is enough. `prioritized` weight: more
+  JD-specific bullet edits from the evidence bank only
+  (`knowledge/application_priority.yaml`). Do not invent domain experience.
 - Prioritize demonstrated outcomes and technical decisions over keyword stuffing.
 - Reuse the employer's terminology only when it accurately describes existing experience.
 - Keep bullets concise and interview-defensible.

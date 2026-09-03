@@ -43,6 +43,9 @@ Template-owner example (Junyi) — ignore on a personalized fork:
 - Tracks are CO-PRIMARY: 2027 new-grad AND 2027 internships (esp. Summer 2027)
 - remote_ok: false → fully remote roles should be skip
 - Preferred: in-person/hybrid, any US city (Boston preferred)
+- HARD SKIP non-US work location (Belgrade / Serbia / any clear non-US
+  city or country of work). intern_list can miss this. Rule id
+  `non_us_location`. Blank location is not an automatic skip.
 - Role clusters: cloud_swe, data_ml, health_ai; interest in AI infra / agents / inference
 - Sponsorship unknown/no is NOT a hard reject
 
@@ -302,6 +305,13 @@ Numbered list: Company — Role — lane/cluster — grad_display_hint — **app
 (If >20 keep, show top 15 by fit and say “see CSV for rest”)
 grad_display_hint: program_end (default Dec resume) | dual_date (Mar+Dec line) | either
 Prefer linking `apply_url` when present; the Jobright `url` is discovery-only.
+
+### Non-standard apply holds
+Jobs whose form needs an external website, product exercise, or shared
+URL that is not in the profile (see
+`knowledge/nonstandard_apply_holds.yaml`). Do not Submit. Do not invent
+the artifact. List company — role — what is missing. Include holds
+noticed on autofill review, not only today's discovery CSV.
 
 ### Needs attention
 Session/login failures, empty boards, parse anomalies, suspected duplicate URLs vs data/applications.csv

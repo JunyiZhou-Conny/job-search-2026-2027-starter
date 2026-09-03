@@ -16,8 +16,24 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 
 - Hard eligibility ≠ sponsorship probability. See `docs/eligibility.md`.
 - Never mark a role `ineligible` only because sponsorship is `no` or `unclear`.
+- Visa-sponsorship **form** answer (as of 2026-08-24): **No / None**.
+  Re-read the widget before any Submit. If they ask for visa **type**,
+  put **F-1**. The fact `future_sponsorship_required: true` is unchanged.
+- Graduation **date** widgets: **2026-12-18**. Year-only widgets: **2027**.
+- Non-US work location (Belgrade, etc.) → skip. Do not Submit.
 - Use `pursuit_lane`: `core` | `broad` | `practice`.
 - Keep practice-lane applications roughly 15–25% of applied volume unless funnel data justifies a change.
+- Apply **weight** is separate: `regular` | `prioritized` (GTC 2026 / startup / prestige / **FDE**).
+  See `knowledge/application_priority.yaml` and `knowledge/role_families.yaml`.
+  Forward Deployed / FDE titles → keep and mark. Prioritized: more Why-us
+  care, JD-tuned resume from the evidence bank only. **Public Submit**
+  when the form is ready; do not wait for a referral / insider page
+  (Junyi 2026-08-24: those pages are rare; FIFO in the queue matters
+  more). Labels stay suggestions until Junyi confirms. Do not claim FDE
+  customer-on-site work already done.
+- ITAR / EAR / U.S. Person / export compliance (rocket, defense): keep in
+  discovery. Do not filter out. Care is low. No need to submit. Form
+  answer: I am not a U.S. Person. Do not rewrite Why-us for this family.
 
 ## Platforms
 
@@ -71,8 +87,21 @@ close that tab, write `decision=closed` in `data/job_decisions.csv`,
 do not pick a sibling from the employer’s current openings.
 
 Free-response drafts (why company, week structure, and similar) go in
-`docs/apply/written_answers/`. Reusable ideology:
-`knowledge/written_response_bank.yaml`. A file there is not a submit.
+`docs/apply/written_answers/`. Answer the prompt on the page. Do not
+paste education + three projects into every Why-us. Match ability to
+the role; do not dump a DL tour onto a non-ML Why-us. Do not use em
+dashes or hyphen asides in the text that goes on the form. Write like
+a person. Ideology in `knowledge/written_response_bank.yaml` is for
+week / meaning / culture questions only. A file there is not a submit.
+
+Copilot “Completed” on phone or resume is not proof the widget has a
+value. Look at the page. Especially on prioritized companies.
+
+If Junyi already accepted a draft and said type it: **one paste**. Copy
+`docs/automation/COMPUTER_USE_PROMPT.md` into the `computerUse` Task.
+Do not add verify steps. The parent writes that prompt; Cursor does not
+generate a second one from chat. See
+`knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
 
 ## Automation safety
 

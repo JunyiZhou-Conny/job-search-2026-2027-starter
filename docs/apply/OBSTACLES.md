@@ -166,3 +166,150 @@ New always-rules / archive:
 
 Never click Simplify **Generate with AI**. Do not Submit this test
 (100-day lock).
+
+## Round two (2026-08-23) — new obstacles
+
+Ten unused employers. Notes:
+`docs/experiments/2026-08-23_ten_tab_round_two.md`. Nothing submitted.
+
+**Workday account wall (CVS Health).** Data Science Analyst
+`R0993501-1` stopped at account creation. Tab closed. No account
+created. This is not a closed posting and not a sibling hunt.
+
+**U.S. Person / ITAR (Relativity Space).** Copilot picked the U.S.
+Person side. Profile is F-1. Computer-use set “I am not a U.S. Person.”
+Standing rule in `knowledge/form_strategy.yaml`.
+
+**Broad sponsorship No (again).** Lila, Hayden, Relativity, and Scale
+all used “now or in the future” with H-1B as an example. Copilot said
+No. Computer-use said Yes. H-1B-**named-only** questions stay No.
+
+**Any-employer work auth (Hayden AI).** Copilot Yes. F-1 is not that.
+Leftover. Do not silently flip it.
+
+**Country-named sponsorship (Perplexity).** UK / Germany / Serbia, role
+in Belgrade. Copilot No. Do not apply the US Yes rule. Also a pick miss:
+Belgrade is outside `search.country: United States`.
+
+**Perplexity exercise URL.** Required shared thread. Left empty. Do not
+invent one. Junyi 2026-08-24: non-standard apply hold. Do not Submit.
+Daily digest must list these. `knowledge/nonstandard_apply_holds.yaml`.
+
+**Past-project dump.** Perplexity draft listed several projects. Junyi:
+one story, matched to company type. Bank is empty until he writes it.
+`knowledge/project_stories.yaml`.
+
+**Hayden 90 / 182-day lock.** Do not Submit this test.
+
+**EEO filled** on Hayden, Baseten, Relativity, Scale, Notion. Block
+unattended Submit.
+
+**Notion (Ashby) 2026-08-24.** Anchor Days / committed → Yes. Relocate
+→ Yes. Location interest → pick one US option. Visa type → F-1.
+Future sponsorship → No / None. Prior internships → 2. Role type →
+closest fit or any that unblocks. Graduation date → 2026-12-18.
+How-heard → LinkedIn or any option that unblocks.
+
+**Scale AI sponsorship.** Computer-use had flipped the future-
+sponsorship widget to Yes. Junyi 2026-08-24: that is wrong. Standing
+answer is No / None. Not re-clicked from the note.
+
+**Run Autofill Again clears corrections.** After leftover essays were
+typed, a second Autofill reset Lila Yes dropdowns and flipped Baseten
+sponsorship to No. Re-set. Do not click it after a human/computer-use
+pass.
+
+## Lila evening review (2026-08-23) — no re-click
+
+Junyi reviewed the Lila tab. Nothing was re-clicked.
+
+**Sidebar ≠ form.** Copilot said phone country, phone, and resume were
+complete. They were empty. Future pass: look at the widgets. Cover
+letter empty is expected.
+
+**Why Lila was a miss.** The typed draft answered a resume prompt that
+was not on the page. Cause: `written_responses.style` plus the Traba
+ideology pack reused as a Why-company template. New rule: answer the
+prompt, ardent / genuine / truthful, no project dump.
+
+**Lila is prioritized.** GTC 2026 Exhibitor (already in
+`knowledge/market_signals/gtc2026_sponsors_exhibitors.md`) plus Junyi
+emphasis. Hold public Submit until a referral / insider page is checked.
+See `knowledge/application_priority.yaml` and `docs/apply/PRIORITY.md`.
+
+## Hayden inspect (2026-08-24) — no re-click
+
+Junyi reviewed the Hayden AI Associate Data Scientist tab. Screen
+checked only. Nothing clicked.
+
+**Start date rule worked.** Sidebar still flags “When can you start a
+new role” as the one need-review. The widget is `05/18/2027`. Copilot
+did not fill it; computer-use on the same Chrome did (not Playwright).
+
+**Years of relevant experience** is empty. Future answer: **2**.
+
+**Visa sponsorship** widget is **Yes** (old flip). New form answer:
+**No, I do not need sponsorship**. Re-read before any Submit.
+
+**Automated script / spoofing:** sidebar says complete; neither radio
+is selected. Future answer: **No**.
+
+**Why Hayden** still formulaic. Rewrite later (company values / culture
++ Junyi’s philosophy). Cover letter empty is fine.
+
+## Leftover typing over-click (Charta 2026-08-24)
+
+Junyi asked to paste accepted Why Charta v2. He would Submit.
+
+The first computer-use pass put the text in the box. The parent then
+started a second pass (Ctrl+F / scroll) and a third (blank line). That
+is the waste. Not a Copilot miss.
+
+Rule: one paste, one screenshot, stop.
+`knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
+Parent copies `docs/automation/COMPUTER_USE_PROMPT.md`. Do not ask the
+clicker to Ctrl+F or prove a cropped textarea.
+
+Other computer-use token sinks (nested Task with no clicker, vision
+full-apply stills, parent screenshot audits, huge screen recordings)
+are listed under `computer_use_token_sinks` in
+`knowledge/form_strategy.yaml`. The Why-us loop has a fix. A DOM fill
+does not.
+
+## Ashby submit blocked as possible spam (Charta 2026-08-24)
+
+Junyi hit Ashby’s candidate-facing page: “We couldn’t submit your
+application… flagged as possible spam,” with VPN / pause extensions /
+other browser / switch networks.
+
+That is a **submit-time block**. The application did not land. It is
+not a Why-us word limit.
+
+Two different Ashby layers (do not collapse them):
+
+1. **Recruiter fraud detection** (Ashby, 2025-09-16 product): scans
+   device, IP, email, phone after a successful submit. Ashby’s blog
+   says it should not add candidate friction.
+   https://www.ashbyhq.com/blog/all/ashby-launches-the-first-ats-integrated-fraud-detection-system
+2. **This pink error** is a bot/spam wall on Submit. Same wording
+   reported by other applicants (e.g. Norton community). Triggers
+   include VPN/proxy, privacy extensions, odd IP reputation.
+
+This Cloud Chrome is a bad Submit path: datacenter IP, Simplify
+Copilot, computer-use clicks, many ATS tabs.
+
+Do: wait, Submit from Junyi’s own machine, pause Copilot, no VPN,
+prefer home or mobile data. Do not keep retrying on the already
+blocked VM. Do not invent a bypass.
+
+2026-08-24: Junyi submitted Charta from his laptop after the Cloud
+block. Isolation test (new pod, different Ashby org, one Submit):
+`docs/experiments/2026-08-24_ashby_submit_isolation.md`.
+
+First nested child: harness ready, no computer-use, `not_run`.
+Dashboard agent `bc-b6ea9703-f8db-491d-98ab-52b490155db1`: Autofill
+once, Submit once on Anyscale Software Engineer (Ray Core). Ashby
+thank-you: “Success. Your application was successfully submitted.”
+No pink spam wall. Outcome `submitted`. Cloud Submit is no longer a
+one-sample failure. Still do not mass-Submit from Cloud Chrome. Do
+not retry Charta on the blocked parent session.

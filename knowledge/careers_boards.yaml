@@ -21,6 +21,8 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  "Lila Sciences": lilasciences  # verified 2026-08-23
+  "Scale AI": scaleai  # verified 2026-08-23
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -32,6 +34,11 @@ ashby:
   Baseten: baseten
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   "Hayden AI": haydenai  # verified 2026-08-23
+  Notion: notion  # verified 2026-08-23
+  Perplexity: perplexity  # verified 2026-08-23
+  Anyscale: anyscale  # verified 2026-08-24; isolation Submit test (Ray Core SF Hybrid)
+  Midjourney: midjourney  # verified 2026-08-24; QA Analyst form
+  Runway: runway-ml  # verified 2026-08-24; Runway ML gen-AI board, not cfo.ai slug `runway`
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}

@@ -3,8 +3,8 @@
 # Cursor / computer-use must apply these after Copilot, or Junyi types them.
 # Do not Submit unless Junyi explicitly says so for a named row.
 
-last_updated: "2026-08-23"
-source: "Junyi Neuralink review plus Gemini/Nirmata/Apptronik/SpaceX/Traba"
+last_updated: "2026-08-24"
+source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules"
 
 always:
   employed_by_this_company_before:
@@ -22,6 +22,41 @@ always:
   h1b_named_question_only:
     see: "knowledge/work_authorization.yaml form_strategy.h1b_named_question_only"
     form_answer: "No"
+
+  visa_sponsorship:
+    decided: "2026-08-24"
+    form_answer: "No, I do not need sponsorship"
+    accept_also: ["No", "None"]
+    when: >
+      Will you now or in the future require visa sponsorship? / require
+      sponsorship? / visa sponsorship yes-no / None. Prefer the exact No
+      wording if the widget is a radio. If None is an option, pick None.
+      If it is free text, type the sentence.
+    supersedes: "2026-08-23 broad-Yes flip (Lila/Hayden/Relativity/Scale)"
+    before_any_submit: >
+      Re-read the sponsorship widget. If it is Yes, stop. Junyi: this
+      answer is crucial for not getting filtered out.
+    fact_unchanged: "future_sponsorship_required remains true"
+    reason: >
+      Junyi Hayden review 2026-08-24. Computer-use had flipped Hayden
+      from Copilot No to Yes under the old rule. Form still shows Yes.
+      Not re-clicked. Later pass must set No.
+
+  years_of_relevant_experience:
+    decided: "2026-08-24"
+    form_answer: "2"
+    when: >
+      How many years of relevant / work / professional experience do
+      you have?
+    reason: "Junyi Hayden 2026-08-24: standard answer 2 for this type."
+
+  automated_script_or_spoofing:
+    decided: "2026-08-24"
+    form_answer: "No"
+    when: "Are you applying via an automated script or spoofing?"
+    reason: >
+      Junyi Hayden 2026-08-24: always No. Sidebar may mark it complete
+      while neither radio is selected — look at the widget.
 
   prior_internship_or_coop_in_general:
     decided: "2026-08-23"
@@ -45,6 +80,15 @@ always:
       Junyi: put 2027. Commencement is March 2027. Program end is still
       2026-12-18 in work_authorization.yaml — do not delete that fact.
 
+  graduation_date_on_forms:
+    decided: "2026-08-24"
+    form_answer: "2026-12-18"
+    when: >
+      Graduation date / expected graduation as a full date (not year-only).
+    reason: >
+      Junyi Notion 2026-08-24: the date is December 18. That is program
+      end / I-20, not commencement. Year-only widgets stay 2027.
+
   on_site_or_work_on_site:
     decided: "2026-08-23"
     form_answer: "Yes"
@@ -52,19 +96,60 @@ always:
     speech_to_text_note: "Junyi said 'work on science'; treated as on-site."
     reason: "Junyi: always Yes; No would screen out."
 
+  committed_schedule_or_anchor_days:
+    decided: "2026-08-24"
+    form_answer: "Yes"
+    when: >
+      Anchor Days / committed to in-office Mon Tue Thu / office N days
+      per week / are you committed to this schedule.
+    reason: >
+      Junyi Notion 2026-08-24: for these, the obvious answer is Yes.
+
+  location_interest_pick_one:
+    decided: "2026-08-24"
+    form_answer: "pick_one_us_option_that_unblocks"
+    when: "Indicate all locations of interest / which office / area"
+    reason: >
+      Junyi Notion 2026-08-24: pick one at random. Do not leave it empty
+      if that blocks Submit. Prefer a US city on the list. Do not invent
+      a city that is not an option.
+
+  visa_type_named:
+    decided: "2026-08-24"
+    form_answer: "F-1"
+    accept_also: ["F1", "F-1 Student"]
+    when: "Current visa type / what is your visa status / select your visa"
+    reason: >
+      Junyi Notion 2026-08-24: when they ask for the type, put F-1.
+      Future-sponsorship widgets stay No / None.
+
+  prior_internship_count:
+    decided: "2026-08-24"
+    form_answer: "2"
+    when: "How many prior internships / how many internships have you had?"
+    reason: "Junyi Notion 2026-08-24: always 2."
+
+  engineering_role_interest:
+    decided: "2026-08-24"
+    prefer_in_order: ["backend", "platform", "cloud", "infrastructure", "ML", "AI"]
+    when: "What type of engineering role are you interested in?"
+    reason: >
+      Junyi Notion 2026-08-24: pick the closest fit. If none match,
+      pick any option that does not block Submit.
+
   how_did_you_hear:
     decided: "2026-08-23"
+    revised: "2026-08-24"
     form_answer: "LinkedIn"
     prefer_exact: "LinkedIn Job Board (if that checkbox/option exists)"
-    fallback_ok: "LinkedIn / LinkedIn feed / any normal public LinkedIn source"
+    fallback_ok: "Any listed option that unblocks Submit"
     when: "How did you hear about us / this job / this company?"
     reason: >
-      Junyi: LinkedIn is fine; pick a normal public source, not random junk.
-      Copilot often leaves this empty (Traba 2026-08-23). Computer-use on
-      the same Chrome must click it every time. Do not leave it for later.
+      Junyi Notion 2026-08-24: trivial. Prefer LinkedIn. If LinkedIn is
+      missing or hard, pick whatever works so the form can Submit.
     if_copilot_skips: >
-      Spawn computer-use (same Chrome profile as Copilot). Tick LinkedIn
-      Job Board or the closest LinkedIn option. Then stop. Do not Submit.
+      Tick LinkedIn Job Board or the closest LinkedIn option. If that
+      option is not there, tick any listed source. Then stop.
 
   ideal_start_date:
     decided: "2026-08-23"
@@ -86,21 +171,93 @@ always:
       Junyi 2026-08-23 on Traba. 90k is the no-information default, not
       a target when the posting already prints a range.
 
+# One past-project story (Perplexity 2026-08-24). Do not dump three projects.
+one_project_story:
+  decided: "2026-08-24"
+  when: "Tell us about a past project you have worked on / a project you are proud of"
+  rule: >
+    One story. Match the company's mission (AI product / search vs
+    biomedical vs general SWE). Do not paste education plus three
+    projects. Stories are not written yet — see
+    knowledge/project_stories.yaml. Until Junyi fills a type, leave
+    the box for him or skip Submit on that row.
+  do_not:
+    - Recite Cannon + chatbot + course work in one answer
+    - Invent a project that matches the company
+    - Brainstorm stories in chat unless Junyi asks
+
+# External-artifact / non-standard apply questions
+nonstandard_apply_hold:
+  decided: "2026-08-24"
+  when: >
+    The form needs an external website, product exercise, shared URL,
+    or other artifact that is not in the profile or evidence bank
+    (example: Perplexity "teach in a thread" / "enlist Perplexity as
+    champion" shared URL).
+  do:
+    - Do not Submit
+    - Do not invent the URL or artifact
+    - Mark the job nonstandard_apply_hold
+    - Surface it in the daily KEEP digest under Non-standard apply holds
+  do_not:
+    - Treat Why-us / past-project / how-heard as non-standard
+  see: "knowledge/nonstandard_apply_holds.yaml"
+
 written_responses:
   decided: "2026-08-23"
+  revised: "2026-08-24 — Charta DL spelling is role-specific; Lila hedges stay"
   never_click: "Simplify 'Generate with AI' (paid / subscribe). Do not click it."
-  who_writes: "Cursor / this agent, after Copilot, from knowledge/evidence_bank.yaml"
-  style: >
-    Short or long response: write it. For 'exceptional ability' / wow-us
-    bullets: 3–4 concise examples with quantitative metrics already in
-    the evidence bank. Do not invent metrics, employers, or outcomes.
+  who_writes: "Cursor / this agent, after Copilot"
+  answer_the_prompt:
+    rule: >
+      Answer the question that is on the page, in the order it is asked.
+      "Why Lila, why this role, and why at this moment?" means those
+      three things — not a resume, not Cannon 338, not the ideology pack
+      unless that question asked for them.
+    tone: >
+      Ardent, genuine, truthful. First intern / student voice is fine.
+      Honest hedges about missing domain experience are OK (Lila).
+      Do not invent jobs. Do not dump a DL tour onto a non-ML Why-us.
+    do_not:
+      - Paste education + three projects into every Why-us
+      - Recite program_end / commencement dates unless the prompt asks
+      - Force the Traba week-structure ideology into a company-why box
+      - Invent instrument, domain, or insider experience
+      - Name CellOT, VLM, CV, airway chatbot, or other resume-internal labels
+      - Write hedge lines such as "I do not outsource the goal"
+      - Use em dashes or hyphen asides in form text (looks AI-written)
+      - Spell out computer vision, language models, and transformers unless
+        the role or prompt is ML / FDE / perception
+    metrics_when: >
+      Only when the prompt asks for examples, exceptional ability, or
+      evidence. Then 1–2 evidence-bank facts, not a tour of the bank.
   if_evidence_missing: "Leave for Junyi leftover pile. Do not fabricate."
   archive: >
     Every draft goes in docs/apply/written_answers/ (one file per
-    company + role + date). Reusable ideology lives in
-    knowledge/written_response_bank.yaml. This is the interview recall
-    file — what we wrote, not a claim that it was submitted.
+    company + role + date). If Junyi rejects a draft, keep the typed
+    text as historical and add a revised draft in the same file.
   ideology_for_week_or_meaning_questions: "knowledge/written_response_bank.yaml"
+  prioritized_companies: >
+    Same truth rules, more care. Read the JD. Say why this company and
+    this role. Do not make it longer by dumping projects. See
+    knowledge/application_priority.yaml.
+  why_company_direction_2026-08-24: >
+    Junyi Hayden + Charta: Why-us is not a one-liner and not a project
+    dump. If the prompt has two parts (why this company, why now / why
+    this role), answer both. Start from what they do, the mission, and
+    the culture, then integrate Junyi's health-data / research /
+    engineering philosophy. Use only facts he stated or that sit in
+    the evidence bank. Do not invent domain ownership. Do not claim a
+    CS degree (Emory is AMS + informatics minor). Do not claim FDE
+    customer-on-site work already done. Charta / ML-FDE only: HR may
+    read it first. Show frontend/backend and spell out computer vision,
+    language models, transformers. Flask, React, Auth0, RAG, Cursor,
+    Claude, Codex are fine. Do not name CellOT, VLM, CV, or the Emory
+    airway project. Do not write "I do not outsource the goal." Do not
+    copy that DL tour onto instrument, SWE, or other non-ML Why-us
+    (Lila revised archive is the pattern). No em dashes or hyphen
+    asides on the form. Write like a person. Example: Charta archive
+    v2 (hyphen pass).
 
 leave_for_junyi:
   decided: "2026-08-23"
@@ -114,8 +271,21 @@ leave_for_junyi:
     Do not send that email until Junyi confirms send. Draft only.
 
 later_not_this_run:
-  cover_letter: "Empty unless Junyi asks for one."
+  cover_letter: >
+    Empty unless Junyi asks for one. Lila 2026-08-23: missing cover
+    letter is expected, not a Copilot miss.
   personal_website: "Empty until a live URL exists. GitHub is already in profile.yaml."
+
+# Trust the visible form, not the Copilot sidebar (Lila 2026-08-23 evening)
+copilot_sidebar_is_not_the_form:
+  decided: "2026-08-23"
+  rule: >
+    "Completed" on phone / phone-country / resume does not mean the
+    Greenhouse widget has a number or a file. Look at the page.
+    After any Run Autofill Again, re-check those three before anything
+    else — Autofill can clear them while the sidebar stays green.
+  especially_on: prioritized
+  do_not: "Mark identity complete from the sidebar alone."
 
 # Last gate before Submit. Simplify Copilot often skips these.
 consent_checkboxes:
@@ -134,6 +304,222 @@ consent_checkboxes:
     - "Preferred now: computer-use clicks the visible required checkbox."
     - "Later: a small script that finds required unchecked boxes near Submit and checks them, then stops."
     - "Same Chrome profile as Copilot. Two browsers would miss the filled form."
+
+# Export-control / ITAR "U.S. Person" (Relativity Space 2026-08-23)
+# Care level: Junyi 2026-08-24. Keep in discovery. Do not filter out.
+us_person_export_control:
+  decided: "2026-08-23"
+  revised: "2026-08-24"
+  form_answer: "I am not a U.S. Person"
+  when: >
+    Export compliance / ITAR / EAR dropdown that asks whether the
+    applicant is a U.S. Person (citizen, green card, asylee, refugee).
+  reason: >
+    Junyi is F-1. Copilot picked the U.S. Person side on Relativity.
+    Computer-use must flip it. Do not pick citizen / green card /
+    U.S. Person for this profile.
+  discovery: keep
+  care: low
+  submit: >
+    No need to submit. Mass apply may still open the tab. Do not
+    rewrite Why-us for this family. Relativity Why-us is known bad
+    and left as is. Identity / U.S. Person / relocate fill is enough.
+  do_not:
+    - skip these jobs in discovery because of export compliance
+    - mark ineligible only because the form has ITAR / U.S. Person
+    - spend prioritized Why-us time on rocket / defense export forms
+
+# "Authorized to work for any employer" (Hayden AI 2026-08-23)
+authorized_for_any_employer:
+  decided: "2026-08-23"
+  form_answer: "leave_for_junyi"
+  when: "Are you authorized to work in the United States for any employer?"
+  reason: >
+    Copilot answered Yes on Hayden. F-1 is not a blanket any-employer
+    authorization. Do not treat that Yes as verified. Do not silently
+    flip it to No. Leftover until Junyi or HIO wording is confirmed.
+
+# Country-named sponsorship is not the US Yes-rule (Perplexity 2026-08-23)
+country_specific_sponsorship:
+  decided: "2026-08-23"
+  when: >
+    Sponsorship question names other countries only (e.g. United
+    Kingdom, Germany, or Serbia) and does not ask about the United
+    States.
+  do_not_use: "US visa_sponsorship widget rule"
+  reason: >
+    Perplexity Search ML intern asked UK/Germany/Serbia. Copilot No.
+    That is a different question from the US visa-sponsorship widget.
+    Do not auto-map it.
+
+# Computer-use children do not inherit the parent rulebook
+# (Junyi 2026-08-24: short Task prompts, retries)
+computer_use_context_isolation:
+  decided: "2026-08-24"
+  cursor_docs: "https://cursor.com/docs/subagents.md"
+  not_the_public_browser_builtin: true
+  public_builtins: [explore, bash, browser]
+  cloud_task_type_we_spawn: computerUse
+  parent_writes_the_clicker_prompt: true
+  clicker_starts_clean: true
+  clicker_does_not_inherit:
+    - parent_conversation
+    - agents_md_unless_copied
+    - cursor_rules_unless_copied
+    - knowledge_yaml_unless_copied
+  clicker_does_have:
+    - pixels_mouse_keyboard
+    - same_chrome_on_this_vm
+    - the_task_prompt_only
+    - unpublished_builtin_computer_use_prompt
+  evidence: >
+    Isolation clickers bc-e6b93672, bc-c2329ec6, bc-b1661bf4,
+    bc-f13355c8 each had one user message (1147–2395 chars). None
+    mentioned AGENTS.md, form_strategy.yaml, or leftover_typing.
+    Cursor docs: "Subagents start with a clean context." Built-in
+    computerUse cannot take a custom system prompt.
+  implication: >
+    Short Task prompts are a parent compiler failure, not a child
+    that already read the rulebook. Copy standing rules into the
+    prompt or the child can retry / Autofill Again / verify-loop.
+
+# Leftover typing is one paste (Junyi 2026-08-24, Charta)
+leftover_typing_one_pass:
+  decided: "2026-08-24"
+  when: "Junyi already accepted a draft and said type it / he will Submit"
+  parent_writes_the_clicker_prompt: true
+  prompt_template: "docs/automation/COMPUTER_USE_PROMPT.md"
+  do:
+    - One computer-use call.
+    - Copy the template. Fill only tab, URL, field, and accepted text.
+    - Find the tab. Click the box. Select all. Paste once.
+    - One screenshot. Stop.
+  do_not:
+    - Type the essay character by character when paste works
+    - Add verify / Ctrl+F / Ctrl+End / phrase-hunt steps to the Task prompt
+    - Fight autosuggest with Escape loops or click-away cleanup
+    - Resume computer-use to scroll a cropped textarea
+    - Start a second or third pass to check a blank line or a typo
+    - Start a screen recording unless Junyi asked for a demo
+    - Re-read many screenshots as if this were a UI test
+  reason: >
+    The clicker only sees pixels. Asking it to prove the paste makes it
+    a slow macro recorder. Junyi can see the tab. He is about to Submit.
+
+# Other computer-use token sinks (2026-08-24 isolation + 3-pack)
+# leftover_typing_one_pass is only the Why-us paste case. These are
+# separate. Some have a rule. Some do not have a helper yet.
+computer_use_token_sinks:
+  decided: "2026-08-24"
+  documented_with_a_rule:
+    leftover_verify_loops:
+      what: "Parent resumes computer-use to Ctrl+F / scroll / prove a paste"
+      solution: "leftover_typing_one_pass + docs/automation/COMPUTER_USE_PROMPT.md"
+    autofill_again:
+      what: "Run Autofill Again after corrections"
+      solution: "do_not_run_autofill_again"
+    nested_task_cloud_child:
+      what: "Task environment=cloud child has no computerUse"
+      solution: "Dashboard Cloud Agent. First isolation child was not_run."
+    generate_with_ai:
+      what: "Simplify Generate with AI on leftover essays"
+      solution: "Never click. written_responses.never_click"
+  documented_no_helper_yet:
+    vision_full_apply:
+      what: >
+        Even a clean Autofill+Submit pass is expensive. The clicker
+        screenshots after almost every move (20–30 stills per short
+        Ashby form). There is no DOM / Playwright fill this week.
+      see: "docs/automation/COMPUTER_USE_PROMPT.md Later (not this week)"
+    parent_screenshot_audit:
+      what: >
+        Parent re-reads many /tmp/computer-use/*.webp after the clicker
+        already reported Success. Needed for Submit-truth experiments.
+        Waste for leftover paste. leftover_typing_one_pass already
+        says do not re-read many screenshots as a UI test.
+    screen_record_plus_review:
+      what: >
+        Cloud walkthrough rules want a demo video. leftover rule says
+        do not record unless Junyi asked. videoReview also failed on a
+        15MB recording. Do not start RecordScreen for leftover paste.
+        For Submit experiments, one short recording is enough; do not
+        also spawn videoReview on a huge file.
+
+# Do not re-run Copilot after human / computer-use corrections
+do_not_run_autofill_again:
+  decided: "2026-08-23"
+  rule: >
+    After computer-use corrects sponsorship / U.S. Person / relocate,
+    do not click Simplify "Run Autofill Again". A later Autofill on
+    Lila cleared Yes dropdowns to Select… and flipped Baseten
+    sponsorship back to No.
+  reason: "Corrections are not sticky across a second Autofill."
+
+# Ashby submit-time spam wall (Charta 2026-08-24)
+ashby_spam_submit_block:
+  decided: "2026-08-24"
+  page_copy: "We couldn't submit your application. Your application submission was flagged as possible spam."
+  meaning: "Submit did not land. Not a Why-us length limit."
+  do:
+    - Stop retrying on the parent Cloud Chrome that already hit the wall.
+    - Junyi retries from his own machine, no VPN, Copilot paused.
+    - Prefer home or mobile data. Wait a few minutes.
+  do_not:
+    - Keep clicking Submit on the already-blocked VM
+    - Invent a fingerprint or captcha bypass
+    - Treat this as Ashby's recruiter-only fraud panel (that one is after a successful submit)
+  exception_one_fresh_vm: "docs/experiments/2026-08-24_ashby_submit_isolation.md"
+  see: "docs/apply/OBSTACLES.md"
+
+# One authorized Cloud Submit on a NEW pod (Junyi 2026-08-24)
+ashby_spam_isolation_experiment:
+  decided: "2026-08-24"
+  when: "Junyi asked for a fresh VM + a different Ashby job + one Submit"
+  child_vm_only: true
+  parent_chrome_still_do_not_submit: true
+  job: "Anyscale Software Engineer (Ray Core)"
+  apply_url: "https://jobs.ashbyhq.com/anyscale/73a973b1-6377-4144-a6e5-610b78719882"
+  do:
+    - New Cloud Agent. One Ashby tab. Autofill once.
+    - Fill hybrid Yes, relocate Yes, sponsorship No, location Boston, MA.
+    - Leave Additional information empty.
+    - Click Submit once. Screenshot. Stop.
+  do_not:
+    - Retry Submit if the pink spam wall appears
+    - Open Charta or the 10-tab set
+    - Use Replit (required project URL we do not have)
+    - Use Abridge (Fall 2026 intern)
+    - Use Hex (currently-based-in-SF/NYC is false)
+    - Invent a Why-us or a project password
+  backup_if_closed: "https://jobs.ashbyhq.com/meshy/c2f596a3-378c-4a57-b2cd-0bccd88866d7"
+  first_child_outcome: >
+    2026-08-24 Task-spawned child bc-7f8a7941 harness ready but
+    computerUseSupported=false. Outcome not_run. Next run must be a
+    dashboard Cloud Agent with computer-use, not another nested Task.
+  second_run_outcome: >
+    2026-08-24 dashboard agent bc-b6ea9703-f8db-491d-98ab-52b490155db1
+    opened only Anyscale Ray Core, Autofill once, Submit once.
+    Ashby: "Success. Your application was successfully submitted."
+    Outcome submitted. No pink spam wall. Cloud Submit is no longer a
+    one-sample failure; still not a license for mass apply.
+  followup_three_trivial: >
+    2026-08-24 Junyi authorized three more Cloud Submits on named
+    non-pursuit short Ashby forms, one tab at a time. All three
+    landed (Meshy Infrastructure Intern, Midjourney QA Analyst,
+    Runway FD Finance Partner). No pink spam wall. Still not the
+    weekday apply Automation and not a 10-tab Submit pass. See
+    docs/experiments/2026-08-24_ashby_three_trivial_submits.md.
+  see: "docs/experiments/2026-08-24_ashby_submit_isolation.md"
+
+# Workday / ATS account walls (CVS Health 2026-08-23)
+account_creation_wall:
+  decided: "2026-08-23"
+  do:
+    - Close the tab.
+    - Do not create Workday / Greenhouse / MyGreenhouse accounts.
+    - Do not pick a sibling requisition from the same board.
+    - Log autofill_blocked or similar in data/activity_log.csv.
+  reason: "Junyi: do not create accounts during these supervised tests."
 
 # Closed / vanished postings (Together AI 2026-08-23; will happen often)
 closed_posting:

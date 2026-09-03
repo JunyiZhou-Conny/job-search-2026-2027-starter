@@ -65,6 +65,7 @@ biotech:
   - Ginkgo Bioworks
   - Flagship
   - Flagship Pioneering
+  - Charta Health
   - Color Health
   - Flatiron Health
   - Oscar Health
@@ -108,7 +109,7 @@ startup_or_scaleup:
   - Snowflake
   - Hugging Face
   - Cohere
-  - Perplexity
+  - Perplexity  # Junyi 2026-08-24: treat as startup / scaleup; already on this list
   - Cursor
   - Anyscale
   - Cerebras

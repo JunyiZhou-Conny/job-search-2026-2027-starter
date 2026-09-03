@@ -1,0 +1,45 @@
+# Role families to mark on discovery / apply, beyond the three resume clusters.
+# Labels are suggestions until Junyi confirms. Do not invent FDE experience.
+
+last_updated: "2026-08-24"
+source: "Junyi on Charta Health Forward Deployed AI Engineer"
+
+# Palantir coined "forward-deployed engineer" for engineers on-site building
+# custom data workflows. Junyi 2026-08-24: look for these and mark them.
+# "Filter them out" in that message = pick them into this bucket, not skip.
+
+forward_deployed_engineer:
+  id: fde
+  mark_as: prioritized
+  subfield: fde
+  why_junyi: >
+    Last-mile between an AI system and enterprise data. Customer embedding
+    and scoping with the customer's data team. RAG / agentic workflow,
+    fine-tuning, vector DB, evals (accuracy, latency, security, hallucination).
+    Surface edge cases and missing platform features back to a central
+    research/engineering team. New, well-rounded, suitable.
+  example_company: "Charta Health — Forward Deployed AI Engineer (biomedical AI)"
+  title_signals:
+    - "Forward Deployed"
+    - "Forward-Deployed"
+    - "Forward Deployed Engineer"
+    - "Forward Deployed AI"
+    - "FDE"
+    - "Forward Deployment"
+  not_automatic:
+    - "Customer Success" only
+    - "Solutions Engineer" with no implementation / AI last-mile
+    - "Professional Services" with no engineering
+  do_not_claim:
+    - Palantir employment
+    - On-site customer FDE work already done
+    - Revenue-cycle or payer-ops domain ownership
+  closest_verified_ceiling: >
+    Airway-management chatbot: Flask/React, RAG, clinician feedback loop.
+    Course and Wyss model training. Not a vendor FDE tour.
+  discovery:
+    if_title_matches: keep
+    suggested_lane: core
+    suggested_cluster: health_ai when the company is health/biomed; else data_ml
+    application_weight: prioritized
+    confirm_with_junyi: true

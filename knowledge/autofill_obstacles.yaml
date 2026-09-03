@@ -15,8 +15,8 @@ purpose: >
 
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
-last_updated: "2026-08-23"
-last_source: "Junyi Take Control on Traba Software Engineer (AI Agents) plus earlier 10-tab review"
+last_updated: "2026-08-24"
+last_source: "Ashby isolation Submit (Anyscale Ray Core 2026-08-24) plus second 10-tab Copilot review"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -44,6 +44,31 @@ phenomena:
       Either add it to the Simplify profile (human, in the extension),
       or a later filler must copy a verified repo value into the widget.
       Do not invent a third number.
+
+  - id: current_company_autofilled_harvard
+    observed: "2026-08-24"
+    company: Anyscale
+    meaning: >
+      Isolation Submit on Ashby Software Engineer (Ray Core). Copilot
+      Autofill once put "Harvard University" in Current company. Standing
+      answer is empty (student; do not invent an employer). Computer-use
+      cleared the box before Submit. Additional information / Other were
+      empty and correctly left empty.
+    implication: >
+      Copilot may fill school as current employer. Clear it on student
+      forms. Do not Autofill Again after that correction.
+
+  - id: leftover_typing_over_click
+    observed: "2026-08-24"
+    company: Charta Health
+    meaning: >
+      Junyi asked to paste accepted Why-us v2. First computer-use pass
+      put the text in the box. The parent then launched more passes
+      (Ctrl+F verify, blank-line fix). That burned tokens. Not a
+      Copilot miss. See form_strategy leftover_typing_one_pass.
+    implication: >
+      Accepted leftover text is one paste. Do not resume the clicker
+      to verify.
 
   - id: eeo_inconsistent_across_forms
     observed: "2026-08-23"
@@ -273,6 +298,103 @@ gaps:
       Traba listed $140K–$200K on the page. Junyi: type the minimum
       (140000). If a later page has no number, type 90000.
     ask_later: "None unless Junyi changes the 90k default."
+
+  - id: workday_account_wall
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml account_creation_wall"
+    form_effect: >
+      CVS Health Workday (Data Science Analyst R0993501-1) stopped at
+      account creation. Tab closed. No account created. Not a closed
+      posting.
+    ask_later: "None. Later agents close Workday walls the same way."
+
+  - id: us_person_export_control
+    status: in_repo_unused
+    already_in: "knowledge/form_strategy.yaml us_person_export_control"
+    form_effect: >
+      Relativity Space Copilot selected the ITAR U.S. Person side.
+      Computer-use set "I am not a U.S. Person."
+    ask_later: "None unless Junyi changes export-control wording."
+
+  - id: copilot_broad_sponsorship_no
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml always.visa_sponsorship"
+    form_effect: >
+      Copilot often answers No on visa-sponsorship widgets. As of
+      2026-08-24 that is the intended form answer (Hayden). The 2026-08-23
+      pass had flipped Hayden/Lila/Relativity/Scale to Yes under the old
+      rule. Hayden form still shows Yes. Do not flip No → Yes.
+    ask_later: "None. Later agents set visa sponsorship to No and re-read before Submit."
+
+  - id: authorized_for_any_employer
+    status: needs_human
+    already_in: "knowledge/form_strategy.yaml authorized_for_any_employer"
+    form_effect: >
+      Hayden AI Copilot answered Yes to "authorized to work in the
+      United States for any employer." F-1 is not that. Left as leftover.
+    ask_later: "Exact yes/no/wording for any-employer work-auth widgets."
+
+  - id: country_specific_sponsorship
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml country_specific_sponsorship"
+    form_effect: >
+      Perplexity asked sponsorship for the United Kingdom, Germany or
+      Serbia (role location Belgrade). Copilot No. Do not apply the
+      US Yes rule.
+    ask_later: "None unless a later form mixes US + other countries."
+
+  - id: years_of_relevant_experience
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml always.years_of_relevant_experience"
+    form_effect: >
+      Hayden 2026-08-24: "How many years of relevant experience do you
+      have?" empty. Copilot did not list it. Future answer 2.
+    ask_later: "None unless Junyi changes the 2."
+
+  - id: automated_script_or_spoofing
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml always.automated_script_or_spoofing"
+    form_effect: >
+      Hayden: sidebar marked spoofing complete; inspect showed neither
+      Yes nor No selected. Future answer No. Look at the widget.
+    ask_later: "None."
+
+  - id: copilot_sidebar_complete_field_empty
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml copilot_sidebar_is_not_the_form"
+    form_effect: >
+      Lila 2026-08-23 evening (Junyi): sidebar marked phone country,
+      phone, and resume complete. The Greenhouse widgets were empty.
+      Trust the page, not the sidebar. Re-check after Autofill Again.
+    ask_later: "None. Later agents look at the widgets."
+
+  - id: run_autofill_again_clears_corrections
+    status: observed_ok
+    already_in: "knowledge/form_strategy.yaml do_not_run_autofill_again"
+    form_effect: >
+      After leftovers were typed, a later Autofill cleared Lila
+      sponsorship/reside/relocate/privacy back to Select… and set
+      Baseten sponsorship to No. Re-set. Do not click Run Autofill Again.
+    ask_later: "None."
+
+  - id: perplexity_exercise_url
+    status: missing
+    already_in: "knowledge/nonstandard_apply_holds.yaml"
+    form_effect: >
+      Perplexity requires a shared Perplexity thread URL (teach a
+      topic or advocate for the application). Left empty. Do not invent.
+      Junyi 2026-08-24: this class of question is a non-standard apply
+      hold. Do not Submit. Surface in the daily summary.
+    ask_later: "Only after Junyi records a real shared thread URL."
+
+  - id: one_project_story_not_a_dump
+    status: missing
+    already_in: "knowledge/project_stories.yaml"
+    form_effect: >
+      Perplexity “past project” draft listed Cannon plus the chatbot.
+      Junyi: one story, chosen after the company mission. Types are
+      marked. Stories are not written.
+    ask_later: "Junyi will pick stories later. Do not brainstorm in chat."
 
 do_not_put_in_this_file:
   - passport
