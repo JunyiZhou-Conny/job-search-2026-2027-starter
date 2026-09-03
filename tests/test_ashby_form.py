@@ -47,6 +47,16 @@ class TestAshbyForm(unittest.TestCase):
         self.assertFalse(named["summary"]["broad_sponsorship_question"])
         citizenship = summarize(_form([f("In which country do you have citizenship?", "ValueSelect", options=["China"])]))
         self.assertIn("citizenship_china", citizenship["required_corrections"])
+        export_country = summarize(_form([
+            f("Export licensing / export control country of citizenship or legal permanent residence, whichever obtained last",
+              "ValueSelect", options=["China"]),
+        ]))
+        self.assertEqual(export_country["g2_blockers"], [], "country picker is a China correction, not an ITAR block")
+        self.assertFalse(export_country["summary"]["export_control_question"])
+        self.assertIn("citizenship_china", export_country["required_corrections"])
+        export_country_only = summarize(_form([f("Export control country", "ValueSelect")]))
+        self.assertEqual(export_country_only["g2_blockers"], [])
+        self.assertIn("citizenship_china", export_country_only["required_corrections"])
 
     def test_essay_export_and_artifact_block(self):
         form = summarize(_form([
