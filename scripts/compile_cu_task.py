@@ -96,6 +96,9 @@ def lint_sheet(sheet: dict) -> list[str]:
     names = [m.get("field") for m in mutations]
     if len(names) != len(set(names)):
         hits.append("duplicate_mutation_fields")
+    for item in mutations:
+        if "value" in item and not isinstance(item.get("value"), str):
+            hits.append("non_string_value")
     if len(evidence) > 3 and mode != "submit":
         hits.append("too_many_screenshots")
     return hits
@@ -130,6 +133,8 @@ def _commit_hint(commit: str) -> str:
         return "Click the exact option. Do not reopen the group after it shows the value."
     if commit == "paste":
         return "Ctrl+A, paste once, click outside the box. Do not type key by key."
+    if commit == "clear":
+        return "Select all, press Delete, click outside the box. Do not type a replacement."
     return "Set the value through the widget's normal control, then move on."
 
 

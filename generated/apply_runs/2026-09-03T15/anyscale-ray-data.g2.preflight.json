@@ -6,11 +6,27 @@
   "gate": "G2",
   "weight": "regular",
   "run_id": "2026-09-03T15",
-  "checked_at": "2026-09-03T15:56:06",
+  "checked_at": "2026-09-03T16:08:27",
   "open_gate": "G1",
   "precheck": {
-    "duplicate": false,
-    "matches": []
+    "duplicate": true,
+    "matches": [
+      {
+        "table": "applications",
+        "job_id": "J20260903-033",
+        "status": "ready_to_apply",
+        "by": "url",
+        "blocking": false
+      },
+      {
+        "table": "apply_attempts",
+        "job_id": "J20260903-033",
+        "status": "in_progress",
+        "by": "url",
+        "blocking": true,
+        "attempt_id": "A20260903-003"
+      }
+    ]
   },
   "form_summary": {
     "required_count": 6,
@@ -27,8 +43,8 @@
     "sponsorship_answer_no"
   ],
   "reasons": [
-    "gate_closed:ashby=G1<G2",
-    "identity_unverified"
+    "duplicate",
+    "gate_closed:ashby=G1<G2"
   ],
   "verdict": "blocked"
 }

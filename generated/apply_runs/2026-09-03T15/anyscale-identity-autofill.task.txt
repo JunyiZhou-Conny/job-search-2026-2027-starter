@@ -1,0 +1,18 @@
+MODE EXECUTE. You are hands only. Do not rediscover the form.
+Tab: Anyscale — Software Engineer (Ray Data)
+URL contains: https://jobs.ashbyhq.com/anyscale/01aef589-e268-4b22-b513-d1f9f076210f/application
+Open https://simplify.jobs. Read the visible account name only.
+Expected account name: Junyi Zhou.
+Do not click jobs, settings, or export on that site.
+Open the apply URL in one tab: https://jobs.ashbyhq.com/anyscale/01aef589-e268-4b22-b513-d1f9f076210f/application
+Click Simplify Copilot Autofill once. Wait until it finishes.
+Do not scroll the form to inspect or report fields after Autofill.
+Do not click Submit or any final Apply button.
+Do not click Run Autofill Again or Autofill This Page.
+Do not click Generate with AI.
+Do not reload the page.
+Do not touch: any form field.
+Evidence (separate shots if the facts are far apart):
+- 00_identity.png covers Simplify account name
+- 01_after_autofill_top.png covers Name, Email
+Stop. Do not write a field-by-field audit of untouched widgets.

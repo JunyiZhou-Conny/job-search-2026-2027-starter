@@ -7,11 +7,11 @@ target:
   already_autofilled: true
 mutations:
   - field: Will you now or in the future require sponsorship
-    value: No
+    value: "No"
     commit: radio
     section: work_auth
   - field: Country of citizenship
-    value: China
+    value: "China"
     commit: searchable_dropdown
     section: work_auth
 do_not_touch:

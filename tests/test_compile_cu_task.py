@@ -45,6 +45,26 @@ class TestCompileSheet(unittest.TestCase):
         self.assertNotIn("verify each", text.lower())
         self.assertEqual(cu.lint_task(text), [])
 
+    def test_yaml_yes_no_must_stay_strings(self):
+        sheet = {
+            "mode": "execute",
+            "target": {"url": "https://jobs.ashbyhq.com/acme/x"},
+            "forbidden": ["submit"],
+            "mutations": [{"field": "Sponsorship", "value": False, "commit": "radio"}],
+        }
+        self.assertIn("non_string_value", cu.lint_sheet(sheet))
+
+    def test_clear_commit_is_a_delete_not_a_placeholder(self):
+        sheet = {
+            "mode": "execute",
+            "target": {"url": "https://jobs.ashbyhq.com/acme/x", "already_autofilled": True},
+            "forbidden": ["submit"],
+            "mutations": [{"field": "Current company", "value": "(empty)", "commit": "clear"}],
+        }
+        text = cu.compile_sheet(sheet)
+        self.assertIn("press Delete", text)
+        self.assertNotIn("verify each", text.lower())
+
     def test_multi_field_execute_orders_mutations_and_bounds_retry(self):
         sheet = cu._load_sheet(FIXTURES / "execute_corrections.yaml")
         text = cu.compile_sheet(sheet)

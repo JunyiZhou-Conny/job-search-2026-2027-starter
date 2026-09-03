@@ -1,0 +1,25 @@
+MODE EXECUTE. You are hands only. Do not rediscover the form.
+Tab: Anyscale — Software Engineer (Ray Data)
+URL contains: https://jobs.ashbyhq.com/anyscale/01aef589-e268-4b22-b513-d1f9f076210f/application
+The form is already filled. Touch only the named mutations.
+Do not click Submit or any final Apply button.
+Do not click Run Autofill Again or Autofill This Page.
+Do not click Generate with AI.
+Do not reload the page.
+Do not touch: Name; Email; Current location; Phone number; Resume; Additional information; Other; LinkedIn; Twitter; GitHub; Portfolio.
+Mutations in page order. Do all of them, then stop.
+Do not screenshot or read back after each field.
+- Current company → (empty)
+  Select all, press Delete, click outside the box. Do not type a replacement.
+- Are you okay with a hybrid in-office schedule of Mon, Tue, and Thu? → Yes
+  Click the exact option. Do not reopen the group after it shows the value.
+- If you’re currently located outside of the SF Bay area, are you open to relocate? → Yes
+  Click the exact option. Do not reopen the group after it shows the value.
+- Would you require visa sponsorship to work in the country in which this position is based? → No
+  Click the exact option. Do not reopen the group after it shows the value.
+After the last mutation, wait for the page to settle.
+One bounded retry per field that failed to persist, then mark it unresolved.
+Evidence (separate shots if the facts are far apart):
+- 02_company.png covers Current company
+- 03_questions.png covers Are you okay with a hybrid in-office schedule of Mon, Tue, and Thu?, If you’re currently located outside of the SF Bay area, are you open to relocate?, Would you require visa sponsorship to work in the country in which this position is based?
+Stop. Do not write a field-by-field audit of untouched widgets.

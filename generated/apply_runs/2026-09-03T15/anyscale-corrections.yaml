@@ -1,0 +1,50 @@
+mode: execute
+target:
+  company: Anyscale
+  role: Software Engineer (Ray Data)
+  url: https://jobs.ashbyhq.com/anyscale/01aef589-e268-4b22-b513-d1f9f076210f/application
+  tab: Anyscale — Software Engineer (Ray Data)
+  already_autofilled: true
+mutations:
+  - field: Current company
+    value: "(empty)"
+    commit: clear
+    section: identity
+  - field: Are you okay with a hybrid in-office schedule of Mon, Tue, and Thu?
+    value: "Yes"
+    commit: radio
+    section: questions
+  - field: If you’re currently located outside of the SF Bay area, are you open to relocate?
+    value: "Yes"
+    commit: radio
+    section: questions
+  - field: Would you require visa sponsorship to work in the country in which this position is based?
+    value: "No"
+    commit: radio
+    section: questions
+do_not_touch:
+  - Name
+  - Email
+  - Current location
+  - Phone number
+  - Resume
+  - Additional information
+  - Other
+  - LinkedIn
+  - Twitter
+  - GitHub
+  - Portfolio
+forbidden:
+  - submit
+  - autofill_again
+  - generate_with_ai
+  - reload
+evidence:
+  - name: 02_company.png
+    covers:
+      - Current company
+  - name: 03_questions.png
+    covers:
+      - Are you okay with a hybrid in-office schedule of Mon, Tue, and Thu?
+      - If you’re currently located outside of the SF Bay area, are you open to relocate?
+      - Would you require visa sponsorship to work in the country in which this position is based?
