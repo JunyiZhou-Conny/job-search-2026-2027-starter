@@ -631,8 +631,10 @@ def main() -> int:
     big = sum(1 for i in items if i["company_class"] == "big_tech")
     startup = sum(1 for i in items if i["company_class"] == "startup")
     biotech = sum(1 for i in items if i["company_class"] == "biotech")
+    triage = latest_triage(day)
     print(html_path)
     print(md_path)
+    print(f"triage={triage if triage else 'none'}")
     gtc_n = sum(1 for i in items if i.get("gtc_sponsor") == "yes")
     print(f"items={len(items)} gtc={gtc_n} boston_ma={boston} bay_area={bay} big_tech={big} biotech={biotech} startup={startup}")
     return 0

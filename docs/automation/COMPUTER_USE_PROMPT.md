@@ -65,6 +65,11 @@ Use one mode per spawn. Do not combine them.
 Leftover Why-us paste is `execute` with one `commit: paste` mutation.
 That is still one spawn, one paste, one screenshot, stop.
 
+Opening Simplify to confirm identity and clicking Copilot Autofill once
+is `execute` with a `bootstrap` block (`autofill_once`, optional
+`identity_url`). Do not put field mutations in the same sheet as Autofill.
+Observe the filled page, then compile a second execute sheet.
+
 ## Page order and evidence
 
 Walk the form top → middle → bottom → stop. Reuse a page map from an

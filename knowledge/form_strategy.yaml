@@ -483,7 +483,7 @@ leftover_typing_one_pass:
   compiler: "scripts/compile_cu_task.py"
   do:
     - One computer-use call.
-    - Compile leftover_paste.yaml or copy the leftover template.
+    - Compile leftover_paste.yaml, bootstrap_autofill.yaml, or a correction sheet.
     - Find the tab. Click the box. Select all. Paste once.
     - One screenshot. Stop.
   do_not:

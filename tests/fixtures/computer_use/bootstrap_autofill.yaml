@@ -1,0 +1,27 @@
+mode: execute
+target:
+  company: Anyscale
+  role: Software Engineer (Ray Data)
+  url: https://jobs.ashbyhq.com/anyscale/01aef589-e268-4b22-b513-d1f9f076210f/application
+  tab: Anyscale — Software Engineer (Ray Data)
+  already_autofilled: false
+bootstrap:
+  identity_url: https://simplify.jobs
+  identity_expected: Junyi Zhou
+  open_apply: true
+  autofill_once: true
+do_not_touch:
+  - any form field
+forbidden:
+  - submit
+  - autofill_again
+  - generate_with_ai
+  - reload
+evidence:
+  - name: 00_identity.png
+    covers:
+      - Simplify account name
+  - name: 01_after_autofill_top.png
+    covers:
+      - Name
+      - Email

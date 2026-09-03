@@ -63,6 +63,19 @@ class TestCompileSheet(unittest.TestCase):
         }
         self.assertIn("submit_without_permission", cu.lint_sheet(sheet))
 
+    def test_bootstrap_autofill_compiles_without_mutations(self):
+        sheet = cu._load_sheet(FIXTURES / "bootstrap_autofill.yaml")
+        text = cu.compile_sheet(sheet)
+        self.assertIn("Autofill once", text)
+        self.assertIn("Expected account name: Junyi Zhou", text)
+        self.assertNotIn("Mutations in page order", text)
+        self.assertEqual(cu.lint_task(text), [])
+
+    def test_autofill_plus_mutations_is_rejected(self):
+        sheet = cu._load_sheet(FIXTURES / "bootstrap_autofill.yaml")
+        sheet["mutations"] = [{"field": "Sponsorship", "value": "No"}]
+        self.assertIn("autofill_plus_mutations", cu.lint_sheet(sheet))
+
     def test_verify_shot_cannot_cover_two_sections(self):
         sheet = {
             "mode": "verify",

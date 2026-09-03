@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Ingest keep rows from generated/discovery_triage_YYYY-MM-DD.csv into applications.csv.
+"""Ingest keep rows from generated/discovery_triage_{RUN}.csv into applications.csv.
+
+--date accepts a day (YYYY-MM-DD) or a run stamp (YYYY-MM-DDTHH). A day
+key picks the newest run of that day, same as generate_apply_queue.
 
 Default: rows with decision=keep (or user_confirm=keep).
 Does not auto-apply. Dedupes by canonical job URL.
@@ -16,6 +19,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import generate_apply_queue as gaq  # noqa: E402
 from js_lib import (
     DATA,  # noqa: E402
     ACTIVITY,
@@ -123,9 +127,13 @@ def main() -> int:
     )
     args = ap.parse_args()
     day = args.date
-    triage_path = GEN / f"discovery_triage_{day}.csv"
-    if not triage_path.exists():
-        raise SystemExit(f"Missing {triage_path}")
+    triage_path = gaq.latest_triage(day)
+    if triage_path is None:
+        raise SystemExit(
+            f"No generated/discovery_triage_{day}*.csv "
+            "(day key picks the newest run of that day; a run stamp is exact)"
+        )
+    print(f"triage={triage_path}")
 
     with triage_path.open(newline="", encoding="utf-8-sig") as f:
         triage = list(csv.DictReader(f))

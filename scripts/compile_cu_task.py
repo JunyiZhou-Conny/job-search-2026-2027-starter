@@ -67,6 +67,7 @@ def lint_sheet(sheet: dict) -> list[str]:
         hits.append("missing_target_url")
     mutations = sheet.get("mutations") or []
     evidence = sheet.get("evidence") or []
+    bootstrap = sheet.get("bootstrap") or {}
     if mode == "verify":
         if mutations:
             hits.append("verify_has_mutations")
@@ -79,7 +80,10 @@ def lint_sheet(sheet: dict) -> list[str]:
             if len(cover_sections) > 1:
                 hits.append("evidence_spans_distant_sections")
     if mode in {"execute", "repair"} and not mutations:
-        hits.append("execute_missing_mutations")
+        if not (mode == "execute" and bootstrap.get("autofill_once")):
+            hits.append("execute_missing_mutations")
+    if bootstrap.get("autofill_once") and mutations:
+        hits.append("autofill_plus_mutations")
     if mode == "submit":
         if not sheet.get("submit_permitted"):
             hits.append("submit_without_permission")
@@ -137,11 +141,22 @@ def compile_sheet(sheet: dict) -> str:
     target = sheet["target"]
     lines = [
         f"MODE {mode.upper()}. You are hands only. Do not rediscover the form.",
-        f"Tab: {target.get('tab') or target.get('company', '')} — {target.get('role', '')}",
+        f"Tab: {target.get('tab') or (target.get('company', '') + ' — ' + target.get('role', ''))}",
         f"URL contains: {target['url']}",
     ]
     if target.get("already_autofilled"):
         lines.append("The form is already filled. Touch only the named mutations.")
+    bootstrap = sheet.get("bootstrap") or {}
+    if bootstrap.get("identity_url"):
+        lines.append(f"Open {bootstrap['identity_url']}. Read the visible account name only.")
+        if bootstrap.get("identity_expected"):
+            lines.append(f"Expected account name: {bootstrap['identity_expected']}.")
+        lines.append("Do not click jobs, settings, or export on that site.")
+    if bootstrap.get("open_apply"):
+        lines.append(f"Open the apply URL in one tab: {target['url']}")
+    if bootstrap.get("autofill_once"):
+        lines.append("Click Simplify Copilot Autofill once. Wait until it finishes.")
+        lines.append("Do not scroll the form to inspect or report fields after Autofill.")
     lines.extend(_forbidden_lines(sheet))
     untouched = sheet.get("do_not_touch") or []
     if untouched:
@@ -154,7 +169,7 @@ def compile_sheet(sheet: dict) -> str:
         lines.append("Do not scroll to compose a prettier screenshot.")
         lines.append("If two facts are far apart, take two screenshots. Never hunt for one viewport that shows both.")
         lines.append("Maximum 8 scroll actions. Then report what you have.")
-    if mode in {"execute", "repair"}:
+    if mode in {"execute", "repair"} and (sheet.get("mutations") or []):
         lines.append("Mutations in page order. Do all of them, then stop.")
         lines.append("Do not screenshot or read back after each field.")
         if mode == "repair":

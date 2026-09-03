@@ -317,7 +317,8 @@ Ingest only if the triggering user message explicitly confirms keeps
 (e.g. “ingest all keep” / “confirm keep 1,2,5”).
 If confirmed, use:
 .venv/bin/python scripts/ingest_discovery_triage.py --date "$RUN"
-and report new job ids.
+and report new job ids. `--date` accepts a day or a run stamp and uses
+the same newest-file rule as `generate_apply_queue.py`.
 
 ## Delivery (the `automation/discovery` branch)
 

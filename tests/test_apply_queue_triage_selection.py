@@ -66,6 +66,15 @@ class TestTriageSelection(unittest.TestCase):
             ["2026-09-03T22", "2026-09-03T13", "2026-09-03", "2026-09-02"],
         )
 
+    def test_ingest_uses_the_same_newest_run_as_the_queue(self):
+        import ingest_discovery_triage as ingest
+
+        self.triage("2026-09-03")
+        newest = self.triage("2026-09-03T15")
+        self.assertIs(ingest.gaq.latest_triage, gaq.latest_triage)
+        self.assertEqual(gaq.latest_triage("2026-09-03"), newest)
+        self.assertEqual(gaq.latest_triage("2026-09-03T15"), newest)
+
     def test_date_re_accepts_run_stamps_for_the_queue_api(self):
         self.assertTrue(gaq.DATE_RE.fullmatch("2026-09-03T13"))
         self.assertTrue(gaq.DATE_RE.fullmatch("2026-09-03"))
