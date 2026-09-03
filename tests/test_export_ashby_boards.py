@@ -39,6 +39,8 @@ ORG = {"slug": "kayak", "company": "KAYAK"}
 ASSOCIATE_SWE = next(j for j in BOARD if j["title"] == "Associate Software Engineer" and j["location"] == "Cambridge Office")
 
 
+EMPLOYER = {"slug": "acme", "company": "Acme", "kind": "employer"}
+
 def job(**over):
     base = {"title": "Software Engineer", "location": "San Francisco", "employmentType": "FullTime",
             "publishedAt": "2026-08-25T10:00:00.000+00:00", "isRemote": False, "workplaceType": "OnSite",
@@ -132,13 +134,15 @@ class TestG2Candidate(unittest.TestCase):
         self.assertIn("workplaceType=Hybrid", row["notes"])
 
     def test_clean_open_form_on_fulltime_or_intern_onsite_posting(self):
-        self.assertTrue(g2_candidate(job(), clean_form()))
-        self.assertTrue(g2_candidate(job(employmentType="Intern"), clean_form()))
-        self.assertFalse(g2_candidate(job(employmentType="PartTime"), clean_form()))
-        self.assertFalse(g2_candidate(job(workplaceType="Remote"), clean_form()))
-        self.assertFalse(g2_candidate(job(), clean_form(g2_blockers=["required_essay"])))
-        self.assertFalse(g2_candidate(job(), {"url": "u", "org": "acme", "open": False}))
-        self.assertFalse(g2_candidate(job(), {"url": "u", "org": "acme", "error": "HTTPError: 500"}))
+        self.assertTrue(g2_candidate(EMPLOYER, job(), clean_form()))
+        self.assertTrue(g2_candidate(EMPLOYER, job(employmentType="Intern"), clean_form()))
+        self.assertFalse(g2_candidate(EMPLOYER, job(employmentType="PartTime"), clean_form()))
+        self.assertFalse(g2_candidate(EMPLOYER, job(workplaceType="Remote"), clean_form()))
+        self.assertFalse(g2_candidate(EMPLOYER, job(), clean_form(g2_blockers=["required_essay"])))
+        self.assertFalse(g2_candidate(EMPLOYER, job(), {"url": "u", "org": "acme", "open": False}))
+        self.assertFalse(g2_candidate(EMPLOYER, job(), {"url": "u", "org": "acme", "error": "HTTPError: 500"}))
+        self.assertFalse(g2_candidate({"slug": "clera", "company": "Clera", "kind": "agency"}, job(), clean_form()),
+                         "an agency board is triage material, never a G2 row")
 
     def test_closed_or_failed_probe_leaves_form_facts_blank(self):
         closed = row_for(ORG, job(), {"url": "u", "org": "acme", "open": False})

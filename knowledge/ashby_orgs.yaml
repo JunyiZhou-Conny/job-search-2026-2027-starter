@@ -4,6 +4,8 @@
 # Keep the keys sorted (tests/test_export_ashby_boards.py checks this).
 # `source` says where the slug came from and the last date it returned 200
 # with real postings. Add an org by appending one block in slug order.
+# `kind: agency` marks a board where a recruiter posts on behalf of clients.
+# Agency rows stay in the sweep for triage but are never G2 candidates.
 # This file is discovery scope only; knowledge/careers_boards.yaml still
 # drives resolve_apply_url.py.
 
@@ -25,7 +27,8 @@ orgs:
     source: "careers_boards.yaml ashby; live 2026-09-03"
   clera:
     company: Clera
-    source: "G2 candidate screen 2026-09-03; live 2026-09-03"
+    kind: agency
+    source: "G2 candidate screen 2026-09-03; live 2026-09-03. 70 postings in 7 days across SF, Berlin, Munich, London on one five-field form: a recruiting agency board, not one employer. Junyi applied to one Clera role on 2026-08-25."
   datologyai:
     company: DatologyAI
     source: "G2 candidate screen 2026-09-03; live 2026-09-03"

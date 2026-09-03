@@ -86,7 +86,8 @@ def run_stamp(now: datetime) -> str:
 def load_orgs(path: Path = ORGS_PATH) -> List[Dict[str, str]]:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     orgs = data.get("orgs") or {}
-    return [{"slug": slug, "company": (meta or {}).get("company") or slug} for slug, meta in sorted(orgs.items())]
+    return [{"slug": slug, "company": (meta or {}).get("company") or slug, "kind": (meta or {}).get("kind") or "employer"}
+            for slug, meta in sorted(orgs.items())]
 
 
 def load_role_titles(path: Path = ROLES_PATH) -> List[str]:
@@ -143,13 +144,17 @@ def select_jobs(jobs: Iterable[Dict], domain: "re.Pattern[str]", now: datetime, 
             if published_within(j, now, days) and not remote_only(j) and title_ok(j.get("title") or "", domain)]
 
 
-def g2_candidate(job: Dict, form: Dict) -> bool:
-    return bool(form.get("open")) and not form.get("g2_blockers") \
+def g2_candidate(org: Dict[str, str], job: Dict, form: Dict) -> bool:
+    """An agency board (a recruiter posting on behalf of clients) is not the
+    employer's own application, so it is triage material, never a G2 row."""
+    return org.get("kind", "employer") == "employer" and bool(form.get("open")) and not form.get("g2_blockers") \
         and job.get("employmentType") in G2_EMPLOYMENT and not remote_only(job)
 
 
 def row_for(org: Dict[str, str], job: Dict, form: Dict) -> Dict:
     notes = []
+    if org.get("kind", "employer") != "employer":
+        notes.append(f"kind={org['kind']}")
     if form.get("error"):
         notes.append(f"form: {form['error']}")
     elif not form.get("open"):
@@ -170,7 +175,7 @@ def row_for(org: Dict[str, str], job: Dict, form: Dict) -> Dict:
         "company": org["company"], "slug": org["slug"], "title": (job.get("title") or "").strip(),
         "location": job.get("location") or "", "employmentType": job.get("employmentType") or "",
         "publishedAt": job.get("publishedAt") or "", "jobUrl": job.get("jobUrl") or "", "applyUrl": job.get("applyUrl") or "",
-        **facts, "g2_candidate": g2_candidate(job, form), "notes": ";".join(notes),
+        **facts, "g2_candidate": g2_candidate(org, job, form), "notes": ";".join(notes),
     }
 
 
