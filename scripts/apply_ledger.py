@@ -157,14 +157,18 @@ class Ledger:
         self._append_log(app["id"] if app else "", "posting_closed", "", "closed", f"{company} — {role}: {reason}")
         return {"decision": "closed", "already_recorded": False}
 
+    EVIDENCE_DIRS = ("imports/simplify", "evidence")
+
     def _second_signal_is_durable(self, tracker_status: str, email_evidence: str, application_id: str) -> bool:
         """A second signal is a file we can reopen, not a sentence.
 
-        The tracker or email evidence must name a path under the data dir that
-        exists (a Simplify export, a saved email). An application id from the
-        ATS counts on its own."""
+        The tracker or email evidence must name an existing file inside
+        data/imports/simplify (a tracker export) or data/evidence (a saved
+        email or screenshot). Ledger files do not count as evidence for
+        themselves. An application id from the ATS counts on its own."""
         if application_id.strip():
             return True
+        roots = [(self.data / d).resolve() for d in self.EVIDENCE_DIRS]
         for value in (tracker_status, email_evidence):
             for raw in value.split():
                 token = raw.strip(",;()[]")
@@ -173,7 +177,8 @@ class Ledger:
                 candidate = Path(token)
                 if not candidate.is_absolute():
                     candidate = self.data.parent / token if token.startswith("data/") else self.data / token
-                if candidate.exists() and candidate.is_file():
+                candidate = candidate.resolve()
+                if candidate.is_file() and any(candidate.is_relative_to(r) for r in roots):
                     return True
         return False
 
@@ -200,7 +205,7 @@ class Ledger:
         open_gate = self.gates["gates"].get(ats, "G0")
         if not gate_at_least(open_gate, gate):
             reasons.append(f"gate_closed:{ats}={open_gate}<{gate}")
-        if gate == "G2" and weight != "regular":
+        if gate in {"G2", "G3"} and weight != "regular":
             reasons.append("prioritized_needs_review_packet")
         if gate in {"G2", "G3"}:
             if not harness_ready:
@@ -219,7 +224,7 @@ class Ledger:
                 reasons.append(f"form_probe_error:{form['error']}")
             elif not form.get("open", False):
                 reasons.append("posting_closed")
-            else:
+            elif gate in {"G2", "G3"}:
                 reasons.extend(f"form:{b}" for b in form.get("g2_blockers", []))
         return {
             "url": url, "company": company, "role": role, "ats": ats, "gate": gate, "weight": weight,

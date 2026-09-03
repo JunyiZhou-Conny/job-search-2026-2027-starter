@@ -97,11 +97,18 @@ class TestApplyLedger(unittest.TestCase):
 
     def test_prioritized_harness_identity_and_form_blockers(self):
         self.assertIn("prioritized_needs_review_packet", self._pre(weight="prioritized")["reasons"])
+        g3 = Ledger(self.data, gates={"gates": {"ashby": "G3"}, "regular_submit_cap_per_run": 3})
+        self.assertIn("prioritized_needs_review_packet", g3.preflight(
+            url=URL, company="Acme", role="SWE", ats="ashby", gate="G3", weight="prioritized", run_id="r",
+            harness_ready=True, identity_ok=True, form=MINIMAL_FORM)["reasons"])
         self.assertIn("harness_not_ready", self._pre(harness_ready=False)["reasons"])
         self.assertIn("identity_unverified", self._pre(identity_ok=False)["reasons"])
         essay = dict(MINIMAL_FORM, g2_blockers=["required_essay", "broad_sponsorship_question"])
         self.assertEqual(self._pre(form=essay)["reasons"], ["form:required_essay", "form:broad_sponsorship_question"])
         self.assertEqual(self._pre(form={"url": URL, "org": "acme", "open": False})["reasons"], ["posting_closed"])
+        review = self._pre(gate="G1", weight="prioritized", form=essay, harness_ready=False, identity_ok=False)
+        self.assertEqual(review["verdict"], "pass", "a G1 fill-and-review may open a form with an essay")
+        self.assertEqual(self._pre(gate="G1", form={"url": URL, "org": "acme", "open": False})["reasons"], ["posting_closed"])
 
     def test_run_cap(self):
         a = self._start()
@@ -122,6 +129,9 @@ class TestApplyLedger(unittest.TestCase):
         with self.assertRaises(SystemExit):
             self.ledger.finish(attempt_id=res["attempt_id"], outcome="submitted_verified", banner_text="Success",
                                tracker_status="data/imports/simplify/does_not_exist.csv")
+        with self.assertRaises(SystemExit):
+            self.ledger.finish(attempt_id=res["attempt_id"], outcome="submitted_verified", banner_text="Success",
+                               tracker_status="see data/applications.csv")
         out = self._verified(res["attempt_id"])
         self.assertEqual(out["outcome"], "submitted_verified")
 
