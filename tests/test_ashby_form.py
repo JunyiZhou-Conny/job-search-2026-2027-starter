@@ -34,17 +34,19 @@ class TestAshbyForm(unittest.TestCase):
                                 f("Do you have work authorization to work in that country?", "Boolean")]))
         self.assertEqual(form["g2_blockers"], [])
 
-    def test_broad_sponsorship_blocks_but_h1b_named_does_not(self):
+    def test_sponsorship_is_a_required_correction_not_a_blocker(self):
         broad = summarize(_form([f("Do you now, or will you in the future, need US visa sponsorship?", "Boolean")]))
-        self.assertIn("broad_sponsorship_question", broad["g2_blockers"])
-        # Live Ashby/Greenhouse copy lists H-1B as an example inside the broad ask.
+        self.assertTrue(broad["summary"]["broad_sponsorship_question"])
+        self.assertEqual(broad["g2_blockers"], [], "Junyi confirmed the standing answer No on 2026-09-03")
+        self.assertIn("sponsorship_answer_no", broad["required_corrections"])
         example = summarize(_form([
             f("Will you now or in the future require sponsorship for employment visa status (e.g., H-1B visa status)?", "Boolean"),
         ]))
-        self.assertIn("broad_sponsorship_question", example["g2_blockers"])
+        self.assertTrue(example["summary"]["broad_sponsorship_question"])
         named = summarize(_form([f("Will you require H-1B sponsorship?", "Boolean")]))
-        self.assertNotIn("broad_sponsorship_question", named["g2_blockers"])
-        self.assertEqual(len(named["summary"]["sponsorship_questions"]), 1)
+        self.assertFalse(named["summary"]["broad_sponsorship_question"])
+        citizenship = summarize(_form([f("In which country do you have citizenship?", "ValueSelect", options=["China"])]))
+        self.assertIn("citizenship_china", citizenship["required_corrections"])
 
     def test_essay_export_and_artifact_block(self):
         form = summarize(_form([

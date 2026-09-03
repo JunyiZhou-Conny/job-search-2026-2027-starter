@@ -16,11 +16,11 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 
 - Hard eligibility ≠ sponsorship probability. See `docs/eligibility.md`.
 - Never mark a role `ineligible` only because sponsorship is `no` or `unclear`.
-- Broad visa-sponsorship **form** questions are pending Junyi's written
-  confirmation (2026-09-03): leave them for him and do not Submit that
-  form. H-1B-named questions follow `knowledge/work_authorization.yaml`.
-  If they ask for visa **type**, put **F-1**. The fact
-  `future_sponsorship_required: true` is unchanged.
+- Visa-sponsorship **form** answer, confirmed by Junyi in writing on
+  2026-09-03: **No** on any broad "now or in the future" widget.
+  Citizenship widgets: **China**. If they ask for visa **type**, put
+  **F-1**. Re-read these widgets after every autofill (Copilot set United
+  States once). The fact `future_sponsorship_required: true` is unchanged.
 - Graduation **date** widgets: **2026-12-18**. Year-only widgets: **2027**.
 - Non-US work location (Belgrade, etc.) → skip. Do not Submit.
 - Use `pursuit_lane`: `core` | `broad` | `practice`.

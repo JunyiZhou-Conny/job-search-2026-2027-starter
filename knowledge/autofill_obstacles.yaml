@@ -247,10 +247,10 @@ nirmata_2026-08-23:
 
 gaps:
   - id: citizenship_country
-    status: missing
-    already_in: null
-    form_effect: "Twitch citizenship and export-control country widgets; Copilot picked United States, which is wrong for an F-1 student"
-    ask_later: "Which country to give on citizenship and export-control widgets. Store it in knowledge/work_authorization.yaml once confirmed."
+    status: resolved
+    already_in: "knowledge/work_authorization.yaml citizenship_country China (Junyi 2026-09-03)"
+    form_effect: "Twitch citizenship and export-control country widgets; Copilot picked United States, which is wrong"
+    ask_later: null
 
   - id: harvard_discipline_and_end_date_on_greenhouse
     status: in_repo_unused

@@ -104,13 +104,13 @@ def summarize(form: Dict) -> Dict:
     blockers = []
     if s["required_essays"]:
         blockers.append("required_essay")
-    if s["broad_sponsorship_question"]:
-        blockers.append("broad_sponsorship_question")
     if s["export_control_question"]:
         blockers.append("export_control_question")
     if s["external_artifact"]:
         blockers.append("external_artifact")
     form["g2_blockers"] = blockers
+    form["required_corrections"] = (["sponsorship_answer_no"] if s["sponsorship_questions"] else []) + \
+        (["citizenship_china"] if any(re.search(r"citizenship|nationality", f["title"], re.I) for f in form["fields"]) else [])
     return form
 
 
@@ -123,7 +123,7 @@ def render(form: Dict) -> str:
     for f in form["fields"]:
         opts = f" {f['options'][:6]}" if f["options"] else ""
         lines.append(f"   [{'REQ' if f['required'] else 'opt'}] {f['type']:<16} {f['title'][:110]}{opts}")
-    lines.append(f"   G2 blockers: {form['g2_blockers'] or 'none'}")
+    lines.append(f"   G2 blockers: {form['g2_blockers'] or 'none'}; corrections: {form['required_corrections'] or 'none'}")
     return "\n".join(lines)
 
 

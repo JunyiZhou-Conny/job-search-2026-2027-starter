@@ -24,17 +24,11 @@ always:
     form_answer: "No"
 
   visa_sponsorship:
-    status: pending_owner_confirmation
-    form_answer: "leave_for_junyi"
-    recorded_2026_08_24: "No, I do not need sponsorship"
-    pending_reason: >
-      2026-09-03. The 08-24 widget answer No contradicts the recorded fact
-      future_sponsorship_required: true, and the 08-24 text is agent prose
-      that Junyi has not confirmed in writing. Until he confirms one
-      answer per exact question wording, a broad sponsorship question is a
-      stop-the-line item (docs/policy/SUBMIT_ROLLOUT.md). H-1B-named
-      questions keep the H-1B rule in work_authorization.yaml.
-    accept_also_once_confirmed: ["No", "None"]
+    status: owner_confirmed
+    confirmed_by: "Junyi, written, 2026-09-03 (Twitch review)"
+    form_answer: "No"
+    accept_also: ["No, I do not need sponsorship", "None"]
+    see: "knowledge/work_authorization.yaml form_strategy.visa_sponsorship"
     when: >
       Will you now or in the future require visa sponsorship? / require
       sponsorship? / visa sponsorship yes-no / None. Prefer the exact No
@@ -49,6 +43,34 @@ always:
       Junyi Hayden review 2026-08-24. Computer-use had flipped Hayden
       from Copilot No to Yes under the old rule. Form still shows Yes.
       Not re-clicked. Later pass must set No.
+
+  citizenship_country:
+    decided: "2026-09-03"
+    form_answer: "China"
+    when: "Country of citizenship / nationality. Also the export-control country widget."
+    see: "knowledge/work_authorization.yaml form_strategy.citizenship_country"
+    copilot_note: "Copilot set United States on Twitch 2026-09-03. Always re-read this widget after autofill."
+
+  permanent_resident_elsewhere:
+    decided: "2026-09-03"
+    form_answer: "No"
+    when: "Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?"
+
+  eligible_to_begin_employment_immediately:
+    decided: "2026-09-03"
+    form_answer: "Yes"
+    when: "If offered employment, would you be legally eligible to begin employment immediately?"
+
+  eeo_self_identification:
+    decided: "2026-09-03"
+    rule: "Preserve the values Simplify Copilot fills from Junyi's profile. Do not clear them. Do not change them."
+    junyi_confirmed_values:
+      gender: "Male"
+      hispanic_latino: "No"
+      race: "Asian"
+      veteran_status: "I am not a protected veteran"
+      disability: "No, I do not have a disability and have not had one in the past"
+    note: "Supersedes the 2026-08-22 eeo_touched block rule for these five categories. A different value from Copilot is still a stop-the-line item."
 
   years_of_relevant_experience:
     decided: "2026-08-24"

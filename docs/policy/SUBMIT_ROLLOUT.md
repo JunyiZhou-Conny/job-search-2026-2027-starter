@@ -29,7 +29,7 @@ gate, and the two files must agree.
 |---|---|---|---|---|---|
 | G0 fill only | `check_apply_harness.py` ready | open | open | open | closed (account wall) |
 | G1 fill plus human review | identity check at run start, stop-the-line table applied | open | open | untested | closed |
-| G2 limited autonomous regular Submit | one tab, Autofill once, corrections from repo knowledge, no required free response or answer from the approved bank, sponsorship question absent or H-1B-named, cap 3 per run, banner plus a durable second signal, ledger row written before the next job, rerun shows no duplicate | closed. 4 of 4 controlled Submits on 2026-08-24 were practice-lane, identity-only forms with a banner and a Simplify overlay. Opens after one wanted regular role completes the full protocol below with durable evidence and a blocked rerun. | closed | closed | closed |
+| G2 limited autonomous regular Submit | one tab, Autofill once, corrections from repo knowledge, no required free response or answer from the approved bank, every sponsorship, citizenship, and export-control widget re-read after correction, cap 3 per run, banner plus a durable second signal, ledger row written before the next job, rerun shows no duplicate | closed. 4 of 4 controlled Submits on 2026-08-24 were practice-lane, identity-only forms with a banner and a Simplify overlay. Opens after one wanted regular role completes the full protocol below with durable evidence and a blocked rerun. | closed | closed | closed |
 | G3 broader regular automation | 10 consecutive verified regular Submits with zero wrong-fact incidents, one independent channel (confirmation email or application id) wired, scheduled run proven idempotent twice | closed | closed | closed | closed |
 | prioritized rows | human review packet before Submit, always | policy | policy | policy | policy |
 
@@ -37,11 +37,12 @@ gate, and the two files must agree.
 
 Block Submit and record the reason when any of these hold.
 
-- Copilot filled EEO (gender, race, veteran). `disability_status` is the
-  one EEO field with a standing answer (No).
-- Work authorization widget shows US citizen or green card.
-- A sponsorship question is broad ("now or in the future") and the
-  owner's confirmation in section "Open owner decisions" is still open.
+- Copilot filled an EEO field with a value other than the five Junyi
+  confirmed in `form_strategy.yaml` `eeo_self_identification`.
+- Work authorization widget shows US citizen or green card, or a
+  citizenship or export-control widget shows anything other than China.
+- A sponsorship widget shows anything other than No after the correction
+  pass.
 - A required free response has no approved answer in
   `knowledge/written_response_bank.yaml` or
   `docs/apply/written_answers/`.
@@ -83,15 +84,13 @@ Block Submit and record the reason when any of these hold.
 
 ## Open owner decisions
 
-- Broad sponsorship question. The 08-24 recorded answer "No, I do not
-  need sponsorship" contradicts the fact `future_sponsorship_required:
-  true`, and the recording is agent prose. On 2026-09-03 the standing
-  answer in `knowledge/form_strategy.yaml` and
-  `knowledge/work_authorization.yaml` was set back to `leave_for_junyi`
-  and `never_lie_to_bypass_ats` back to `true`. Junyi decides, in
-  writing, one answer per exact question wording. Until then agents
-  skip Submit on forms that ask it broadly and answer No only when the
-  question names H-1B.
+- Broad sponsorship question. Resolved 2026-09-03. Junyi confirmed in
+  writing: answer No on any "now or in the future need sponsorship or
+  immigration support" widget. Citizenship China, no permanent residence
+  elsewhere, eligible to begin immediately Yes, and Copilot's EEO values
+  preserved. Recorded in `knowledge/work_authorization.yaml` and
+  `knowledge/form_strategy.yaml`. The fact `future_sponsorship_required:
+  true` is unchanged.
 - Outlook MCP authentication for confirmation-email verification.
 
 ## History
