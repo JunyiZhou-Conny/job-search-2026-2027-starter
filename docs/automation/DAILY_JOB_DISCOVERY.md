@@ -130,10 +130,17 @@ produces more than triage can honestly review.
 ## Phase 0 — Setup
 
 - Working directory = repo root
-- Create folders if missing: data/discovery/, generated/, generated/logs/, jobs/inbox/
+- Check out the delivery branch first (see "Delivery" below), then create folders if missing: data/discovery/, generated/, generated/logs/, jobs/inbox/
 - Prefer existing venv if present: `.venv/bin/python` and Playwright already installed
 - If scripts exist, prefer running them; if a script fails, fall back to equivalent browser/table scrape and still produce CSVs
-- Record a run timestamp `RUN_TS` ISO local, and `DAY=YYYY-MM-DD`
+- Record the run stamp once and reuse it for every command in this run:
+
+      RUN="$(date -u +%Y-%m-%dT%H)"   # UTC day and hour, e.g. 2026-09-03T13
+      DAY="${RUN%T*}"                 # calendar day the exporters key their CSVs by
+
+  The morning run (13:xx UTC) and the evening run (22:xx UTC) get different
+  stamps, so their artifacts never collide. Never reuse a stamp from an
+  earlier run, and never drop the `T` hour to fall back to a day-keyed name.
 
 ## Phase 1 — Discover
 
@@ -141,17 +148,21 @@ Preferred commands (if files exist in repo):
 
 .venv/bin/python scripts/automation/export_jobright_discovery.py
 .venv/bin/python scripts/automation/export_board_lists.py
-.venv/bin/python scripts/automation/merge_discovery.py --date "$DAY"
+.venv/bin/python scripts/automation/merge_discovery.py --date "$RUN"
 
-Or one-shot:
+Or one-shot (it stamps the merge from the clock at that moment; read the
+`run=` line in its log and set `RUN` to that value if it differs):
 
 .venv/bin/python scripts/automation/run_discovery.py
 
 Expected per-source outputs — one CSV per (track x category):
 - data/discovery/${DAY}_jobright.csv
 - data/discovery/${DAY}_{newgrad,intern}_{swe,ml_ai,data_science,data_analysis,healthcare}.csv
-- data/discovery/${DAY}_all.csv   ← merged unique URLs
-- jobs/inbox/daily-${DAY}.md      ← human inbox
+- data/discovery/${RUN}_all.csv   ← merged unique URLs, one per run
+- jobs/inbox/daily-${RUN}.md      ← human inbox, one per run
+
+The per-source CSVs stay day-keyed because they are gitignored scratch. Only
+the merged file and everything downstream carry the run stamp.
 
 Ten board files is normal under v2 scope. Expect ~110–130 unique rows after
 dedupe (the swe-only v1 scope produced ~37). The two `_healthcare.csv` files are
@@ -176,9 +187,11 @@ If boards fail entirely:
 
 ## Phase 2 — Prepare triage pack
 
-.venv/bin/python scripts/triage_discovery.py --date "$DAY"
+.venv/bin/python scripts/triage_discovery.py --date "$RUN"
 
 This only copies/prepares the pack. It must NOT decide keep/later/skip.
+It writes generated/discovery_for_triage_${RUN}.csv and
+generated/discovery_triage_prompt_${RUN}.md.
 
 Also read (if present):
 - knowledge/discovery_triage_rules.yaml
@@ -186,8 +199,8 @@ Also read (if present):
 
 ## Phase 3 — AI triage (YOU decide; scripts do not)
 
-Read EVERY row in data/discovery/${DAY}_all.csv
-(or generated/discovery_for_triage_${DAY}.csv).
+Read EVERY row in data/discovery/${RUN}_all.csv
+(or generated/discovery_for_triage_${RUN}.csv).
 
 For each row assign exactly one: keep | later | skip
 
@@ -244,16 +257,16 @@ For each row assign exactly one: keep | later | skip
 - Leave user_confirm blank
 
 ### Write outputs
-- generated/discovery_triage_${DAY}.csv
+- generated/discovery_triage_${RUN}.csv
   Required columns:
   decision, company, role, url, source, track, work_model, location,
   posted_relative, fetched_at, suggested_lane, suggested_cluster,
   confidence, reason, evidence_basis, grad_display_hint, user_confirm
-- generated/discovery_triage_${DAY}.md
+- generated/discovery_triage_${RUN}.md
   Counts + KEEP list with links + grad_display_hint + short SKIP themes
 
 Optional:
-.venv/bin/python scripts/triage_discovery.py --date "$DAY"
+.venv/bin/python scripts/triage_discovery.py --date "$RUN"
 
 ### Resolve employer apply URLs (required after triage)
 
@@ -261,7 +274,7 @@ Jobright discovery URLs cannot be applied to (signup wall). After writing the
 triage CSV, resolve employer ATS links for every KEEP:
 
 ```bash
-python3 scripts/resolve_apply_url.py --date "$DAY" --write-csv
+python3 scripts/resolve_apply_url.py --date "$RUN" --write-csv
 ```
 
 This appends (does not remove) columns:
@@ -271,7 +284,17 @@ Only `exact` / `strong` matches become `apply_url`. Weak matches stay recorded
 in confidence/evidence but leave apply_url blank — a wrong link is worse than none.
 
 Known boards live in `knowledge/careers_boards.yaml` (Greenhouse / Ashby / Lever /
-Workday CXS). Add verified employers there when you find them.
+Workday CXS). Add verified employers there when you find them, then rewrite the
+file in canonical order before you commit:
+
+```bash
+python3 scripts/automation/normalize_careers_boards.py
+```
+
+The file is sorted by company inside each section. Appending at the bottom is
+fine; the normalizer moves the entry into place and drops a spelling that
+duplicates an existing board (`Nvidia` next to `NVIDIA`). Two runs that each
+add a company then touch one line each in stable positions and merge cleanly.
 
 In the Phase 5 report, include:
   - KEEP with a resolved apply_url: N
@@ -283,22 +306,78 @@ Stop before applications.csv.
 Ingest only if the triggering user message explicitly confirms keeps
 (e.g. “ingest all keep” / “confirm keep 1,2,5”).
 If confirmed, use:
-.venv/bin/python scripts/ingest_discovery_triage.py --date "$DAY"
+.venv/bin/python scripts/ingest_discovery_triage.py --date "$RUN"
 and report new job ids.
+
+## Delivery (the `automation/discovery` branch)
+
+Every run lands on one long-lived branch, `automation/discovery`. Do not open
+a pull request against `main` for a discovery run.
+
+Why one branch instead of pushing to `main`: `main` stays human-gated, so a
+run that misfires never lands there unreviewed and the owner's own PRs never
+race a twice-daily bot commit. Each run fast-forwards one linear history, so
+there is nothing to merge pairwise and the owner lands the accumulated runs
+with one PR whenever wanted. The apply stage reads the branch tip directly
+(`git fetch origin automation/discovery`), so consumability does not depend
+on a human merge.
+
+At the start of the run (Phase 0), before any script writes a file:
+
+```bash
+git fetch origin main
+git fetch origin automation/discovery || echo "first run: the branch does not exist yet"
+git checkout -B automation/discovery origin/automation/discovery 2>/dev/null \
+  || git checkout -B automation/discovery origin/main
+git merge --no-edit origin/main
+```
+
+The merge brings in the current scripts and rules from `main`, so the branch
+never runs stale code. If it conflicts, stop, do not resolve by hand, and
+report the conflicting paths in Phase 5.
+
+After Phase 3 (and Phase 4 only when ingest was confirmed):
+
+```bash
+python3 scripts/automation/normalize_careers_boards.py
+git add "generated/discovery_for_triage_${RUN}.csv" \
+        "generated/discovery_triage_prompt_${RUN}.md" \
+        "generated/discovery_triage_${RUN}.csv" \
+        "generated/discovery_triage_${RUN}.md" \
+        "jobs/inbox/daily-${RUN}.md" \
+        knowledge/careers_boards.yaml
+git commit -m "Discovery run ${RUN}"
+git fetch origin automation/discovery && git merge --no-edit origin/automation/discovery
+git push -u origin automation/discovery
+```
+
+The second fetch and merge pick up anything another run pushed while this one
+was working, so the push is a plain fast-forward. On the first run the fetch
+finds no branch, the merge is skipped, and the push creates it. Never force-push and never
+rebase this branch. If `careers_boards.yaml` conflicts on that merge, keep
+both sides' entries, run the normalizer again, `git add` the file, and
+`git commit --no-edit` to finish the merge before pushing. If the push is
+rejected for permissions, push the same commit to `cursor/discovery-${RUN}`
+and open the PR against `automation/discovery`, not `main`.
+
+Consumers: `scripts/generate_apply_queue.py --date "$DAY"` picks the newest
+run of that day and `--date "$RUN"` picks one run; without `--date` the day
+is today. Old day-keyed files still load.
 
 ## Phase 5 — Final reply to user (required format)
 
 Write a concise report:
 
-### Daily discovery — ${DAY}
+### Daily discovery — ${RUN}
 - Sources OK / failed: Matches | newgrad_swe | intern_swe
 - Merged unique jobs: N
 - Triage: keep=X later=Y skip=Z
+- Delivered: automation/discovery @ <short sha>
 - Artifacts:
-  - data/discovery/${DAY}_all.csv
-  - generated/discovery_triage_${DAY}.csv
-  - generated/discovery_triage_${DAY}.md
-  - jobs/inbox/daily-${DAY}.md
+  - data/discovery/${RUN}_all.csv
+  - generated/discovery_triage_${RUN}.csv
+  - generated/discovery_triage_${RUN}.md
+  - jobs/inbox/daily-${RUN}.md
 
 ### KEEP (actionable)
 Numbered list: Company — Role — lane/cluster — grad_display_hint — **apply_url** (or “unresolved”)

@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """One-shot discovery run: Jobright matches + board lists + merge.
 
-Intended cadence (see docs/automation/DAILY_JOB_DISCOVERY.md):
-  - Morning (~08:30): full discovery
-  - Afternoon (~16:00): optional refresh for late HR postings
-  - True real-time on every new posting: not yet; experiment later
+Cadence (see docs/automation/DAILY_JOB_DISCOVERY.md): two Cursor Automations,
+morning at 09:00 and evening at 18:00 America/New_York (13:xx and 22:xx UTC in
+summer). Each run stamps its merged output with the UTC run stamp
+YYYY-MM-DDTHH, so the two runs of one day never overwrite each other.
+True real-time on every new posting: not yet; experiment later.
 
 Stamps fetched_at inside each exporter so we know WHEN data was pulled.
 """
