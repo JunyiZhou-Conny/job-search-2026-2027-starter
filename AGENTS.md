@@ -101,11 +101,11 @@ week / meaning / culture questions only. A file there is not a submit.
 Copilot “Completed” on phone or resume is not proof the widget has a
 value. Look at the page. Especially on prioritized companies.
 
-If Junyi already accepted a draft and said type it: **one paste**. Copy
-`docs/automation/COMPUTER_USE_PROMPT.md` into the `computerUse` Task.
-Do not add verify steps. The parent writes that prompt; Cursor does not
-generate a second one from chat. See
-`knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
+Computer Use is hands only. The parent compiles an action sheet through
+`scripts/compile_cu_task.py` and `docs/automation/COMPUTER_USE_PROMPT.md`.
+Do not spawn a clicker to rediscover, audit, or pretty-screenshot a form
+you already understand. Leftover Why-us paste is still one execute/paste
+spawn. See `knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
 
 ## Automation safety
 

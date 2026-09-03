@@ -480,9 +480,10 @@ leftover_typing_one_pass:
   when: "Junyi already accepted a draft and said type it / he will Submit"
   parent_writes_the_clicker_prompt: true
   prompt_template: "docs/automation/COMPUTER_USE_PROMPT.md"
+  compiler: "scripts/compile_cu_task.py"
   do:
     - One computer-use call.
-    - Copy the template. Fill only tab, URL, field, and accepted text.
+    - Compile leftover_paste.yaml or copy the leftover template.
     - Find the tab. Click the box. Select all. Paste once.
     - One screenshot. Stop.
   do_not:

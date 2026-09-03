@@ -1,28 +1,38 @@
 ---
-description: Computer-use leftover typing is fire-and-forget. Parent writes the clicker prompt.
+description: Parent compiles a bounded Computer Use Task. Clicker is hands only.
 alwaysApply: true
 ---
 
-# Computer-use fire-and-forget
+# Computer Use is hands, not a second brain
 
-You (the parent) write the `computerUse` Task prompt. Cursor does not
-write a second secret prompt from Junyi's chat. The clicker starts
-with a clean context: no parent conversation, and no automatic load
-of `AGENTS.md`, `.cursor/rules`, or `knowledge/*`. If a standing
-rule is not in the Task string, the child does not have it. A long
-verify-heavy prompt is how Charta burned tokens.
+You (the parent) write the `computerUse` Task prompt. The clicker starts
+with a clean context: no parent conversation, and no automatic load of
+`AGENTS.md`, `.cursor/rules`, or `knowledge/*`. Cursor's unpublished
+computer-use prompt is fixed. Bound the job so conservative observation
+cannot become an open-ended scroll.
 
-When Junyi already accepted text and said type it:
+Before any `computerUse` spawn:
 
-1. Read `docs/automation/COMPUTER_USE_PROMPT.md`.
-2. Copy that template. Fill only tab, URL, and the accepted text.
-3. One `computerUse` call. Do not resume it to verify.
+1. Resolve facts in the parent. Compile an action sheet of final actions
+   in page order. Do not ask the clicker to rediscover the form.
+2. Run `python3 scripts/compile_cu_task.py compile <sheet.yaml>`.
+   If you write a Task by hand, run `lint` on it. Hits mean do not send.
+3. One mode per spawn: execute, verify, repair, or submit. Do not combine
+   execute with a full-form audit.
 
-Forbidden in the Task prompt: Ctrl+F, Ctrl+End, phrase hunts, dropdown
-cleanup, Down-arrow scrolling, typo debug, "confirm Flask is present",
-screen recording unless he asked.
+Forbidden in the Task: verify-each-field, report every untouched widget,
+whole-form screenshot tours, fitting distant facts into one viewport,
+unbounded retries, Ctrl+F, Run Autofill Again, Generate with AI.
 
-After paste: one screenshot, stop. Truncated textarea is expected.
-Do not Run Autofill Again. Submit only when the parent's Task string
-says so under an open gate of `docs/policy/SUBMIT_ROLLOUT.md`, and then
-exactly once.
+After mutations: wait for settle, capture the minimum evidence, stop.
+A truncated textarea is expected. Distant facts get two screenshots.
+
+Searchable dropdowns: click the option (highlight is not a commit), Tab
+off, one read-back, one alternate commit, then unresolved. Do not loop.
+
+Submit only when the compiled sheet has `mode: submit` and
+`submit_permitted: true` under an open gate of
+`docs/policy/SUBMIT_ROLLOUT.md`, and then exactly once.
+
+Canonical contract: `docs/automation/COMPUTER_USE_PROMPT.md`.
+Leftover Why-us paste is still one execute/paste spawn.

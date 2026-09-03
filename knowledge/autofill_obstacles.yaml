@@ -149,6 +149,15 @@ phenomena:
       durable fix is the Simplify profile itself (discipline Data Science,
       program end December 2026), which only Junyi can edit in the extension.
       Until then, education leftovers are review items, not blockers.
+    semantic_vs_persistence: >
+      The intended Harvard discipline is Data Science, then Computer Science,
+      then Mathematics (`form_strategy.education_discipline_or_field_of_study`).
+      A degree End date means program completion December 2026 unless the
+      widget text says commencement or ceremony (March 2027). Those facts
+      did not change when the widget reverted. Highlighting a searchable
+      option is not a commit. Click the option, Tab off, one settle
+      read-back, one alternate commit, then stop. Do not loop.
+    reusable_commit: searchable_dropdown
 
 positive_signals:
   - id: need_review_matches_empty_fields

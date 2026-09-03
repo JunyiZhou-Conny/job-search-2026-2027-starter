@@ -1,64 +1,128 @@
-# Computer-use leftover prompt (copy this)
+# Computer Use contract (parent compiler)
 
 **Audience:** the parent Cloud Agent about to spawn `computerUse`.
-**Decided:** 2026-08-24 after Charta. Junyi: fire-and-forget. Do not verify.
+**Decided:** 2026-08-24 leftover paste after Charta; generalized 2026-09-03
+after Twitch burned ~74 minutes on three visual passes.
 
-The clicker only sees pixels and fake mouse/keyboard. It cannot read the
-DOM value of a textarea. If you ask it to prove the paste, it will
-Ctrl+F, fight autosuggest, and scroll. That is the token burn.
+The clicker starts with a clean Task context. It does not inherit this
+chat, `AGENTS.md`, `.cursor/rules`, or `knowledge/*`. Cursor's unpublished
+computer-use system prompt is fixed infrastructure. We do not replace it.
+We bound the job so conservative observation cannot become a 15–30 minute
+exploration.
 
-You cannot inject a custom system prompt into the Computer Use built-in.
-You **can** send this user prompt and nothing else.
+```text
+Parent            Action sheet         computerUse          Parent / verifier
+understands  -->  final actions   -->  bounded UI      -->  expected vs observed
+resolves facts    page order           no rediscovery       delta only
+```
+
+The parent is the brain. Computer Use is the hands. Verification is a
+separate responsibility. A child saying "✓" is not proof.
+
+## Before you spawn a clicker
+
+You must already know:
+
+- target tab and URL
+- whether Simplify already ran
+- exact fields that need mutation, with resolved answers
+- fields that must stay untouched
+- page order of the mutations
+- Submit permission (`docs/policy/SUBMIT_ROLLOUT.md`)
+- the evidence you actually need
+- any fact that still blocks execution
+
+If you do not know those, inspect first (structured state, DOM, existing
+screenshots). Do not spawn an EXECUTE worker to rediscover the form.
+
+Then:
+
+```bash
+python3 scripts/compile_cu_task.py compile path/to/sheet.yaml
+```
+
+Lint any hand-written Task string the same way:
+
+```bash
+python3 scripts/compile_cu_task.py lint path/to/task.txt
+```
+
+A Task that fails lint is not sent. The Twitch fill, correction, and
+read-only prompts are the regression fixtures
+(`tests/fixtures/computer_use/twitch_*.txt`).
+
+## Modes
+
+Use one mode per spawn. Do not combine them.
+
+| Mode | Does | Does not |
+|---|---|---|
+| `execute` | Named mutations in page order, then stop | Rediscover, audit untouched fields, verify after each click |
+| `verify` | Read named final-state facts | Click, type, compose one viewport of distant facts |
+| `repair` | Named mismatches only, one alternate commit each | Repeat the same interaction, touch other fields |
+| `submit` | One Submit click when the gate is open | Retry, Autofill Again, a second Submit |
+
+Leftover Why-us paste is `execute` with one `commit: paste` mutation.
+That is still one spawn, one paste, one screenshot, stop.
+
+## Page order and evidence
+
+Walk the form top → middle → bottom → stop. Reuse a page map from an
+earlier worker in this run. Do not make every child rediscover it.
+
+Evidence proves state. It does not need a pretty screenshot. Distant
+facts get two shots. Once a fact is readable, stop hunting for a
+viewport that shows both.
+
+Safety-critical fields (identity, citizenship, sponsorship, export
+control, work authorization, resume, consequential EEO) still need a
+stable read after the page settles. Batch that read. Do not screenshot
+after every click.
+
+## Bounded retry and searchable dropdowns
+
+For a field that does not persist:
+
+1. Use the widget's normal commit.
+2. Observe the settled value once.
+3. Try one materially different commit.
+4. Mark the field unresolved and return to the parent.
+
+Highlighting a searchable-dropdown option is not a commit. Click the
+option, then Tab off the widget. If it reverts, try Enter as the one
+alternate, or the reverse. Do not encode "always press Enter."
+
+Twitch Harvard education (Greenhouse): discipline and end date showed
+the intended values, then reverted to Other / March 2027. Semantic
+answers stay in `form_strategy.yaml` (Data Science; degree end date is
+program completion December 2026 unless the widget text means
+commencement). Widget persistence is a separate obstacle
+(`greenhouse_education_widget_reverts_edits`).
 
 ## What the clicker can see
 
-Cursor docs: a Task child starts with a **clean context**. It does not
-get the parent chat. The parent must put every needed fact in the
-launch prompt
-([Subagents](https://cursor.com/docs/subagents.md)).
-
-`computerUse` is a reserved Cloud Task type (desktop mouse/keyboard
-on this VM). It is **not** the public **Browser** built-in on
-[subagents](https://cursor.com/docs/subagents.md) or the in-editor
-[Browser tools](https://cursor.com/docs/agent/tools/browser) page.
-Those three public built-ins are Explore, Bash, and Browser.
-
-The parent cannot replace the unpublished `computerUse` system
-prompt. Cursor's docs are silent on whether Task children auto-load
-`AGENTS.md`, `.cursor/rules`, skills, or `knowledge/*`. Stored
-clicker transcripts from the 2026-08-24 Ashby isolation runs show
-**one** user message only — the Task string. No `AGENTS.md`, no
-`form_strategy.yaml`, no leftover-typing rule.
-
-The clicker has:
-
 - pixels, mouse, keyboard, the same Chrome on this VM
-- whatever you copied into the Task prompt
-- Cursor's unpublished computer-use prompt (not ours)
+- whatever you put in the Task string
+- Cursor's unpublished computer-use prompt
 
-The clicker does **not** have:
+It cannot read a textarea DOM value. Asking it to prove a paste with
+Ctrl+F is how Charta burned tokens.
 
-- this parent conversation
-- `AGENTS.md` / `.cursor/rules` / `knowledge/*` unless you paste them
-- memory of earlier 10-tab reviews unless you write that into the prompt
+## Forbidden in every Task
 
-If you omit a standing rule (no Autofill Again, no verify loop, sponsorship
-No), the child can fall back to retries. That is not a hidden second
-prompt from Junyi's chat. It is a short Task string plus a generic
-clicker. The parent has to compile the rulebook into that string.
+Submit unless mode is `submit` and `submit_permitted` is true under
+`docs/policy/SUBMIT_ROLLOUT.md`. Autofill Again. Generate with AI.
+Reload after a filled form. Ctrl+F / phrase hunts. Screen recording
+unless Junyi asked. A field-by-field audit of untouched widgets.
 
-## Parent steps
+## Leftover paste (still valid)
 
-1. One `Task` with `subagent_type=computerUse`.
-2. Prompt = the template below, with tab / URL / text filled in.
-3. Do not add "verify", "confirm", "search for", or "scroll to the end".
-4. Do not resume the same agent unless Junyi asks, or the first call
-   never reached the tab.
-5. Do not start a screen recording unless Junyi asked for a demo.
-
-## Template (copy)
+`tests/fixtures/computer_use/leftover_paste.yaml` compiles to the
+one-paste Task. You may still copy this by hand if the compiler is
+unavailable:
 
 ```text
+MODE EXECUTE. You are hands only. Do not rediscover the form.
 Same Chrome. Do not Submit. Do not Run Autofill Again. Do not click
 Generate with AI. Do not change any other field.
 
@@ -67,14 +131,11 @@ Generate with AI. Do not change any other field.
 2. Click the box: <FIELD LABEL>
 3. Ctrl+A. Paste the text between the markers once. Do not type it
    key by key. If an autosuggest dropdown opens, click the textarea
-   once and paste anyway. Do not press Escape in a loop. Do not
-   click away to "clean" the dropdown.
+   once and paste anyway. Do not press Escape in a loop.
 4. Click once outside the box.
 5. One screenshot of the page. Stop.
 
-Do not Ctrl+F. Do not Ctrl+End. Do not press Down to read the
-textarea. Do not hunt for phrases. A cropped textarea is normal.
-Do not start a second pass.
+A cropped textarea is normal. Do not start a second pass.
 
 -----BEGIN TEXT-----
 <ACCEPTED DRAFT, EXACT>
@@ -83,13 +144,8 @@ Do not start a second pass.
 
 ## If the first pass fails
 
-- Tab not found, or paste never happened → one retry with the same
-  template. Still no verify steps.
-- Textarea looks empty later → tell Junyi. He pastes, or he asks for
-  one more paste. Do not Autofill Again.
-- Dropdown / "thegoal" / 0/0 find-in-page → ignore. Not a retry reason.
-
-## Later (not this week)
-
-A DOM or Playwright fill would skip vision entirely. That is a
-separate helper. Do not build it in a leftover-typing pass.
+- Tab not found, or the named mutation never happened → one retry with
+  the same compiled Task. Still no verify-each steps.
+- A field reverted after one alternate commit → unresolved. Parent
+  records the obstacle. Do not Autofill Again.
+- Dropdown / find-in-page noise → ignore. Not a retry reason.

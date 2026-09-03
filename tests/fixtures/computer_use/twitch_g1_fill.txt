@@ -1,0 +1,24 @@
+Fill-and-review pass (gate G1) on ONE job application form. HARD RULES: never click Submit, "Submit application", or any final Apply button. Never click Greenhouse's own "Autofill my application" or "Apply with MyGreenhouse" button (that is not Simplify). Never click Simplify "Generate with AI". Never click Simplify "Run Autofill Again" after corrections. Do not touch any EEO field (gender, race, ethnicity, veteran) except the disability question named below. Do not invent any fact. Do not open any other job.
+
+Browser: the already-open Google Chrome window (profile /home/ubuntu/.config/google-chrome, logged in to Simplify as Junyi Zhou). If Chrome is not open, launch `/opt/google/chrome/chrome --user-data-dir=/home/ubuntu/.config/google-chrome --no-first-run`. Close any tab other than Simplify tabs before starting so exactly one job tab is open.
+
+Steps:
+1. Open https://job-boards.greenhouse.io/twitch/jobs/8459320002 in a new tab. Confirm the page title is "Software Engineer I, Commerce Engineering" at Twitch. If it says the job is closed or no longer accepting applications, screenshot it, stop, and report "posting_closed".
+2. Scroll to the application form. Trigger Simplify Copilot ONCE: the Simplify extension shows a floating button or side panel on the page; click its "Autofill This Page" (or "Start Application") control. Wait for it to finish. If the Copilot panel never appears within 60 seconds, screenshot and report "copilot_not_visible"; do not type identity fields by hand.
+3. Take a screenshot of the identity section after autofill. Note exactly which resume file name Copilot attached, if any.
+4. Corrections. Set ONLY these fields, and only if Copilot left them empty or set a different value:
+   - Location: "Boston, MA" (if the field exists).
+   - Website: https://connyzhou.com
+   - LinkedIn Profile: https://www.linkedin.com/in/junyi-zhou-270208247
+   - "Are you currently a Twitch employee?": No
+   - "Are you open to relocation?": Seattle, WA
+   - "Are you a current employee with Amazon or any Amazon subsidiary (outside of Twitch)?": No
+   - "Have you previously been employed by Amazon or any Amazon subsidiary?": No
+   - "Have you held H-1B status, or had an H-1B petition approved on your behalf, within the preceding 6 years...": No
+   - "What is your expected total base pay compensation...": 110500
+   - Voluntary Self-Identification of Disability (only this EEO item): "No, I do not have a disability and have not had one in the past" (or the closest wording).
+   LEAVE UNTOUCHED, whatever Copilot did, and report the value shown: "Are you familiar with Twitch?", "Have you previously applied to Amazon or any Amazon subsidiary?", "Are you subject to a non-competition agreement...", "If offered employment by Amazon, would you be legally eligible to begin employment immediately?", the immigration/sponsorship question ("Do you need, or will you need in the future, any immigration..."), "In which country/region do you have citizenship?", "Since obtaining your most recent citizenship, did you afterwards become a permanent resident...", "For the sole purpose of determining export licensing requirements...", "Would you like to be considered for future opportunities at Twitch...", Cover Letter, and all other EEO items (gender, race, veteran).
+5. Take screenshots covering the whole filled form top to bottom (identity, each question block, EEO block, and the un-clicked Submit button). Save them as /workspace/generated/apply_runs/2026-09-03T13/twitch/01_identity.png, 02_questions_a.png, 03_questions_b.png, 04_eeo.png, 05_submit_unclicked.png (add more numbered files if needed).
+6. Leave the tab open exactly as filled. Do NOT submit.
+
+Report, precisely and without inference: whether the posting was open; whether Copilot ran and what it said in its panel (any "need review" count); the resume file name attached; for EVERY question on the form the value now shown (or "blank"), marking which ones Copilot set, which you corrected, and which you left untouched; whether Copilot touched any EEO field (gender, race, veteran) and what values; any error, CAPTCHA, or login wall; and the screenshot paths.

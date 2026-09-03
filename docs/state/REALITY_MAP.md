@@ -252,3 +252,17 @@ Rollout ladder (policy, supersedes the blanket ban).
 | Limited autonomous regular Submit | Ashby, one tab, no required free response or answer from the approved bank, sponsorship question absent or H-1B-named, cap 3 per run, banner plus a durable second signal, ledger row before next job | closed until unit 4 is verified (`config/submit_gates.yaml`) |
 | Broader regular automation | 10 consecutive verified regular Submits with zero wrong-fact incidents, one independent channel (email or application id) wired | closed |
 | Prioritized rows | human review packet before Submit, always | policy |
+
+## 12. Checkpoint after integration (same day, later)
+
+PRs #100 and #102 are folded onto this branch. Discovery artifacts are
+run-stamped. The Ashby sweep is a merge source (`source=ashby_sweep`).
+Broad sponsorship is a required correction, not a G2 blocker.
+
+Computer Use is a compiled action sheet
+(`scripts/compile_cu_task.py`, `docs/automation/COMPUTER_USE_PROMPT.md`).
+Twitch is the regression case, not a live re-audit:
+`docs/experiments/2026-09-03_twitch_cu_cost.md`. Twitch stays
+unsubmitted. The next unit is still one regular Ashby apply under
+`docs/policy/SUBMIT_ROLLOUT.md`. G2 stays closed until that unit has
+durable evidence and a blocked rerun.
