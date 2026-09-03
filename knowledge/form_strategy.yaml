@@ -4,7 +4,7 @@
 # Do not Submit unless Junyi explicitly says so for a named row.
 
 last_updated: "2026-08-27"
-source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules; Junyi leftover rules after Advanced Space redo 2026-08-25"
+source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules; Junyi 2026-08-25 work-auth / GPA / website / discipline; Junyi leftover rules after Advanced Space redo 2026-08-25"
 
 always:
   employed_by_this_company_before:
@@ -171,6 +171,40 @@ always:
       Junyi 2026-08-23 on Traba. 90k is the no-information default, not
       a target when the posting already prints a range.
 
+  gpa:
+    decided: "2026-08-25"
+    harvard_masters: "4.0"
+    emory_undergrad: "3.925"
+    if_only_one_gpa_box: "4.0"
+    when: "GPA / undergraduate GPA / graduate GPA / current GPA"
+    do_not: "Invent any other GPA, SAT, ACT, or a third-school GPA."
+    reason: >
+      Junyi 2026-08-25: Harvard 4.0 is the current master's GPA and the
+      single-box default. Emory 3.925 is undergrad. These are on his
+      resume. Real numbers. Not invented.
+
+  personal_website:
+    decided: "2026-08-25"
+    form_answer: "https://connyzhou.com"
+    when: "Personal website / portfolio / website URL"
+    supersedes: "later_not_this_run.personal_website empty-until-live-URL"
+    reason: >
+      Junyi 2026-08-25: he is registering this site and wants it on
+      applications. Use this URL on forms. Cover letter stays parked.
+
+  education_discipline_or_field_of_study:
+    decided: "2026-08-25"
+    prefer_in_order: ["Data Science", "Computer Science", "Mathematics"]
+    if_none_exist: "Other"
+    when: "Education discipline / field of study / major / area of study"
+    if_copilot_picks_other_on_masters: >
+      Flip off Other. Prefer Data Science, then Computer Science,
+      then Mathematics.
+    reason: >
+      Junyi 2026-08-25: Copilot often wrongly picks Other on the
+      master's. Prefer the listed order. Other only if none of those
+      options exist.
+
   disability_status:
     decided: "2026-08-25"
     form_answer: "No"
@@ -290,8 +324,11 @@ leave_for_junyi:
 later_not_this_run:
   cover_letter: >
     Empty unless Junyi asks for one. Lila 2026-08-23: missing cover
-    letter is expected, not a Copilot miss.
-  personal_website: "Empty until a live URL exists. GitHub is already in profile.yaml."
+    letter is expected, not a Copilot miss. Still parked 2026-08-25.
+  personal_website: >
+    SUPERSEDED 2026-08-25. Do not leave empty. Use
+    always.personal_website https://connyzhou.com. Old rule was
+    empty until a live URL exists.
 
 # Trust the visible form, not the Copilot sidebar (Lila 2026-08-23 evening)
 copilot_sidebar_is_not_the_form:
@@ -346,15 +383,22 @@ us_person_export_control:
     - mark ineligible only because the form has ITAR / U.S. Person
     - spend prioritized Why-us time on rocket / defense export forms
 
-# "Authorized to work for any employer" (Hayden AI 2026-08-23)
+# "Authorized to work for any employer" / work authorization in that country
+# Hayden leftover 2026-08-23 SUPERSEDED 2026-08-25
 authorized_for_any_employer:
-  decided: "2026-08-23"
-  form_answer: "leave_for_junyi"
-  when: "Are you authorized to work in the United States for any employer?"
+  decided: "2026-08-25"
+  form_answer: "Yes"
+  always: true
+  when: >
+    Are you authorized to work in the United States for any employer?
+    / authorized to work for any employer? / work authorization to
+    work in that country?
+  if_copilot_set_no: "Flip to Yes."
+  supersedes: "2026-08-23 Hayden leave_for_junyi leftover"
   reason: >
-    Copilot answered Yes on Hayden. F-1 is not a blanket any-employer
-    authorization. Do not treat that Yes as verified. Do not silently
-    flip it to No. Leftover until Junyi or HIO wording is confirmed.
+    Junyi 2026-08-25: form_answer Yes, always. He stated this is the
+    truth for his applications. Not an invention. If Copilot set No,
+    flip to Yes.
 
 # Country-named sponsorship is not the US Yes-rule (Perplexity 2026-08-23)
 country_specific_sponsorship:
