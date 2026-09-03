@@ -59,7 +59,12 @@ def fetch(url: str, timeout: int = 20) -> Dict:
     body = json.dumps({"operationName": "ApiJobPosting", "query": QUERY,
                        "variables": {"organizationHostedJobsPageName": ref["org"], "jobPostingId": ref["id"]}}).encode()
     req = urllib.request.Request(ENDPOINT, data=body, headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"})
-    data = json.load(urllib.request.urlopen(req, timeout=timeout))
+    try:
+        data = json.load(urllib.request.urlopen(req, timeout=timeout))
+    except Exception as exc:  # network, HTTP, or JSON failure is a blocked probe, not a crash
+        return {"url": url, "org": ref["org"], "error": f"{type(exc).__name__}: {exc}"[:200]}
+    if data.get("errors"):
+        return {"url": url, "org": ref["org"], "error": f"graphql: {data['errors'][0].get('message', '')}"[:200]}
     posting = (data.get("data") or {}).get("jobPosting")
     if posting is None:
         return {"url": url, "org": ref["org"], "open": False}
@@ -111,7 +116,7 @@ def summarize(form: Dict) -> Dict:
 
 def render(form: Dict) -> str:
     if form.get("error"):
-        return f"{form['url']}: {form['error']}"
+        return f"{form['url']}: PROBE ERROR {form['error']}"
     if not form["open"]:
         return f"{form['url']}: CLOSED (posting not found)"
     lines = [f"== {form['org']} | {form['title']} | {form['location']} | {form['workplace']} | {form['employment']} | published {form['published']}"]

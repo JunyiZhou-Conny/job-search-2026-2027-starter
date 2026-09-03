@@ -10,7 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from ashby_form import parse_url, summarize  # noqa: E402
+import ashby_form  # noqa: E402
+from ashby_form import fetch, parse_url, summarize  # noqa: E402
 
 
 def _form(fields):
@@ -54,6 +55,23 @@ class TestAshbyForm(unittest.TestCase):
         ]))
         self.assertEqual(sorted(form["g2_blockers"]), ["export_control_question", "external_artifact", "required_essay"])
         self.assertEqual(form["summary"]["required_essays"], ["Why are you a fit for this role?"])
+
+
+class TestFetchFailures(unittest.TestCase):
+    def test_network_failure_is_a_probe_error_not_an_exception(self):
+        def boom(*a, **k):
+            raise OSError("connection reset")
+        original = ashby_form.urllib.request.urlopen
+        ashby_form.urllib.request.urlopen = boom
+        try:
+            out = fetch("https://jobs.ashbyhq.com/acme/3dc0a0f6-6a53-4a8c-bc70-b007113c348a")
+        finally:
+            ashby_form.urllib.request.urlopen = original
+        self.assertIn("OSError", out["error"])
+        self.assertNotIn("open", out)
+
+    def test_non_ashby_url_is_an_error(self):
+        self.assertEqual(fetch("https://boards.greenhouse.io/x/jobs/1")["error"], "not an Ashby posting URL")
 
 
 if __name__ == "__main__":
