@@ -36,6 +36,11 @@ class TestAshbyForm(unittest.TestCase):
     def test_broad_sponsorship_blocks_but_h1b_named_does_not(self):
         broad = summarize(_form([f("Do you now, or will you in the future, need US visa sponsorship?", "Boolean")]))
         self.assertIn("broad_sponsorship_question", broad["g2_blockers"])
+        # Live Ashby/Greenhouse copy lists H-1B as an example inside the broad ask.
+        example = summarize(_form([
+            f("Will you now or in the future require sponsorship for employment visa status (e.g., H-1B visa status)?", "Boolean"),
+        ]))
+        self.assertIn("broad_sponsorship_question", example["g2_blockers"])
         named = summarize(_form([f("Will you require H-1B sponsorship?", "Boolean")]))
         self.assertNotIn("broad_sponsorship_question", named["g2_blockers"])
         self.assertEqual(len(named["summary"]["sponsorship_questions"]), 1)
