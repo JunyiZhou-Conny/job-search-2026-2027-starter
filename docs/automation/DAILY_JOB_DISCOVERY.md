@@ -159,8 +159,11 @@ Alongside the board scrape, run the Ashby board sweep
 (`docs/automation/ASHBY_SWEEP.md`): `python3 scripts/automation/export_ashby_boards.py --days 7`.
 It needs no session, reads every board in `knowledge/ashby_orgs.yaml`, and writes
 `generated/ashby_sweep_{RUN}.csv` plus a digest with `g2_candidate` rows first.
-Those rows carry Ashby's true `publishedAt` and the form facts, so they skip the
-apply-URL resolution step; they still go through Phase 3 triage like any other row.
+`merge_discovery.py --date "$RUN"` reads that file and adds the postings to
+`${RUN}_all.csv` as `source=ashby_sweep`. Those rows already have an employer
+apply URL and form facts, so they skip the apply-URL resolution step; they
+still go through Phase 3 triage like any other row. Agency boards stay in
+the sweep for triage and never become `g2_candidate`.
 
 Expected per-source outputs — one CSV per (track x category):
 - data/discovery/${DAY}_jobright.csv

@@ -121,15 +121,16 @@ class TestSelection(unittest.TestCase):
 
 
 class TestG2Candidate(unittest.TestCase):
-    def test_recorded_kayak_form_is_blocked_by_broad_sponsorship(self):
+    def test_recorded_kayak_form_treats_sponsorship_as_a_correction(self):
         row = row_for(ORG, ASSOCIATE_SWE, fetch_recorded_form(ASSOCIATE_SWE["jobUrl"]))
-        self.assertEqual(row["g2_blockers"], "broad_sponsorship_question")
+        self.assertEqual(row["g2_blockers"], "")
+        self.assertEqual(row["required_corrections"], "sponsorship_answer_no")
         self.assertTrue(row["broad_sponsorship_question"])
         self.assertFalse(row["export_control_question"])
         self.assertFalse(row["external_artifact"])
         self.assertEqual(row["required_count"], 11)
         self.assertEqual(row["required_essays"], "")
-        self.assertFalse(row["g2_candidate"])
+        self.assertTrue(row["g2_candidate"])
         self.assertEqual(row["applyUrl"], ASSOCIATE_SWE["applyUrl"])
         self.assertIn("workplaceType=Hybrid", row["notes"])
 

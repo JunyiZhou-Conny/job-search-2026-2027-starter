@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-shot discovery run: Jobright matches + board lists + merge.
+"""One-shot discovery run: Jobright matches + board lists + Ashby sweep + merge.
 
 Cadence (see docs/automation/DAILY_JOB_DISCOVERY.md): two Cursor Automations,
 morning at 09:00 and evening at 18:00 America/New_York (13:xx and 22:xx UTC in
@@ -47,12 +47,15 @@ def main() -> int:
         codes.append(run([py, str(AUTO / "export_jobright_discovery.py")], logf))
         # Balanced board lists (intern + newgrad minisites)
         codes.append(run([py, str(AUTO / "export_board_lists.py")], logf))
+        # Credential-free Ashby boards + form facts (ok if a board is down)
+        codes.append(run([py, str(AUTO / "export_ashby_boards.py"), "--days", "7"], logf))
         codes.append(run([py, str(AUTO / "merge_discovery.py")], logf))
         logf.write(f"done codes={codes}\n")
 
     print(log_path)
-    # Jobright export may fail without session; boards+merge still valuable
-    return 0 if codes[-1] == 0 and codes[-2] == 0 else 1
+    # Jobright and the Ashby sweep may fail without session or on a down board.
+    # Boards plus merge are still a useful run.
+    return 0 if codes[-1] == 0 and codes[1] == 0 else 1
 
 
 if __name__ == "__main__":

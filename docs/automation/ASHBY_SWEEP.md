@@ -17,6 +17,10 @@ Outputs, `RUN` being the UTC hour stamp `YYYY-MM-DDTHH`:
   board that failed to load (blank title, reason in `notes`).
 - `generated/ashby_sweep_{RUN}.md`, a digest with `g2_candidate` rows first.
 
+`scripts/automation/merge_discovery.py` reads the CSV for the same `RUN` and
+adds those postings to `data/discovery/{RUN}_all.csv` as `source=ashby_sweep`.
+`scripts/automation/run_discovery.py` runs the sweep before the merge.
+
 ## What a row means
 
 `publishedAt` is Ashby's first publication time, the freshness truth for Ashby
@@ -26,10 +30,11 @@ come from `ashby_form.summarize`: `required_count`, `required_essays`,
 `g2_blockers`. They are blank when the probe failed or the posting is closed.
 
 `g2_candidate` is true when the posting is open, `g2_blockers` is empty, the
-type is FullTime or Intern, and the posting is not remote-only. It is a form
-fact, not a decision. Location, the 2026 cycle year, and fit stay with triage
-(`knowledge/discovery_triage_rules.yaml`), and the Submit gate stays with
-`docs/policy/SUBMIT_ROLLOUT.md`.
+type is FullTime or Intern, and the posting is not remote-only. Broad
+sponsorship and citizenship widgets are `required_corrections`, not blockers
+(`docs/policy/SUBMIT_ROLLOUT.md`). `g2_candidate` is a form fact, not a
+decision. Location, the 2026 cycle year, and fit stay with triage
+(`knowledge/discovery_triage_rules.yaml`).
 
 ## Filters in code
 

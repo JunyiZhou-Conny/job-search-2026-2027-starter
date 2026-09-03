@@ -124,6 +124,43 @@ class TestMergeNaming(unittest.TestCase):
         disc, _ = self.run_merge([], exporter_day=now.astimezone().date().isoformat())
         self.assertTrue((disc / f"{merge_discovery.run_stamp(now)}_all.csv").exists())
 
+    def test_ashby_sweep_rows_join_the_merged_file(self):
+        disc = Path(self.tmp.name) / "discovery"
+        inbox = Path(self.tmp.name) / "inbox"
+        gen = Path(self.tmp.name) / "generated"
+        gen.mkdir()
+        write_csv(disc / "2026-09-03_intern_swe.csv", [ROW])
+        sweep = gen / "ashby_sweep_2026-09-03T13.csv"
+        with sweep.open("w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=["company", "title", "applyUrl", "jobUrl", "employmentType", "publishedAt", "g2_candidate", "required_corrections", "g2_blockers", "notes"])
+            w.writeheader()
+            w.writerow({
+                "company": "Etched",
+                "title": "Software Engineer",
+                "applyUrl": "https://jobs.ashbyhq.com/etched/abc/application",
+                "jobUrl": "https://jobs.ashbyhq.com/etched/abc",
+                "employmentType": "FullTime",
+                "publishedAt": "2026-09-02T10:00:00.000+00:00",
+                "g2_candidate": "True",
+                "required_corrections": "sponsorship_answer_no",
+                "g2_blockers": "",
+                "notes": "workplaceType=OnSite",
+            })
+        old = merge_discovery.DISC, merge_discovery.INBOX, merge_discovery.GEN
+        merge_discovery.DISC, merge_discovery.INBOX, merge_discovery.GEN = disc, inbox, gen
+        try:
+            self.assertEqual(merge_discovery.main(["--date", "2026-09-03T13"]), 0)
+        finally:
+            merge_discovery.DISC, merge_discovery.INBOX, merge_discovery.GEN = old
+        merged = list(csv.DictReader((disc / "2026-09-03T13_all.csv").open(encoding="utf-8")))
+        sources = {r["source"] for r in merged}
+        self.assertEqual(sources, {"intern_list", "ashby_sweep"})
+        etched = next(r for r in merged if r["company"] == "Etched")
+        self.assertEqual(etched["url"], "https://jobs.ashbyhq.com/etched/abc/application")
+        self.assertEqual(etched["track"], "new_grad")
+        self.assertIn("g2_candidate", etched["notes"])
+        self.assertIn("corrections=sponsorship_answer_no", etched["notes"])
+
 
 class TestTriagePackNaming(unittest.TestCase):
     def setUp(self):

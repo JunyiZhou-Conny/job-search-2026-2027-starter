@@ -20,6 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 DISC = ROOT / "data" / "discovery"
 INBOX = ROOT / "jobs" / "inbox"
+GEN = ROOT / "generated"
 
 STAMP_FORMAT = "%Y-%m-%dT%H"
 STAMP_RE = re.compile(r"(\d{4}-\d{2}-\d{2})(T\d{2})?")
@@ -67,6 +68,61 @@ def load_day_files(day: str) -> list[Path]:
     files = sorted(DISC.glob(f"{day}_*.csv"))
     # exclude prior merged all file when re-merging
     return [p for p in files if not p.name.endswith("_all.csv")]
+
+
+def sweep_csv(run: str) -> Path:
+    return GEN / f"ashby_sweep_{run}.csv"
+
+
+def sweep_row_to_discovery(row: dict, fetched_at: str) -> dict:
+    """Map one Ashby-sweep posting onto the merge schema.
+
+    applyUrl is the identity the apply stage uses. jobUrl stays in list_url.
+    Form facts ride in notes so the existing merge columns do not fork.
+    """
+    url = (row.get("applyUrl") or row.get("jobUrl") or "").strip()
+    employment = row.get("employmentType") or ""
+    track = "internship_if_eligible" if employment == "Intern" else "new_grad"
+    facts = []
+    flag = row.get("g2_candidate")
+    if flag in {True, "True", "true"}:
+        facts.append("g2_candidate")
+    if row.get("required_corrections"):
+        facts.append(f"corrections={row['required_corrections']}")
+    if row.get("g2_blockers"):
+        facts.append(f"blockers={row['g2_blockers']}")
+    extra = (row.get("notes") or "").strip()
+    notes = ";".join(x for x in (*facts, extra) if x)
+    return {
+        "company": row.get("company") or "",
+        "role": row.get("title") or "",
+        "url": url,
+        "source": "ashby_sweep",
+        "track": track,
+        "category": "swe",
+        "date_discovered": (row.get("publishedAt") or "")[:10],
+        "fetched_at": fetched_at,
+        "posted_relative": row.get("publishedAt") or "",
+        "location": row.get("location") or "",
+        "work_model": "",
+        "h1b_signal": "",
+        "is_new_grad_signal": "",
+        "list_url": row.get("jobUrl") or "",
+        "notes": notes,
+    }
+
+
+def load_ashby_sweep(run: str, fetched_at: str | None = None) -> list[dict]:
+    path = sweep_csv(run)
+    if not path.exists():
+        return []
+    fetched_at = fetched_at or datetime.now(timezone.utc).isoformat()
+    out = []
+    for row in read_rows(path):
+        if not (row.get("applyUrl") or row.get("jobUrl")):
+            continue
+        out.append(sweep_row_to_discovery(row, fetched_at))
+    return out
 
 
 def read_rows(path: Path) -> list[dict]:
@@ -127,7 +183,7 @@ def write_inbox(rows: list[dict], day: str, fetched_note: str) -> Path:
         "## How this fits",
         "",
         "```text",
-        "board minisites + Jobright matches → data/discovery/* → THIS inbox",
+        "board minisites + Jobright + Ashby sweep → data/discovery/* → THIS inbox",
         "                              ↓ triage keep/skip",
         "                     data/applications.csv (+ Simplify import)",
         "```",
@@ -167,7 +223,8 @@ def main(argv: list[str] | None = None) -> int:
         ap.error(str(exc))
 
     files = load_day_files(input_day)
-    if not files:
+    sweep_rows = load_ashby_sweep(day)
+    if not files and not sweep_rows:
         print(f"No discovery CSVs for {input_day} under {DISC}", file=__import__("sys").stderr)
         return 2
 
@@ -176,6 +233,9 @@ def main(argv: list[str] | None = None) -> int:
         chunk = read_rows(path)
         print(f"read {path.name}: {len(chunk)}")
         all_rows.extend(chunk)
+    if sweep_rows:
+        print(f"read {sweep_csv(day).name}: {len(sweep_rows)}")
+        all_rows.extend(sweep_rows)
 
     merged = merge(all_rows)
     out = DISC / f"{day}_all.csv"

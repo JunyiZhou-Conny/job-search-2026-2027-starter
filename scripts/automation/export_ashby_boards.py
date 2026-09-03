@@ -43,7 +43,7 @@ PAUSE = 0.5
 COLUMNS = (
     "company", "slug", "title", "location", "employmentType", "publishedAt", "jobUrl", "applyUrl",
     "required_count", "required_essays", "broad_sponsorship_question", "export_control_question",
-    "external_artifact", "g2_blockers", "g2_candidate", "notes",
+    "external_artifact", "g2_blockers", "required_corrections", "g2_candidate", "notes",
 )
 
 # Title filter: DOMAIN must match, EXCLUDE must not, and a DROP hit stands
@@ -170,6 +170,7 @@ def row_for(org: Dict[str, str], job: Dict, form: Dict) -> Dict:
         "export_control_question": summary["export_control_question"] if summary else "",
         "external_artifact": bool(summary["external_artifact"]) if summary else "",
         "g2_blockers": ";".join(form.get("g2_blockers") or []),
+        "required_corrections": ";".join(form.get("required_corrections") or []),
     }
     return {
         "company": org["company"], "slug": org["slug"], "title": (job.get("title") or "").strip(),
