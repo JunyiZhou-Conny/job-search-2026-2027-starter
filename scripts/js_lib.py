@@ -153,9 +153,22 @@ TRACKING_PARAMS = {
 }
 
 
-# Ashby appends /application on the form and Greenhouse appends /confirm on the
-# thank-you page; Simplify records those URLs while discovery records the posting.
-ATS_STEP_SUFFIX = re.compile(r"/(application|confirm)$", re.I)
+# Ashby appends /application on the form and Greenhouse appends /confirm or
+# /confirmation on the thank-you page; Simplify records those URLs while
+# discovery records the posting. Scoped by host so an unrelated site whose path
+# ends in /application keeps its identity.
+ATS_STEP_SUFFIX = {
+    "jobs.ashbyhq.com": re.compile(r"/application$", re.I),
+    "greenhouse.io": re.compile(r"/confirm(ation)?$", re.I),
+}
+
+
+def _strip_ats_step(host: str, path: str) -> str:
+    host = host.lower()
+    for suffix_host, pattern in ATS_STEP_SUFFIX.items():
+        if host == suffix_host or host.endswith("." + suffix_host):
+            return pattern.sub("", path)
+    return path
 
 
 def canonical_url(url: str) -> str:
@@ -175,7 +188,7 @@ def canonical_url(url: str) -> str:
         if k.lower() not in TRACKING_PARAMS and not k.lower().startswith("utm")
     ]
     query = urlencode(sorted(kept))
-    path = ATS_STEP_SUFFIX.sub("", parsed.path.rstrip("/"))
+    path = _strip_ats_step(parsed.netloc, parsed.path.rstrip("/"))
     cleaned = parsed._replace(path=path, query=query, fragment="")
     return urlunparse(cleaned).rstrip("/").lower()
 

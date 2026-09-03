@@ -25,7 +25,7 @@ fetch each form from Ashby's public GraphQL (`ApiJobPosting`,
 
 ## Result
 
-No qualifying G2 row in this window. Four negative gates fired as
+No qualifying G2 row in this window, and the Ashby G2 gate itself stays closed in `config/submit_gates.yaml` until the first wanted regular role completes the protocol. Four negative gates fired as
 designed on real data: closed posting, duplicate against the repo,
 duplicate against Simplify (pending the export), and broad-sponsorship
 block. Two rows route to other lanes: Bland to the writer path, Notion

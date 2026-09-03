@@ -73,7 +73,15 @@ class TestCanonicalUrlAtsSteps(unittest.TestCase):
             canonical_url("https://job-boards.greenhouse.io/advancedspace/jobs/4324875009/confirm"),
             canonical_url("https://job-boards.greenhouse.io/advancedspace/jobs/4324875009"),
         )
+        self.assertEqual(
+            canonical_url("https://job-boards.greenhouse.io/advancedspace/jobs/4324875009/confirmation?gh_src=Simplify"),
+            canonical_url("https://job-boards.greenhouse.io/advancedspace/jobs/4324875009"),
+        )
         self.assertEqual(canonical_url("https://x.com/application/foo"), "https://x.com/application/foo")
+        self.assertNotEqual(canonical_url("https://careers.example.com/jobs/application"),
+                            canonical_url("https://careers.example.com/jobs"))
+        self.assertNotEqual(canonical_url("https://careers.example.com/jobs/123/confirm"),
+                            canonical_url("https://careers.example.com/jobs/123"))
 
 
 if __name__ == "__main__":

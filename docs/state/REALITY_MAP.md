@@ -249,6 +249,6 @@ Rollout ladder (policy, supersedes the blanket ban).
 |---|---|---|
 | Fill only | harness ready | open |
 | Fill plus human review | identity check at run start, stop-the-line table | open |
-| Limited autonomous regular Submit | Ashby, one tab, no required free response or answer from the approved bank, sponsorship question absent or H-1B-named, cap 3 per run, banner plus tracker verification, ledger row before next job | opening with unit 4 |
+| Limited autonomous regular Submit | Ashby, one tab, no required free response or answer from the approved bank, sponsorship question absent or H-1B-named, cap 3 per run, banner plus a durable second signal, ledger row before next job | closed until unit 4 is verified (`config/submit_gates.yaml`) |
 | Broader regular automation | 10 consecutive verified regular Submits with zero wrong-fact incidents, one independent channel (email or application id) wired | closed |
 | Prioritized rows | human review packet before Submit, always | policy |
