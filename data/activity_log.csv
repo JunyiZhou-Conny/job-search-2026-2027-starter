@@ -112,3 +112,5 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-09-03T04:12:53,J20260903-029,,simplify_import_created,,saved,Neuralink — Firmware Engineer Intern
 2026-09-03T04:12:53,J20260903-030,,simplify_import_created,,saved,Gemini — Software Engineer Intern
 2026-09-03T04:12:53,J20260903-031,,simplify_import_created,,saved,SpaceX — New Graduate Engineer
+2026-09-03T13:56:53,J20260903-032,,job_added,,ready_to_apply,"Twitch — Software Engineer I, Commerce Engineering (discovery_2026-09-03)"
+2026-09-03T13:56:53,J20260903-032,,submit_attempt_started,ready_to_apply,,attempt A20260903-001 gate=G1 weight=prioritized ats=greenhouse
