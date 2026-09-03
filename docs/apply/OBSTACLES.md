@@ -274,8 +274,8 @@ clicker to Ctrl+F or prove a cropped textarea.
 
 Other computer-use token sinks (nested Task with no clicker, vision
 full-apply stills, parent screenshot audits, huge screen recordings)
-are listed under `computer_use_token_sinks` in
-`knowledge/form_strategy.yaml`. The Why-us loop has a fix. A DOM fill
+are listed in `docs/automation/COMPUTER_USE_TOKEN_SINKS.md`. The Why-us
+loop has a fix. A DOM fill
 does not.
 
 ## Ashby submit blocked as possible spam (Charta 2026-08-24)
