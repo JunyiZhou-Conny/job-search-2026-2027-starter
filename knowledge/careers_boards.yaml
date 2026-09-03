@@ -12,26 +12,26 @@
 
 # Greenhouse board token (boards-api.greenhouse.io/v1/boards/{slug}/jobs)
 greenhouse:
-  Apptronik: apptronik
-  Nirmata: nirmata
   Appian: appian
-  SpaceX: spacex
-  Neuralink: neuralink
-  "Together AI": togetherai
+  Apptronik: apptronik
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
+  Neuralink: neuralink
+  Nirmata: nirmata
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  SpaceX: spacex
+  "Together AI": togetherai
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
-  "Bild AI": bild-ai
-  Etched: etched
-  Traba: traba
-  OpenAI: openai
-  "Charta Health": chartahealth
   Baseten: baseten
-  MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
+  "Bild AI": bild-ai
+  "Charta Health": chartahealth
+  Etched: etched
   "Hayden AI": haydenai  # verified 2026-08-23
+  MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
+  OpenAI: openai
+  Traba: traba
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
@@ -39,27 +39,23 @@ lever: {}
 # Workday CXS — verified hosts only.
 # apply URL = https://{host}.myworkdayjobs.com/{site}{externalPath}
 workday:
-  "Caterpillar Inc.":
-    host: cat.wd5
-    tenant: cat
-    site: CaterpillarCareers
-  Waystar:
-    host: waystar.wd1
-    tenant: waystar
-    site: Waystar
-  NVIDIA:
-    host: nvidia.wd5
-    tenant: nvidia
-    site: NVIDIAExternalCareerSite
-  Nvidia:
-    host: nvidia.wd5
-    tenant: nvidia
-    site: NVIDIAExternalCareerSite
-  "CVS Health":
-    host: cvshealth.wd1
-    tenant: cvshealth
-    site: CVS_Health_Careers
   Blackstone:
     host: blackstone.wd1
     tenant: blackstone
     site: Blackstone_Careers
+  "Caterpillar Inc.":
+    host: cat.wd5
+    tenant: cat
+    site: CaterpillarCareers
+  "CVS Health":
+    host: cvshealth.wd1
+    tenant: cvshealth
+    site: CVS_Health_Careers
+  NVIDIA:
+    host: nvidia.wd5
+    tenant: nvidia
+    site: NVIDIAExternalCareerSite
+  Waystar:
+    host: waystar.wd1
+    tenant: waystar
+    site: Waystar
