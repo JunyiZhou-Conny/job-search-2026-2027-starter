@@ -10,7 +10,6 @@ from collections import Counter
 from datetime import date, datetime
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
-from urllib.parse import urlparse, urlunparse
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -18,7 +17,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from js_lib import (  # noqa: E402
     APP_FIELDS, APPLICATIONS, ACTIVITY, HARD_ELIG, LANES, LEGACY_NETWORKING_FIELDS,
     LOG_FIELDS, NETWORKING, SPONSORSHIP, TERMINAL, VALID_STATUSES, bump_highest,
-    company_role_key, ensure_csv, map_sponsorship, normalize_url, now_iso,
+    canonical_url, company_role_key, ensure_csv, map_sponsorship, now_iso,
     read_rows, sync_app_aliases, today_iso, write_rows
 )
 
@@ -129,16 +128,6 @@ def log_event(
         "to_status": to_status,
         "note": note,
     })
-
-
-def normalize_url(url: str) -> str:
-    url = (url or "").strip()
-    if not url:
-        return ""
-    parsed = urlparse(url)
-    # Drop tracking fragments/query noise lightly; keep path for matching
-    clean = parsed._replace(fragment="")
-    return urlunparse(clean).rstrip("/").lower()
 
 
 def normalize_key(company: str, role: str) -> str:
@@ -292,10 +281,10 @@ def cmd_add_contact(args: argparse.Namespace) -> None:
 
 
 def find_match(apps: List[Dict[str, str]], url: str, company: str, role: str) -> Optional[Dict[str, str]]:
-    norm_url = normalize_url(url)
+    norm_url = canonical_url(url)
     if norm_url:
         for row in apps:
-            if normalize_url(row.get("posting_url", "")) == norm_url:
+            if canonical_url(row.get("posting_url", "")) == norm_url:
                 return row
     key = normalize_key(company, role)
     if company and role:
@@ -341,11 +330,11 @@ def cmd_import_simplify(args: argparse.Namespace) -> None:
             old_status = match.get("status", "")
             # Simplify-owned only: company, role, url, location, date_applied, base status.
             # Never overwrite resume_version, pursuit_lane, sponsorship, auth, referral, labels.
-            if company:
+            if company and not match.get("company"):
                 match["company"] = company
-            if role:
+            if role and not match.get("role"):
                 match["role"] = role
-            if url:
+            if url and not match.get("posting_url"):
                 match["posting_url"] = url
                 match["job_url"] = url
             if date_applied:

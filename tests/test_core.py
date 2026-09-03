@@ -62,5 +62,19 @@ class TestLabeling(unittest.TestCase):
         self.assertEqual(s["hard_eligibility"]["value"], "ineligible")
 
 
+class TestCanonicalUrlAtsSteps(unittest.TestCase):
+    def test_ashby_application_and_greenhouse_confirm_collapse_onto_the_posting(self):
+        from js_lib import canonical_url
+        self.assertEqual(
+            canonical_url("https://jobs.ashbyhq.com/Runway/82789f66-9216-4ef3-bfeb-6cef4b416e63/application?embed=true"),
+            canonical_url("https://jobs.ashbyhq.com/runway/82789f66-9216-4ef3-bfeb-6cef4b416e63"),
+        )
+        self.assertEqual(
+            canonical_url("https://job-boards.greenhouse.io/advancedspace/jobs/4324875009/confirm"),
+            canonical_url("https://job-boards.greenhouse.io/advancedspace/jobs/4324875009"),
+        )
+        self.assertEqual(canonical_url("https://x.com/application/foo"), "https://x.com/application/foo")
+
+
 if __name__ == "__main__":
     unittest.main()

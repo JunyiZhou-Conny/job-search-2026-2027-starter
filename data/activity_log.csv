@@ -82,3 +82,33 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-09-03T03:56:08,J20260824-001,,job_updated,,,Align future_sponsorship_answer with the recorded form answer (No) on the Anyscale row
 2026-09-03T03:56:08,J20260824-004,,job_updated,,,"Correction: employer is cfo.ai (Ashby board slug runway), not Runway ML. Earlier rows naming Runway refer to this job."
 2026-09-03T04:07:07,,,posting_closed,,closed,"DatologyAI — Software Engineer Intern, Infrastructure (Winter 2027): Ashby GraphQL jobPosting returns null on 2026-09-03; posting gone"
+2026-09-03T04:12:53,J20260903-002,,simplify_import_created,,saved,Hive — Machine Learning Engineer
+2026-09-03T04:12:53,J20260903-003,,simplify_import_created,,applied,AppLovin — ML Infrastructure Engineer
+2026-09-03T04:12:53,J20260903-004,,simplify_import_created,,applied,Tenstorrent — Software Engineer
+2026-09-03T04:12:53,J20260903-005,,simplify_import_created,,applied,Clera — Founding AI Engineer
+2026-09-03T04:12:53,J20260903-006,,simplify_import_created,,applied,Kodiak Robotics — Artificial Intelligence/Machine Learning Intern
+2026-09-03T04:12:53,J20260903-007,,simplify_import_created,,applied,Advanced Space — 2027 Machine Learning Summer Internship
+2026-09-03T04:12:53,J20260903-008,,simplify_import_created,,applied,Lightfield — Software Engineer
+2026-09-03T04:12:53,J20260903-009,,simplify_import_created,,saved,Perplexity AI — Internship
+2026-09-03T04:12:53,J20260903-010,,simplify_import_created,,saved,Notion — Software Engineer Intern
+2026-09-03T04:12:53,J20260903-011,,simplify_import_created,,saved,Scale AI — AI Builder Intern
+2026-09-03T04:12:53,J20260903-012,,simplify_import_created,,saved,Relativity Space — AI Software Engineer
+2026-09-03T04:12:53,J20260903-013,,simplify_import_created,,saved,Baseten — Software Engineer
+2026-09-03T04:12:53,J20260903-014,,simplify_import_created,,saved,Hayden AI — Associate Data Scientist
+2026-09-03T04:12:53,J20260903-015,,simplify_import_created,,saved,Lila Sciences — Software Engineer 1
+2026-09-03T04:12:53,J20260903-016,,simplify_import_created,,saved,Meshy — Fullstack Engineer Intern
+2026-09-03T04:12:53,J20260903-017,,simplify_import_created,,saved,Apptronik — Robotics Software Intern
+2026-09-03T04:12:53,J20260903-018,,simplify_import_created,,saved,Gemini — Design Developer
+2026-09-03T04:12:53,J20260903-019,,simplify_import_created,,saved,Neuralink — Machine Learning Engineer Intern
+2026-09-03T04:12:53,J20260903-020,,simplify_import_created,,saved,OpenAI — Performance Modeling Engineer
+2026-09-03T04:12:53,J20260903-021,,simplify_import_created,,saved,Baseten — AI Inference Engineer
+2026-09-03T04:12:53,J20260903-022,,simplify_import_created,,saved,Appian — Database Engineer
+2026-09-03T04:12:53,J20260903-023,,simplify_import_created,,saved,Traba — Software Engineer
+2026-09-03T04:12:53,J20260903-024,,simplify_import_created,,saved,Etched — Inference Architecture Intern
+2026-09-03T04:12:53,J20260903-025,,simplify_import_created,,saved,Bild AI — AI/Software Engineer Intern
+2026-09-03T04:12:53,J20260903-026,,simplify_import_created,,saved,Nirmata — AI Software Engineer Intern
+2026-09-03T04:12:53,J20260903-027,,simplify_import_created,,saved,Apptronik — Software Engineer Intern
+2026-09-03T04:12:53,J20260903-028,,simplify_import_created,,saved,Together AI — Systems Research Engineer Intern
+2026-09-03T04:12:53,J20260903-029,,simplify_import_created,,saved,Neuralink — Firmware Engineer Intern
+2026-09-03T04:12:53,J20260903-030,,simplify_import_created,,saved,Gemini — Software Engineer Intern
+2026-09-03T04:12:53,J20260903-031,,simplify_import_created,,saved,SpaceX — New Graduate Engineer

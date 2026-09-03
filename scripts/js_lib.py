@@ -149,7 +149,13 @@ TRACKING_PARAMS = {
     "gclid",
     "mc_cid",
     "mc_eid",
+    "embed",
 }
+
+
+# Ashby appends /application on the form and Greenhouse appends /confirm on the
+# thank-you page; Simplify records those URLs while discovery records the posting.
+ATS_STEP_SUFFIX = re.compile(r"/(application|confirm)$", re.I)
 
 
 def canonical_url(url: str) -> str:
@@ -169,7 +175,8 @@ def canonical_url(url: str) -> str:
         if k.lower() not in TRACKING_PARAMS and not k.lower().startswith("utm")
     ]
     query = urlencode(sorted(kept))
-    cleaned = parsed._replace(query=query, fragment="")
+    path = ATS_STEP_SUFFIX.sub("", parsed.path.rstrip("/"))
+    cleaned = parsed._replace(path=path, query=query, fragment="")
     return urlunparse(cleaned).rstrip("/").lower()
 
 

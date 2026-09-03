@@ -15,3 +15,15 @@ application,J20260720-016,date_applied,warn,date_applied before date_discovered
 application,J20260726-001,date_applied,warn,date_applied before date_discovered
 application,J20260726-002,date_applied,warn,date_applied before date_discovered
 application,J20260903-001,date_applied,warn,date_applied before date_discovered
+application,J20260903-003,date_applied,warn,date_applied before date_discovered
+application,J20260903-003,needs_review,info,manual label flagged needs_review — human owns resolution
+application,J20260903-004,date_applied,warn,date_applied before date_discovered
+application,J20260903-004,needs_review,info,manual label flagged needs_review — human owns resolution
+application,J20260903-005,date_applied,warn,date_applied before date_discovered
+application,J20260903-005,needs_review,info,manual label flagged needs_review — human owns resolution
+application,J20260903-006,date_applied,warn,date_applied before date_discovered
+application,J20260903-006,needs_review,info,manual label flagged needs_review — human owns resolution
+application,J20260903-007,date_applied,warn,date_applied before date_discovered
+application,J20260903-007,needs_review,info,manual label flagged needs_review — human owns resolution
+application,J20260903-008,date_applied,warn,date_applied before date_discovered
+application,J20260903-008,needs_review,info,manual label flagged needs_review — human owns resolution
