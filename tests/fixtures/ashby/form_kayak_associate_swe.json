@@ -1,0 +1,374 @@
+{
+ "data": {
+  "jobPosting": {
+   "id": "1cd42283-0b84-448f-9aac-ca94b72db320",
+   "title": "Associate Software Engineer",
+   "locationName": "Cambridge Office",
+   "workplaceType": "Hybrid",
+   "employmentType": "FullTime",
+   "publishedDate": "2026-07-20",
+   "applicationForm": {
+    "sections": [
+     {
+      "title": "Personal Information",
+      "fieldEntries": [
+       {
+        "isRequired": true,
+        "field": {
+         "id": "1773d7fc-c7da-4dc1-8740-1cde8bfa1fda",
+         "path": "_systemfield_name",
+         "humanReadablePath": "Name",
+         "title": "Full Name",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "String",
+         "__autoSerializationID": "StringField"
+        }
+       },
+       {
+        "isRequired": false,
+        "field": {
+         "id": "48cb064c-d87e-4df1-9bb4-6ca0fd215785",
+         "path": "48cb064c-d87e-4df1-9bb4-6ca0fd215785",
+         "humanReadablePath": "",
+         "title": "Preferred Name",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "String",
+         "__autoSerializationID": "StringField"
+        }
+       },
+       {
+        "isRequired": true,
+        "field": {
+         "id": "381131c0-0b97-444b-8cc5-362dc614cfc8",
+         "path": "_systemfield_email",
+         "humanReadablePath": "Email",
+         "title": "Email",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "Email",
+         "__autoSerializationID": "EmailField"
+        }
+       },
+       {
+        "isRequired": true,
+        "field": {
+         "id": "834522e2-8b26-4d7d-b01c-ef4ee68ebed4",
+         "path": "834522e2-8b26-4d7d-b01c-ef4ee68ebed4",
+         "humanReadablePath": "",
+         "title": "Phone Number",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "Phone",
+         "__autoSerializationID": "PhoneField"
+        }
+       },
+       {
+        "isRequired": true,
+        "field": {
+         "id": "1c8a1a09-20c6-4da4-be65-81d072cfc09d",
+         "path": "_systemfield_location",
+         "humanReadablePath": "Location",
+         "title": "Location",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "Location",
+         "locationTypes": [
+          "City",
+          "Region"
+         ],
+         "__autoSerializationID": "LocationField"
+        }
+       },
+       {
+        "isRequired": true,
+        "field": {
+         "id": "888b5f86-46ed-47f9-87ea-ce7489093d2b",
+         "path": "_systemfield_resume",
+         "humanReadablePath": "Resume",
+         "title": "Resume",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "File",
+         "__autoSerializationID": "FileField"
+        }
+       },
+       {
+        "isRequired": false,
+        "field": {
+         "id": "65423b68-96fe-46ec-9b29-09005309a1d1",
+         "path": "65423b68-96fe-46ec-9b29-09005309a1d1",
+         "humanReadablePath": "",
+         "title": "Cover Letter",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "File",
+         "__autoSerializationID": "FileField"
+        }
+       }
+      ]
+     },
+     {
+      "title": "Application Questions",
+      "fieldEntries": [
+       {
+        "isRequired": true,
+        "field": {
+         "id": "e4b9f250-f8a9-4097-91b8-bed2d8b036c6",
+         "path": "e4b9f250-f8a9-4097-91b8-bed2d8b036c6",
+         "humanReadablePath": "",
+         "title": "Do you now, or will you in the future, need US visa sponsorship? Note: we are unable to offer work sponsorship (including OPT) at this time.",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "Boolean",
+         "__autoSerializationID": "BooleanField"
+        }
+       },
+       {
+        "isRequired": true,
+        "field": {
+         "id": "7dae13f6-5fcd-4925-9c49-b95022379252",
+         "path": "7dae13f6-5fcd-4925-9c49-b95022379252",
+         "humanReadablePath": "",
+         "title": "Are you able to work from the required office at least 3 days per week?",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "Boolean",
+         "__autoSerializationID": "BooleanField"
+        }
+       },
+       {
+        "isRequired": false,
+        "field": {
+         "id": "339ca855-1993-4baa-a778-5ab595fac4e1",
+         "path": "339ca855-1993-4baa-a778-5ab595fac4e1",
+         "humanReadablePath": "",
+         "title": "Have you previously worked or currently work for one of our sister brand companies?",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "MultiValueSelect",
+         "selectableValues": [
+          {
+           "label": "Agoda",
+           "value": "Agoda"
+          },
+          {
+           "label": "Booking Holdings",
+           "value": "Booking Holdings"
+          },
+          {
+           "label": "booking.com",
+           "value": "booking.com"
+          },
+          {
+           "label": "FareHarbor",
+           "value": "FareHarbor"
+          },
+          {
+           "label": "FareHarbor US",
+           "value": "FareHarbor US"
+          },
+          {
+           "label": "Getaroom",
+           "value": "Getaroom"
+          },
+          {
+           "label": "KAYAK",
+           "value": "KAYAK"
+          },
+          {
+           "label": "OpenTable",
+           "value": "OpenTable"
+          },
+          {
+           "label": "Priceline",
+           "value": "Priceline"
+          }
+         ],
+         "__autoSerializationID": "MultiValueSelectField"
+        }
+       },
+       {
+        "isRequired": false,
+        "field": {
+         "id": "8bc3fc53-a6da-4457-baf9-f695ec59143a",
+         "path": "8bc3fc53-a6da-4457-baf9-f695ec59143a",
+         "humanReadablePath": "",
+         "title": "LinkedIn Profile",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "String",
+         "__autoSerializationID": "StringField"
+        }
+       },
+       {
+        "isRequired": false,
+        "field": {
+         "id": "051d1a86-e1ad-4530-9631-518a38eac105",
+         "path": "051d1a86-e1ad-4530-9631-518a38eac105",
+         "humanReadablePath": "",
+         "title": "Website",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "String",
+         "__autoSerializationID": "StringField"
+        }
+       },
+       {
+        "isRequired": false,
+        "field": {
+         "id": "421d2488-6928-4655-b929-78aa2654ffe3",
+         "path": "421d2488-6928-4655-b929-78aa2654ffe3",
+         "humanReadablePath": "",
+         "title": "How did you hear about this job?",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "String",
+         "__autoSerializationID": "StringField"
+        }
+       }
+      ]
+     },
+     {
+      "title": null,
+      "fieldEntries": [
+       {
+        "isRequired": true,
+        "field": {
+         "id": "a6792ce2-9034-4ff9-a5eb-10774289cccc",
+         "path": "32629098-b50d-4d44-b869-bb88cf2b728d",
+         "humanReadablePath": "",
+         "title": "Where do you currently reside?",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "ValueSelect",
+         "selectableValues": [
+          {
+           "label": "ABKHAZIA",
+           "value": "ABKHAZIA"
+          },
+          {
+           "label": "AFGHANISTAN",
+           "value": "AFGHANISTAN"
+          },
+          {
+           "label": "ALAND ISLANDS",
+           "value": "ALAND ISLANDS"
+          },
+          {
+           "label": "ALBANIA",
+           "value": "ALBANIA"
+          },
+          {
+           "label": "ALGERIA",
+           "value": "ALGERIA"
+          }
+         ],
+         "__autoSerializationID": "ValueSelectField"
+        }
+       },
+       {
+        "isRequired": true,
+        "field": {
+         "id": "25c31364-f7b7-4f97-a2da-3cb197dd5de4",
+         "path": "ad1aea76-7f3b-4093-894b-c1e8e023f40d",
+         "humanReadablePath": "",
+         "title": "Are you a current or former employee of Deloitte?",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "Boolean",
+         "__autoSerializationID": "BooleanField"
+        }
+       },
+       {
+        "isRequired": true,
+        "field": {
+         "id": "41512c5a-98d8-4549-833c-5435d1aa225f",
+         "path": "02eb18e9-07ee-453e-b85d-62113d4414e3",
+         "humanReadablePath": "",
+         "title": "Are you a family member (spouse, spousal equivalent, parent, dependent, child, sibling, in-law, or share the same household) of a current Deloitte employee?",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "Boolean",
+         "__autoSerializationID": "BooleanField"
+        }
+       },
+       {
+        "isRequired": true,
+        "field": {
+         "id": "7fd55681-3803-4e00-a7e9-25b6a80f7f0c",
+         "path": "6a1d2730-f04e-4b2f-b306-9ba3e5608972",
+         "humanReadablePath": "",
+         "title": "Privacy Notice",
+         "isNullable": false,
+         "isPrivate": false,
+         "isDeactivated": false,
+         "isMany": false,
+         "metadata": {},
+         "type": "MultiValueSelect",
+         "selectableValues": [
+          {
+           "label": "By checking this box, I confirm I have read and agree to the Job Applicant Privacy Notice",
+           "value": "By checking this box, I confirm I have read and agree to the Job Applicant Privacy Notice",
+           "isArchived": false
+          }
+         ],
+         "__autoSerializationID": "MultiValueSelectField"
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ }
+}

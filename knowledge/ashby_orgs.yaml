@@ -1,0 +1,70 @@
+# Ashby boards swept by scripts/automation/export_ashby_boards.py.
+#
+# Keyed by board slug: https://api.ashbyhq.com/posting-api/job-board/{slug}
+# Keep the keys sorted (tests/test_export_ashby_boards.py checks this).
+# `source` says where the slug came from and the last date it returned 200
+# with real postings. Add an org by appending one block in slug order.
+# This file is discovery scope only; knowledge/careers_boards.yaml still
+# drives resolve_apply_url.py.
+
+orgs:
+  anyscale:
+    company: Anyscale
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  baseten:
+    company: Baseten
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  bild-ai:
+    company: Bild AI
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  bland:
+    company: Bland
+    source: "G2 candidate screen 2026-09-03; live 2026-09-03"
+  chartahealth:
+    company: Charta Health
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  clera:
+    company: Clera
+    source: "G2 candidate screen 2026-09-03; live 2026-09-03"
+  datologyai:
+    company: DatologyAI
+    source: "G2 candidate screen 2026-09-03; live 2026-09-03"
+  etched:
+    company: Etched
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  haydenai:
+    company: Hayden AI
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  kayak:
+    company: KAYAK
+    source: "G2 candidate screen 2026-09-03; live 2026-09-03"
+  lightfield:
+    company: Lightfield
+    source: "live 2026-09-03"
+  meshy:
+    company: MeshyAI
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  midjourney:
+    company: Midjourney
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  northwoodspace:
+    company: Northwood
+    source: "G2 candidate screen 2026-09-03; live 2026-09-03"
+  notion:
+    company: Notion
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  openai:
+    company: OpenAI
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  perplexity:
+    company: Perplexity
+    source: "careers_boards.yaml ashby; live 2026-09-03"
+  runway:
+    company: Runway (business planning, runway.com)
+    source: "live 2026-09-03; not the gen-AI Runway, which is runway-ml"
+  runway-ml:
+    company: Runway ML
+    source: "careers_boards.yaml ashby (listed as Runway); live 2026-09-03"
+  traba:
+    company: Traba
+    source: "careers_boards.yaml ashby; live 2026-09-03"
