@@ -95,6 +95,26 @@ class TestCanonicalForm(unittest.TestCase):
                 match = {k.casefold(): v for k, v in after[section].items()}
                 self.assertEqual(match[company.casefold()], board, (section, company))
 
+    def test_duplicate_section_headers_merge_instead_of_last_wins(self):
+        text = (
+            "# Greenhouse board token\n"
+            "greenhouse:\n"
+            "  Alpha: alpha\n"
+            "  Zeta: zeta\n"
+            "\n"
+            "# Ashby board slug\n"
+            "ashby:\n"
+            "  Traba: traba\n"
+            "\n"
+            "greenhouse:\n"
+            "  Beta: beta\n"
+        )
+        out = ncb.canonical(text)
+        loaded = yaml.safe_load(out)
+        self.assertEqual(list(loaded["greenhouse"]), ["Alpha", "Beta", "Zeta"])
+        self.assertEqual(loaded["ashby"], {"Traba": "traba"})
+        self.assertIn("# Greenhouse board token\ngreenhouse:\n", out)
+
     def test_comments_survive_in_place(self):
         out = ncb.canonical(MESSY)
         self.assertTrue(out.startswith("# Known boards.\n#\n# - Only add boards you have verified.\n\n# Greenhouse board token\ngreenhouse:\n"))

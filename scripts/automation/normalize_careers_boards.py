@@ -163,12 +163,19 @@ def dedupe(entries: list[Entry]) -> list[Entry]:
 
 
 def normalize(boards: Boards) -> Boards:
-    by_name = {s.name: s for s in boards.sections}
-    order = [n for n in SECTION_ORDER if n in by_name] + sorted(n for n in by_name if n not in SECTION_ORDER)
+    grouped: dict[str, list[Section]] = {}
+    for s in boards.sections:
+        grouped.setdefault(s.name, []).append(s)
+    order = [n for n in SECTION_ORDER if n in grouped] + sorted(n for n in grouped if n not in SECTION_ORDER)
     sections = []
     for name in order:
-        s = by_name[name]
-        sections.append(Section(name=name, comments=s.comments, entries=dedupe(s.entries)))
+        group = grouped[name]
+        comments: list[str] = []
+        entries: list[Entry] = []
+        for s in group:
+            comments += [c for c in s.comments if c not in comments]
+            entries.extend(s.entries)
+        sections.append(Section(name=name, comments=comments, entries=dedupe(entries)))
     return Boards(header=boards.header, sections=sections)
 
 
