@@ -21,6 +21,9 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  FanDuel: fanduel  # verified 2026-09-03; Data Scientist NYC gh_jid=8120545 (only DS twin)
+  "Oscar Health": oscar  # verified 2026-09-03; Data Scientist I NYC gh_jid=7592274 (LA/Tempe siblings are DS II)
+  Twitch: twitch  # verified 2026-09-03; SWE I Commerce Engineering Seattle 8459320002; SF twin 8457711002
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
