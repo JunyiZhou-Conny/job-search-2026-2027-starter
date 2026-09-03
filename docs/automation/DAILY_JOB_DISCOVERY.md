@@ -344,13 +344,13 @@ git add "generated/discovery_for_triage_${RUN}.csv" \
         "jobs/inbox/daily-${RUN}.md" \
         knowledge/careers_boards.yaml
 git commit -m "Discovery run ${RUN}"
-git fetch origin automation/discovery
-git merge --no-edit origin/automation/discovery
-git push origin automation/discovery
+git fetch origin automation/discovery && git merge --no-edit origin/automation/discovery
+git push -u origin automation/discovery
 ```
 
 The second fetch and merge pick up anything another run pushed while this one
-was working, so the push is a plain fast-forward. Never force-push and never
+was working, so the push is a plain fast-forward. On the first run the fetch
+finds no branch, the merge is skipped, and the push creates it. Never force-push and never
 rebase this branch. If `careers_boards.yaml` conflicts on that merge, keep
 both sides' entries, run the normalizer again, `git add` the file, and
 `git commit --no-edit` to finish the merge before pushing. If the push is
