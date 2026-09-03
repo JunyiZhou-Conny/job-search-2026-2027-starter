@@ -263,6 +263,10 @@ Computer Use is a compiled action sheet
 (`scripts/compile_cu_task.py`, `docs/automation/COMPUTER_USE_PROMPT.md`).
 Twitch is the regression case, not a live re-audit:
 `docs/experiments/2026-09-03_twitch_cu_cost.md`. Twitch stays
-unsubmitted. The next unit is still one regular Ashby apply under
-`docs/policy/SUBMIT_ROLLOUT.md`. G2 stays closed until that unit has
-durable evidence and a blocked rerun.
+unsubmitted. Discovery run `2026-09-03T15` produced 101 sweep rows
+(`source=ashby_sweep`); apply-queue `--date 2026-09-03T15` printed
+`triage=none` and did not pick an older day's keeps. Ingest uses the
+same newest-file rule and was not run (Phase 4 default). Selected
+regular unit: Anyscale Software Engineer (Ray Data),
+`J20260903-033` / `A20260903-003`. G2 stays closed until that unit
+has durable evidence and a blocked rerun.

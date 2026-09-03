@@ -1,0 +1,128 @@
+[
+ {
+  "url": "https://jobs.ashbyhq.com/anyscale/01aef589-e268-4b22-b513-d1f9f076210f/application",
+  "org": "anyscale",
+  "open": true,
+  "title": "Software Engineer (Ray Data)",
+  "location": "San Francisco",
+  "workplace": null,
+  "employment": "FullTime",
+  "published": "2026-08-28",
+  "fields": [
+   {
+    "title": "Name",
+    "type": "String",
+    "required": true,
+    "options": []
+   },
+   {
+    "title": "Email",
+    "type": "Email",
+    "required": true,
+    "options": []
+   },
+   {
+    "title": "Current location",
+    "type": "String",
+    "required": true,
+    "options": []
+   },
+   {
+    "title": "Current company",
+    "type": "String",
+    "required": false,
+    "options": []
+   },
+   {
+    "title": "Phone number",
+    "type": "Phone",
+    "required": false,
+    "options": []
+   },
+   {
+    "title": "Resume",
+    "type": "File",
+    "required": true,
+    "options": []
+   },
+   {
+    "title": "Additional information",
+    "type": "LongText",
+    "required": false,
+    "options": []
+   },
+   {
+    "title": "LinkedIn",
+    "type": "String",
+    "required": false,
+    "options": []
+   },
+   {
+    "title": "Twitter",
+    "type": "String",
+    "required": false,
+    "options": []
+   },
+   {
+    "title": "GitHub",
+    "type": "String",
+    "required": false,
+    "options": []
+   },
+   {
+    "title": "Portfolio",
+    "type": "String",
+    "required": false,
+    "options": []
+   },
+   {
+    "title": "Other",
+    "type": "String",
+    "required": false,
+    "options": []
+   },
+   {
+    "title": "Are you okay with a hybrid in-office schedule of Mon, Tue, and Thu?",
+    "type": "ValueSelect",
+    "required": true,
+    "options": [
+     "Yes",
+     "No"
+    ]
+   },
+   {
+    "title": "If you\u2019re currently located outside of the SF Bay area, are you open to relocate?",
+    "type": "ValueSelect",
+    "required": false,
+    "options": [
+     "Yes",
+     "No"
+    ]
+   },
+   {
+    "title": "Would you require visa sponsorship to work in the country in which this position is based?",
+    "type": "ValueSelect",
+    "required": true,
+    "options": [
+     "Yes",
+     "No"
+    ]
+   }
+  ],
+  "summary": {
+   "required_count": 6,
+   "required_essays": [],
+   "sponsorship_questions": [
+    "Would you require visa sponsorship to work in the country in which this position is based?"
+   ],
+   "broad_sponsorship_question": true,
+   "export_control_question": false,
+   "eeo_fields": [],
+   "external_artifact": []
+  },
+  "g2_blockers": [],
+  "required_corrections": [
+   "sponsorship_answer_no"
+  ]
+ }
+]
