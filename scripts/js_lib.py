@@ -153,9 +153,10 @@ TRACKING_PARAMS = {
 }
 
 
-# Ashby appends /application on the form and Greenhouse appends /confirm on the
-# thank-you page; Simplify records those URLs while discovery records the posting.
-ATS_STEP_SUFFIX = re.compile(r"/(application|confirm)$", re.I)
+# Ashby appends /application on the form and Greenhouse appends /confirm or
+# /confirmation on the thank-you page; Simplify records those URLs while
+# discovery records the posting.
+ATS_STEP_SUFFIX = re.compile(r"/(application|confirmation|confirm)$", re.I)
 
 
 def canonical_url(url: str) -> str:

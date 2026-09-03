@@ -30,8 +30,21 @@ QUERY = (
 
 SPONSORSHIP = re.compile(r"sponsor", re.I)
 H1B_NAMED = re.compile(r"h-?1b", re.I)
+# Broad "now or in the future" widgets often list H-1B as an example.
+# Those stay broad; only a question that is specifically about H-1B is named-only.
+BROAD_SPONSORSHIP = re.compile(r"now or in the future|in the future", re.I)
+H1B_AS_EXAMPLE = re.compile(r"e\.?g\.?|for example|including|such as", re.I)
 EXPORT = re.compile(r"ITAR|export control|U\.?S\.? person", re.I)
 EEO = re.compile(r"gender|race|ethnic|veteran|disabilit", re.I)
+
+
+def _h1b_named_only(title: str) -> bool:
+    """True when the question is specifically about H-1B, not a broad visa ask."""
+    if not H1B_NAMED.search(title):
+        return False
+    if BROAD_SPONSORSHIP.search(title) or H1B_AS_EXAMPLE.search(title):
+        return False
+    return True
 
 
 def parse_url(url: str) -> Optional[Dict[str, str]]:
@@ -72,7 +85,7 @@ def summarize(form: Dict) -> Dict:
     req = [f for f in form["fields"] if f["required"]]
     essays = [f["title"] for f in req if f["type"] == "LongText"]
     sponsorship = [f["title"] for f in form["fields"] if SPONSORSHIP.search(f["title"])]
-    broad = [t for t in sponsorship if not H1B_NAMED.search(t)]
+    broad = [t for t in sponsorship if not _h1b_named_only(t)]
     form["summary"] = {
         "required_count": len(req),
         "required_essays": essays,
