@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Merge today's discovery CSVs → data/discovery/YYYY-MM-DD_all.csv + jobs/inbox.
+"""Merge one run's discovery CSVs → data/discovery/{RUN}_all.csv + jobs/inbox.
+
+RUN is the UTC run stamp YYYY-MM-DDTHH, so the morning and evening runs of one
+day write distinct files. A plain YYYY-MM-DD is still accepted.
 
 Dedupes by canonical job URL. Keeps newest fetched_at when colliding.
 Does NOT write into applications.csv (triage first).
@@ -9,13 +12,17 @@ from __future__ import annotations
 
 import argparse
 import csv
+import re
 from collections import Counter
-from datetime import date
+from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DISC = ROOT / "data" / "discovery"
 INBOX = ROOT / "jobs" / "inbox"
+
+STAMP_FORMAT = "%Y-%m-%dT%H"
+STAMP_RE = re.compile(r"(\d{4}-\d{2}-\d{2})(T\d{2})?")
 
 FIELDS = [
     "company",
@@ -34,6 +41,26 @@ FIELDS = [
     "list_url",
     "notes",
 ]
+
+
+def run_stamp(now: datetime | None = None) -> str:
+    now = now or datetime.now(timezone.utc)
+    return now.astimezone(timezone.utc).strftime(STAMP_FORMAT)
+
+
+def source_day(stamp: str) -> str:
+    """Calendar day the exporters keyed their CSVs by.
+
+    Exporters use the machine's local date while the stamp is UTC, so the
+    stamp's hour is converted back to local time before taking the date.
+    """
+    m = STAMP_RE.fullmatch(stamp)
+    if not m:
+        raise ValueError(f"bad run stamp {stamp!r}; expected YYYY-MM-DD or YYYY-MM-DDTHH")
+    if not m.group(2):
+        return stamp
+    utc = datetime.strptime(stamp, STAMP_FORMAT).replace(tzinfo=timezone.utc)
+    return utc.astimezone().date().isoformat()
 
 
 def load_day_files(day: str) -> list[Path]:
@@ -124,15 +151,24 @@ def write_inbox(rows: list[dict], day: str, fetched_note: str) -> Path:
     return path
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--date", default=date.today().isoformat())
-    args = ap.parse_args()
-    day = args.date
+def main(argv: list[str] | None = None) -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument(
+        "--date",
+        default=None,
+        metavar="RUN",
+        help="run stamp YYYY-MM-DDTHH in UTC, or a plain YYYY-MM-DD; default: the current UTC hour",
+    )
+    args = ap.parse_args(argv)
+    day = args.date or run_stamp()
+    try:
+        input_day = source_day(day)
+    except ValueError as exc:
+        ap.error(str(exc))
 
-    files = load_day_files(day)
+    files = load_day_files(input_day)
     if not files:
-        print(f"No discovery CSVs for {day} under {DISC}", file=__import__("sys").stderr)
+        print(f"No discovery CSVs for {input_day} under {DISC}", file=__import__("sys").stderr)
         return 2
 
     all_rows: list[dict] = []
@@ -148,6 +184,7 @@ def main() -> int:
     fetched_times = sorted({r.get("fetched_at") for r in merged if r.get("fetched_at")})
     note = f"sources={len(files)}; fetched_at values={fetched_times[:4]}{'…' if len(fetched_times) > 4 else ''}"
     inbox = write_inbox(merged, day, note)
+    print(f"run={day}")
     print(f"merged={len(merged)} → {out}")
     print(f"inbox → {inbox}")
     return 0
