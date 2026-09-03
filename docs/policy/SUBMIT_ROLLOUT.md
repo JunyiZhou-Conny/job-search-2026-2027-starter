@@ -85,3 +85,13 @@ Blanket ban text existed in `AGENTS.md`, `.cursor/rules/00-core-system.mdc`,
 `docs/automation/WEEKDAY_APPLY_AUTOMATION.md`, and
 `docs/apply/written_answers/README.md`. See `docs/state/REALITY_MAP.md`
 section 7 for the contradictions that motivated this file.
+
+## Where attempts are recorded
+
+`data/apply_attempts.csv` holds one row per Submit attempt with outcome and
+evidence (`scripts/apply_ledger.py`). `data/applications.csv` stays the
+current-state ledger and is updated from the attempt outcome. Before any
+attempt, `apply_ledger.py precheck` must exit 0. Outcomes:
+`submitted_verified` needs the banner text plus a second signal (tracker,
+email, or application id); `submitted_unverified` is a banner alone;
+`submit_failed`, `blocked`, `review_packet`, `posting_closed`, `not_run`.
