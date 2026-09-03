@@ -24,9 +24,17 @@ always:
     form_answer: "No"
 
   visa_sponsorship:
-    decided: "2026-08-24"
-    form_answer: "No, I do not need sponsorship"
-    accept_also: ["No", "None"]
+    status: pending_owner_confirmation
+    form_answer: "leave_for_junyi"
+    recorded_2026_08_24: "No, I do not need sponsorship"
+    pending_reason: >
+      2026-09-03. The 08-24 widget answer No contradicts the recorded fact
+      future_sponsorship_required: true, and the 08-24 text is agent prose
+      that Junyi has not confirmed in writing. Until he confirms one
+      answer per exact question wording, a broad sponsorship question is a
+      stop-the-line item (docs/policy/SUBMIT_ROLLOUT.md). H-1B-named
+      questions keep the H-1B rule in work_authorization.yaml.
+    accept_also_once_confirmed: ["No", "None"]
     when: >
       Will you now or in the future require visa sponsorship? / require
       sponsorship? / visa sponsorship yes-no / None. Prefer the exact No

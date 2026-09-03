@@ -39,12 +39,13 @@ form_strategy:
     see: "knowledge/form_strategy.yaml always.visa_type_named"
 
   visa_sponsorship:
-    decided: "2026-08-24"
-    form_answer: "No, I do not need sponsorship"
-    accept_also: ["No", "None"]
+    status: pending_owner_confirmation
+    form_answer: "leave_for_junyi"
+    recorded_2026_08_24: "No, I do not need sponsorship"
     when: >
       Visa sponsorship / now or in the future require sponsorship /
-      require sponsorship to work in the US. None is an acceptable widget.
+      require sponsorship to work in the US. Broad wording is a
+      stop-the-line item until Junyi confirms in writing.
     reason: >
       Junyi Hayden 2026-08-24: this wording is what he wants on the
       form so the ATS does not filter him out. Re-read the widget
@@ -58,9 +59,9 @@ standard_question_answers:
     typical_answer: "Yes"
     condition: "Valid OPT EAD covering the employment period"
   will_require_sponsorship_now_or_future:
-    typical_answer: "No, I do not need sponsorship"
-    form_strategy_as_of: "2026-08-24"
-    condition: "Widget answer only. Standing fact is still future_sponsorship_required true."
+    typical_answer: "leave_for_junyi"
+    recorded_2026_08_24: "No, I do not need sponsorship"
+    condition: "Pending owner confirmation since 2026-09-03. Standing fact is future_sponsorship_required true."
   program_end_or_graduation_date:
     typical_answer: "Program completion / I-20 end: December 18, 2026; commencement March 2027"
     default_short_answer: "December 2026"
@@ -68,9 +69,7 @@ standard_question_answers:
     year_only_widget: "2027"
     when_form_asks_commencement_or_spring_2027: "March 2027 (program completed December 2026)"
     notion_2026-08-24: "Junyi: fill the graduation date as December 18."
-  # Visa-sponsorship widgets use form_strategy.visa_sponsorship (No) as of 2026-08-24.
-  # That Junyi-confirmed widget No is an ATS-filter exception; do not flip it to Yes.
-  never_lie_to_bypass_ats: false
+  never_lie_to_bypass_ats: true
 
 questions_requiring_manual_review:
   - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"
