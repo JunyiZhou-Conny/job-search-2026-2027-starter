@@ -64,8 +64,9 @@ Block Submit and record the reason when any of these hold.
    set (`applications.csv`, `job_decisions.csv`, `apply_attempts.csv`,
    newest Simplify export), weight, harness and identity flags, the
    per-run cap, and for Ashby the live form (open, no required essay,
-   no broad sponsorship or export-control question, no external
-   artifact). `start` refuses without that file.
+   no ITAR / U.S. Person restriction, no external artifact).
+   Sponsorship, citizenship, and export-control country widgets are
+   required corrections, not blockers. `start` refuses without that file.
 3. One Chrome tab. Copilot Autofill once. Never Run Autofill Again after
    corrections. Never Generate with AI.
 4. Corrections only from `config/profile.yaml`,

@@ -35,6 +35,10 @@ H1B_NAMED = re.compile(r"h-?1b", re.I)
 BROAD_SPONSORSHIP = re.compile(r"now or in the future|in the future", re.I)
 H1B_AS_EXAMPLE = re.compile(r"e\.?g\.?|for example|including|such as", re.I)
 EXPORT = re.compile(r"ITAR|export control|U\.?S\.? person", re.I)
+# Country/LPR picker on an export-control form. ITAR / U.S. Person stays a blocker.
+EXPORT_COUNTRY = re.compile(r"country|citizenship|nationality|lpr|permanent resid", re.I)
+ITAR_US_PERSON = re.compile(r"ITAR|U\.?S\.? person", re.I)
+CITIZENSHIP = re.compile(r"citizenship|nationality", re.I)
 EEO = re.compile(r"gender|race|ethnic|veteran|disabilit", re.I)
 
 
@@ -45,6 +49,13 @@ def _h1b_named_only(title: str) -> bool:
     if BROAD_SPONSORSHIP.search(title) or H1B_AS_EXAMPLE.search(title):
         return False
     return True
+
+
+def _export_control_country(title: str) -> bool:
+    """True for a country/LPR picker, not an ITAR or U.S. Person restriction."""
+    if ITAR_US_PERSON.search(title):
+        return False
+    return bool(re.search(r"export control", title, re.I) and EXPORT_COUNTRY.search(title))
 
 
 def parse_url(url: str) -> Optional[Dict[str, str]]:
@@ -96,7 +107,7 @@ def summarize(form: Dict) -> Dict:
         "required_essays": essays,
         "sponsorship_questions": sponsorship,
         "broad_sponsorship_question": bool(broad),
-        "export_control_question": any(EXPORT.search(f["title"]) for f in form["fields"]),
+        "export_control_question": any(EXPORT.search(f["title"]) and not _export_control_country(f["title"]) for f in form["fields"]),
         "eeo_fields": [f["title"] for f in form["fields"] if EEO.search(f["title"])],
         "external_artifact": [f["title"] for f in req if f["type"] == "Url" and not re.search(r"linkedin", f["title"], re.I)],
     }
@@ -109,8 +120,9 @@ def summarize(form: Dict) -> Dict:
     if s["external_artifact"]:
         blockers.append("external_artifact")
     form["g2_blockers"] = blockers
+    needs_china = any(CITIZENSHIP.search(f["title"]) or _export_control_country(f["title"]) for f in form["fields"])
     form["required_corrections"] = (["sponsorship_answer_no"] if s["sponsorship_questions"] else []) + \
-        (["citizenship_china"] if any(re.search(r"citizenship|nationality", f["title"], re.I) for f in form["fields"]) else [])
+        (["citizenship_china"] if needs_china else [])
     return form
 
 

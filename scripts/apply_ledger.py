@@ -230,6 +230,7 @@ class Ledger:
             "url": url, "company": company, "role": role, "ats": ats, "gate": gate, "weight": weight,
             "run_id": run_id, "checked_at": now_iso(), "open_gate": open_gate,
             "precheck": check, "form_summary": (form or {}).get("summary"),
+            "required_corrections": (form or {}).get("required_corrections") or [],
             "reasons": reasons, "verdict": "pass" if not reasons else "blocked",
         }
 
