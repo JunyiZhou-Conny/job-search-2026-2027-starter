@@ -358,8 +358,8 @@ rejected for permissions, push the same commit to `cursor/discovery-${RUN}`
 and open the PR against `automation/discovery`, not `main`.
 
 Consumers: `scripts/generate_apply_queue.py --date "$DAY"` picks the newest
-run of that day, `--date "$RUN"` picks one run, and no `--date` picks the
-newest run overall. Old day-keyed files still load.
+run of that day and `--date "$RUN"` picks one run; without `--date` the day
+is today. Old day-keyed files still load.
 
 ## Phase 5 — Final reply to user (required format)
 
