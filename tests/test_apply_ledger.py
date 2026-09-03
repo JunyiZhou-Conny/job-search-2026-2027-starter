@@ -89,6 +89,31 @@ class TestApplyLedger(unittest.TestCase):
         self.assertEqual(dec[0]["decision"], "closed")
         self.assertTrue(self.ledger.precheck(URL, "Acme", "Software Engineer")["duplicate"])
 
+    def test_simplify_tracker_is_a_second_memory(self):
+        folder = self.data / "imports" / "simplify"
+        folder.mkdir(parents=True)
+        with (folder / "2026-09-03_simplify_download.csv").open("w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["Job Title", "Company Name", "Location", "Job URL", "Applied Date", "Status"])
+            w.writerow(["Founding AI Engineer", "Clera", "SF", "https://jobs.ashbyhq.com/clera/abc", "2026-08-25", "APPLIED"])
+            w.writerow(["ML Engineer", "Hive", "Seattle", "https://jobs.ashbyhq.com/hive/def", "", "SAVED"])
+        applied = self.ledger.precheck("https://jobs.ashbyhq.com/clera/abc", "Clera", "Founding AI Engineer")
+        self.assertTrue(applied["duplicate"])
+        self.assertEqual(applied["matches"][0]["table"], "simplify_tracker")
+        by_name = self.ledger.precheck("https://other.example/x", "clera", "founding ai engineer")
+        self.assertTrue(by_name["duplicate"], "company plus title matches even when the URL differs")
+        saved = self.ledger.precheck("https://jobs.ashbyhq.com/hive/def", "Hive", "ML Engineer")
+        self.assertFalse(saved["duplicate"], "a saved row is not an application")
+
+    def test_close_posting_is_idempotent_and_blocks(self):
+        url = "https://jobs.ashbyhq.com/datologyai/gone"
+        first = self.ledger.close_posting(url=url, company="DatologyAI", role="SWE Intern", reason="Ashby posting not found", source="test")
+        second = self.ledger.close_posting(url=url, company="DatologyAI", role="SWE Intern", reason="again", source="test")
+        self.assertFalse(first["already_recorded"])
+        self.assertTrue(second["already_recorded"])
+        self.assertEqual(len(_rows(self.data / "job_decisions.csv")), 1)
+        self.assertTrue(self.ledger.precheck(url, "DatologyAI", "SWE Intern")["duplicate"])
+
     def test_cli_precheck_exit_codes(self):
         argv = ["--data-dir", str(self.data), "precheck", "--url", URL, "--company", "Acme", "--role", "SWE"]
         self.assertEqual(main(argv), 0)

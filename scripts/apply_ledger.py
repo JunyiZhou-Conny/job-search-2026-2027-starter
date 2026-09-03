@@ -84,6 +84,15 @@ class Ledger:
             if key_url and canonical_url(r.get("url", "")) == key_url:
                 matches.append({"table": "job_decisions", "job_id": r.get("job_id", ""),
                                 "status": r.get("decision", ""), "by": "url", "blocking": True})
+        for r in self._simplify_rows():
+            same_url = key_url and canonical_url(r["url"]) == key_url
+            same_cr = company_role_key(r["company"], r["title"]) == key_cr
+            if same_url or same_cr:
+                st = r["status"].strip().lower()
+                matches.append({"table": "simplify_tracker", "job_id": "", "status": st,
+                                "by": "url" if same_url else "company_role",
+                                "blocking": st not in {"", "saved", "screening_saved"},
+                                "source_file": r["source_file"]})
         cutoff = datetime.now() - timedelta(hours=stale_hours)
         for r in read_rows(self.attempts):
             if key_url and canonical_url(r.get("apply_url", "")) != key_url:
@@ -99,6 +108,38 @@ class Ledger:
                                 "status": outcome, "by": "url", "blocking": True,
                                 "attempt_id": r["attempt_id"]})
         return {"duplicate": any(m["blocking"] for m in matches), "matches": matches}
+
+    def _simplify_rows(self) -> List[Dict[str, str]]:
+        """Rows from the newest Simplify export. Both export shapes are read:
+        the site download (Job Title, Company Name, Job URL, Status) and the
+        older scrape (Title, Company, URL, Status)."""
+        folder = self.data / "imports" / "simplify"
+        files = sorted(folder.glob("*.csv")) if folder.exists() else []
+        if not files:
+            return []
+        latest = files[-1]
+        out = []
+        for r in read_rows(latest):
+            out.append({
+                "url": r.get("Job URL") or r.get("URL") or "",
+                "company": r.get("Company Name") or r.get("Company") or "",
+                "title": r.get("Job Title") or r.get("Title") or "",
+                "status": r.get("Status") or "",
+                "source_file": latest.name,
+            })
+        return out
+
+    def close_posting(self, *, url: str, company: str, role: str, reason: str, source: str) -> Dict:
+        decisions = read_rows(self.decisions)
+        key = canonical_url(url)
+        if any(canonical_url(d.get("url", "")) == key and d.get("decision") == "closed" for d in decisions):
+            return {"decision": "closed", "already_recorded": True}
+        app = self._find_app(url, company, role)
+        decisions.append({"url": url, "company": company, "role": role, "job_id": app["id"] if app else "",
+                          "decision": "closed", "reason": reason, "decided_at": now_iso(), "source": source})
+        write_rows(self.decisions, DECISION_FIELDS, decisions)
+        self._append_log(app["id"] if app else "", "posting_closed", "", "closed", f"{company} — {role}: {reason}")
+        return {"decision": "closed", "already_recorded": False}
 
     def _find_app(self, url: str, company: str, role: str) -> Optional[Dict[str, str]]:
         key_url, key_cr = canonical_url(url), company_role_key(company, role)
@@ -231,8 +272,19 @@ def main(argv: Optional[List[str]] = None) -> int:
                  "answers-used", "screens-dir", "notes", "next-action", "next-action-date"):
         c.add_argument(f"--{name}", default="")
 
+    d = sub.add_parser("close-posting", help="record a closed or vanished apply URL so no run resurfaces it")
+    d.add_argument("--url", required=True)
+    d.add_argument("--company", required=True)
+    d.add_argument("--role", required=True)
+    d.add_argument("--reason", required=True)
+    d.add_argument("--source", default="apply_precheck")
+
     args = p.parse_args(argv)
     ledger = Ledger(args.data_dir)
+    if args.cmd == "close-posting":
+        print(json.dumps(ledger.close_posting(url=args.url, company=args.company, role=args.role,
+                                              reason=args.reason, source=args.source)))
+        return 0
     if args.cmd == "precheck":
         result = ledger.precheck(args.url, args.company, args.role)
         print(json.dumps(result, indent=2))

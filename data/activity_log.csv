@@ -37,36 +37,36 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-07-26T11:36:19,J20260726-001,,duplicate_closed,applied,closed,Duplicate of J20260723-007
 2026-08-23T13:59:27,,,posting_closed,,closed,Together AI Research Intern Model Shaping Fall 2026 — Greenhouse jobs/5157661007 no longer open
 2026-08-23T14:30:00,J20260723-016,,autofill_reviewed,discovered,discovered,Traba Ashby written answers drafted; not submitted (100-day lock)
-2026-08-23T15:13:00,,,autofill_reviewed,,,"Perplexity Search ML Intern — Belgrade posting; UK/DE/RS sponsorship No; I-agree clicked; exercise URL empty; essays drafted; not submitted"
-2026-08-23T15:15:00,,,autofill_reviewed,,,"MeshyAI Fullstack Engineer Intern — Ashby short form; Copilot complete; not submitted"
-2026-08-23T15:16:00,,,autofill_blocked,,,"CVS Health Data Science Analyst R0993501-1 — Workday account-creation wall; tab closed; no account created"
-2026-08-23T15:21:00,,,autofill_reviewed,,,"Hayden AI Associate Data Scientist — sponsorship No→Yes; start 2027-05-18; any-employer leftover; Why Hayden drafted; 90/182-day lock; not submitted"
-2026-08-23T15:23:00,,,autofill_reviewed,,,"Scale AI AI Builder Intern — sponsorship No→Yes; 1 conditional leftover empty; EEO filled; not submitted"
-2026-08-23T15:25:00,,,autofill_reviewed,,,"Notion SWE Intern Summer 2027 — relocate Yes; sponsorship type leftover; Why Notion drafted; not submitted"
-2026-08-23T15:28:00,,,autofill_reviewed,,,"Charta Health Forward Deployed AI Engineer — 5 leftovers drafted; not submitted"
-2026-08-23T15:30:00,,,autofill_reviewed,,,"Baseten SWE Dedicated Inference — 2 leftovers drafted; EEO filled; not submitted"
-2026-08-23T15:32:00,,,autofill_reviewed,,,"Lila Sciences SWE I Instrument Software — sponsorship No→Yes; Why Lila drafted; not submitted"
-2026-08-23T15:33:00,,,autofill_reviewed,,,"Relativity Space AI SWE — U.S. Person corrected; sponsorship No→Yes; Why Relativity drafted; EEO filled; not submitted"
-2026-08-23T16:38:00,,,autofill_reviewed,,,"Round-two leftovers typed on still-open tabs; Lila/Baseten sponsorship re-set after Autofill Again; still not submitted"
-2026-08-23T18:15:00,,,rule_updated,,,"Junyi Lila review: Why-us dump rejected; Copilot sidebar phone/resume false-complete; Lila marked prioritized; public Submit hold for referral risk; no re-click"
-2026-08-24T12:47:00,,,autofill_reviewed,,,"Hayden AI inspect only — start 05/18/2027 filled by computer-use; years experience empty; sponsorship still Yes (old flip); spoofing radios empty; no re-click"
-2026-08-24T12:50:00,,,rule_updated,,,"Visa sponsorship form answer No I do not need sponsorship; years of experience 2; automated script/spoofing No"
-2026-08-24T13:20:00,,,rule_updated,,,"FDE / Forward Deployed AI marked as prioritized role family; Charta confirmed; Why Charta rewritten from Junyi dictation (not typed)"
-2026-08-24T13:35:00,,,rule_updated,,,"Export compliance / ITAR / U.S. Person jobs stay in discovery; low care; no need to submit; Relativity Why-us left as is"
-2026-08-24T13:36:00,,,autofill_reviewed,,,"Charta Why-us v2 hyphen pass typing onto Ashby tab; Junyi will Submit; agent does not click Submit"
-2026-08-24T14:03:00,,,rule_updated,,,"leftover_typing_one_pass: one paste then stop; extra Charta verify loops were a miss"
-2026-08-24T14:11:00,,,autofill_reviewed,,,"Charta Why-us textarea empty on later inspect; v2 not on the form; no re-click; Junyi can paste before Submit"
-2026-08-24T14:15:00,,,rule_updated,,,"Computer-use leftover prompt is fire-and-forget; parent copies docs/automation/COMPUTER_USE_PROMPT.md"
-2026-08-24T14:24:00,,,autofill_blocked,,,"Charta Ashby Submit flagged as possible spam; application did not land; do not retry from Cloud Chrome"
-2026-08-24T14:40:00,,,status_changed,,applied,"Charta Forward Deployed AI Engineer — Junyi submitted from his own computer; Cloud Chrome path had failed"
-2026-08-24T14:41:00,,,experiment_started,,,"Ashby Submit isolation: fresh Cloud VM + Anyscale Ray Core; protocol docs/experiments/2026-08-24_ashby_submit_isolation.md"
-2026-08-24T14:44:20,,,experiment_blocked,,,"Ashby isolation child VM harness ready (Copilot pbanhockgagggenencehbnadejlgchfc) but computerUseSupported=false; Anyscale URL not opened; Submit not clicked; outcome not_run"
-2026-08-24T14:48:00,,,experiment_blocked,,,"Ashby isolation: nested Task cloud child is not enough to Submit; next run must be a dashboard Cloud Agent with computer-use; parent Chrome still must not Submit"
-2026-08-24T14:51:00,,,experiment_started,,,"Ashby isolation second run: dashboard agent bc-b6ea9703-f8db-491d-98ab-52b490155db1; harness ready (Copilot pbanhockgagggenencehbnadejlgchfc); computerUse present; Anyscale still listed; Submit not clicked yet"
+2026-08-23T15:13:00,,,autofill_reviewed,,,Perplexity Search ML Intern — Belgrade posting; UK/DE/RS sponsorship No; I-agree clicked; exercise URL empty; essays drafted; not submitted
+2026-08-23T15:15:00,,,autofill_reviewed,,,MeshyAI Fullstack Engineer Intern — Ashby short form; Copilot complete; not submitted
+2026-08-23T15:16:00,,,autofill_blocked,,,CVS Health Data Science Analyst R0993501-1 — Workday account-creation wall; tab closed; no account created
+2026-08-23T15:21:00,,,autofill_reviewed,,,Hayden AI Associate Data Scientist — sponsorship No→Yes; start 2027-05-18; any-employer leftover; Why Hayden drafted; 90/182-day lock; not submitted
+2026-08-23T15:23:00,,,autofill_reviewed,,,Scale AI AI Builder Intern — sponsorship No→Yes; 1 conditional leftover empty; EEO filled; not submitted
+2026-08-23T15:25:00,,,autofill_reviewed,,,Notion SWE Intern Summer 2027 — relocate Yes; sponsorship type leftover; Why Notion drafted; not submitted
+2026-08-23T15:28:00,,,autofill_reviewed,,,Charta Health Forward Deployed AI Engineer — 5 leftovers drafted; not submitted
+2026-08-23T15:30:00,,,autofill_reviewed,,,Baseten SWE Dedicated Inference — 2 leftovers drafted; EEO filled; not submitted
+2026-08-23T15:32:00,,,autofill_reviewed,,,Lila Sciences SWE I Instrument Software — sponsorship No→Yes; Why Lila drafted; not submitted
+2026-08-23T15:33:00,,,autofill_reviewed,,,Relativity Space AI SWE — U.S. Person corrected; sponsorship No→Yes; Why Relativity drafted; EEO filled; not submitted
+2026-08-23T16:38:00,,,autofill_reviewed,,,Round-two leftovers typed on still-open tabs; Lila/Baseten sponsorship re-set after Autofill Again; still not submitted
+2026-08-23T18:15:00,,,rule_updated,,,Junyi Lila review: Why-us dump rejected; Copilot sidebar phone/resume false-complete; Lila marked prioritized; public Submit hold for referral risk; no re-click
+2026-08-24T12:47:00,,,autofill_reviewed,,,Hayden AI inspect only — start 05/18/2027 filled by computer-use; years experience empty; sponsorship still Yes (old flip); spoofing radios empty; no re-click
+2026-08-24T12:50:00,,,rule_updated,,,Visa sponsorship form answer No I do not need sponsorship; years of experience 2; automated script/spoofing No
+2026-08-24T13:20:00,,,rule_updated,,,FDE / Forward Deployed AI marked as prioritized role family; Charta confirmed; Why Charta rewritten from Junyi dictation (not typed)
+2026-08-24T13:35:00,,,rule_updated,,,Export compliance / ITAR / U.S. Person jobs stay in discovery; low care; no need to submit; Relativity Why-us left as is
+2026-08-24T13:36:00,,,autofill_reviewed,,,Charta Why-us v2 hyphen pass typing onto Ashby tab; Junyi will Submit; agent does not click Submit
+2026-08-24T14:03:00,,,rule_updated,,,leftover_typing_one_pass: one paste then stop; extra Charta verify loops were a miss
+2026-08-24T14:11:00,,,autofill_reviewed,,,Charta Why-us textarea empty on later inspect; v2 not on the form; no re-click; Junyi can paste before Submit
+2026-08-24T14:15:00,,,rule_updated,,,Computer-use leftover prompt is fire-and-forget; parent copies docs/automation/COMPUTER_USE_PROMPT.md
+2026-08-24T14:24:00,,,autofill_blocked,,,Charta Ashby Submit flagged as possible spam; application did not land; do not retry from Cloud Chrome
+2026-08-24T14:40:00,,,status_changed,,applied,Charta Forward Deployed AI Engineer — Junyi submitted from his own computer; Cloud Chrome path had failed
+2026-08-24T14:41:00,,,experiment_started,,,Ashby Submit isolation: fresh Cloud VM + Anyscale Ray Core; protocol docs/experiments/2026-08-24_ashby_submit_isolation.md
+2026-08-24T14:44:20,,,experiment_blocked,,,Ashby isolation child VM harness ready (Copilot pbanhockgagggenencehbnadejlgchfc) but computerUseSupported=false; Anyscale URL not opened; Submit not clicked; outcome not_run
+2026-08-24T14:48:00,,,experiment_blocked,,,Ashby isolation: nested Task cloud child is not enough to Submit; next run must be a dashboard Cloud Agent with computer-use; parent Chrome still must not Submit
+2026-08-24T14:51:00,,,experiment_started,,,Ashby isolation second run: dashboard agent bc-b6ea9703-f8db-491d-98ab-52b490155db1; harness ready (Copilot pbanhockgagggenencehbnadejlgchfc); computerUse present; Anyscale still listed; Submit not clicked yet
 2026-08-24T15:06:35,J20260824-001,,job_added,,discovered,Anyscale — Software Engineer (Ray Core)
 2026-08-24T15:06:37,J20260824-001,,status_changed,discovered,applied,Cloud Chrome isolation Submit succeeded; Ashby thank-you; not a spam wall
 2026-08-24T15:06:58,J20260824-001,,job_updated,,,Resume filename from Copilot widget; cluster version not verified
-2026-08-24T15:07:00,J20260824-001,,experiment_completed,,,"Ashby isolation second run outcome submitted; Anyscale Ray Core; no pink spam wall; Cloud Submit no longer one-sample failure; do not mass-Submit"
+2026-08-24T15:07:00,J20260824-001,,experiment_completed,,,Ashby isolation second run outcome submitted; Anyscale Ray Core; no pink spam wall; Cloud Submit no longer one-sample failure; do not mass-Submit
 2026-08-24T15:12:00,,,experiment_started,,,"Junyi authorized three more trivial Ashby Cloud Submits (Meshy Infrastructure Intern, Midjourney QA Analyst, Runway FD Finance Partner); one tab each; not weekday Automation"
 2026-08-24T15:21:00,,,experiment_completed,,,"Three trivial Ashby Cloud Submits all landed (Meshy intern, Midjourney QA, Runway finance); no pink spam wall; still not weekday Automation or a 10-tab Submit pass"
 2026-08-24T15:31:50,J20260824-002,,job_added,,discovered,MeshyAI — Infrastructure Intern
@@ -76,8 +76,9 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-08-24T15:32:17,J20260824-003,,status_changed,discovered,applied,Cloud Chrome one-tab Submit; Ashby thank-you; Midjourney QA Analyst
 2026-08-24T15:32:17,J20260824-004,,status_changed,discovered,applied,Cloud Chrome one-tab Submit; Ashby thank-you; Runway FD Finance Partner
 2026-08-24T18:20:00,,,rule_updated,,,"Prioritized public Submit hold retired; Junyi: insider pages rare, FIFO in the employer queue matters more; still no outreach without confirm"
-2026-08-24T19:25:00,,,rule_updated,,,"Scale/Notion/Perplexity inspect: sponsorship No/None; visa type F-1; graduation date 2026-12-18; intern count 2; non-US location skip; one-project stories empty; Perplexity exercise is nonstandard hold do not Submit"
+2026-08-24T19:25:00,,,rule_updated,,,Scale/Notion/Perplexity inspect: sponsorship No/None; visa type F-1; graduation date 2026-12-18; intern count 2; non-US location skip; one-project stories empty; Perplexity exercise is nonstandard hold do not Submit
 2026-09-03T03:56:08,J20260903-001,,job_added,,discovered,Charta Health — Forward Deployed AI Engineer
 2026-09-03T03:56:08,J20260903-001,,status_changed,discovered,applied,Recorded after the fact from activity_log 2026-08-24T14:40 (Junyi laptop submit). Confirmation unknown.
 2026-09-03T03:56:08,J20260824-001,,job_updated,,,Align future_sponsorship_answer with the recorded form answer (No) on the Anyscale row
 2026-09-03T03:56:08,J20260824-004,,job_updated,,,"Correction: employer is cfo.ai (Ashby board slug runway), not Runway ML. Earlier rows naming Runway refer to this job."
+2026-09-03T04:07:07,,,posting_closed,,closed,"DatologyAI — Software Engineer Intern, Infrastructure (Winter 2027): Ashby GraphQL jobPosting returns null on 2026-09-03; posting gone"
