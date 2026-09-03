@@ -45,13 +45,13 @@ board_categories:
 role_clusters:
   cloud_swe:
     titles: ["Software Engineer", "Backend Engineer", "Platform Engineer", "Cloud Engineer", "Infrastructure Engineer", "New Grad SWE"]
-    default_resume: "2026-07-27_cloud-swe_v1.2"
+    default_resume: "2026-08-24_cloud-swe_v1.3"
   data_ml:
     titles: ["Machine Learning Engineer", "Applied AI", "AI Engineer", "Data Scientist", "Data Engineer", "ML Intern/New Grad"]
-    default_resume: "2026-07-27_data-ml_v1.2"
+    default_resume: "2026-08-24_data-ml_v1.3"
   health_ai:
     titles: ["Healthcare AI", "Clinical Data", "Digital Health", "Health Informatics", "Life Science ML"]
-    default_resume: "2026-07-27_health-ai_v1.2"
+    default_resume: "2026-08-24_health-ai_v1.3"
 
 preferences:
   industries_preferred: ["big tech", "fast-iterating startups", "applied AI / agents", "cloud platforms"]
@@ -78,6 +78,7 @@ emerging_interest:
     - cloud AI infrastructure
     - developer tooling for AI systems
     - forward-deployed / FDE / last-mile AI deployment
+    - medical reinforcement learning / pathology instance segmentation (S-Seg-RLVR capstone; bootstrap only)
   cluster_promotion_rules:
     min_high_interest_jobs: 5
     or_major_target: true

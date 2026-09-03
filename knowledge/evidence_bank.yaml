@@ -69,6 +69,61 @@ projects:
       - "GPU parallel inference; pLDDT/PAE filtering; CLI for non-ML users"
     interview_depth: moderate
 
+  sseg_rlvr:
+    title: "Structure-Verified RLVR for Label-Efficient Pathology Instance Segmentation"
+    working_title: "S-Seg-RLVR"
+    org: "Harvard T.H. Chan School of Public Health (Health Data Science capstone)"
+    mentor: "Alexander Chowdhury"
+    role: "Graduate Researcher"
+    dates: "2026-08 — present"
+    dates_status: >-
+      2026-08-24: Junyi said the training semester is still ahead and he has
+      not really started experiments. The public repo already exists
+      (updated 2026-08-16): proposal, literature library, roadmap, and
+      reward interfaces. Do not back-date into 2025. Do not write
+      "Present" as if GRPO training is running.
+    source_url: "https://github.com/JunyiZhou-Conny/Structure-Verified-RLVR-for-Label-Efficient-Pathology-Instance-Segmentation"
+    source_file: "resumes/base/JZ_resume.tex"
+    technologies:
+      - "reinforcement learning"
+      - "RLVR"
+      - "GRPO"
+      - "pathology instance segmentation"
+      - "SAM / SAM2 (planned policy)"
+      - "point / count supervision"
+    status: bootstrap
+    verified_now:
+      - "Named Health Data Science capstone with mentor Alexander Chowdhury"
+      - "Public repo with proposal digest, 30-paper literature library, 16-week roadmap"
+      - "Typed reward interfaces: count, separation, topology, match, format, composite"
+      - "Target venue written as MICCAI 2027 (fallback ISBI / MIDL 2027)"
+    not_yet_built:
+      - "GRPO training loop"
+      - "SAM / SAM2 policy training"
+      - "Pathology datasets (PanNuke, CoNSeP, MoNuSeg, Lizard, GlaS, CRAG) — README: none downloaded"
+      - "Implemented reward math (each verifier raises NotImplementedError; planned weeks 9–11)"
+      - "Any Dice / PQ / count metric on real slides"
+      - "MICCAI / ISBI / MIDL submission or acceptance"
+    measurable_results: []
+    interview_depth: weak
+    resume_eligible: true
+    resume_eligible_note: >-
+      Eligible as a current-research / capstone line about the method and
+      the repo. Not eligible as a results line. Junyi 2026-08-24 asked to
+      surface this on the resume and LinkedIn even before training.
+    do_not:
+      - invent Dice, IoU, PQ, or count-error numbers
+      - claim a trained GRPO policy or a downloaded dataset
+      - claim MICCAI 2027 acceptance or a submitted paper
+      - list Dana-Farber as an employer (README says GPUs later)
+      - upgrade reinforcement_learning to working/strong until a real run
+    notes: >-
+      2026-08-24: Junyi called this a strong next-semester project and asked
+      to show it now. The honest ceiling is method design + literature +
+      stubs. Interviewers can open the repo and see NotImplementedError.
+      LinkedIn draft: knowledge/linkedin_sseg_rlvr_draft.md. Do not post
+      LinkedIn from this repo.
+
   # ---------------------------------------------------------------------------
   # Added 2026-07-26 from public GitHub READMEs. Not previously on any resume.
   # All metrics below are transcribed from the repos, not inferred.
@@ -498,6 +553,24 @@ skills:
         technologies: ["SQL", "MongoDB"]
         measurable_result: "Coursework Database Systems + app data layer"
         source_file: "resumes/base/JZ_resume.tex"
+
+  reinforcement_learning:
+    name: Reinforcement learning / RLVR / GRPO
+    category: ml_method
+    level: exposure
+    verified: true
+    resume_eligible: true
+    interview_depth: weak
+    last_used: "2026"
+    evidence:
+      - project_id: sseg_rlvr
+        description: "Capstone method: structural verifiers as GRPO rewards for pathology instance segmentation. Proposal, literature, reward interfaces. No trained policy yet."
+        technologies: ["RLVR", "GRPO", "pathology instance segmentation"]
+        measurable_result: "none yet — NotImplementedError stubs"
+        source_file: "resumes/base/JZ_resume.tex"
+    notes: >-
+      2026-08-24: do not upgrade to working or strong until Junyi confirms a
+      real GRPO run. Fine to name RLVR / GRPO on the S-Seg-RLVR resume line.
 
 rules:
   - "Do not invent skills or upgrade exposure→strong without user confirmation."

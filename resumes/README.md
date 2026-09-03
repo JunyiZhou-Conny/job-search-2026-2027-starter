@@ -6,15 +6,15 @@ You maintain **one evidence bank** and **three cluster resumes**. Pick a cluster
 
 | Cluster | File (current) | Use when the job looks like… |
 |---|---|---|
-| `cloud_swe` | `cloud_swe/2026-07-27_cloud-swe_v1.2` | Software Engineer, Backend, Platform, Cloud, Infrastructure, general new-grad SWE |
-| `data_ml` | `data_ml/2026-07-27_data-ml_v1.2` | ML Engineer, Applied AI, AI Engineer, Data Scientist/Engineer, LLM/RAG roles |
-| `health_ai` | `health_ai/2026-07-27_health-ai_v1.2` | Healthcare AI, clinical data, digital health, life-science ML — when domain is an asset |
+| `cloud_swe` | `cloud_swe/2026-08-24_cloud-swe_v1.3` | Software Engineer, Backend, Platform, Cloud, Infrastructure, general new-grad SWE |
+| `data_ml` | `data_ml/2026-08-24_data-ml_v1.3` | ML Engineer, Applied AI, AI Engineer, Data Scientist/Engineer, LLM/RAG roles |
+| `health_ai` | `health_ai/2026-08-24_health-ai_v1.3` | Healthcare AI, clinical data, digital health, life-science ML — when domain is an asset. Leads with S-Seg-RLVR. |
 
 **Quality rule:** cluster = base bullets + reorder only. Do not dilute specificity.
 
 ## Clusters are generated, not hand-edited
 
-As of `v1.2`, cluster resumes are built from `base/JZ_resume.tex` by a script. Edit base, then
+As of `v1.3`, cluster resumes are built from `base/JZ_resume.tex` by a script. Edit base, then
 regenerate — do not edit a cluster `.tex` directly, or the next build will overwrite it.
 
 ```bash

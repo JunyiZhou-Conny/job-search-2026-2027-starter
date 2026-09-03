@@ -18,11 +18,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "resumes" / "base" / "JZ_resume.tex"
-VERSION = "v1.2"
-DATE = "2026-07-27"
+VERSION = "v1.3"
+DATE = "2026-08-24"
 
 # Short id -> distinctive substring of the entry title in base.
 ENTRY_KEYS = {
+    "sseg_rlvr": "Structure-Verified RLVR",
     "wyss": "Cross-Species Drug Translation",
     "alphafold": "AlphaFold Protein",
     "compleg": "Computational Legislative Studies",
@@ -92,8 +93,8 @@ CLUSTERS = {
             "Certifications",
         ],
         "sections": [
-            ("Clinical AI Experience", ["airway", "wyss"]),
-            ("Machine Learning Projects", ["pneumonia", "alphafold"]),
+            ("Clinical AI Experience", ["sseg_rlvr", "airway"]),
+            ("Machine Learning Projects", ["pneumonia", "wyss"]),
         ],
     },
 }
