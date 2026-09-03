@@ -13,6 +13,6 @@ alwaysApply: true
 - Every active job should end with one concrete next action.
 - Separate discovery, application, networking, and interview preparation as distinct activities.
 - Optimize for qualified applications and follow-through, not raw application count alone.
-- Do not send messages or submit applications without explicit user authorization.
+- Do not send messages on the user's behalf. Submit follows `docs/policy/SUBMIT_ROLLOUT.md` (regular rows autonomous once the gate is open, prioritized rows always reviewed).
 - **Sponsorship unknown/no is not a hard reject.** Do not auto-mark roles ineligible for sponsorship reasons alone.
 - Prefer one-way Simplify CSV import over manual re-entry of every application.

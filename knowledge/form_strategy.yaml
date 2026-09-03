@@ -1,7 +1,7 @@
 # Form-answer rules Junyi confirmed. Not a second ATS.
 # Copilot = Simplify Copilot (Chrome extension). It will not read this file.
 # Cursor / computer-use must apply these after Copilot, or Junyi types them.
-# Do not Submit unless Junyi explicitly says so for a named row.
+# Submit is governed by docs/policy/SUBMIT_ROLLOUT.md.
 
 last_updated: "2026-08-27"
 source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules; Junyi 2026-08-25 work-auth / GPA / website / discipline; Junyi leftover rules after Advanced Space redo 2026-08-25"

@@ -10,7 +10,7 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Preserve existing IDs and append history rather than rewriting it.
 - Every active record should have one concrete `next_action` and, where useful, a `next_action_date`.
 - Prefer a few role-cluster resumes plus targeted bullet edits over creating a completely new resume for every job.
-- Do not submit an application, send a message, or claim an action was completed unless the user explicitly confirms it.
+- Submit is governed by `docs/policy/SUBMIT_ROLLOUT.md`. Regular rows may be submitted autonomously once that ATS gate is open. Prioritized rows always stop for a review packet. Never send a message on Junyi's behalf or claim an action was completed without evidence.
 
 ## Eligibility and sponsorship
 
@@ -26,10 +26,11 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Apply **weight** is separate: `regular` | `prioritized` (GTC 2026 / startup / prestige / **FDE**).
   See `knowledge/application_priority.yaml` and `knowledge/role_families.yaml`.
   Forward Deployed / FDE titles → keep and mark. Prioritized: more Why-us
-  care, JD-tuned resume from the evidence bank only. **Public Submit**
-  when the form is ready; do not wait for a referral / insider page
-  (Junyi 2026-08-24: those pages are rare; FIFO in the queue matters
-  more). Labels stay suggestions until Junyi confirms. Do not claim FDE
+  care, JD-tuned resume from the evidence bank only, full form prep, then
+  a review packet for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`).
+  Do not wait for a referral / insider page on regular rows (Junyi
+  2026-08-24: those pages are rare; FIFO in the queue matters more).
+  Labels stay suggestions until Junyi confirms. Do not claim FDE
   customer-on-site work already done.
 - ITAR / EAR / U.S. Person / export compliance (rocket, defense): keep in
   discovery. Do not filter out. Care is low. No need to submit. Form
@@ -71,7 +72,8 @@ python3 scripts/automation/check_apply_harness.py
 
 If it exits 1, stop and follow `docs/automation/APPLY_HARNESS.md`. Do not
 treat Greenhouse’s MyGreenhouse button as Simplify. Do not type identity
-fields by hand to fake a Copilot pass. Do not Submit.
+fields by hand to fake a Copilot pass. Submit only within an open gate of
+`docs/policy/SUBMIT_ROLLOUT.md`.
 
 Copilot “need review” that matches empty form fields is a **gap**, not a
 license to invent. Record it in `knowledge/autofill_obstacles.yaml`

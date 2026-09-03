@@ -12,7 +12,7 @@
 | Identity Copilot filled | name, Harvard email. **Sidebar said phone + resume complete; Junyi 2026-08-23 evening: phone country, phone, and resume were empty.** |
 | Copilot need-review | 1 after correction (Why Lila) |
 | `application_weight` | `prioritized` (Junyi confirmed). GTC 2026 Exhibitor + particular emphasis. |
-| Public Submit | **hold** — check referral / insider page first |
+| Public Submit | review packet for Junyi before Submit (hold retired 2026-08-24; packet rule 2026-09-03) |
 
 **Not submitted.** Generate with AI not clicked. Cover letter empty is expected.
 

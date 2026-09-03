@@ -30,7 +30,7 @@ application was submitted.
    companies: `knowledge/application_priority.yaml`.
 2. Save the draft here **before** or as you type it on the form.
 3. Set `form_status` to `drafted` or `typed_on_form`. Set `submitted` only
-   when Junyi names that row and confirms Submit.
+   after a verified Submit under `docs/policy/SUBMIT_ROLLOUT.md`.
 4. If the company later emails, open this file. Do not reconstruct from
    chat memory.
 

@@ -23,4 +23,6 @@ cleanup, Down-arrow scrolling, typo debug, "confirm Flask is present",
 screen recording unless he asked.
 
 After paste: one screenshot, stop. Truncated textarea is expected.
-Junyi can see the tab. Do not click Submit. Do not Run Autofill Again.
+Do not Run Autofill Again. Submit only when the parent's Task string
+says so under an open gate of `docs/policy/SUBMIT_ROLLOUT.md`, and then
+exactly once.

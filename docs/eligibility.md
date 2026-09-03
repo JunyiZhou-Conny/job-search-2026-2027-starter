@@ -40,8 +40,10 @@ Values: `verified` | `likely` | `unclear` | `no`
 
 `regular` vs `prioritized` (GTC 2026 / startup / prestige). Not the letter
 `priority` field. See `knowledge/application_priority.yaml` and
-`docs/apply/PRIORITY.md`. Prioritized: hold public Submit until referral
-risk is checked. Confirm the weight before writing it onto a ledger row.
+`docs/apply/PRIORITY.md`. Prioritized: full form prep, then a review
+packet for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`). The
+referral hold was retired 2026-08-24. Confirm the weight before writing
+it onto a ledger row.
 
 ## Dual graduation dates (both real)
 

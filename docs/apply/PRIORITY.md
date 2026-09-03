@@ -12,7 +12,7 @@ letter `priority` (A / B / C / D).
 | Weight | What changes |
 |---|---|
 | `regular` | Mass autofill. Cluster resume. Free response answers the prompt and stops. |
-| `prioritized` | More judgment. JD-tuned resume from the evidence bank only. Why-us actually answers the prompt. **Public Submit** when the form is ready. Do not wait for a referral / insider page. Coffee-chat drafts only — never send without confirm. |
+| `prioritized` | More judgment. JD-tuned resume from the evidence bank only. Why-us actually answers the prompt. Full form prep, then a **review packet** for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`). Do not wait for a referral / insider page to prepare it. Coffee-chat drafts only, never sent without confirm. |
 
 ## Three subfields under prioritized
 
@@ -33,8 +33,8 @@ Labels stay suggestions until Junyi confirms.
 ## Confirmed so far
 
 - **Lila Sciences — Software Engineer I, Instrument Software** —
-  prioritized (`gtc_2026` + Junyi emphasis). Public Submit allowed
-  (hold retired 2026-08-24).
+  prioritized (`gtc_2026` + Junyi emphasis). Referral hold retired
+  2026-08-24; review packet before Submit since 2026-09-03.
 - **Charta Health — Forward Deployed AI Engineer** — prioritized
   (`fde` + startup + biomedical AI). Why-us v2 accepted. Junyi
   submitted from his own computer 2026-08-24. Cloud Chrome Submit
@@ -48,7 +48,7 @@ company-specific on Greenhouse.
 
 Junyi 2026-08-24: those pages are rare. The employer pool is closer to
 FIFO, so waiting to verify a referral costs more than it saves. **Do
-not hold public Submit** for that check. If a named person later has a
+not hold the review packet** for that check. If a named person later has a
 real insider URL, record it. Do not rewind a landed public apply.
 
 Do not send LinkedIn, email, or 1point3acres messages without confirm.

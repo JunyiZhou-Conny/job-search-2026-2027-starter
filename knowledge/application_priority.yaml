@@ -14,9 +14,11 @@ application_weight:
     meaning: >
       Extra judgment. Tailor resume toward the JD using only evidence-bank
       facts. Free-response gets a real answer to the prompt, not a project
-      dump. Public Submit is allowed. Do not wait for a referral /
-      insider-page check. Junyi 2026-08-24: those pages are rare; the
-      public pool is closer to FIFO, so waiting costs more than it saves.
+      dump. Full form prep, then stop before Submit and hand Junyi a
+      review packet (docs/policy/SUBMIT_ROLLOUT.md, 2026-09-03). Do not
+      wait for a referral / insider-page check before preparing the
+      packet. Junyi 2026-08-24: those pages are rare; the public pool is
+      closer to FIFO, so waiting costs more than it saves.
     subfields:
       - id: gtc_2026
         meaning: "Company appears on NVIDIA GTC 2026 sponsors/exhibitors."
@@ -51,11 +53,11 @@ confirmed_prioritized:
     subfields:
       - gtc_2026   # Exhibitor on the 2026 list — verified in market_signals
       - prestige   # Junyi: particular emphasis; scientific / research
-    public_submit: allowed
+    public_submit: human_review_packet
     hold_reason: >
-      Superseded 2026-08-24. Junyi: do not wait for an insider / referral
-      URL. Public Submit. FIFO in the employer queue matters more than
-      the rare later-referral conflict.
+      Referral hold superseded 2026-08-24. Junyi: do not wait for an
+      insider / referral URL. Since 2026-09-03 prioritized rows stop
+      before Submit for a review packet, not for a referral check.
     written_answer: "docs/apply/written_answers/2026-08-23_lila-swe-i-instrument.md"
     resume: "cluster resume is not enough; tailor toward instrument / scientific software using only evidence-bank facts. Do not invent lab-hardware experience."
 
@@ -97,7 +99,7 @@ apply_behavior:
     - Same standing yes/no rules (relocate, sponsorship, salary floor)
     - More time on Why-us / JD-specific writing
     - Visually confirm phone, resume attachment, sponsorship — do not trust Copilot "Completed"
-    - Default next_action: public Submit when the form is ready; do not wait for a referral URL
+    - Default next_action: review packet for Junyi when the form is ready; do not wait for a referral URL
     - Draft coffee-chat / LinkedIn only; never send without Junyi confirm
     - 1point3acres is a noisy research source, not an auto-apply channel
 
@@ -105,9 +107,10 @@ referral_risk:
   decided: "2026-08-23"
   revised: "2026-08-24"
   rule: >
-    Public Submit on prioritized rows. Do not hold for a referral or
-    insider-page check. If a named employee later has a real insider
-    URL, record it; do not rewind a landed public apply.
+    Do not hold a prioritized row for a referral or insider-page check.
+    Prepare the form and the review packet; Junyi decides Submit
+    (docs/policy/SUBMIT_ROLLOUT.md). If a named employee later has a
+    real insider URL, record it; do not rewind a landed public apply.
   why: >
     The 2026-08-23 hold assumed a public apply can close a later
     referral (Ashby "candidate already exists"; some Greenhouse
@@ -115,7 +118,7 @@ referral_risk:
     waiting to verify one loses FIFO place in the employer queue.
     The conflict is real but not worth the delay.
   do:
-    - Public Submit when the form and Why-us are ready
+    - Review packet when the form and Why-us are ready
     - Record referral_status on the ledger only after a real outcome
   do_not:
     - Hold a ready form while hunting 1point3acres / LinkedIn for 内推

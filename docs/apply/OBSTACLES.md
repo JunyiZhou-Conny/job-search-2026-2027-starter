@@ -234,8 +234,10 @@ prompt, ardent / genuine / truthful, no project dump.
 
 **Lila is prioritized.** GTC 2026 Exhibitor (already in
 `knowledge/market_signals/gtc2026_sponsors_exhibitors.md`) plus Junyi
-emphasis. Hold public Submit until a referral / insider page is checked.
-See `knowledge/application_priority.yaml` and `docs/apply/PRIORITY.md`.
+emphasis. Prioritized rows stop for a review packet before Submit
+(`docs/policy/SUBMIT_ROLLOUT.md`). The referral hold was retired
+2026-08-24. See `knowledge/application_priority.yaml` and
+`docs/apply/PRIORITY.md`.
 
 ## Hayden inspect (2026-08-24) — no re-click
 
