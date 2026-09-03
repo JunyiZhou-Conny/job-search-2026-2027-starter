@@ -268,5 +268,7 @@ unsubmitted. Discovery run `2026-09-03T15` produced 101 sweep rows
 `triage=none` and did not pick an older day's keeps. Ingest uses the
 same newest-file rule and was not run (Phase 4 default). Selected
 regular unit: Anyscale Software Engineer (Ray Data),
-`J20260903-033` / `A20260903-003`. G2 stays closed until that unit
-has durable evidence and a blocked rerun.
+`J20260903-033` / `A20260903-003`. G1 form is prepared
+(company cleared, hybrid Yes, relocate Yes, sponsorship No).
+Submit was not clicked. G2 stays closed until that unit has
+durable Submit evidence and a blocked rerun.
