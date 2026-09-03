@@ -100,6 +100,41 @@ phenomena:
       Those questions need more attention than name/email. Leaving them
       empty and flagged is the desired stop, not a miss.
 
+  - id: copilot_sets_us_citizenship
+    observed: "2026-09-03"
+    company: Twitch
+    ats: greenhouse
+    meaning: >
+      Greenhouse Amazon-family form. Copilot Autofill once set "In which
+      country/region do you have citizenship?" to United States of
+      America. Junyi is F-1 (knowledge/work_authorization.yaml
+      current_status). The value is wrong on its face even though the
+      correct country is not stored in the repo. Copilot also answered the
+      broad immigration sponsorship question No and "legally eligible to
+      begin employment immediately" Yes (earliest start is 2027-01-18).
+    implication: >
+      A wrong-fact class, not a gap. Any G2 preflight must treat a
+      citizenship, nationality, or export-control country widget as
+      stop-the-line unless the repo holds the confirmed value and the
+      clicker verifies the widget after autofill. Copilot "Completed" on
+      these widgets is not a value check.
+    evidence: "generated/apply_runs/2026-09-03T13/twitch/06_compensation_eeo_start.png (local; not committed)"
+
+  - id: copilot_fills_eeo_greenhouse_amazon
+    observed: "2026-09-03"
+    company: Twitch
+    ats: greenhouse
+    meaning: >
+      Copilot filled gender, Hispanic/Latino, race, and veteran status on
+      the voluntary EEO block, plus disability (standing answer No). Same
+      behavior as OpenAI, Nirmata, SpaceX on 2026-08-22. Values likely come
+      from the Simplify profile Junyi filled in.
+    implication: >
+      The stop-the-line rule eeo_touched fired on a prioritized row, so
+      Junyi sees it in the packet. Whether Copilot's EEO values are his own
+      profile answers is a question for him, not a fact to infer.
+
+
 positive_signals:
   - id: need_review_matches_empty_fields
     observed: "2026-08-23"
@@ -211,6 +246,19 @@ nirmata_2026-08-23:
   h1b_rule_written_to: "knowledge/work_authorization.yaml form_strategy.h1b_named_question_only"
 
 gaps:
+  - id: citizenship_country
+    status: missing
+    already_in: null
+    form_effect: "Twitch citizenship and export-control country widgets; Copilot picked United States, which is wrong for an F-1 student"
+    ask_later: "Which country to give on citizenship and export-control widgets. Store it in knowledge/work_authorization.yaml once confirmed."
+
+  - id: harvard_discipline_and_end_date_on_greenhouse
+    status: in_repo_unused
+    already_in: "knowledge/form_strategy.yaml always.education_discipline_or_field_of_study (Data Science first) and always.graduation_date_on_forms (2026-12-18)"
+    form_effect: "Twitch education block: Copilot set Harvard discipline Other and end date March 2027"
+    ask_later: null
+    note: "The 2026-09-03 clicker prompt did not include these two corrections. Add them to the standing slice for Greenhouse education blocks."
+
   - id: emory_undergrad_gpa
     status: in_repo_unused
     already_in: "config/profile.yaml education_history Emory gpa 3.925"

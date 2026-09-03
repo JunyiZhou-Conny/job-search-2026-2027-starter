@@ -97,3 +97,21 @@ ready_for_junyi_review. Greenhouse is at G1 (config/submit_gates.yaml; docs/poli
 https://job-boards.greenhouse.io/twitch/jobs/8459320002
 
 Files consulted: config/profile.yaml, config/submit_gates.yaml, knowledge/evidence_bank.yaml, knowledge/work_authorization.yaml, knowledge/form_strategy.yaml, knowledge/application_priority.yaml, knowledge/company_lists.yaml, knowledge/target_roles.yaml, knowledge/written_response_bank.yaml, docs/apply/PRIORITY.md, docs/apply/written_answers/README.md, docs/policy/SUBMIT_ROLLOUT.md, docs/state/decisions.tsv, data/contacts.csv, data/networking.csv, data/applications.csv, data/resume_versions.csv, data/imports/simplify/2026-09-03_simplify_download.csv, resumes/README.md, resumes/cloud_swe/2026-08-24_cloud-swe_v1.3.tex, generated/apply_runs/2026-09-03T13/twitch-swe-i.preflight.json, Greenhouse API job 8459320002 with questions (fetched 2026-09-03).
+
+## 11. Form state after the G1 fill (2026-09-03 14:21 UTC)
+
+Copilot ran once, attached `Junyi_Zhou_resume.pdf`, reported 12 fields to review. The agent corrected Website, Twitch employee No, relocation Seattle, two Amazon employment No answers, H-1B-held No, expected base pay 110500. Submit was not clicked. The tab is open on this VM. Screenshots are local under `generated/apply_runs/2026-09-03T13/twitch/` (not committed; they show EEO values).
+
+Must fix before any Submit.
+
+| Widget | Shows now | Problem |
+|---|---|---|
+| Country of citizenship | United States of America | Wrong. F-1 status. Correct value is not in the repo. |
+| Immigration support or sponsorship, now or future | No | Copilot's answer. Pending your written decision. |
+| Legally eligible to begin immediately | Yes | Earliest full-time start is 2027-01-18. Your call on the wording. |
+| Gender, Hispanic/Latino, race, veteran | Male, No, Asian, not a protected veteran | Copilot filled EEO. Confirm these are your own profile answers or clear them. |
+| Harvard discipline, end date | Other, March 2027 | Standing rules say Data Science and 2026-12-18. |
+
+Still blank and required: Twitch familiarity, prior Amazon application, non-compete, permanent residence elsewhere, export-control country, future opportunities consent.
+
+Readiness after the fill: ready_for_junyi_review, with the citizenship widget as a hard stop.
