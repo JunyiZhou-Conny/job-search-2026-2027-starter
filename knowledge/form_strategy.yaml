@@ -470,42 +470,6 @@ leftover_typing_one_pass:
 # Other computer-use token sinks (2026-08-24 isolation + 3-pack)
 # leftover_typing_one_pass is only the Why-us paste case. These are
 # separate. Some have a rule. Some do not have a helper yet.
-computer_use_token_sinks:
-  decided: "2026-08-24"
-  documented_with_a_rule:
-    leftover_verify_loops:
-      what: "Parent resumes computer-use to Ctrl+F / scroll / prove a paste"
-      solution: "leftover_typing_one_pass + docs/automation/COMPUTER_USE_PROMPT.md"
-    autofill_again:
-      what: "Run Autofill Again after corrections"
-      solution: "do_not_run_autofill_again"
-    nested_task_cloud_child:
-      what: "Task environment=cloud child has no computerUse"
-      solution: "Dashboard Cloud Agent. First isolation child was not_run."
-    generate_with_ai:
-      what: "Simplify Generate with AI on leftover essays"
-      solution: "Never click. written_responses.never_click"
-  documented_no_helper_yet:
-    vision_full_apply:
-      what: >
-        Even a clean Autofill+Submit pass is expensive. The clicker
-        screenshots after almost every move (20–30 stills per short
-        Ashby form). There is no DOM / Playwright fill this week.
-      see: "docs/automation/COMPUTER_USE_PROMPT.md Later (not this week)"
-    parent_screenshot_audit:
-      what: >
-        Parent re-reads many /tmp/computer-use/*.webp after the clicker
-        already reported Success. Needed for Submit-truth experiments.
-        Waste for leftover paste. leftover_typing_one_pass already
-        says do not re-read many screenshots as a UI test.
-    screen_record_plus_review:
-      what: >
-        Cloud walkthrough rules want a demo video. leftover rule says
-        do not record unless Junyi asked. videoReview also failed on a
-        15MB recording. Do not start RecordScreen for leftover paste.
-        For Submit experiments, one short recording is enough; do not
-        also spawn videoReview on a huge file.
-
 # Do not re-run Copilot after human / computer-use corrections
 do_not_run_autofill_again:
   decided: "2026-08-23"
@@ -533,45 +497,6 @@ ashby_spam_submit_block:
   see: "docs/apply/OBSTACLES.md"
 
 # One authorized Cloud Submit on a NEW pod (Junyi 2026-08-24)
-ashby_spam_isolation_experiment:
-  decided: "2026-08-24"
-  when: "Junyi asked for a fresh VM + a different Ashby job + one Submit"
-  child_vm_only: true
-  parent_chrome_still_do_not_submit: true
-  job: "Anyscale Software Engineer (Ray Core)"
-  apply_url: "https://jobs.ashbyhq.com/anyscale/73a973b1-6377-4144-a6e5-610b78719882"
-  do:
-    - New Cloud Agent. One Ashby tab. Autofill once.
-    - Fill hybrid Yes, relocate Yes, sponsorship No, location Boston, MA.
-    - Leave Additional information empty.
-    - Click Submit once. Screenshot. Stop.
-  do_not:
-    - Retry Submit if the pink spam wall appears
-    - Open Charta or the 10-tab set
-    - Use Replit (required project URL we do not have)
-    - Use Abridge (Fall 2026 intern)
-    - Use Hex (currently-based-in-SF/NYC is false)
-    - Invent a Why-us or a project password
-  backup_if_closed: "https://jobs.ashbyhq.com/meshy/c2f596a3-378c-4a57-b2cd-0bccd88866d7"
-  first_child_outcome: >
-    2026-08-24 Task-spawned child bc-7f8a7941 harness ready but
-    computerUseSupported=false. Outcome not_run. Next run must be a
-    dashboard Cloud Agent with computer-use, not another nested Task.
-  second_run_outcome: >
-    2026-08-24 dashboard agent bc-b6ea9703-f8db-491d-98ab-52b490155db1
-    opened only Anyscale Ray Core, Autofill once, Submit once.
-    Ashby: "Success. Your application was successfully submitted."
-    Outcome submitted. No pink spam wall. Cloud Submit is no longer a
-    one-sample failure; still not a license for mass apply.
-  followup_three_trivial: >
-    2026-08-24 Junyi authorized three more Cloud Submits on named
-    non-pursuit short Ashby forms, one tab at a time. All three
-    landed (Meshy Infrastructure Intern, Midjourney QA Analyst,
-    Runway FD Finance Partner). No pink spam wall. Still not the
-    weekday apply Automation and not a 10-tab Submit pass. See
-    docs/experiments/2026-08-24_ashby_three_trivial_submits.md.
-  see: "docs/experiments/2026-08-24_ashby_submit_isolation.md"
-
 # Workday / ATS account walls (CVS Health 2026-08-23)
 account_creation_wall:
   decided: "2026-08-23"
