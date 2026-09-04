@@ -146,3 +146,5 @@ This job is owner-named. It is not a row in `data/applications.csv` in the 2026-
 | Weight | Regular. Not a G2 Ashby protocol unit. |
 
 Pass condition. Polar left Jobright and landed on the source posting. Cursor did not rediscover the job. Polar returns `opened_url`, `original_job_post_url`, `apply_url_used`, `filled=no`, `submitted=no`, and a short note.
+
+The first fill-and-stop pilot is a later Cursor-selected KEEP, not Tallgrass. See `docs/experiments/2026-09-04_polar_first_pilot.md`. G2 is still closed. Polar still must not Submit.
