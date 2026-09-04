@@ -1,4 +1,4 @@
-# Three operating boundaries
+# Operating boundaries
 
 ## 1. Labels are suggestions until you confirm
 
@@ -55,3 +55,15 @@ against **their** fork. Two Pro accounts do not share automations. See
 - Cloud Agent autofill: `docs/automation/APPLY_HARNESS.md`. Snapshot a
   logged-in Simplify profile only on a **personal** environment. Never commit
   the extension or `simplify_storage.json`.
+- Polar keeps its sessions on Junyi's computer. Do not export Polar cookies
+  into this repo.
+
+## 5. Polar executes. It does not discover.
+
+Polar is a local browser execution environment (`docs/automation/POLAR.md`).
+It consumes a small GitHub handoff (company, role, `discovery_url`,
+`apply_url`, stop rule) and returns an execution result.
+
+It must **not** run a second discovery, rank, dedupe, or priority loop.
+It must **not** own `data/applications.csv`. Cursor reconciles results
+into the ledger when we add that write path.

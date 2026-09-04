@@ -19,6 +19,10 @@ resolves facts    page order           no rediscovery       delta only
 The parent is the brain. Computer Use is the hands. Verification is a
 separate responsibility. A child saying "✓" is not proof.
 
+Polar is a different execution environment on Junyi's machine
+(`docs/automation/POLAR.md`). It is not a Computer Use worker and
+does not use `scripts/compile_cu_task.py`.
+
 ## Before you spawn a clicker
 
 You must already know:
