@@ -42,6 +42,9 @@ class TestPolarLivePacket(unittest.TestCase):
         self.assertIn("Stop immediately before Submit.", self.text)
         self.assertIn("submitted: yes/no", self.text)
         self.assertNotRegex(self.text, r"(?m)^.*[Cc]lick Submit exactly")
+        self.assertIn("click Apply once to open it", self.text)
+        self.assertIn("final Apply button", self.text)
+        self.assertNotIn("Do not click Submit, Apply, or Finish application.", self.text)
 
     def test_omits_phone_email_and_board_urls(self):
         self.assertNotIn("@", self.text)

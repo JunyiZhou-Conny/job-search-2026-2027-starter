@@ -22,13 +22,13 @@ JOBRIGHT
 7. Stop and report if the destination is a different role, a closed or 404 page, LinkedIn only, a generic careers home with no this requisition, a non-US work location, or any other unusable page. Do not open a sibling requisition.
 
 EMPLOYER APPLICATION
-8. Use the existing logged-in session. Do not create an employer ATS account. If an account wall or sign-in wall appears, stop and report. Do not register.
+8. If the application form is not open, click Apply once to open it. Use the existing logged-in session. Do not create an employer ATS account. If an account wall or sign-in wall appears, stop and report. Do not register.
 9. If Simplify Copilot is available, run Autofill once. Never Run Autofill Again. Never click Generate with AI.
 10. Look at the visible form, not the Copilot sidebar. Correct mismatches using ONLY the answers below.
 11. Click required privacy / I agree squares.
 12. Leave cover letter empty.
 13. If a required free-response or Why-us box has no approved text below, leave it empty, list it as unresolved, and do not invent an essay.
-14. Stop immediately before Submit. Do not click Submit, Apply, or Finish application.
+14. Stop immediately before Submit. Do not click Submit, a final Apply button, or Finish application.
 
 IDENTITY AND STANDING ANSWERS
 Use Simplify for phone and email. Do not invent a different name, phone, or email.
