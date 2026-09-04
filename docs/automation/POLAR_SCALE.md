@@ -83,9 +83,10 @@ The human table is `docs/experiments/polar_ats_matrix.md`.
 | Two Polar workers on isolated profiles or machines | not tested |
 | Shared clipboard across Polar chats | not tested |
 
-Do not run a parallelism probe on this packet. The smallest later
-same-profile probe is two Polar tabs on dummy pages, a written
-collision report. Not two KEEP applies.
+Do not run a parallelism probe on this packet. Dummy pages cannot
+open P5. Copilot and Original Job Post do not engage there. A later
+probe needs two Polar contexts and two different real ATS forms, or
+the gate stays closed. Not two KEEP applies on one profile.
 
 ## Gates
 
@@ -96,8 +97,8 @@ collision report. Not two KEEP applies.
 | P2 Packet repeatability | second packet from the same standing-answer render, no YAML homework for Polar | standing answers drift | a small renderer | Workflow |
 | P3 Mailbox-read | Polar executes `LIVE.md` from repo context with no chat paste | Polar ignores the file or rediscovers | Junyi clicks Run | Polar git-write, scheduled Workflow |
 | P3w Mailbox-write | Polar writes `generated/polar/results/<packet_id>.md` with no paste of the report | Polar cannot write git, or Polar writes the ledger | Cursor reconciles from that file | scheduled Workflow, Polar ledger writes |
-| P4 One-slot Workflow | P1 plus P2 plus P3 plus P3w, three clean serial fills, zero invented facts, human still reconciles | Workflow iterates a KEEP list or Submits | a scheduled Workflow whose body executes `LIVE.md` | Parallel, Submit |
-| P5 Concurrency probe | dummy-page collision report | cookie or Copilot cross-fill | a written collision report. Still no production KEEP parallel | production parallel KEEP applies |
+| P4 One-slot Workflow | P1 plus P2 plus P3 plus P3w, three clean serial fills, a scheduled throwaway page with the Mac locked or Polar backgrounded, zero invented facts, human still reconciles | Workflow iterates a KEEP list or Submits | a scheduled Workflow whose body executes `LIVE.md` | Parallel, Submit |
+| P5 Concurrency probe | two Polar contexts, two different real ATS forms, a written collision report | cookie or Copilot cross-fill, or a dummy-page-only report | still no production KEEP parallel | production parallel KEEP applies |
 
 G2 and Submit stay in `docs/policy/SUBMIT_ROLLOUT.md`. A Polar fill
 does not open them.

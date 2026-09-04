@@ -19,6 +19,10 @@ Jobright-only core KEEPs still sit in that triage file. This row
 was picked for an assumed non-Greenhouse Original Job Post, not
 as the only survivor.
 
+Triage `evidence_basis` is `board_fields`. No JD in this repo proves
+the start date or the seniority. Treat the packet as a transport
+and ATS-family measurement until Polar reports the posting.
+
 | Field | Value |
 |---|---|
 | `packet_id` | `P-20260904-002` |
@@ -97,6 +101,8 @@ The paste-ready prompt is `generated/polar/LIVE.md`. Do not paste
 this experiment note into Polar.
 
 Quantbot ledger ids `J20260904-001` and `A20260904-001` live on the
-open first-pilot PR. Do not mint those ids on this branch. Do not
-call `Ledger.start` until that row set is on the same history, and
-never with a Jobright URL.
+open first-pilot PR. Do not mint those ids on this branch. Keep one
+open Polar ledger-writing PR at a time. Do not call `Ledger.start`
+until that row set is on the same history, and never with a Jobright
+URL. A wall, a closed posting, or an unmatched page is an experiment
+note, not a `start`.
