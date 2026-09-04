@@ -97,6 +97,7 @@ standard_question_answers:
 questions_requiring_manual_review:
   - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"
   - "Questions asking if you need sponsorship 'to begin work' when OPT covers start"
+  - "Will you now or in the future require work authorization to work in the U.S.? (Quantbot Greenhouse 2026-09-04. Polar set No. Not the standing visa-sponsorship widget until Junyi confirms.)"
   - "Forms that ask only 'graduation date' without distinguishing program end vs commencement — prefer December 2026 / 2026-12-18 unless they explicitly mean ceremony"
   - "Any wording you are unsure about — save verbatim Q&A and ask HIO if needed"
 

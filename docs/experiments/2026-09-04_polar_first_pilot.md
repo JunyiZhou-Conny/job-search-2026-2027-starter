@@ -82,11 +82,52 @@ autofill that Polar cannot correct from the packet.
 ## What would justify the next stage
 
 - 1 → 3–5 jobs. Two clean Jobright-to-source fills on different ATS
-  hosts, each with `submitted=no` and no invented facts. One of those
-  two may be this Quantbot run.
+  hosts, each with `submitted=no` and no invented facts. Quantbot
+  Greenhouse is the first. Need one more host that is not Greenhouse.
 - 3–5 → scheduled Polar Workflow. Five fills with the same stop
   discipline, zero wrong-fact incidents, and a human still reconciling
-  results into the ledger. Do not schedule from a single lucky run.
+  results into the ledger. Do not schedule from this one run.
+
+## Polar result (2026-09-04)
+
+Junyi pasted the packet into Polar and sent this report. Cursor did not
+watch the browser. Facts below are Polar's report, not a second
+observation.
+
+| Field | Polar report |
+|---|---|
+| Original Job Post used | yes |
+| Final application URL | `https://job-boards.greenhouse.io/embed/job_app?for=quantbot-technologies&jr_id=6a9b1602fe45b8490f606c9f` |
+| Host | `job-boards.greenhouse.io` |
+| Posting matched | yes. Same company, title, New York, on site, Summer 2027, 10 weeks, 180000 to 200000 on both pages |
+| Simplify | yes. Autofill This Page once. No Run Autofill Again. No Generate with AI |
+| Resume | Simplify `Junyi_Zhou_resume` already attached. No `data_ml` v1.3 picker |
+| Cover letter | empty |
+| Ready to submit | yes |
+| Submitted | no |
+| Stop reason | packet stop rule, immediately before Submit |
+| CAPTCHA / account wall | none |
+| Elapsed | about 6 minutes |
+
+Corrections Polar reported:
+
+- Website blank → `https://connyzhou.com`
+- "Will you be graduating between December 2027 and June 2028?" blank → No
+- "Will you now or in the future require work authorization to work in the U.S.?" autofilled Yes → No
+- Veteran Status blank → I am not a protected veteran
+- Disability Status blank → No, I do not have a disability and have not had one in the past
+- Gender, ethnicity, Hispanic/Latino left as Simplify filled them
+
+The work-authorization widget is not the standing visa-sponsorship
+question. Polar applied the sponsorship No anyway. That field stays
+`needs_review` until Junyi confirms the wording. See
+`knowledge/form_strategy.yaml` `visa_sponsorship.do_not_auto_map`.
+
+Ledger row `J20260904-001`. Attempt `A20260904-001` outcome
+`review_packet`. Status `ready_to_apply`. Not applied.
+
+Pass for the system boundary. Polar left Jobright, reached Greenhouse,
+filled standing fields it could see, and did not Submit.
 
 ## Polar prompt
 

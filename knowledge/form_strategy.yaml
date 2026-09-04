@@ -34,6 +34,14 @@ always:
       sponsorship? / visa sponsorship yes-no / None. Prefer the exact No
       wording if the widget is a radio. If None is an option, pick None.
       If it is free text, type the sentence.
+    do_not_auto_map:
+      - >
+        Will you now or in the future require work authorization to
+        work in the U.S.?
+    do_not_auto_map_seen: >
+      Quantbot Greenhouse 2026-09-04. Polar set No from the standing
+      sponsorship answer. The widget says work authorization, not visa
+      sponsorship. Leave for Junyi until that wording is confirmed.
     supersedes: "2026-08-23 broad-Yes flip (Lila/Hayden/Relativity/Scale)"
     before_any_submit: >
       Re-read the sponsorship widget. If it is Yes, stop. Junyi: this

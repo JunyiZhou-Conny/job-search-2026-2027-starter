@@ -123,9 +123,11 @@ Junyi filled a real application with Polar. That test was not flagged the way so
 | Workflow exists and can be saved or scheduled | owner-observed. Public press agrees. | Proven as a product concept |
 | Polar can take repo context | owner-observed | Proven |
 | Jobright Original Job Post reaches the Tallgrass Oracle Cloud URL | owner-observed | Proven for that job |
+| Jobright Original Job Post reaches Quantbot Greenhouse | Polar report, 2026-09-04 | Proven for that job |
+| Polar can fill a Cursor-selected KEEP and stop before Submit | Polar report, 2026-09-04 | Proven for Quantbot. About 6 minutes. No CAPTCHA. |
 | Polar Workflow can consume this repo's queue unattended | inference | Unproven |
-| Every Original Job Post is an employer ATS | inference | Unproven. The link may be LinkedIn or a tracker. |
-| Polar can write `apply_attempts.csv` without a human | inference | Unproven |
+| Every Original Job Post is an employer ATS | inference | Unproven. Quantbot was Greenhouse. Others may be LinkedIn or a tracker. |
+| Polar can write `apply_attempts.csv` without a human | inference | Unproven. Cursor wrote the Quantbot row from the Polar report. |
 | Daily Cursor Automations can use Polar sessions | inference | False unless someone runs Polar locally |
 
 ## First experiment packet
