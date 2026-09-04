@@ -5,94 +5,89 @@ Architecture stays in `docs/automation/POLAR.md`. Scale rules stay in
 
 Quantbot is experiment 1. Do not re-run it.
 
-Do not run this packet in Cursor Computer Use.
+Do not run this packet in Cursor Computer Use. Do not Submit.
 
-## Why this job
+## Why Rakuten was selected
 
-Source is `origin/automation/discovery` triage
-`generated/discovery_triage_2026-09-04T22.csv`. Decision is `keep`.
-Lane is `core`. Cluster is `cloud_swe`. Weight is `regular`.
+Source is the `origin/automation/discovery` KEEP file
+`generated/discovery_triage_2026-09-04T22.csv`.
+
+It is the remaining Jobright-only `core` and `cloud_swe` KEEP Junyi
+would reasonably pursue after the rejects below. It is a full-time
+Platform Engineer role in San Mateo, not an intern cycle.
 
 | Field | Value |
 |---|---|
+| `packet_id` | `P-20260904-002` |
 | Company | Rakuten Rewards |
 | Role | Platform Engineer |
+| Lane and cluster | `core` and `cloud_swe` |
+| Location | San Mateo, CA, on site |
+| Track | full-time, earliest start 2027-01-18 |
+| Weight | regular |
 | `discovery_url` | `https://jobright.ai/jobs/info/6a99ffb990a313642c653fe3` |
 | `apply_url` | empty |
 | `apply_url_confidence` | `none` |
-| Location | San Mateo, CA, on site |
-| Track | full-time, earliest start 2027-01-18 |
-| Resume | `cloud_swe` v1.3 |
+| Resume cluster | `cloud_swe` v1.3 |
+| Polar prompt | `generated/polar/LIVE.md` |
 
-`scripts/apply_ledger.py precheck` on that Jobright URL returned
-`duplicate=false` and no matches.
+`Ledger.precheck` on that Jobright URL, company, and role returned
+`duplicate=False` and no matches. Polar is not run from this turn.
 
-It is not in `knowledge/application_priority.yaml`
-`confirmed_prioritized`. The title is Platform Engineer, not Forward
-Deployed Engineer. It is not an agency board. It is not a 2026 intern
-cycle. Title is not Senior.
+Expected ATS family is Workday. That status is ASSUMED from other
+public Rakuten Rewards engineering listings. The resolver returned
+none for this title. Polar must use Original Job Post. Do not write
+a Workday URL into the Polar prompt.
 
-Expected ATS family is Workday. That is ASSUMED from other Rakuten
-Rewards engineering listings on `rakuten.wd1.myworkdayjobs.com`.
-`scripts/resolve_apply_url.py` returned `none` for this title. Polar
-must use Original Job Post. Do not write a Workday URL into the packet.
+`config/submit_gates.yaml` keeps Workday at G0. Polar stops before
+Submit. If an account wall appears, Polar stops and reports. It does
+not register.
 
-`config/submit_gates.yaml` has `workday: G0`. G2 is closed for every
-ATS family. Polar fills if it can, then stops before Submit. If an
-account wall appears, Polar stops and reports. It does not register.
+Jobscroller text uses forward-deployed language. Polar must not
+invent FDE or customer-on-site experience.
 
-## Rejected rows from the same KEEP pool
+## Rejected alternatives
 
 | Row | Why not |
 |---|---|
 | Quantbot | Experiment 1 |
 | Skild AI Simulation Engineer | Public board is Greenhouse |
 | Anyscale Ray Core | Ledger duplicate. Exact Ashby URL |
-| Clera (all) | `knowledge/ashby_orgs.yaml` `kind=agency` |
-| Northwood Ashby intern | Export-control / defense class the first Polar screen skipped |
-| Booz Allen Workday | Same defense skip |
-| NY Life 2027 AI & Data Science intern | Public posting forbids OPT/CPT |
+| Clera, all listings | `knowledge/ashby_orgs.yaml` `kind=agency` |
+| Northwood Ashby intern | Export-control and defense class the first Polar screen skipped |
+| Booz Allen Workday | Same defense skip. Also not Jobright-only |
+| NY Life 2027 AI and Data Science intern | Public posting forbids OPT and CPT |
 | Spectrum 2027 Data Science intern | Requires a rising bachelor's senior graduating Dec 2027 to May 2028 |
 | Delta Intern, Innovation AI Engineering Spring 2027 | Avature, but the Jobright title is the undergraduate listing. Do not open the graduate sibling |
 | Manulife Summer Intern 2027 AI | Public Boston text asks for a current undergraduate plus cover letter and transcript. Jobright location is blank |
-| Bain AI Engineering Intern Summer 2027 | Jobright says NY/SF. Public Bain AI intern listings found are non-US offices |
+| Bain AI Engineering Intern Summer 2027 | Jobright says NY or SF. Public Bain AI intern listings found are non-US offices |
 | Constellation Associate SWE AI | Resolver weak-matched the wrong Ashby board. Energy careers mention nuclear-site access |
-| Adobe / Apple / Waymo / TikTok / IBM / Cisco | `big_tech` hint list used in the first Polar screen |
-| CGI / Capgemini | Staffing or consulting mills from the first Polar screen |
+| Adobe, Apple, Waymo, TikTok, SpaceX, IBM, and Cisco | `big_tech` hint list used in the first Polar screen |
+| CGI and Capgemini | Staffing or consulting mills from the first Polar screen |
 
 There is no legitimate Jobright-only Ashby KEEP in this pool.
 
-## What this experiment tests
-
-```text
-GitHub Live Slot
-→ Polar opens the Jobright discovery URL
-→ Original Job Post only
-→ non-Greenhouse host if the assumption holds
-→ Simplify once if the form is reachable
-→ stop before Submit
-```
-
-It does not test Workflow, parallel workers, or Polar ledger write-back.
-
 ## Pass and fail
 
-Reach pass. Polar left Jobright, landed on the same company and
-Platform Engineer role, host is not `jobright.ai` and not Greenhouse,
-submitted=no.
+Reach and fill are separate results.
 
-Fill pass. Reach pass, plus standing fields filled or listed as
-unresolved, no invented facts.
+Reach. Polar left Jobright, landed on the same company and Platform
+Engineer role, and the host is not jobright.ai.
 
-Account wall. Reach may still pass if the host is the employer ATS.
-Fill fails. That does not open the 3 to 5 fill gate.
+Fill. Reach holds, the host is not Greenhouse, standing fields are
+filled or listed as unresolved, no facts were invented, and Submit
+was not clicked.
 
-Greenhouse again. Record the cell. Do not open P1. Do not open a
-sibling. Clear the slot on a later turn.
+Account wall. Reach may still hold if the host is the employer ATS
+and the posting matches. That can open P1 as reach. Fill fails. It
+does not count as a fill toward a multi-job gate.
 
-Invented apply URL, sibling job, or Submit. Stop the Polar ladder.
+If Original Job Post lands on Greenhouse, Stage 2 fails. Record the
+host. Do not open P1. Do not open a sibling.
+
+Invented apply URL, sibling job, or Submit freezes the Polar ladder.
 
 ## Polar prompt
 
-Paste `generated/polar/LIVE.md`. Do not add P-Stack. Do not open extra
-jobs.
+The paste-ready prompt is `generated/polar/LIVE.md`. Do not paste
+this experiment note into Polar.

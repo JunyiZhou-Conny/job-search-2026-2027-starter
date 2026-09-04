@@ -51,6 +51,8 @@ GitHub stays in the middle so Polar cannot become a second source of truth. That
 
 ## What Polar must not do
 
+Polar does not discover.
+
 - Redo discovery, ranking, dedupe, or priority.
 - Own `data/applications.csv` or become a second ledger.
 - Treat Jobright as the final application URL.
@@ -91,7 +93,10 @@ Cloud Computer Use still uses `scripts/compile_cu_task.py` on cloud Chrome. Pola
 
 ## Handoff shape
 
-No API in this change. A later Cursor turn may write one markdown packet Polar can paste. Minimum fields:
+No API in this change. The live fill packet is `generated/polar/LIVE.md`.
+It carries resolved answers. Polar does not read policy YAML.
+
+Minimum fields:
 
 - `company`
 - `role`
@@ -99,9 +104,10 @@ No API in this change. A later Cursor turn may write one markdown packet Polar c
 - `apply_url` (may be empty)
 - `apply_url_confidence` (`exact`, `strong`, `weak`, `none`, or blank)
 - `stop_rule`
-- pointers to `knowledge/form_strategy.yaml`, `knowledge/work_authorization.yaml`, and `docs/policy/SUBMIT_ROLLOUT.md`
+- inlined standing answers
 
-The first experiment uses this default `stop_rule`. Reach the source posting. Fill only if the packet says to fill. Do not Submit.
+The first land-only packet stays below. Fill packets use this `stop_rule`.
+Reach the source posting. Fill only if the packet says to fill. Do not Submit.
 
 ## Result shape
 
