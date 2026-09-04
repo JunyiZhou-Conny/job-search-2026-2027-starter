@@ -16,13 +16,17 @@ greenhouse:
   Apptronik: apptronik
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
+  Kodiak: kodiak  # verified 2026-09-04; Winter 2027 Intern, Data Engineering 4396622009
   "Lila Sciences": lilasciences  # verified 2026-08-23
   Neuralink: neuralink
   Nirmata: nirmata
+  Quantifind: quantifind  # verified 2026-09-04; Associate Data Scientist 7589899
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
   "Scale AI": scaleai  # verified 2026-08-23
+  Schonfeld: schonfeld  # verified 2026-09-04; 2027 Data Science Intern 8171692
   SpaceX: spacex
   "Together AI": togetherai
+  Waymo: waymo  # verified 2026-09-04; two generic Data Scientist reqs (7455592 / 8177515) — leave title-only KEEP unresolved
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -34,6 +38,7 @@ ashby:
   "Hayden AI": haydenai  # verified 2026-08-23
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   Midjourney: midjourney  # verified 2026-08-24; QA Analyst form
+  Northwood: northwoodspace  # verified 2026-09-04; company key is Northwood, slug is northwoodspace
   Notion: notion  # verified 2026-08-23
   OpenAI: openai
   Perplexity: perplexity  # verified 2026-08-23
@@ -50,6 +55,10 @@ workday:
     host: blackstone.wd1
     tenant: blackstone
     site: Blackstone_Careers
+  "Booz Allen Hamilton":
+    host: bah.wd1
+    tenant: bah
+    site: BAH_Jobs
   "Caterpillar Inc.":
     host: cat.wd5
     tenant: cat
