@@ -16,9 +16,18 @@ Follow the canonical instructions in this repo — do not improvise a different 
    - config/profile.yaml
 2. If anything in chat memory or an older pasted prompt conflicts with those files, the FILES win.
 3. Execute the discovery + triage loop described in DAILY_JOB_DISCOVERY.md end-to-end for this run.
-4. Write the required artifacts and reply in the Phase 5 report format from that file.
-5. Do not submit applications, do not send outreach, and do not ingest into data/applications.csv unless the user explicitly confirms keeps in this run.
+4. Stamp every artifact with the UTC run stamp RUN=YYYY-MM-DDTHH from Phase 0. Never reuse a day-keyed name.
+5. Deliver per the "Delivery" section of that file: commit on the automation/discovery branch after running scripts/automation/normalize_careers_boards.py, merge the branch tip, push. Do not open a PR against main.
+6. Write the required artifacts and reply in the Phase 5 report format from that file.
+7. Do not submit applications, do not send outreach, and do not ingest into data/applications.csv unless the user explicitly confirms keeps in this run.
 ```
+
+Both Automations ("Daily Job Discovery Morning" at 09:00 and "Daily Job
+Discovery Evening" at 18:00 America/New_York) share this block. They commit
+to one branch, `automation/discovery`, so their output accumulates instead of
+producing one PR per run. If a run still opens a `cursor/*` PR against
+`main`, turn off PR creation in that Automation's settings; the branch is the
+delivery path.
 
 ## Weekday apply review (separate Automation)
 

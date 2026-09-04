@@ -1,0 +1,142 @@
+# Regular vs prioritized apply weight.
+# Orthogonal to pursuit_lane (core/broad/practice) and letter priority (A/B/C/D).
+# Labels are suggestions until Junyi confirms (docs/BOUNDARIES.md).
+# Do not Submit, send LinkedIn, or send 1point3acres/email from this file.
+
+last_updated: "2026-08-24"
+source: "Junyi Charta FDE notes plus Lila / Hayden reviews"
+
+# Two chunks
+application_weight:
+  regular:
+    meaning: "Mass autofill is fine. Cluster resume. Short, prompt-faithful free response."
+  prioritized:
+    meaning: >
+      Extra judgment. Tailor resume toward the JD using only evidence-bank
+      facts. Free-response gets a real answer to the prompt, not a project
+      dump. Full form prep, then stop before Submit and hand Junyi a
+      review packet (docs/policy/SUBMIT_ROLLOUT.md, 2026-09-03). Do not
+      wait for a referral / insider-page check before preparing the
+      packet. Junyi 2026-08-24: those pages are rare; the public pool is
+      closer to FIFO, so waiting costs more than it saves.
+    subfields:
+      - id: gtc_2026
+        meaning: "Company appears on NVIDIA GTC 2026 sponsors/exhibitors."
+        source: "knowledge/market_signals/gtc2026_sponsors_exhibitors.md"
+        official_page: "https://www.nvidia.com/gtc/sponsors/"
+        note: >
+          Being on the list is a signal they showed up for AI, not a claim
+          about spend. Elite/Diamond/Gold is a stronger signal than a
+          235-company Exhibitor row. Do not invent a tier.
+      - id: startup
+        meaning: "Vibrant / engaging / can be pushy. Early or scaling company."
+        source: "knowledge/company_lists.yaml startup_or_scaleup is a hint only."
+        note: "Hint, not a confirmation. Junyi decides."
+      - id: prestige
+        meaning: "Top big tech, biomedical, or research institute Junyi values."
+        source: "knowledge/company_lists.yaml big_tech / biotech is a hint only."
+        note: "Hint, not a confirmation. Junyi decides."
+      - id: fde
+        meaning: >
+          Forward-deployed engineer / Forward Deployed AI. Palantir-coined
+          on-site last-mile role. See knowledge/role_families.yaml.
+        note: >
+          Junyi 2026-08-24: mark these. Suitable. Charta is the type example
+          in a biomedical AI company. Confirm the row; do not skip them.
+
+# Confirmed by Junyi in chat (2026-08-23). Not a full company census.
+confirmed_prioritized:
+  - company: "Lila Sciences"
+    role: "Software Engineer I, Instrument Software"
+    apply_url: "https://job-boards.greenhouse.io/lilasciences/jobs/4186444009"
+    weight: prioritized
+    subfields:
+      - gtc_2026   # Exhibitor on the 2026 list — verified in market_signals
+      - prestige   # Junyi: particular emphasis; scientific / research
+    public_submit: human_review_packet
+    hold_reason: >
+      Referral hold superseded 2026-08-24. Junyi: do not wait for an
+      insider / referral URL. Since 2026-09-03 prioritized rows stop
+      before Submit for a review packet, not for a referral check.
+    written_answer: "docs/apply/written_answers/2026-08-23_lila-swe-i-instrument.md"
+    resume: "cluster resume is not enough; tailor toward instrument / scientific software using only evidence-bank facts. Do not invent lab-hardware experience."
+
+  - company: "Charta Health"
+    role: "Forward Deployed AI Engineer"
+    apply_url: "https://jobs.ashbyhq.com/chartahealth/3088555d-de93-4236-add1-41005bf0933b"
+    weight: prioritized
+    subfields:
+      - fde
+      - startup
+      - prestige   # biomedical AI; Junyi: type example of FDE in that context
+    public_submit: already_submitted
+    hold_reason: >
+      Junyi submitted from his laptop 2026-08-24 after Cloud Chrome
+      spam-blocked. Public-Submit hold is retired the same day.
+    written_answer: "docs/apply/written_answers/2026-08-23_charta-forward-deployed-ai.md"
+    resume: "health_ai cluster plus FDE last-mile wording from evidence bank only. Do not invent customer-on-site FDE."
+
+# Suggested only (GTC hit on the round-two set). Do not treat as confirmed.
+suggested_gtc_on_round_two:
+  - company: Baseten
+    gtc_tier: Gold
+    weight_suggestion: prioritized
+    subfield_suggestion: gtc_2026
+    confirm: "Junyi has not confirmed Baseten as prioritized."
+
+do_not_conflate:
+  - pursuit_lane is effort mix (core/broad/practice), not this filter
+  - letter priority A/B/C/D is the old score, not regular/prioritized
+  - company_lists.yaml class is a sort hint, not a confirmed weight
+
+apply_behavior:
+  regular:
+    - Copilot + standing form_strategy
+    - Cluster resume
+    - Free response answers the prompt; no project dump
+    - Cover letter stays empty unless Junyi asks
+  prioritized:
+    - Same standing yes/no rules (relocate, sponsorship, salary floor)
+    - More time on Why-us / JD-specific writing
+    - Visually confirm phone, resume attachment, sponsorship — do not trust Copilot "Completed"
+    - Default next_action: review packet for Junyi when the form is ready; do not wait for a referral URL
+    - Draft coffee-chat / LinkedIn only; never send without Junyi confirm
+    - 1point3acres is a noisy research source, not an auto-apply channel
+
+referral_risk:
+  decided: "2026-08-23"
+  revised: "2026-08-24"
+  rule: >
+    Do not hold a prioritized row for a referral or insider-page check.
+    Prepare the form and the review packet; Junyi decides Submit
+    (docs/policy/SUBMIT_ROLLOUT.md). If a named employee later has a
+    real insider URL, record it; do not rewind a landed public apply.
+  why: >
+    The 2026-08-23 hold assumed a public apply can close a later
+    referral (Ashby "candidate already exists"; some Greenhouse
+    workflows). Junyi 2026-08-24: those insider pages are rare, and
+    waiting to verify one loses FIFO place in the employer queue.
+    The conflict is real but not worth the delay.
+  do:
+    - Review packet when the form and Why-us are ready
+    - Record referral_status on the ledger only after a real outcome
+  do_not:
+    - Hold a ready form while hunting 1point3acres / LinkedIn for 内推
+    - Open a sibling job to dodge a referral
+    - Message employees or 1point3acres posters without confirm
+    - Treat this as permission to invent Why-us or skip leftover_typing_one_pass
+
+onepoint3acres:
+  decided: "2026-08-23"
+  home: "https://www.1point3acres.com"
+  job_board: "https://jobs.1point3acres.com/"
+  zhao_gong: "https://www.1point3acres.com/bbs/forum-28-1.html"
+  nei_tui: "https://www.1point3acres.com/bbs/forum-198-1.html"
+  access_from_this_vm: >
+    2026-08-23: curl to home, Job多多, and forum-198 returned HTTP 403
+    Cloudflare challenge (`cf-mitigated: challenge`). WebFetch timed out.
+    Public index pages are visible via web search. Full 内推 posts are
+    noisy and often login-gated. 海外职位内推 auto-closes at 90 days.
+    Do not treat a 1p3a link as a verified referral.
+  use: "Human-reviewed research for referral leads on prioritized companies."
+  never: "Auto-message, auto-apply, or scrape into the ledger as fact."

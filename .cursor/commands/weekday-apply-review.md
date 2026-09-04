@@ -17,3 +17,6 @@ write the review row. Do not invent essays.
 
 If the posting is gone: close that tab, write `decision=closed` in
 `data/job_decisions.csv`, do not open a sibling job.
+
+Leftover typing: copy `docs/automation/COMPUTER_USE_PROMPT.md`. One
+paste. No Ctrl+F. No second computer-use pass.

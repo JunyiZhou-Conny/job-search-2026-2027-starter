@@ -1,7 +1,7 @@
 # Apply harness — Copilot + session, not a folder id
 
 **Audience:** Junyi + any Cloud Agent about to open ATS tabs.
-**Last updated:** 2026-08-22
+**Last updated:** 2026-08-24
 
 This is the contract for **autofill review** (open forms, fill identity, stop
 before Submit). Daily discovery does **not** need this harness.
@@ -80,6 +80,27 @@ profile, do not Submit — see `docs/automation/WEEKDAY_APPLY_AUTOMATION.md`.
 this repo. A value in `config/profile.yaml` (for example Emory GPA 3.925)
 can stay unused on the form. See `docs/apply/OBSTACLES.md`. Do not call
 Cursor “Copilot” in apply notes.
+
+---
+
+## Leftover typing is one paste
+
+Junyi 2026-08-24 after Charta. If a draft is already accepted and the
+ask is “type it, I will Submit”:
+
+1. One computer-use call.
+2. Find the tab. Click the box. Select all. **Paste** once.
+3. One screenshot. Stop.
+
+Do not type the essay key by key. Do not resume the clicker to Ctrl+F,
+scroll the textarea, or fix a blank line. Do not start a second or
+third computer-use “verify” pass. Do not start a screen recording
+unless he asked for a demo. He can see the tab.
+
+Canonical: `knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
+Parent must copy `docs/automation/COMPUTER_USE_PROMPT.md`. Do not invent
+a verify-heavy Task prompt. You cannot edit the Computer Use built-in
+system prompt. You can only send a short fire-and-forget user prompt.
 
 ---
 

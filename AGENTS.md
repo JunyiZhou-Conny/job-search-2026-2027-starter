@@ -10,14 +10,33 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Preserve existing IDs and append history rather than rewriting it.
 - Every active record should have one concrete `next_action` and, where useful, a `next_action_date`.
 - Prefer a few role-cluster resumes plus targeted bullet edits over creating a completely new resume for every job.
-- Do not submit an application, send a message, or claim an action was completed unless the user explicitly confirms it.
+- Submit is governed by `docs/policy/SUBMIT_ROLLOUT.md`. Regular rows may be submitted autonomously once that ATS gate is open. Prioritized rows always stop for a review packet. Never send a message on Junyi's behalf or claim an action was completed without evidence.
 
 ## Eligibility and sponsorship
 
 - Hard eligibility ≠ sponsorship probability. See `docs/eligibility.md`.
 - Never mark a role `ineligible` only because sponsorship is `no` or `unclear`.
+- Visa-sponsorship **form** answer, confirmed by Junyi in writing on
+  2026-09-03: **No** on any broad "now or in the future" widget.
+  Citizenship widgets: **China**. If they ask for visa **type**, put
+  **F-1**. Re-read these widgets after every autofill (Copilot set United
+  States once). The fact `future_sponsorship_required: true` is unchanged.
+- Graduation **date** widgets: **2026-12-18**. Year-only widgets: **2027**.
+- Non-US work location (Belgrade, etc.) → skip. Do not Submit.
 - Use `pursuit_lane`: `core` | `broad` | `practice`.
 - Keep practice-lane applications roughly 15–25% of applied volume unless funnel data justifies a change.
+- Apply **weight** is separate: `regular` | `prioritized` (GTC 2026 / startup / prestige / **FDE**).
+  See `knowledge/application_priority.yaml` and `knowledge/role_families.yaml`.
+  Forward Deployed / FDE titles → keep and mark. Prioritized: more Why-us
+  care, JD-tuned resume from the evidence bank only, full form prep, then
+  a review packet for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`).
+  Do not wait for a referral / insider page on regular rows (Junyi
+  2026-08-24: those pages are rare; FIFO in the queue matters more).
+  Labels stay suggestions until Junyi confirms. Do not claim FDE
+  customer-on-site work already done.
+- ITAR / EAR / U.S. Person / export compliance (rocket, defense): keep in
+  discovery. Do not filter out. Care is low. No need to submit. Form
+  answer: I am not a U.S. Person. Do not rewrite Why-us for this family.
 
 ## Platforms
 
@@ -55,7 +74,8 @@ python3 scripts/automation/check_apply_harness.py
 
 If it exits 1, stop and follow `docs/automation/APPLY_HARNESS.md`. Do not
 treat Greenhouse’s MyGreenhouse button as Simplify. Do not type identity
-fields by hand to fake a Copilot pass. Do not Submit.
+fields by hand to fake a Copilot pass. Submit only within an open gate of
+`docs/policy/SUBMIT_ROLLOUT.md`.
 
 Copilot “need review” that matches empty form fields is a **gap**, not a
 license to invent. Record it in `knowledge/autofill_obstacles.yaml`
@@ -71,8 +91,21 @@ close that tab, write `decision=closed` in `data/job_decisions.csv`,
 do not pick a sibling from the employer’s current openings.
 
 Free-response drafts (why company, week structure, and similar) go in
-`docs/apply/written_answers/`. Reusable ideology:
-`knowledge/written_response_bank.yaml`. A file there is not a submit.
+`docs/apply/written_answers/`. Answer the prompt on the page. Do not
+paste education + three projects into every Why-us. Match ability to
+the role; do not dump a DL tour onto a non-ML Why-us. Do not use em
+dashes or hyphen asides in the text that goes on the form. Write like
+a person. Ideology in `knowledge/written_response_bank.yaml` is for
+week / meaning / culture questions only. A file there is not a submit.
+
+Copilot “Completed” on phone or resume is not proof the widget has a
+value. Look at the page. Especially on prioritized companies.
+
+Computer Use is hands only. The parent compiles an action sheet through
+`scripts/compile_cu_task.py` and `docs/automation/COMPUTER_USE_PROMPT.md`.
+Do not spawn a clicker to rediscover, audit, or pretty-screenshot a form
+you already understand. Leftover Why-us paste is still one execute/paste
+spawn. See `knowledge/form_strategy.yaml` `leftover_typing_one_pass`.
 
 ## Automation safety
 

@@ -7,7 +7,8 @@ Dimensions (orthogonal):
   - company_class = big_tech | biotech | startup | other
 
 Inputs:
-  - generated/discovery_triage_YYYY-MM-DD.csv (decision=keep)
+  - generated/discovery_triage_{RUN}.csv (decision=keep), RUN = YYYY-MM-DDTHH
+    or the older YYYY-MM-DD; --date takes either and picks the newest match
   - data/applications.csv (status discovered/saved)
   - knowledge/company_lists.yaml (optional allowlists)
 
@@ -36,7 +37,8 @@ OUT_DIR = ROOT / "generated" / "apply_queue"
 TEMPLATE_DIR = ROOT / "templates" / "apply_queue"
 STATIC_DIR = ROOT / "static" / "apply_queue"
 
-DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}(T\d{2})?")
+TRIAGE_PREFIX = "discovery_triage_"
 LISTS = ROOT / "knowledge" / "company_lists.yaml"
 GTC_SPONSORS = ROOT / "knowledge" / "market_signals" / "gtc2026_sponsors_exhibitors.json"
 JOB_DECISIONS = ROOT / "data" / "job_decisions.csv"
@@ -242,20 +244,30 @@ def classify_geo(location: str) -> str:
     return "other"
 
 
-def latest_triage(day: str | None) -> Path | None:
+def triage_files(prefix: str = "") -> list[Path]:
+    """Triage CSVs whose stamp starts with prefix, newest first.
+
+    Stamps are YYYY-MM-DD or YYYY-MM-DDTHH, so plain string order is time
+    order and a day-keyed file sorts before that day's run-stamped ones.
+    """
     gen = ROOT / "generated"
-    if day:
-        p = gen / f"discovery_triage_{day}.csv"
-        return p if p.exists() else None
-    files = sorted(gen.glob("discovery_triage_*.csv"), reverse=True)
+    files = [
+        p
+        for p in gen.glob(f"{TRIAGE_PREFIX}{prefix}*.csv")
+        if DATE_RE.fullmatch(p.stem[len(TRIAGE_PREFIX):])
+    ]
+    return sorted(files, key=lambda p: p.stem, reverse=True)
+
+
+def latest_triage(day: str | None) -> Path | None:
+    """Newest triage CSV for a run stamp or a day; newest overall when day is None."""
+    files = triage_files(day or "")
     return files[0] if files else None
 
 
 def available_dates() -> list[str]:
-    """Dates that have a triage CSV, newest first — drives the date switcher."""
-    gen = ROOT / "generated"
-    days = [p.stem.replace("discovery_triage_", "") for p in gen.glob("discovery_triage_*.csv")]
-    return sorted({d for d in days if DATE_RE.fullmatch(d)}, reverse=True)
+    """Stamps that have a triage CSV, newest first. Drives the date switcher."""
+    return [p.stem[len(TRIAGE_PREFIX):] for p in triage_files()]
 
 
 def load_apps() -> list[dict]:
@@ -619,8 +631,10 @@ def main() -> int:
     big = sum(1 for i in items if i["company_class"] == "big_tech")
     startup = sum(1 for i in items if i["company_class"] == "startup")
     biotech = sum(1 for i in items if i["company_class"] == "biotech")
+    triage = latest_triage(day)
     print(html_path)
     print(md_path)
+    print(f"triage={triage if triage else 'none'}")
     gtc_n = sum(1 for i in items if i.get("gtc_sponsor") == "yes")
     print(f"items={len(items)} gtc={gtc_n} boston_ma={boston} bay_area={bay} big_tech={big} biotech={biotech} startup={startup}")
     return 0

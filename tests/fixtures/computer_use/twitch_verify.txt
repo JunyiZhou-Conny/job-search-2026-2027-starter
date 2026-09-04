@@ -1,0 +1,6 @@
+Read-only check on the open Twitch application tab in Google Chrome (URL https://job-boards.greenhouse.io/twitch/jobs/8459320002). Do not click any button, do not type, do not reload, do not submit. Only scroll.
+
+1. Scroll to the Education section. Screenshot the Harvard University entry showing School, Degree, Discipline, Start date, End date. Save as /workspace/generated/apply_runs/2026-09-03T14/twitch/07_education_final.png. Report the exact Discipline and End date month/year shown.
+2. Scroll to "Would you like to be considered for future opportunities at Twitch when you apply?" and "Are you familiar with Twitch?" and report the exact values shown. Screenshot as 08_consent_familiarity_final.png in the same folder.
+3. Report the Simplify panel's "need review" count and the field names it lists.
+Leave everything as is.

@@ -1,7 +1,7 @@
 # Master evidence bank
 
 Source of truth for cluster resumes. Do not invent beyond what is listed here.
-Last reviewed: 2026-07-20 from `resumes/base/JZ_resume.tex`.
+Last reviewed: 2026-08-24 from `resumes/base/JZ_resume.tex`.
 
 ## Target ambition (user-stated)
 
@@ -54,6 +54,16 @@ You do **not** need to erase Health Data Science. You need to stop leading with 
 - Public GitHub
 
 **Use in:** all clusters; especially `data_ml` and SWE/ML roles
+
+### C2. Pathology RL capstone (bootstrap — no training results yet)
+
+**S-Seg-RLVR** — Graduate Researcher | Harvard Health Data Science capstone (mentor Alexander Chowdhury) | Aug 2026 -- Present
+
+- Method: instance count, separation, and topology as GRPO rewards instead of only Dice/IoU
+- Real today: proposal, 30-paper library, roadmap, typed reward interfaces
+- Not real yet: GRPO training, datasets, metrics, MICCAI acceptance
+- Public GitHub. LinkedIn paste: `knowledge/linkedin_sseg_rlvr_draft.md`
+- Use in: `health_ai` lead. Do not put fake numbers on any cluster.
 
 ### C. ML systems / research scale (secondary for non-bio roles)
 

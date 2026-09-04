@@ -1,0 +1,21 @@
+# Jobs that need an external artifact not in the profile.
+# Junyi 2026-08-24 on the Perplexity exercise. Do not Submit these.
+# Surface in the daily discovery KEEP digest / email.
+
+last_updated: "2026-08-24"
+rule: >
+  Non-standard means the form is not asking for past experience or a
+  Why-us from the evidence bank. It needs an outside website, product
+  exercise, or shared URL that never appears in the profile. Mark.
+  Do not Submit. Tell Junyi in the daily summary.
+
+holds:
+  - company: Perplexity
+    role: Internship - Search Machine Learning Engineer
+    apply_url: "https://jobs.ashbyhq.com/perplexity/9246cf02-26fd-4ae8-90c5-639c6e85e9e2"
+    ats: Ashby
+    noticed: "2026-08-24"
+    artifact: "Shared Perplexity thread URL (teach a topic, or enlist Perplexity as champion)"
+    also: "Work location Belgrade — non_us_location skip even without the exercise"
+    submit: no
+    written_answer: "docs/apply/written_answers/2026-08-23_perplexity-search-ml-intern.md"

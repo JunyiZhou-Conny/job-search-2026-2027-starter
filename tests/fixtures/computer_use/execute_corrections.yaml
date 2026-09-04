@@ -1,0 +1,29 @@
+mode: execute
+target:
+  company: Acme
+  role: Software Engineer
+  url: jobs.ashbyhq.com/acme
+  tab: Acme — Software Engineer
+  already_autofilled: true
+mutations:
+  - field: Will you now or in the future require sponsorship
+    value: "No"
+    commit: radio
+    section: work_auth
+  - field: Country of citizenship
+    value: "China"
+    commit: searchable_dropdown
+    section: work_auth
+do_not_touch:
+  - EEO
+  - Are you familiar with this product
+forbidden:
+  - submit
+  - autofill_again
+  - generate_with_ai
+  - reload
+evidence:
+  - name: 01_work_auth.png
+    covers:
+      - Will you now or in the future require sponsorship
+      - Country of citizenship

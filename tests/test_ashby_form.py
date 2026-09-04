@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""The Ashby form summary must name the G2 blockers the rollout policy cares about."""
+
+from __future__ import annotations
+
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+
+import ashby_form  # noqa: E402
+from ashby_form import fetch, parse_url, summarize  # noqa: E402
+
+
+def _form(fields):
+    return {"url": "u", "org": "o", "open": True, "title": "t", "location": None, "workplace": None,
+            "employment": None, "published": None, "fields": fields}
+
+
+def f(title, type_="String", required=True, options=None):
+    return {"title": title, "type": type_, "required": required, "options": options or []}
+
+
+class TestAshbyForm(unittest.TestCase):
+    def test_parse_url(self):
+        self.assertEqual(parse_url("https://jobs.ashbyhq.com/clera/3dc0a0f6-6a53-4a8c-bc70-b007113c348a/application"),
+                         {"org": "clera", "id": "3dc0a0f6-6a53-4a8c-bc70-b007113c348a"})
+        self.assertIsNone(parse_url("https://boards.greenhouse.io/x/jobs/1"))
+
+    def test_minimal_form_has_no_blockers(self):
+        form = summarize(_form([f("Name"), f("Email", "Email"), f("Resume", "File"), f("LinkedIn", "Url"),
+                                f("Do you have work authorization to work in that country?", "Boolean")]))
+        self.assertEqual(form["g2_blockers"], [])
+
+    def test_sponsorship_is_a_required_correction_not_a_blocker(self):
+        broad = summarize(_form([f("Do you now, or will you in the future, need US visa sponsorship?", "Boolean")]))
+        self.assertTrue(broad["summary"]["broad_sponsorship_question"])
+        self.assertEqual(broad["g2_blockers"], [], "Junyi confirmed the standing answer No on 2026-09-03")
+        self.assertIn("sponsorship_answer_no", broad["required_corrections"])
+        example = summarize(_form([
+            f("Will you now or in the future require sponsorship for employment visa status (e.g., H-1B visa status)?", "Boolean"),
+        ]))
+        self.assertTrue(example["summary"]["broad_sponsorship_question"])
+        named = summarize(_form([f("Will you require H-1B sponsorship?", "Boolean")]))
+        self.assertFalse(named["summary"]["broad_sponsorship_question"])
+        citizenship = summarize(_form([f("In which country do you have citizenship?", "ValueSelect", options=["China"])]))
+        self.assertIn("citizenship_china", citizenship["required_corrections"])
+        export_country = summarize(_form([
+            f("Export licensing / export control country of citizenship or legal permanent residence, whichever obtained last",
+              "ValueSelect", options=["China"]),
+        ]))
+        self.assertEqual(export_country["g2_blockers"], [], "country picker is a China correction, not an ITAR block")
+        self.assertFalse(export_country["summary"]["export_control_question"])
+        self.assertIn("citizenship_china", export_country["required_corrections"])
+        export_country_only = summarize(_form([f("Export control country", "ValueSelect")]))
+        self.assertEqual(export_country_only["g2_blockers"], [])
+        self.assertIn("citizenship_china", export_country_only["required_corrections"])
+
+    def test_essay_export_and_artifact_block(self):
+        form = summarize(_form([
+            f("Why are you a fit for this role?", "LongText"),
+            f("The person hired will have access to ITAR controlled items", "ValueSelect", options=["A United States citizen"]),
+            f("Project URL", "Url"),
+            f("Optional essay", "LongText", required=False),
+        ]))
+        self.assertEqual(sorted(form["g2_blockers"]), ["export_control_question", "external_artifact", "required_essay"])
+        self.assertEqual(form["summary"]["required_essays"], ["Why are you a fit for this role?"])
+
+
+class TestFetchFailures(unittest.TestCase):
+    def test_network_failure_is_a_probe_error_not_an_exception(self):
+        def boom(*a, **k):
+            raise OSError("connection reset")
+        original = ashby_form.urllib.request.urlopen
+        ashby_form.urllib.request.urlopen = boom
+        try:
+            out = fetch("https://jobs.ashbyhq.com/acme/3dc0a0f6-6a53-4a8c-bc70-b007113c348a")
+        finally:
+            ashby_form.urllib.request.urlopen = original
+        self.assertIn("OSError", out["error"])
+        self.assertNotIn("open", out)
+
+    def test_non_ashby_url_is_an_error(self):
+        self.assertEqual(fetch("https://boards.greenhouse.io/x/jobs/1")["error"], "not an Ashby posting URL")
+
+
+if __name__ == "__main__":
+    unittest.main()

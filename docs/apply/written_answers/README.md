@@ -19,11 +19,18 @@ application was submitted.
 
 ## How an agent should use this
 
-1. After Copilot, write every short/long free response from the evidence
-   bank + the ideology file. Never click Simplify **Generate with AI**.
+1. After Copilot, write every short/long free response by **answering
+   the prompt**. Ideology is for week / meaning / culture questions only.
+   Why-us: HR may read it before the resume. Spell out computer vision,
+   language models, and transformers. Do not name CellOT, VLM, CV, or
+   the Emory airway project. Flask, React, Auth0, RAG, Cursor, Claude,
+   Codex are fine. Show ability. Do not write "I do not outsource the
+   goal." Do not use em dashes or hyphen asides on the form. Write like
+   a person. Never click Simplify **Generate with AI**. Prioritized
+   companies: `knowledge/application_priority.yaml`.
 2. Save the draft here **before** or as you type it on the form.
 3. Set `form_status` to `drafted` or `typed_on_form`. Set `submitted` only
-   when Junyi names that row and confirms Submit.
+   after a verified Submit under `docs/policy/SUBMIT_ROLLOUT.md`.
 4. If the company later emails, open this file. Do not reconstruct from
    chat memory.
 

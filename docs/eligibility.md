@@ -10,8 +10,14 @@ Use `ineligible` only when at least one of these is true and verified from the p
 - Active security clearance required
 - Internship requires return-to-school / a graduation window that matches **neither** real date: I-20 program end **2026-12-18** (December 2026 completion) **nor** commencement / school listing **March 2027**
 - Start date conflicts with available work authorization timing (planned earliest FT **2027-01-18** from program end + OPT; confirm with HIO)
-- Location / work model is actually unacceptable
+- Location / work model is actually unacceptable (including a clear
+  non-US work city/country such as Belgrade; `non_us_location`)
 - Role cannot be reasonably connected to your background (Health Data Science + target clusters)
+
+Export compliance / ITAR / U.S. Person on a rocket or defense form is
+**not** this list. Keep those jobs in discovery. Do not filter them
+out. Care is low. No need to submit. See
+`knowledge/form_strategy.yaml` `us_person_export_control`.
 
 Values: `verified` | `likely` | `unclear` | `ineligible`
 
@@ -30,6 +36,15 @@ Values: `verified` | `likely` | `unclear` | `no`
 | `broad` | Strong tech fit; sponsor `no` or weak; still may yield OA/interview | Nearest cluster resume; 1–2 bullets max |
 | `practice` | Low conversion expected; used for interview reps | Cap at ~15–25% of applied volume |
 
+## `application_weight` (separate filter)
+
+`regular` vs `prioritized` (GTC 2026 / startup / prestige). Not the letter
+`priority` field. See `knowledge/application_priority.yaml` and
+`docs/apply/PRIORITY.md`. Prioritized: full form prep, then a review
+packet for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`). The
+referral hold was retired 2026-08-24. Confirm the weight before writing
+it onto a ledger row.
+
 ## Dual graduation dates (both real)
 
 | Date | Meaning | Use for |
@@ -44,7 +59,7 @@ Default resume: December 2026 program completion. Dual-date resume line when the
 Do not invent answers. After OPT EAD is in hand for full-time work:
 
 - "Are you authorized to work in the United States?" → usually **Yes** (with valid EAD)
-- "Will you now or in the future require sponsorship?" → usually **Yes** if future H-1B/employer sponsorship is needed
-- "Will you require **H-1B** sponsorship?" (H-1B named) → **No** as of 2026-08-23 (Junyi, Nirmata review). Form strategy only. `future_sponsorship_required` is still true.
+- "Will you now or in the future require visa sponsorship?" → **No** (Junyi, written, 2026-09-03). Widget answer only; the standing fact `future_sponsorship_required` is still true. Citizenship and export-control widgets → **China**.
+- "Will you require **H-1B** sponsorship?" (H-1B named) → **No** as of 2026-08-23. Same fact file.
 
-Do not answer the broad second question **No** to bypass ATS. If the form names only H-1B, use the 2026-08-23 rule in `knowledge/work_authorization.yaml`. If the form conflates OPT/EAD/H-1B under one “sponsorship” line, save the **verbatim question and submitted answer** in `auth_qa_notes`.
+If the form conflates OPT/EAD/H-1B under one “sponsorship” line, save the **verbatim question and submitted answer** in `auth_qa_notes`.

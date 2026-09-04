@@ -1,0 +1,30 @@
+# One-story bank for "tell us about a past project".
+# Junyi 2026-08-24 on Perplexity: do not brainstorm yet. Mark the types.
+# A filled story here is not a Submit.
+
+last_updated: "2026-08-24"
+status: empty
+rule: >
+  One story per answer. Pick the type that matches the company mission.
+  Do not dump several projects. Do not invent a story to fit the JD.
+
+types:
+  ai_product_or_search:
+    when: "AI product / search / assistants (example: Perplexity)"
+    story: null
+    why_this_story: null
+  biomedical_or_health_ai:
+    when: "Biomedical / clinical / health-data company"
+    story: null
+    why_this_story: null
+  general_swe_or_platform:
+    when: "General SWE / platform / infra, not domain-first"
+    story: null
+    why_this_story: null
+
+first_example_not_to_reuse_as_is:
+  company: Perplexity
+  date: "2026-08-24"
+  problem: >
+    The typed draft listed Cannon ablations and the airway chatbot.
+    Junyi: that is several projects. The question asked for one.

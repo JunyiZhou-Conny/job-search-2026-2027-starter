@@ -1,0 +1,22 @@
+mode: execute
+target:
+  company: Charta Health
+  role: Forward Deployed AI
+  url: jobs.ashbyhq.com/chartahealth
+  tab: Charta Health — Forward Deployed
+  already_autofilled: true
+mutations:
+  - field: Why us
+    value: accepted leftover draft
+    commit: paste
+do_not_touch:
+  - every other field
+forbidden:
+  - submit
+  - autofill_again
+  - generate_with_ai
+  - reload
+evidence:
+  - name: leftover.png
+    covers:
+      - Why us

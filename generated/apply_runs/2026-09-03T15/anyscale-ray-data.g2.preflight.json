@@ -1,0 +1,50 @@
+{
+  "url": "https://jobs.ashbyhq.com/anyscale/01aef589-e268-4b22-b513-d1f9f076210f/application",
+  "company": "Anyscale",
+  "role": "Software Engineer (Ray Data)",
+  "ats": "ashby",
+  "gate": "G2",
+  "weight": "regular",
+  "run_id": "2026-09-03T15",
+  "checked_at": "2026-09-03T16:08:27",
+  "open_gate": "G1",
+  "precheck": {
+    "duplicate": true,
+    "matches": [
+      {
+        "table": "applications",
+        "job_id": "J20260903-033",
+        "status": "ready_to_apply",
+        "by": "url",
+        "blocking": false
+      },
+      {
+        "table": "apply_attempts",
+        "job_id": "J20260903-033",
+        "status": "in_progress",
+        "by": "url",
+        "blocking": true,
+        "attempt_id": "A20260903-003"
+      }
+    ]
+  },
+  "form_summary": {
+    "required_count": 6,
+    "required_essays": [],
+    "sponsorship_questions": [
+      "Would you require visa sponsorship to work in the country in which this position is based?"
+    ],
+    "broad_sponsorship_question": true,
+    "export_control_question": false,
+    "eeo_fields": [],
+    "external_artifact": []
+  },
+  "required_corrections": [
+    "sponsorship_answer_no"
+  ],
+  "reasons": [
+    "duplicate",
+    "gate_closed:ashby=G1<G2"
+  ],
+  "verdict": "blocked"
+}

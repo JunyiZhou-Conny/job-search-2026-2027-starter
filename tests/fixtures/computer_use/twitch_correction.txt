@@ -1,0 +1,22 @@
+Correction pass on the ALREADY-FILLED Twitch application form in the open Google Chrome window (tab title "Software Engineer I, Commerce Engineering", URL https://job-boards.greenhouse.io/twitch/jobs/8459320002). HARD RULES: never click Submit or "Submit application". Never click Greenhouse "Autofill my application" or MyGreenhouse. Never click any Simplify Copilot button (no Autofill, no Run Autofill Again, no Generate with AI). Do not reload the page (the fill would be lost). Do not change any field not named below. Do not invent values.
+
+If the tab is missing or the page has been reloaded and the form is empty, stop and report "form_state_lost" with a screenshot; do not refill.
+
+Set these widgets to exactly these values (verify each one after setting by reading the widget back):
+1. "In which country/region do you have citizenship?" -> China (currently shows United States of America; change it).
+2. "Since obtaining your most recent citizenship, did you afterwards become a permanent resident in any other country/region?..." -> No.
+3. "For the sole purpose of determining export licensing requirements, please provide your country of citizenship or legal permanent residence..." -> China.
+4. "Your response is mandatory when applying for a U.S.-based position. Do you need, or will you need in the future, any immigration related support or sponsorship from Amazon..." -> must show No. Verify; set only if it shows anything else.
+5. "If offered employment by Amazon, would you be legally eligible to begin employment immediately?" -> must show Yes. Verify; set only if different.
+6. "Have you previously applied to Amazon or any Amazon subsidiary?" -> No.
+7. "Are you subject to a non-competition agreement or other agreement that would preclude or restrict your employment at Amazon?" -> No.
+8. "Would you like to be considered for future opportunities at Twitch when you apply?" -> Yes.
+9. Education entry for Harvard University: Discipline -> "Data Science" if that option exists in the dropdown; otherwise "Computer Science"; otherwise "Mathematics"; otherwise leave "Other" and report the options you saw. End date -> December 2026 (month December, year 2026) if the widget is month/year.
+10. EEO block: read back Gender, Hispanic/Latino, Race, Veteran Status, Disability Status and report their exact values. Do not change them.
+11. "Are you familiar with Twitch?" -> leave blank (do not touch), report what it shows.
+
+Then read back and report the values of: Location, Resume file name, LinkedIn, Website, "Are you currently a Twitch employee?", "Are you open to relocation?", the two Amazon employment questions, the H-1B question, expected base pay.
+
+Screenshots (save under /workspace/generated/apply_runs/2026-09-03T14/twitch/): 01_citizenship_export.png showing widgets 1 to 3 after correction; 02_sponsorship_eligibility.png showing widgets 4 to 5; 03_amazon_history_consent.png showing widgets 6 to 8; 04_education_harvard.png; 05_eeo.png; 06_submit_unclicked.png showing the Submit button not clicked. Leave the tab open. Do NOT submit.
+
+Report every widget's final value exactly as displayed, which ones you changed, anything that would not accept the value, and any error, CAPTCHA, or login wall.

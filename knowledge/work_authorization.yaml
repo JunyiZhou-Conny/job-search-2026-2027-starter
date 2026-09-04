@@ -21,9 +21,13 @@ earliest_full_time_start: "2027-01-18"
 preferred_full_time_start: "2027-01-18 ideal; any later 2027 date including Summer OK"
 future_sponsorship_required: true
 
-# 2026-08-23 Junyi (Nirmata review): on questions that name H-1B only,
-# answer No so the ATS does not auto-reject. This is a form strategy.
-# The fact above is unchanged: future employer sponsorship is still expected.
+# Citizenship facts. Junyi confirmed in writing 2026-09-03 (Twitch review).
+citizenship_country: "China"
+permanent_resident_elsewhere_since_citizenship: false
+export_control_country: "China"   # citizenship or LPR, whichever obtained last
+
+# Form strategy (widgets) vs standing fact.
+# Fact above is unchanged: future employer sponsorship is still expected.
 form_strategy:
   h1b_named_question_only:
     decided: "2026-08-23"
@@ -31,11 +35,42 @@ form_strategy:
     when: >
       The question is specifically "Will you require H-1B sponsorship?"
       or the same idea with H-1B named.
-    do_not_use_when: >
-      The question is "Will you now or in the future require sponsorship?"
-      with no H-1B wording — that still uses
-      will_require_sponsorship_now_or_future (Yes).
     fact_unchanged: "future_sponsorship_required remains true"
+
+  visa_type_named:
+    decided: "2026-08-24"
+    form_answer: "F-1"
+    when: "Current visa type / visa status / select your visa"
+    see: "knowledge/form_strategy.yaml always.visa_type_named"
+
+  visa_sponsorship:
+    status: owner_confirmed
+    confirmed_by: "Junyi, written, 2026-09-03 (Twitch review; the widget text counted STEM OPT Training Plan as support)"
+    form_answer: "No"
+    accept_also: ["No, I do not need sponsorship", "None"]
+    when: >
+      Do you need, or will you need in the future, any immigration related
+      support or sponsorship / require visa sponsorship now or in the
+      future / require sponsorship to work in the US. Any broad wording.
+    history: "2026-08-24 recorded No (agent prose); 2026-09-03 set to leave_for_junyi pending confirmation; 2026-09-03 confirmed No by Junyi."
+    fact_unchanged: "future_sponsorship_required remains true. The widget answer is the owner's decision, applied verbatim."
+  citizenship_country:
+    decided: "2026-09-03"
+    form_answer: "China"
+    when: "In which country/region do you have citizenship? / nationality / country of citizenship"
+  export_control_country:
+    decided: "2026-09-03"
+    form_answer: "China"
+    when: "Export licensing / export control country of citizenship or legal permanent residence, whichever obtained last"
+  permanent_resident_elsewhere:
+    decided: "2026-09-03"
+    form_answer: "No"
+    when: "Since obtaining your most recent citizenship, did you become a permanent resident in any other country/region?"
+  eligible_to_begin_employment_immediately:
+    decided: "2026-09-03"
+    form_answer: "Yes"
+    when: "If offered employment, would you be legally eligible to begin employment immediately?"
+    note: "Junyi confirmed Yes on 2026-09-03 for the Twitch form with earliest full-time start 2027-01-18 on file."
 
 standard_question_answers:
   # Use only after OPT EAD is valid for the employment period being asked about.
@@ -43,15 +78,21 @@ standard_question_answers:
     typical_answer: "Yes"
     condition: "Valid OPT EAD covering the employment period"
   will_require_sponsorship_now_or_future:
-    typical_answer: "Yes"
-    condition: "Future H-1B or other employer sponsorship expected"
+    typical_answer: "No"
+    confirmed: "Junyi, written, 2026-09-03"
+    condition: "Widget answer only. Standing fact is future_sponsorship_required true."
   program_end_or_graduation_date:
     typical_answer: "Program completion / I-20 end: December 18, 2026; commencement March 2027"
     default_short_answer: "December 2026"
+    full_date_widget: "2026-12-18"
+    year_only_widget: "2027"
     when_form_asks_commencement_or_spring_2027: "March 2027 (program completed December 2026)"
-  # Broad "sponsorship now or in the future" stays Yes. H-1B-named
-  # questions use form_strategy.h1b_named_question_only (No) as of 2026-08-23.
-  never_lie_to_bypass_ats: true
+    notion_2026-08-24: "Junyi: fill the graduation date as December 18."
+  widget_answers_are_owner_decisions: >
+    Standing widget answers in this file were confirmed by Junyi in writing
+    on the dates shown. The agent applies them verbatim and does not
+    re-derive them from the facts above. The agent never invents an answer
+    that is not listed here.
 
 questions_requiring_manual_review:
   - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"

@@ -1,0 +1,18 @@
+{
+  "url": "https://job-boards.greenhouse.io/twitch/jobs/8459320002",
+  "company": "Twitch",
+  "role": "Software Engineer I, Commerce Engineering",
+  "ats": "greenhouse",
+  "gate": "G1",
+  "weight": "prioritized",
+  "run_id": "2026-09-03T13",
+  "checked_at": "2026-09-03T13:43:15",
+  "open_gate": "G1",
+  "precheck": {
+    "duplicate": false,
+    "matches": []
+  },
+  "form_summary": null,
+  "reasons": [],
+  "verdict": "pass"
+}

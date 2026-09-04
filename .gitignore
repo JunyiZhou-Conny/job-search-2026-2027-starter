@@ -29,3 +29,10 @@ generated/logs/
 generated/apply_queue/*.html
 .venv/
 data/queue_undo_journal.json
+
+# Apply-run screenshots hold EEO and identity values; keep them local.
+generated/apply_runs/**/*.png
+generated/apply_runs/**/*.webp
+generated/apply_runs/**/*.jpg
+generated/apply_runs/**/*.jpeg
+generated/apply_runs/**/*.gif

@@ -3,18 +3,24 @@
 # docs/apply/written_answers/. Do not invent metrics. Do not mark submitted
 # unless Junyi confirms a named row was submitted.
 
-last_updated: "2026-08-23"
-source: "Junyi Take Control on Traba Software Engineer (AI Agents)"
+last_updated: "2026-08-24"
+source: "Junyi Lila review — Why-us must answer the prompt, not dump the bank"
 
 # Speech-to-text that day said "Trava"; the Ashby tab is Traba.
+
+# 2026-08-23 evening: the Traba ideology pack was wrongly reused as a
+# Why-company template (Lila). Education + Cannon 338 + chatbot in every
+# box is a miss. Ideology stays for week / meaning / culture prompts only.
 
 ideology:
   decided: "2026-08-23"
   use_when:
-    - why this company
     - how I structure a week / get my best results
     - meaning / purpose / what kind of work I want
     - in-person vs remote culture prompts
+  do_not_use_when:
+    - why this company / why this role / why now
+    - any prompt that did not ask for background, week structure, or meaning
   points:
     - id: education_and_self_motivation
       text: >
@@ -43,6 +49,54 @@ ideology:
         the boring so the remaining work can be the meaningful part.
         Be mindful I am F-1 / student — do not write as if I already
         ran a Series A.
+
+# Why-company shape (Junyi Charta 2026-08-24; Lila remains the non-ML pattern)
+why_company_shape:
+  decided: "2026-08-24"
+  reader: "HR may read this before the resume."
+  parts:
+    - answer every clause in the prompt (why them, why now, why this role)
+    - start from their mission / product / culture
+    - then show ability that matches this role, not a default DL tour
+    - one or two verified surfaces if they earn their place (not a tour)
+  charta_or_ml_fde:
+    when: "role or prompt is ML / FDE / perception, not instrument or general SWE"
+    parts:
+      - show ability: frontend/backend, deep learning, agents
+      - spell out computer vision, language models, transformers
+  ok_to_name:
+    - Flask
+    - React
+    - Auth0
+    - RAG
+    - Cursor
+    - Claude
+    - Codex
+  do_not:
+    - one-line Why-us on a two-part prompt
+    - name CellOT, VLM, CV, airway chatbot, or other resume-internal labels
+    - "hedge lines such as: I do not outsource the goal"
+    - invent employers or on-site FDE
+    - claim FDE / Palantir / Epic-admin work that is not in the bank
+    - upgrade Emory to a CS degree
+    - dump computer vision / language models / transformers onto a non-ML Why-us
+    - em dashes or hyphen asides in the text that goes on the form
+  punctuation:
+    decided: "2026-08-24"
+    rule: >
+      Free-response text that will sit on an ATS page must read like a
+      person wrote it. Do not use em dashes. Do not use hyphen asides
+      (backend — Flask — RAG). Do not stack hyphenated compounds
+      (last-mile, mission-driven, non-clinical, Epic-style,
+      Forward-deployed). Write ordinary sentences with periods, commas,
+      and colons. Two words is fine (last mile, Forward Deployed,
+      full stack). Official product names that include a hyphen may stay.
+    reason: "Junyi: hyphens make the answer look AI-written."
+  tone: >
+    Ardent, genuine, truthful. First intern / student voice is fine.
+    Honest hedges about missing domain experience are OK (Lila).
+    On Charta / ML-FDE, a little assertiveness is OK. Do not invent jobs.
+    Write like a person.
 
 salary_rule:
   see: "knowledge/form_strategy.yaml always.salary_or_expected_compensation"

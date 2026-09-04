@@ -1,2 +1,3 @@
 url,company,role,job_id,decision,reason,decided_at,source
 https://job-boards.greenhouse.io/togetherai/jobs/5157661007,Together AI,"Research Intern, Model Shaping (Fall 2026)",,closed,Greenhouse no longer open; dumped to Current openings (?error=true). High-volume close. Do not pick a sibling.,2026-08-23T13:59:27,autofill_review
+https://jobs.ashbyhq.com/datologyai/17d51801-5d5f-41ad-baec-f1ac5a255d02,DatologyAI,"Software Engineer Intern, Infrastructure (Winter 2027)",,closed,Ashby GraphQL jobPosting returns null on 2026-09-03; posting gone,2026-09-03T04:07:07,apply_precheck
