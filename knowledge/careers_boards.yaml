@@ -21,6 +21,10 @@ greenhouse:
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  "DV Trading LLC": dvtrading  # verified 2026-09-04; Software Developer (Chicago) 4687398005 — NY twin is 4687462005
+  "Ludo Robotics": ludorobotics  # verified 2026-09-04; ML/AI Engineer SF 8451758002 — do not use Seoul AI/ML Research 8460224002
+  Quantifind: quantifind  # verified 2026-09-04; Associate Data Scientist Palo Alto gh_jid=7589899 — Data Scientist sibling is 7463020
+  ujet.cx: ujet  # verified 2026-09-04; AI Data Engineer 4707365005 (ATS location Los Angeles)
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
@@ -32,6 +36,7 @@ ashby:
   Baseten: baseten
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   "Hayden AI": haydenai  # verified 2026-08-23
+  Clera: clera  # verified 2026-09-04; Research Engineer / Research Scientist, Robotics and Physical AI SF
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
