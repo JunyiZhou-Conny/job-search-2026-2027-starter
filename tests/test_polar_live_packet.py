@@ -18,7 +18,9 @@ ALLOWED_URLS = {
     "https://connyzhou.com",
 }
 
-NANP_LEAK = re.compile(r"(?:\+1[\s.-]*)?(?:\(?\d{3}\)?[\s.-]*)\d{3}[\s.-]*\d{4}")
+NANP_LEAK = re.compile(
+    r"(?:\+1[\s.-]+)?(?:\(\d{3}\)[\s.-]*|\d{3}[\s.-]+)\d{3}[\s.-]+\d{4}"
+)
 
 
 class TestPolarLivePacket(unittest.TestCase):
@@ -50,6 +52,9 @@ class TestPolarLivePacket(unittest.TestCase):
         found = set(re.findall(r"https?://[^\s]+", self.text))
         self.assertTrue(found <= ALLOWED_URLS, found)
         self.assertIsNone(NANP_LEAK.search(self.text))
+        self.assertIsNone(NANP_LEAK.search("P-20260904-002"))
+        self.assertIsNone(NANP_LEAK.search("20260904002"))
+        self.assertIsNotNone(NANP_LEAK.search("617-555-0100"))
 
     def test_does_not_auto_map_work_authorization(self):
         self.assertIn("DO NOT AUTO-MAP", self.text)
