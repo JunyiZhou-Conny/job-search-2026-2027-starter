@@ -63,8 +63,8 @@ requisition URL exists.
 Landing on a host and filling a form are different facts.
 
 A Workday account wall can prove Jobright Original Job Post reached
-Workday. It does not prove Polar can fill Workday. It does not open
-a multi-job fill gate.
+Workday. Record that as a reach cell in the matrix. It does not
+open P1. P1 is a non-Greenhouse fill.
 
 Do not upgrade `not_tested` to `proven` from a public career page.
 The human table is `docs/experiments/polar_ats_matrix.md`.
@@ -92,7 +92,7 @@ collision report. Not two KEEP applies.
 | Gate | Evidence to open | Failure that blocks | Newly allowed | Still prohibited |
 |---|---|---|---|---|
 | P0 Polar fill exists | Quantbot Greenhouse, submitted=no | none | one more Polar packet | Submit, Workflow, parallel |
-| P1 Non-Greenhouse Original Job Post | Jobright-only KEEP, host is not Greenhouse and not jobright.ai, posting matched, submitted=no | invented apply URL, sibling job, Submit | record that ATS family as reached. A fill on that host is a separate cell | Submit, Workflow, parallel |
+| P1 Non-Greenhouse fill | Jobright-only KEEP, host is not Greenhouse and not jobright.ai, posting matched, standing fields filled or listed unresolved, submitted=no | invented apply URL, sibling job, Submit, account wall, land-only | one more serial Polar packet on a third family | Submit, Workflow, parallel |
 | P2 Packet repeatability | second packet from the same standing-answer render, no YAML homework for Polar | standing answers drift | a small renderer | Workflow |
 | P3 Mailbox-read | Polar executes `LIVE.md` from repo context with no chat paste | Polar ignores the file or rediscovers | Junyi clicks Run | Polar git-write, scheduled Workflow |
 | P3w Mailbox-write | Polar writes `generated/polar/results/<packet_id>.md` with no paste of the report | Polar cannot write git, or Polar writes the ledger | Cursor reconciles from that file | scheduled Workflow, Polar ledger writes |

@@ -83,8 +83,8 @@ filled or listed as unresolved, no facts were invented, and Submit
 was not clicked.
 
 Account wall. Reach may still hold if the host is the employer ATS
-and the posting matches. That can open P1 as reach. Fill fails. It
-does not count as a fill toward a multi-job gate.
+and the posting matches. Record it on the matrix. It does not open
+P1. P1 is a fill.
 
 If Original Job Post lands on Greenhouse, Stage 2 fails. Record the
 host. Do not open P1. Do not open a sibling.
@@ -95,3 +95,8 @@ Invented apply URL, sibling job, or Submit freezes the Polar ladder.
 
 The paste-ready prompt is `generated/polar/LIVE.md`. Do not paste
 this experiment note into Polar.
+
+Quantbot ledger ids `J20260904-001` and `A20260904-001` live on the
+open first-pilot PR. Do not mint those ids on this branch. Do not
+call `Ledger.start` until that row set is on the same history, and
+never with a Jobright URL.
