@@ -8,9 +8,17 @@ Question answered: *What roles exist right now?*
 
 ## Layer 2 — Application execution + base ledger
 
-Simplify Autofill / Tracker (and company ATS). Jobright Autofill only if needed.
+Simplify Autofill and Tracker, plus the company ATS.
+Polar must not use Jobright **APPLY WITH AUTOFILL** as the path to the employer ATS.
 
 Question answered: *What did I apply to, when, and what stage is it in?*
+
+Two execution environments share this layer. They do not share cookies.
+
+- **Cursor cloud.** Computer Use on a Cloud Agent VM. Needs the apply harness. See `docs/automation/APPLY_HARNESS.md` and `docs/automation/COMPUTER_USE_PROMPT.md`.
+- **Polar local.** Polar is Junyi's agentic browser on Junyi's computer. It uses logged-in Jobright, Original Job Post, and the employer ATS. See `docs/automation/POLAR.md`.
+
+Cursor still decides what to apply to. Polar or cloud Computer Use executes a named job. GitHub holds the handoff. Polar does not scrape or triage a second job list.
 
 ## Layer 3 — Local Cursor strategy system
 
