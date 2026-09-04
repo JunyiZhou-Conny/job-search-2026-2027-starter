@@ -48,8 +48,15 @@ The Polar in-box is `generated/polar/LIVE.md`. Polar's proven I/O is
 pasted markdown and a bullet report. JSON and GitHub Issues are not
 that surface. Issues would become a second ledger.
 
-An external reviewer reads these files. The system does not depend on
-that chat staying open.
+`LIVE.md` is a mailbox, not a lock. Polar does not consult it unless
+Junyi pastes. `Ledger.precheck` does not treat `review_packet` as a
+duplicate. Attempts match employer `apply_url` only. A Jobright
+precheck cannot see a Polar attempt that wrote the employer URL.
+Junyi not pasting twice is the occupancy rule until Polar reads git.
+
+Do not call `Ledger.start` with a Jobright URL. File an unmatched or
+account-wall report as an experiment note until an employer
+requisition URL exists.
 
 ## Reach versus fill
 
@@ -74,6 +81,7 @@ The human table is `docs/experiments/polar_ats_matrix.md`.
 | Polar Workflow consumes this repo unattended | unproven |
 | Locked, sleeping, or backgrounded Mac | not tested |
 | Two Polar workers on isolated profiles or machines | not tested |
+| Shared clipboard across Polar chats | not tested |
 
 Do not run a parallelism probe on this packet. The smallest later
 same-profile probe is two Polar tabs on dummy pages, a written
@@ -97,10 +105,10 @@ does not open them.
 The older volume ladder mixed count with transport. Three Greenhouse
 fills would not prove Workday.
 
-## What to implement later
+## Closed until a later gate
 
-Not this turn. `scripts/polar_slot.py`, a packet compiler, a Workflow,
-parallel workers, ledger write before Polar reports, G2, Submit, and
+`scripts/polar_slot.py`, a packet compiler, a Workflow, parallel
+workers, ledger write before Polar reports, G2, Submit, and
 `knowledge/polar_execution_evidence.yaml`.
 
 Build the renderer when a third packet would recopy standing answers

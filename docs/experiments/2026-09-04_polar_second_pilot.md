@@ -12,9 +12,12 @@ Do not run this packet in Cursor Computer Use. Do not Submit.
 Source is the `origin/automation/discovery` KEEP file
 `generated/discovery_triage_2026-09-04T22.csv`.
 
-It is the remaining Jobright-only `core` and `cloud_swe` KEEP Junyi
-would reasonably pursue after the rejects below. It is a full-time
-Platform Engineer role in San Mateo, not an intern cycle.
+It is a Jobright-only `core` and `cloud_swe` KEEP Junyi would
+reasonably pursue after the rejects below. It is a full-time
+Platform Engineer role in San Mateo, not an intern cycle. Other
+Jobright-only core KEEPs still sit in that triage file. This row
+was picked for an assumed non-Greenhouse Original Job Post, not
+as the only survivor.
 
 | Field | Value |
 |---|---|
@@ -32,7 +35,8 @@ Platform Engineer role in San Mateo, not an intern cycle.
 | Polar prompt | `generated/polar/LIVE.md` |
 
 `Ledger.precheck` on that Jobright URL, company, and role returned
-`duplicate=False` and no matches. Polar is not run from this turn.
+`duplicate=False` and no matches. That check does not serialize a
+later Polar paste.
 
 Expected ATS family is Workday. That status is ASSUMED from other
 public Rakuten Rewards engineering listings. The resolver returned

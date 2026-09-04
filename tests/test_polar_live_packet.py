@@ -18,8 +18,7 @@ ALLOWED_URLS = {
     "https://connyzhou.com",
 }
 
-# Dates, GPA, salary, and the LinkedIn slug use digits. A leaked phone is NANP-shaped.
-PHONE = re.compile(r"(?:\+1[\s.-]*)?(?:\(?\d{3}\)?[\s.-]*)\d{3}[\s.-]*\d{4}")
+NANP_LEAK = re.compile(r"(?:\+1[\s.-]*)?(?:\(?\d{3}\)?[\s.-]*)\d{3}[\s.-]*\d{4}")
 
 
 class TestPolarLivePacket(unittest.TestCase):
@@ -45,11 +44,12 @@ class TestPolarLivePacket(unittest.TestCase):
     def test_omits_phone_email_and_board_urls(self):
         self.assertNotIn("@", self.text)
         self.assertNotIn("workdayjobs", self.text.lower())
+        self.assertNotIn("Workday", self.text)
         self.assertNotIn("jobs.ashbyhq.com", self.text)
         self.assertNotIn("job-boards.greenhouse.io", self.text)
         found = set(re.findall(r"https?://[^\s]+", self.text))
         self.assertTrue(found <= ALLOWED_URLS, found)
-        self.assertIsNone(PHONE.search(self.text))
+        self.assertIsNone(NANP_LEAK.search(self.text))
 
     def test_does_not_auto_map_work_authorization(self):
         self.assertIn("DO NOT AUTO-MAP", self.text)

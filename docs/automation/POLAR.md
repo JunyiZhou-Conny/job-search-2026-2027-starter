@@ -138,6 +138,8 @@ Junyi filled a real application with Polar. That test was not flagged the way so
 | Every Original Job Post is an employer ATS | inference | Unproven. The link may be LinkedIn or a tracker. |
 | Polar can write `apply_attempts.csv` without a human | inference | Unproven |
 | Daily Cursor Automations can use Polar sessions | inference | False unless someone runs Polar locally |
+| `Ledger.precheck` blocks a second Polar paste of a `review_packet` KEEP | measured on `scripts/apply_ledger.py` | False. `review_packet` is not blocking. Attempts match employer URL only. |
+| `generated/polar/LIVE.md` is a mutex Polar consults | inference | False. Polar sees the bytes only after a paste. |
 
 ## First experiment packet
 
