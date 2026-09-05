@@ -14,6 +14,7 @@
 greenhouse:
   Appian: appian
   Apptronik: apptronik
+  Axon: axon  # verified 2026-09-05; AI Scientist I Seattle 7746492003
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
   Kodiak: kodiak  # verified 2026-09-04; Winter 2027 Intern, Data Engineering 4396622009
@@ -25,6 +26,7 @@ greenhouse:
   "Scale AI": scaleai  # verified 2026-08-23
   Schonfeld: schonfeld  # verified 2026-09-04; 2027 Data Science Intern 8171692
   SpaceX: spacex
+  "The Nuclear Company": thenuclearcompany  # verified 2026-09-05; slug guess `nuclear` 404s; Spring/Summer 2027 AI Applied Research 5391888008 / 5391923008
   "Together AI": togetherai
   Waymo: waymo  # verified 2026-09-04; two generic Data Scientist reqs (7455592 / 8177515) — leave title-only KEEP unresolved
 
@@ -35,6 +37,7 @@ ashby:
   "Bild AI": bild-ai
   "Charta Health": chartahealth
   Etched: etched
+  Fab2: fab2  # verified 2026-09-05; Infrastructure Software Engineering Intern - Summer 53f3fe23 (Austin)
   "Hayden AI": haydenai  # verified 2026-08-23
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   Midjourney: midjourney  # verified 2026-08-24; QA Analyst form
