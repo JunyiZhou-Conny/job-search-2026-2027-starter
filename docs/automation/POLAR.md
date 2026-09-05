@@ -2,7 +2,10 @@
 
 This file is the only full Polar essay. Other docs may point here. They must not retell it.
 
-Status is architecture only. This repo has no Polar runtime, SDK, or scheduler.
+Repeatable execution after the first fill is `docs/automation/POLAR_SCALE.md`.
+The live Polar packet is `generated/polar/LIVE.md`.
+
+Status is architecture plus one Greenhouse fill. This repo has no Polar runtime, SDK, or scheduler.
 
 Polar is a second execution environment, not a second job-search system.
 
@@ -48,6 +51,8 @@ GitHub stays in the middle so Polar cannot become a second source of truth. That
 
 ## What Polar must not do
 
+Polar does not discover.
+
 - Redo discovery, ranking, dedupe, or priority.
 - Own `data/applications.csv` or become a second ledger.
 - Treat Jobright as the final application URL.
@@ -88,7 +93,10 @@ Cloud Computer Use still uses `scripts/compile_cu_task.py` on cloud Chrome. Pola
 
 ## Handoff shape
 
-No API in this change. A later Cursor turn may write one markdown packet Polar can paste. Minimum fields:
+No API in this change. The live fill packet is `generated/polar/LIVE.md`.
+It carries resolved answers. Polar does not read policy YAML.
+
+Minimum fields:
 
 - `company`
 - `role`
@@ -96,9 +104,10 @@ No API in this change. A later Cursor turn may write one markdown packet Polar c
 - `apply_url` (may be empty)
 - `apply_url_confidence` (`exact`, `strong`, `weak`, `none`, or blank)
 - `stop_rule`
-- pointers to `knowledge/form_strategy.yaml`, `knowledge/work_authorization.yaml`, and `docs/policy/SUBMIT_ROLLOUT.md`
+- inlined standing answers
 
-The first experiment uses this default `stop_rule`. Reach the source posting. Fill only if the packet says to fill. Do not Submit.
+The first land-only packet stays below. Fill packets use this `stop_rule`.
+Reach the source posting. Fill only if the packet says to fill. Do not Submit.
 
 ## Result shape
 
@@ -123,14 +132,21 @@ Junyi filled a real application with Polar. That test was not flagged the way so
 | Workflow exists and can be saved or scheduled | owner-observed. Public press agrees. | Proven as a product concept |
 | Polar can take repo context | owner-observed | Proven |
 | Jobright Original Job Post reaches the Tallgrass Oracle Cloud URL | owner-observed | Proven for that job |
+| Jobright Original Job Post reaches Quantbot Greenhouse | Polar report, 2026-09-04 | Proven for that job |
+| Polar can fill a Cursor-selected KEEP and stop before Submit | Polar report, 2026-09-04 | Proven for Quantbot. About 6 minutes. No CAPTCHA. |
+| Jobright Original Job Post reaches Rakuten Rewards Workday | Polar report P-20260904-002 | Proven land. Host `rakuten.wd1.myworkdayjobs.com`. About 4 minutes. |
+| Polar can fill Workday | Polar report P-20260904-002 | Not tested. Create Account / Sign In wall. submitted=no. |
 | Polar Workflow can consume this repo's queue unattended | inference | Unproven |
 | Every Original Job Post is an employer ATS | inference | Unproven. The link may be LinkedIn or a tracker. |
 | Polar can write `apply_attempts.csv` without a human | inference | Unproven |
 | Daily Cursor Automations can use Polar sessions | inference | False unless someone runs Polar locally |
+| `Ledger.precheck` blocks a second Polar paste of a `review_packet` KEEP | measured on `scripts/apply_ledger.py` | False. `review_packet` is not blocking. Attempts match employer URL only. |
+| `generated/polar/LIVE.md` is a mutex Polar consults | inference | False. Polar sees the bytes only after a paste. |
 
 ## First experiment packet
 
-Do not run this packet in a Cursor Cloud Agent turn. The next Cursor turn may turn it into a Polar prompt.
+Do not run this packet in a Cursor Cloud Agent turn. It is a land-only
+packet. Fill packets live in `generated/polar/LIVE.md`.
 
 This job is owner-named. It is not a row in `data/applications.csv` in the 2026-09-04 checkout. The packet is still the GitHub handoff. Polar must not scrape a replacement job.
 
@@ -146,3 +162,10 @@ This job is owner-named. It is not a row in `data/applications.csv` in the 2026-
 | Weight | Regular. Not a G2 Ashby protocol unit. |
 
 Pass condition. Polar left Jobright and landed on the source posting. Cursor did not rediscover the job. Polar returns `opened_url`, `original_job_post_url`, `apply_url_used`, `filled=no`, `submitted=no`, and a short note.
+
+The first fill-and-stop was Quantbot Greenhouse, not Tallgrass.
+Experiment 2 was Rakuten Rewards. Original Job Post reached Workday
+and stopped on an account wall. See
+`docs/experiments/2026-09-04_polar_second_pilot.md` and
+`generated/polar/results/P-20260904-002.md`. P1 is still closed. G2
+is still closed. Polar still must not Submit.
