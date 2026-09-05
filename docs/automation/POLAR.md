@@ -134,6 +134,8 @@ Junyi filled a real application with Polar. That test was not flagged the way so
 | Jobright Original Job Post reaches the Tallgrass Oracle Cloud URL | owner-observed | Proven for that job |
 | Jobright Original Job Post reaches Quantbot Greenhouse | Polar report, 2026-09-04 | Proven for that job |
 | Polar can fill a Cursor-selected KEEP and stop before Submit | Polar report, 2026-09-04 | Proven for Quantbot. About 6 minutes. No CAPTCHA. |
+| Jobright Original Job Post reaches Rakuten Rewards Workday | Polar report P-20260904-002 | Proven land. Host `rakuten.wd1.myworkdayjobs.com`. About 4 minutes. |
+| Polar can fill Workday | Polar report P-20260904-002 | Not tested. Create Account / Sign In wall. submitted=no. |
 | Polar Workflow can consume this repo's queue unattended | inference | Unproven |
 | Every Original Job Post is an employer ATS | inference | Unproven. The link may be LinkedIn or a tracker. |
 | Polar can write `apply_attempts.csv` without a human | inference | Unproven |
@@ -161,7 +163,9 @@ This job is owner-named. It is not a row in `data/applications.csv` in the 2026-
 
 Pass condition. Polar left Jobright and landed on the source posting. Cursor did not rediscover the job. Polar returns `opened_url`, `original_job_post_url`, `apply_url_used`, `filled=no`, `submitted=no`, and a short note.
 
-The first fill-and-stop was Quantbot Greenhouse, not Tallgrass. The next
-packet is Rakuten Rewards in `generated/polar/LIVE.md`. See
-`docs/experiments/2026-09-04_polar_second_pilot.md`. G2 is still closed.
-Polar still must not Submit.
+The first fill-and-stop was Quantbot Greenhouse, not Tallgrass.
+Experiment 2 was Rakuten Rewards. Original Job Post reached Workday
+and stopped on an account wall. See
+`docs/experiments/2026-09-04_polar_second_pilot.md` and
+`generated/polar/results/P-20260904-002.md`. P1 is still closed. G2
+is still closed. Polar still must not Submit.

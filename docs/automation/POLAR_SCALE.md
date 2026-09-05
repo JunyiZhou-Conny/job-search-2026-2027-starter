@@ -118,6 +118,7 @@ experiment. Probe one-slot Workflow after both plus three clean
 serial fills. Probe concurrency after P4, and only as isolated
 profiles or machines.
 
-The next packet is
-`docs/experiments/2026-09-04_polar_second_pilot.md`
-and `generated/polar/LIVE.md`.
+Experiment 2 is filed at
+`generated/polar/results/P-20260904-002.md`. Workday land is proven.
+Workday fill is not. P1 is still closed. The next Polar packet is
+not armed.

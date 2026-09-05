@@ -9,12 +9,13 @@ career page does not count.
 |---|---|---|---|---|---|
 | Greenhouse | Jobright OJP | Quantbot Technologies LP, Machine Learning Research Engineer Internship 2027 | proven | proven | Polar report 2026-09-04. About 6 minutes. submitted=no. Final host family was Greenhouse. |
 | Oracle Cloud | Jobright OJP | Tallgrass, Intern-AI and Data Solutions | proven | not tested | Owner-observed land. Fill was never asked. |
+| Workday | Jobright OJP | Rakuten Rewards, Platform Engineer | proven | not tested | Polar report P-20260904-002. About 4 minutes. submitted=no. Host `rakuten.wd1.myworkdayjobs.com`. Create Account / Sign In wall. Simplify Create Account & Autofill not clicked. No ledger start. P1 closed. |
 
 ## Assumed
 
 | ATS | Path | Job | Land | Fill | Note |
 |---|---|---|---|---|---|
-| Workday | Jobright OJP | Rakuten Rewards, Platform Engineer | not tested | not tested | Assumed family for the next packet only, from other public Rakuten Rewards engineering listings. Resolver returned none. The Polar prompt has no Workday URL. |
+| Workday fill | any Polar path | none | | not tested | Polar-local Workday has only hit an account wall. A fill needs a session that is already signed in, or a different family. |
 
 ## Not tested
 

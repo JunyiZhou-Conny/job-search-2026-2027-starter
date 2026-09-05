@@ -42,10 +42,9 @@ and ATS-family measurement until Polar reports the posting.
 `duplicate=False` and no matches. That check does not serialize a
 later Polar paste.
 
-Expected ATS family is Workday. That status is ASSUMED from other
-public Rakuten Rewards engineering listings. The resolver returned
-none for this title. Polar must use Original Job Post. Do not write
-a Workday URL into the Polar prompt.
+Expected ATS family was Workday. Polar confirmed the host
+`rakuten.wd1.myworkdayjobs.com`. The Polar prompt still has no
+Workday URL. Do not invent the truncated requisition suffix.
 
 `config/submit_gates.yaml` keeps Workday at G0. Polar stops before
 Submit. If an account wall appears, Polar stops and reports. It does
@@ -97,12 +96,26 @@ Invented apply URL, sibling job, or Submit freezes the Polar ladder.
 
 ## Polar prompt
 
-The paste-ready prompt is `generated/polar/LIVE.md`. Do not paste
-this experiment note into Polar.
+The executed prompt is `generated/polar/LIVE.md`. The Polar report is
+`generated/polar/results/P-20260904-002.md`. Do not paste this
+experiment note into Polar.
+
+## Result
+
+Reach passed. Fill failed. P1 stays closed.
+
+Polar used Original Job Post, landed on Workday, matched Platform
+Engineer in San Mateo, clicked Apply once, then Workday Autofill with
+Resume, and stopped on Create Account / Sign In. Simplify was not
+used. submitted=no. About 4 minutes. No retries. No ledger start.
+
+Do not create that Workday account. Do not sign in. Do not Submit.
+Do not open a sibling. Do not re-run this packet.
 
 Quantbot ledger ids `J20260904-001` and `A20260904-001` live on the
 open first-pilot PR. Do not mint those ids on this branch. Keep one
-open Polar ledger-writing PR at a time. Do not call `Ledger.start`
-until that row set is on the same history, and never with a Jobright
-URL. A wall, a closed posting, or an unmatched page is an experiment
-note, not a `start`.
+open Polar ledger-writing PR at a time.
+
+Next Polar packet is not armed. Prefer a Jobright-only KEEP whose
+Original Job Post is not a Workday wall, unless Junyi already has a
+Workday session Polar may use.
