@@ -119,4 +119,4 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-09-03T15:34:31,J20260903-032,,submit_attempt_finished,ready_to_apply,ready_to_apply,attempt A20260903-002 review_packet
 2026-09-03T15:56:16,J20260903-033,,job_added,,ready_to_apply,Anyscale — Software Engineer (Ray Data) (ashby_sweep)
 2026-09-03T15:56:16,J20260903-033,,submit_attempt_started,ready_to_apply,,attempt A20260903-003 gate=G1 weight=regular ats=ashby
-2026-09-05T00:05:00,,autofill_blocked,,,"P-20260904-002 Rakuten Rewards Platform Engineer. Jobright OJP reached rakuten.wd1.myworkdayjobs.com. Workday Create Account/Sign In wall. Simplify Create Account & Autofill not clicked. submitted=no. No ledger start."
+2026-09-05T00:05:00,,,autofill_blocked,,,"P-20260904-002 Rakuten Rewards Platform Engineer. Jobright OJP reached rakuten.wd1.myworkdayjobs.com. Workday Create Account/Sign In wall. Simplify Create Account & Autofill not clicked. submitted=no. No ledger start."
