@@ -47,6 +47,7 @@ ashby:
   Perplexity: perplexity  # verified 2026-08-23
   Runway: runway-ml  # verified 2026-08-24; Runway ML gen-AI board, not cfo.ai slug `runway`
   Traba: traba
+  WHOOP: whoop  # verified 2026-09-06; Software Engineer I (Backend) Boston OnSite 0623a9e9
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever: {}
