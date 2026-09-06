@@ -15,8 +15,8 @@ purpose: >
 
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
-last_updated: "2026-08-24"
-last_source: "Ashby isolation Submit (Anyscale Ray Core 2026-08-24) plus second 10-tab Copilot review"
+last_updated: "2026-09-05"
+last_source: "Polar P-20260904-002 Rakuten Workday account wall plus prior Ashby isolation notes"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -376,8 +376,11 @@ gaps:
     already_in: "knowledge/form_strategy.yaml account_creation_wall"
     form_effect: >
       CVS Health Workday (Data Science Analyst R0993501-1) stopped at
-      account creation. Tab closed. No account created. Not a closed
-      posting.
+      account creation on Cloud Chrome. Polar-local hit the same wall
+      on Rakuten Rewards Platform Engineer (P-20260904-002, host
+      rakuten.wd1.myworkdayjobs.com). Create Account / Sign In before
+      any fields. Simplify offered Create Account & Autofill. Polar
+      did not click it and did not register. Not a closed posting.
     ask_later: "None. Later agents close Workday walls the same way."
 
   - id: us_person_export_control

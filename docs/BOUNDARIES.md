@@ -61,8 +61,8 @@ against **their** fork. Two Pro accounts do not share automations. See
 ## 5. Polar executes. It does not discover.
 
 Polar is a local browser execution environment (`docs/automation/POLAR.md`).
-It consumes a small GitHub handoff (company, role, `discovery_url`,
-`apply_url`, stop rule) and returns an execution result.
+It consumes one GitHub packet (`generated/polar/LIVE.md`) and returns an
+execution result. It must not iterate a job list.
 
 It must **not** run a second discovery, rank, dedupe, or priority loop.
 It must **not** own `data/applications.csv`. Cursor reconciles results
