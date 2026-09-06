@@ -66,7 +66,7 @@ Use Simplify for phone and email. Do not invent a different name, phone, or emai
 - Current visa type if asked: F-1
 - Citizenship / nationality / export-control country: China
 - Permanent resident elsewhere since citizenship: No
-- Eligible to begin employment immediately: No if they mean this week. Yes if they mean the intern term on the page
+- Eligible to begin employment immediately: Yes
 - U.S. Person / ITAR / EAR: I am not a U.S. Person
 - Disability: No / I do not have a disability
 - Other EEO (gender, Hispanic/Latino, race, veteran): keep whatever Simplify Copilot filled. Do not change those four if they already match Male, No, Asian, not a protected veteran
