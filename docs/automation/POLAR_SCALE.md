@@ -120,5 +120,18 @@ profiles or machines.
 
 Experiment 2 is filed at
 `generated/polar/results/P-20260904-002.md`. Workday land is proven.
-Workday fill is not. P1 is still closed. The next Polar packet is
-not armed.
+Workday fill is not. P1 is still closed.
+
+The next Polar work is the ATS sweep batch in
+`generated/polar/ats_sweep/`. Cursor selected those jobs. Polar
+pastes one packet at a time. `generated/polar/LIVE.md` stays the
+Rakuten mailbox from experiment 2. Do not replace it with a KEEP
+list.
+
+Trusted `apply_url` rows in this sweep start at the employer URL.
+Jobright-only rows still use Original Job Post. Polar still must
+not invent a board URL.
+
+One clean non-Greenhouse fill from that batch opens a 3 to 5 job
+serial Polar batch. Workday fill waits on one owner login and a
+later packet. Do not re-run Quantbot or Rakuten.
