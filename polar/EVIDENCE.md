@@ -184,13 +184,14 @@ so a reviewer does not need those remotes. Original commits remain
 
 ### C016. One Polar fill was not flagged like some cloud submits
 
-- claim: I filled a real application with Polar and that test was not flagged the way some cloud-browser submits were.
+- claim: POLAR.md says I filled a real application with Polar and that test was not flagged the way some cloud-browser submits were. The job is unnamed in that file.
 - evidence_type: owner_observed
 - sources:
   - docs/automation/POLAR.md
+  - docs/experiments/2026-09-04_polar_first_pilot.md
 - date: 2026-09-04
 - confidence: low
-- does_not_prove: That Polar evades ATS spam filters. POLAR.md already forbids that upgrade. The flagged cloud case and the Polar case are not a controlled pair.
+- does_not_prove: Two separate Polar fills. I treat this sentence and the Quantbot report as one event until a second company is named. It also does not prove Polar evades ATS spam filters. POLAR.md already forbids that upgrade.
 
 ### C017. Exact hour I first read Frontier Problems
 
@@ -201,6 +202,17 @@ so a reviewer does not need those remotes. Original commits remain
 - date: unknown
 - confidence: low
 - does_not_prove: Anything about motive. Use C010 for the git chronology instead.
+
+### C019. Compiled Anyscale G1 wall time
+
+- claim: On 2026-09-03 a compiled Computer Use bootstrap execute on Anyscale Ray Data took 3.4 minutes and 23 tool messages. A compiled 4-field correction execute took 5.7 minutes and 74 tool messages. Submit was not clicked.
+- evidence_type: directly_measured
+- sources:
+  - docs/experiments/2026-09-03_anyscale_g1_unit.md
+  - generated/apply_runs/2026-09-03T15/expected_vs_observed.md
+- date: 2026-09-03
+- confidence: high
+- does_not_prove: That the compiler caused the lower time versus Twitch. The file says the counts are not Twitch-style action taxonomy. Different ATS. No verify pass.
 
 ### C018. Fair Computer Use versus Polar comparison
 

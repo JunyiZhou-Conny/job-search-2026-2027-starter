@@ -165,6 +165,30 @@ that the isolation "finding" is a transcript observation, that Ashby
 automation is not solved, and that Computer Use is now a compiled
 sheet.
 
+## 2026-09-03. Compiled Anyscale G1, still no Submit
+
+**Attempt.** Use the new compiler on a regular Ashby role. Software
+Engineer (Ray Data). Different posting from the 24 August Ray Core
+Submit.
+
+**Measurement.** Worker createdAt/updatedAt and tool-message counts.
+Not the Twitch action taxonomy.
+
+| Pass | Wall | Tool messages |
+|---|---|---|
+| Identity + Autofill once | 3.4 min | 23 |
+| Corrections | 5.7 min | 74 |
+
+**Result.** Form prepared. Parent checked screenshots in
+`generated/apply_runs/2026-09-03T15/expected_vs_observed.md`. Submit
+not clicked. G2 stays closed.
+
+**What this does not prove.** That the compiler made Computer Use
+cheap. Different ATS, different count method, no verify pass. The
+file only contrasts the numbers.
+
+Source. [`docs/experiments/2026-09-03_anyscale_g1_unit.md`](../docs/experiments/2026-09-03_anyscale_g1_unit.md)
+
 ## 2026-09-04. Polar enters the repo
 
 **Change.** [`docs/automation/POLAR.md`](../docs/automation/POLAR.md)
@@ -176,7 +200,10 @@ KEEP list.
 Owner-observed the same day, in that file. Polar runs locally, logged
 in. Polar accepted instructions and repository context. Workflow exists
 as a product concept. One real Polar fill was not flagged the way some
-cloud submits were. That last sentence is one test.
+cloud submits were. That fill is unnamed in `POLAR.md`. I treat it as
+the same event as the Quantbot report unless a second job is named.
+The Tallgrass Original Job Post packet in that file was written and
+not run (`docs/state/decisions.tsv`).
 
 ## 2026-09-04. Quantbot Polar fill, off this branch
 

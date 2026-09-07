@@ -80,6 +80,8 @@ They are not the most flattering sentences.
    actions. The parent Task strings had asked for whole-form screenshots,
    verify-each-field, and report-every-widget. I compiled those strings
    into fixtures. `scripts/compile_cu_task.py lint` rejects them now.
+   The same day, a compiled Ashby G1 unit on a different form ran in
+   3.4 plus 5.7 minutes. That is not a controlled before-and-after.
 2. **I showed that a computerUse child starts clean.** Four isolation
    clickers on 24 August 2026 each received one user message (1147 to 2395
    characters) and no `AGENTS.md`, no `knowledge/*`, and no parent chat.
