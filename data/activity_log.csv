@@ -122,4 +122,10 @@ timestamp,job_id,contact_id,event_type,from_status,to_status,note
 2026-09-04T23:21:11,J20260904-001,,job_added,,ready_to_apply,Quantbot Technologies LP — Machine Learning Research Engineer Internship - 2027 [New York] (polar_pilot)
 2026-09-04T23:21:11,J20260904-001,,submit_attempt_started,ready_to_apply,,attempt A20260904-001 gate=G1 weight=regular ats=greenhouse source=polar_local
 2026-09-04T23:21:11,J20260904-001,,submit_attempt_finished,ready_to_apply,ready_to_apply,attempt A20260904-001 review_packet submitted=no
-2026-09-05T00:05:00,,,autofill_blocked,,,"P-20260904-002 Rakuten Rewards Platform Engineer. Jobright OJP reached rakuten.wd1.myworkdayjobs.com. Workday Create Account/Sign In wall. Simplify Create Account & Autofill not clicked. submitted=no. No ledger start."
+2026-09-05T00:05:00,,,autofill_blocked,,,P-20260904-002 Rakuten Rewards Platform Engineer. Jobright OJP reached rakuten.wd1.myworkdayjobs.com. Workday Create Account/Sign In wall. Simplify Create Account & Autofill not clicked. submitted=no. No ledger start.
+2026-09-07T15:40:00,J20260907-001,,job_added,,ready_to_apply,"Solidigm — 2027 Graduate Software, Firmware & AI Engineering Internships - US (polar_ats_sweep)"
+2026-09-07T15:40:00,J20260907-001,,submit_attempt_started,ready_to_apply,,attempt A20260907-001 gate=G0 weight=regular ats=other source=polar_local
+2026-09-07T15:40:00,J20260907-001,,submit_attempt_finished,ready_to_apply,ready_to_apply,attempt A20260907-001 review_packet submitted=no P1 opened
+2026-09-07T15:41:00,J20260907-002,,job_added,,ready_to_apply,Citadel — Sector Data Scientist 2027 Intern (polar_ats_sweep)
+2026-09-07T15:41:00,J20260907-002,,submit_attempt_started,ready_to_apply,,attempt A20260907-002 gate=G0 weight=regular ats=other source=polar_local
+2026-09-07T15:41:00,J20260907-002,,submit_attempt_finished,ready_to_apply,ready_to_apply,attempt A20260907-002 review_packet submitted=no two Yes/No unresolved

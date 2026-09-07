@@ -9,11 +9,13 @@
 | Apply URL | https://jobs.smartrecruiters.com/solidigm/744000147613769 |
 | Apply URL confidence | exact |
 | Polar packet | `generated/polar/ats_sweep/solidigm.md` |
-| `form_status` | `drafted` |
+| `form_status` | `typed_on_form` |
 | `submitted` | no |
 | `application_weight` | regular |
 
-Not submitted. Generate with AI not clicked. Cover letter empty is expected.
+Polar typed the Why-this-company draft on SmartRecruiters Easy Apply
+2026-09-07. Not submitted. Generate with AI not clicked. Cover letter
+empty is expected. No other essay boxes appeared.
 
 ## Why this company
 

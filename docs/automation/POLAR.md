@@ -136,6 +136,9 @@ Junyi filled a real application with Polar. That test was not flagged the way so
 | Polar can fill a Cursor-selected KEEP and stop before Submit | Polar report, 2026-09-04 | Proven for Quantbot. About 6 minutes. No CAPTCHA. |
 | Jobright Original Job Post reaches Rakuten Rewards Workday | Polar report P-20260904-002 | Proven land. Host `rakuten.wd1.myworkdayjobs.com`. About 4 minutes. |
 | Polar can fill Workday | Polar report P-20260904-002 | Not tested. Create Account / Sign In wall. submitted=no. |
+| Polar can fill SmartRecruiters and stop before Submit | Polar report P-20260906-001 | Proven for Solidigm. Guest Easy Apply. About 6 minutes. submitted=no. |
+| Jobright Original Job Post reaches Citadel custom careers | Polar report P-20260906-002 | Proven land. Host `www.citadel.com`. About 15 minutes. submitted=no. |
+| Polar can clean-fill Citadel custom | Polar report P-20260906-002 | Partial. Two Yes/No prompts have no approved answer. |
 | Polar Workflow can consume this repo's queue unattended | inference | Unproven |
 | Every Original Job Post is an employer ATS | inference | Unproven. Quantbot was Greenhouse. Others may be LinkedIn or a tracker. |
 | Polar can write `apply_attempts.csv` without a human | inference | Unproven. Cursor wrote the Quantbot row from the Polar report. |
@@ -167,6 +170,7 @@ The first fill-and-stop was Quantbot Greenhouse, not Tallgrass. See
 `docs/experiments/2026-09-04_polar_first_pilot.md`. Experiment 2 was
 Rakuten Rewards. Original Job Post reached Workday and stopped on an
 account wall. See `docs/experiments/2026-09-04_polar_second_pilot.md`
-and `generated/polar/results/P-20260904-002.md`. The next Polar work
-is a Cursor-selected ATS sweep in `generated/polar/ats_sweep/`. P1 is
-still closed. G2 is still closed. Polar still must not Submit.
+and `generated/polar/results/P-20260904-002.md`. The ATS sweep results are in `generated/polar/results/P-20260906-001.md`
+and `generated/polar/results/P-20260906-002.md`. P1 is open on the
+Solidigm SmartRecruiters fill. G2 is still closed. Polar still must
+not Submit.

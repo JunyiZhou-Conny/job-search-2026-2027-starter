@@ -69,7 +69,22 @@ then a real Workday packet tests fill.
 
 A public career page does not count. Cursor Computer Use does not count.
 
+## Polar results (2026-09-07)
+
+Junyi pasted both packets. Cursor did not watch the browser.
+
+Solidigm `P-20260906-001` is a clean SmartRecruiters fill. Guest Easy
+Apply. Ready to submit. submitted=no. About 6 minutes. Ledger
+`J20260907-001`. P1 is open.
+
+Citadel `P-20260906-002` reached `www.citadel.com`. Partial fill.
+submitted=no. About 15 minutes. Ledger `J20260907-002`. Two Yes/No
+prompts still need Junyi. Current employer blank is correct.
+
+Phone and email from the Citadel chat report were not stored.
+
 ## What unlocks the next batch
 
-One clean non-Greenhouse Polar fill from this sweep opens a 3 to 5
-job serial Polar batch. P1 stays a fill gate, not a reach gate.
+Opened. Solidigm is the clean non-Greenhouse fill. A 3 to 5 job
+serial Polar batch is permitted. G2 is still closed. Agents must
+not Submit.

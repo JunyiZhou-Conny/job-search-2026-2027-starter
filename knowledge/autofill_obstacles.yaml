@@ -15,8 +15,8 @@ purpose: >
 
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
-last_updated: "2026-09-05"
-last_source: "Polar P-20260904-002 Rakuten Workday account wall plus prior Ashby isolation notes"
+last_updated: "2026-09-07"
+last_source: "Polar ATS sweep P-20260906-001 Solidigm and P-20260906-002 Citadel"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -470,6 +470,37 @@ gaps:
       Junyi: one story, chosen after the company mission. Types are
       marked. Stories are not written.
     ask_later: "Junyi will pick stories later. Do not brainstorm in chat."
+
+  - id: citadel_summer_return_offer
+    status: needs_human
+    observed: "2026-09-07"
+    company: Citadel
+    meaning: >
+      Polar P-20260906-002 left empty. The widget asks whether a
+      summer internship this year produced a return offer. The repo
+      has prior_internship_count 2 and no summer-2026 return-offer
+      fact.
+    ask_later: "Yes or No for that exact Citadel wording."
+
+  - id: citadel_late_stage_competing
+    status: needs_human
+    observed: "2026-09-07"
+    company: Citadel
+    meaning: >
+      Polar P-20260906-002 left empty. The widget asks whether Junyi
+      is in late-stage processes with competing companies, including
+      offer stage. Applied ledger rows are not that fact.
+    ask_later: "Yes or No for that exact Citadel wording."
+
+  - id: polar_report_contact_fields
+    status: observed_ok
+    observed: "2026-09-07"
+    company: Citadel
+    meaning: >
+      Polar pasted phone and email into the chat report because the
+      custom form had no Copilot icon. Those values stay in Simplify.
+      Do not copy them into git.
+    implication: "Redact Polar reports before commit."
 
 do_not_put_in_this_file:
   - passport

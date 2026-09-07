@@ -93,7 +93,7 @@ the gate stays closed. Not two KEEP applies on one profile.
 | Gate | Evidence to open | Failure that blocks | Newly allowed | Still prohibited |
 |---|---|---|---|---|
 | P0 Polar fill exists | Quantbot Greenhouse, submitted=no | none | one more Polar packet | Submit, Workflow, parallel |
-| P1 Non-Greenhouse fill | Jobright-only KEEP, host is not Greenhouse and not jobright.ai, posting matched, standing fields filled or listed unresolved, submitted=no | invented apply URL, sibling job, Submit, account wall, land-only | one more serial Polar packet on a third family | Submit, Workflow, parallel |
+| P1 Non-Greenhouse fill | Polar fill on a non-Greenhouse host, posting matched, standing fields filled or listed unresolved, submitted=no | invented apply URL, sibling job, Submit, account wall, land-only | 3 to 5 job serial Polar batch | Submit, Workflow, parallel |
 | P2 Packet repeatability | second packet from the same standing-answer render, no YAML homework for Polar | standing answers drift | a small renderer | Workflow |
 | P3 Mailbox-read | Polar executes `LIVE.md` from repo context with no chat paste | Polar ignores the file or rediscovers | Junyi clicks Run | Polar git-write, scheduled Workflow |
 | P3w Mailbox-write | Polar writes `generated/polar/results/<packet_id>.md` with no paste of the report | Polar cannot write git, or Polar writes the ledger | Cursor reconciles from that file | scheduled Workflow, Polar ledger writes |
@@ -120,18 +120,18 @@ profiles or machines.
 
 Experiment 2 is filed at
 `generated/polar/results/P-20260904-002.md`. Workday land is proven.
-Workday fill is not. P1 is still closed.
+Workday fill is not.
 
-The next Polar work is the ATS sweep batch in
-`generated/polar/ats_sweep/`. Cursor selected those jobs. Polar
-pastes one packet at a time. `generated/polar/LIVE.md` stays the
-Rakuten mailbox from experiment 2. Do not replace it with a KEEP
-list.
+P1 is open. Solidigm SmartRecruiters (`P-20260906-001`) is a clean
+non-Greenhouse Polar fill. submitted=no. A 3 to 5 job serial Polar
+batch is now permitted. G2 is still closed. Agents must not Submit.
 
-Trusted `apply_url` rows in this sweep start at the employer URL.
-Jobright-only rows still use Original Job Post. Polar still must
-not invent a board URL.
+Citadel custom (`P-20260906-002`) reached `www.citadel.com` and
+stopped on two Yes/No prompts with no approved answer. That is
+partial fill, not the P1 opener.
 
-One clean non-Greenhouse fill from that batch opens a 3 to 5 job
-serial Polar batch. Workday fill waits on one owner login and a
-later packet. Do not re-run Quantbot or Rakuten.
+Workday fill still waits on one owner login and a later packet.
+Do not re-run Quantbot or Rakuten.
+
+Build the renderer before a third hand-copied standing-answer block
+if the serial batch starts. Mailbox-read and Workflow stay later.

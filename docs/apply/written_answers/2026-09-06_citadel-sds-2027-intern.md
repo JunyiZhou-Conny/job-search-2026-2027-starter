@@ -12,7 +12,8 @@
 | `submitted` | no |
 | `application_weight` | regular |
 
-Not submitted. Generate with AI not clicked. Cover letter empty is expected.
+Polar reached the Citadel careers form 2026-09-07. No Why-us box
+appeared. These drafts were not typed. Not submitted.
 
 A required essay about personal interest in investing, trading, markets, or why finance stays empty. That preference is not in the repo.
 

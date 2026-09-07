@@ -53,9 +53,13 @@ Greenhouse and Workday are not in this batch. Quantbot already filled Greenhouse
 
 If a form asks for a new account, stop. Do not register. Do not invent credentials.
 
-## After this sweep
+## Polar results
 
-One clean non-Greenhouse Polar fill opens a 3 to 5 job serial Polar batch.
-A third hand-copied packet should get a renderer. Polar reading git and
-Polar writing git stay later independent proofs. Do not arm Workflow.
-Do not build parallel workers.
+| packet_id | Reach | Fill | Auth wall | submitted | P1 |
+|---|---|---|---|---|---|
+| P-20260906-001 | yes | full | no | no | opened |
+| P-20260906-002 | yes | partial | no | no | already open |
+
+A 3 to 5 job serial Polar batch is now permitted. G2 stays closed.
+Agents must not Submit. Build the renderer before the next
+hand-copied standing-answer block.
