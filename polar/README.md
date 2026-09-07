@@ -96,8 +96,8 @@ They are not the most flattering sentences.
    the rules" problem.
 3. **I split control-plane reasoning from local browser execution.** Daily
    cloud discovery cannot see my Jobright session. A public ATS resolver
-   covers only a slice of keeps. Nested cloud children can boot the
-   harness disk and still lack `computerUse`. Polar reported using Jobright
+   covers only a slice of keeps. One nested cloud child booted the
+   harness disk and still lacked `computerUse`. Polar reported using Jobright
    Original Job Post, reaching Greenhouse, filling visible standing fields,
    mapping sponsorship No onto a different work-authorization widget, and
    stopping before Submit in about 6 minutes on one Quantbot intern form.
