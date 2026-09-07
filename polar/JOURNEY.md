@@ -59,27 +59,29 @@ calendar collision. This experiment file does not mention Polar.
 
 **Question.** Can Copilot and the Simplify cookie survive a new pod.
 
-**Result.** `ready: true` on three boots after a personal-environment
-snapshot. Cloud disks do not carry the harness unless someone snapshotted
-them after a human login.
+**Result.** `ready: true` on the source disk and on two boots from its
+snapshot. Cloud disks do not carry the harness unless someone
+snapshotted them after a human login.
 
 Source. [`docs/experiments/2026-08-21_harness_snapshot_clone.md`](../docs/experiments/2026-08-21_harness_snapshot_clone.md)
 
 ## 2026-08-22. Copilot on the same ten employers
 
 **Result.** With the harness present, Copilot filled name, email, phone,
-LinkedIn, and resume on the live tabs. Work-authorization, EEO, and some
-education widgets were wrong or unverified. Essays stay empty. Nothing
-is submitted.
+LinkedIn, and resume on the live tabs. Etched citizenship was a misfill.
+Other work-authorization widgets were unverified or later reversed.
+Essays stay empty. Nothing is submitted.
 
 Source. [`docs/experiments/2026-08-22_ten_tab_copilot_review.md`](../docs/experiments/2026-08-22_ten_tab_copilot_review.md)
 
 ## 2026-08-23. Second ten-tab pass
 
-**Result.** Copilot again fills identity. Broad "now or in the future"
-sponsorship widgets come back No and have to be corrected. Relativity's
-ITAR widget comes back as U.S. Person and is corrected. Run Autofill
-Again on a later correction pass wipes dropdowns.
+**Result.** Copilot again fills identity. The standing sponsorship rule
+that day was Yes. Computer-use flipped Copilot's No to Yes on four
+broad widgets. Junyi reversed that standing answer to No on
+2026-09-03. Copilot's No matches the current form answer. Relativity's
+ITAR widget came back as U.S. Person and was corrected. Run Autofill
+Again on a later pass wiped parent-set dropdowns.
 
 **Change.** `do_not_run_autofill_again` in
 [`knowledge/form_strategy.yaml`](../knowledge/form_strategy.yaml).

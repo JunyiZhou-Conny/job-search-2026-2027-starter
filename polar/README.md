@@ -32,8 +32,9 @@ URLs. The signup wall was reproduced on the first two keeps tried.
 Cloud sessions lose Simplify Copilot unless someone snapshotted a
 login. Stored computerUse transcripts omit the parent rulebook.
 Parent prompts spend most of their budget scrolling and verifying.
-One Ashby spam wall on a crowded cloud Chrome session. Nested
-`Task environment=cloud` children that have no `computerUse` tool.
+One Ashby spam wall on a crowded cloud Chrome session. One nested
+`Task environment=cloud` child booted the harness disk and had no
+`computerUse` tool.
 
 Polar first appears in this repository on 4 September 2026, in
 [`docs/automation/POLAR.md`](../docs/automation/POLAR.md). The July

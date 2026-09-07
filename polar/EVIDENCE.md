@@ -26,12 +26,12 @@ machinery on the scale-stage branch is still not here.
 ### C001. Twitch three-pass Computer Use cost
 
 - claim: Three Computer Use passes on one Twitch Greenhouse form took about 74 minutes, 195 CU actions, 129 scrolls, and 12 type or key actions.
-- evidence_type: directly_measured
+- evidence_type: repository_verified
 - sources:
   - docs/experiments/2026-09-03_twitch_cu_cost.md
 - date: 2026-09-03
 - confidence: medium
-- does_not_prove: That every Computer Use form costs this much. That the unpublished computer-use system prompt is the sole cause. That Polar is faster on the same form. That 195 actions were one child. The total includes a deliberately read-only 43-call pass. The counter script was `/tmp/analyze_cu_transcripts.py` and is not in git. Re-count needs the original transcripts.
+- does_not_prove: That every Computer Use form costs this much. That the unpublished computer-use system prompt is the sole cause. That Polar is faster on the same form. That 195 actions were one child. The total includes a deliberately read-only 43-call pass. The counter script was `/tmp/analyze_cu_transcripts.py` and is not in git. The transcripts are not in git. The writeup table is the surviving artifact.
 
 ### C002. Twitch parent prompts invited the loops
 
@@ -60,13 +60,13 @@ machinery on the scale-stage branch is still not here.
 ### C004. Isolation stored transcripts omit parent rule files
 
 - claim: Four isolation Submit children each left a stored transcript with one user message, 1147 to 2395 characters, and no AGENTS.md or knowledge files in that file.
-- evidence_type: directly_measured
+- evidence_type: repository_verified
 - sources:
   - docs/experiments/2026-08-24_computer_use_context_isolation.md
   - knowledge/form_strategy.yaml
 - date: 2026-08-24
-- confidence: high
-- does_not_prove: Runtime context the child actually received. Cursor's unpublished computerUse system prompt is not in the stored file. The designed parent-compiler follow-up was never run. The four child transcripts are not stored in git. The table is the surviving measurement.
+- confidence: medium
+- does_not_prove: Runtime context the child actually received. Cursor's unpublished computerUse system prompt is not in the stored file. The designed parent-compiler follow-up was never run. The four child transcripts are not stored in git. The writeup table is the surviving artifact.
 
 ### C005. Nested cloud Task can lack computerUse
 
@@ -112,16 +112,16 @@ machinery on the scale-stage branch is still not here.
 - confidence: high
 - does_not_prove: That all 55 Jobright pages were opened. Only 2 of 2 tested pages showed the signup wall. Current keep-list coverage. The 27 percent figure is that day's 55 keeps. Greenhouse coverage is a floor because custom widgets often lack a DOM value.
 
-### C009. Run Autofill Again can wipe corrections
+### C009. Run Autofill Again can wipe parent-set widgets
 
-- claim: After computer-use corrected sponsorship or similar widgets, a later Simplify Run Autofill Again cleared Yes dropdowns and flipped Baseten sponsorship back to No.
+- claim: After computer-use changed sponsorship or similar widgets, a later Simplify Run Autofill Again cleared Yes dropdowns and flipped Baseten sponsorship back to No.
 - evidence_type: owner_observed
 - sources:
   - knowledge/form_strategy.yaml
   - docs/experiments/2026-08-23_ten_tab_round_two.md
 - date: 2026-08-23
 - confidence: high
-- does_not_prove: That Copilot is generally unsafe. It proves a second Autofill is not a safe "refresh."
+- does_not_prove: That those 08-23 Yes writes were the current standing answer. They were not. Junyi set broad sponsorship to No on 2026-09-03. A second Autofill is not a safe refresh.
 
 ### C010. Polar first appears in this repo on 2026-09-04
 
@@ -162,7 +162,7 @@ machinery on the scale-stage branch is still not here.
   - docs/experiments/2026-09-04_polar_first_pilot.md
 - date: 2026-09-04
 - confidence: medium
-- does_not_prove: Independent observation. Cursor did not watch the browser. Screenshots and trajectory logs are not in git. This is a partial fill, not a proven Greenhouse fill. The pilot cites `visa_sponsorship.do_not_auto_map`, which is not a key in `knowledge/form_strategy.yaml`. It does not prove Polar bypasses ATS bot detection. It does not prove Workflow or any other ATS family.
+- does_not_prove: Independent observation. Cursor did not watch the browser. Screenshots and trajectory logs are not in git. This is a partial fill, not a proven Greenhouse fill. The pilot cites `visa_sponsorship.do_not_auto_map`, which is not a key in `knowledge/form_strategy.yaml`. Ledger ids J20260904-001 and A20260904-001 named in the pilot are on the first-pilot PR, not this branch. It does not prove Polar bypasses ATS bot detection. It does not prove Workflow or any other ATS family.
 
 ### C014. Polar Rakuten Workday reach
 
@@ -242,13 +242,13 @@ machinery on the scale-stage branch is still not here.
 
 ### C021. Copilot identity fields versus work-authorization
 
-- claim: On 2026-08-22, with the harness ready, Copilot filled name, email, phone, LinkedIn, and resume on the live employer tabs. Work-authorization, EEO, and some education widgets were wrong or unverified.
+- claim: On 2026-08-22, with the harness ready, Copilot filled name, email, phone, LinkedIn, and resume on the live employer tabs. Etched citizenship was selected as US Citizen or Permanent Resident. Other work-authorization widgets were unverified or later reversed.
 - evidence_type: owner_observed
 - sources:
   - docs/experiments/2026-08-22_ten_tab_copilot_review.md
 - date: 2026-08-22
 - confidence: medium
-- does_not_prove: That identity fill is reliable on every ATS. The checker still reported identity_match unknown. Work-authorization is not in the reliable set.
+- does_not_prove: That identity fill is reliable on every ATS. The checker still reported identity_match unknown. That Copilot's sponsorship No was wrong. That answer later became the standing form answer.
 
 ### C022. Auth difference is session and provisioning, not locality
 
@@ -259,9 +259,9 @@ machinery on the scale-stage branch is still not here.
   - docs/state/REALITY_MAP.md
   - docs/experiments/2026-08-21_harness_snapshot_clone.md
   - docs/experiments/2026-08-24_ashby_three_trivial_submits.md
-- date: 2026-08-24
+- date: 2026-09-04
 - confidence: high
-- does_not_prove: That cloud can never do logged-in apply. That Original Job Post exists only on a laptop. That Polar is required for any authenticated session.
+- does_not_prove: That cloud can never do logged-in apply. That Original Job Post exists only on a laptop. That Polar is required for any authenticated session. The Original Job Post clause is Polar-aware. The snapshot and Ashby Submits are earlier.
 
 ### C023. Discovery stretch on the 2026-09-03 reality map
 

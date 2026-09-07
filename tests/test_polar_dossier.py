@@ -113,6 +113,34 @@ class TestPolarDossier(unittest.TestCase):
             errors = dossier.check_paths(root)
             self.assertTrue(any("phone number" in e for e in errors), errors)
 
+    def test_rejects_untracked_source_in_git_tree(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            _stub_tree(root)
+            (root / "loose.md").write_text("not committed\n")
+            (root / "polar" / "EVIDENCE.md").write_text(
+                "\n".join(
+                    [
+                        _claim_block("C001", source="loose.md"),
+                        *(_claim_block(f"C{i:03d}") for i in range(2, 9)),
+                    ]
+                )
+            )
+            subprocess.run(
+                ["git", "init"],
+                cwd=root,
+                check=True,
+                capture_output=True,
+            )
+            subprocess.run(
+                ["git", "add", "README.md", "polar"],
+                cwd=root,
+                check=True,
+                capture_output=True,
+            )
+            errors = dossier.check_paths(root)
+            self.assertTrue(any("untracked source loose.md" in e for e in errors), errors)
+
     def test_http_sources_are_not_fetched(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -84,9 +84,11 @@ G2 closed. Prioritized rows always stop for a review packet.
 2. **31 July.** Autofill works on resolved URLs. Discovery URLs do
    not. The resolver is added because the keep list is unactionable.
 3. **August.** Cloud disks lose Copilot. The harness checker and a
-   personal snapshot become mandatory. Copilot misfills sponsorship
-   and U.S. Person widgets. Autofill Again undoes corrections.
-4. **24 August.** Nested cloud children cannot click. Isolation
+   personal snapshot become mandatory. Copilot misfills U.S. Person.
+   On 08-23 the standing sponsorship rule was Yes and computer-use
+   overwrote Copilot's No. That rule flipped to No on 09-03.
+   Autofill Again undoes parent-set widgets.
+4. **24 August.** One nested cloud child cannot click. Isolation
    stored transcripts each contained one user message and no copied
    rule files. Leftover typing becomes one paste. Token sinks are
    named.

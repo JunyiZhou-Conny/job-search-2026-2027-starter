@@ -173,6 +173,16 @@ def check_paths(root: Path) -> list[str]:
             repo_path = root / source
             if not repo_path.exists():
                 errors.append(f"{cid} missing source {source}")
+                continue
+            if (root / ".git").exists():
+                tracked = subprocess.run(
+                    ["git", "ls-files", "--error-unmatch", "--", source],
+                    cwd=root,
+                    capture_output=True,
+                    check=False,
+                )
+                if tracked.returncode != 0:
+                    errors.append(f"{cid} untracked source {source}")
 
     email = polar / "EMAIL_DRAFT.md"
     if email.is_file():
