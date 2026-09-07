@@ -4,8 +4,9 @@ This branch is an evidence packet, not a second job tracker. It reconstructs
 what this repository actually did while I tried to automate my own 2026–2027
 job search, then maps those findings to Polar's Frontier Problems.
 
-I have not emailed Polar. I have not submitted an application. This file is
-the landing page. The rest of `polar/` is the audit trail.
+I have not emailed Polar. I have not sent this dossier or applied to
+Polar. This file is the landing page. The rest of `polar/` is the audit
+trail.
 
 ## Who I am
 
@@ -77,25 +78,28 @@ They are not the most flattering sentences.
 
 1. **I measured an observation-loop tax, then encoded it.** On 3 September
    2026 three Computer Use passes on one Twitch Greenhouse form took about
-   74 minutes and 195 actions, including 129 scrolls and 12 type or key
-   actions. The parent Task strings had asked for whole-form screenshots,
-   verify-each-field, and report-every-widget. I compiled those strings
-   into fixtures. `scripts/compile_cu_task.py lint` rejects them now.
-   The same day, a compiled Ashby G1 unit on a different form ran in
-   3.4 plus 5.7 minutes. That is not a controlled before-and-after.
-2. **I showed that a computerUse child starts clean.** Four isolation
-   clickers on 24 August 2026 each received one user message (1147 to 2395
-   characters) and no `AGENTS.md`, no `knowledge/*`, and no parent chat.
-   Writing a better rule file does not change the next clicker unless a
-   parent copies the standing slice into the Task string. That is a handoff
-   problem, not a "the model forgot the rules" problem.
-3. **I split control-plane reasoning from local browser execution.** Cloud
-   discovery cannot see my Jobright session. A public ATS resolver covers
-   only a slice of keeps. Nested cloud children can boot the harness disk
-   and still lack `computerUse`. Polar, on my machine, used Jobright
-   Original Job Post, reached Greenhouse, filled standing fields, and
-   stopped before Submit in about 6 minutes on one Quantbot intern form.
-   That Polar result is a Polar report I pasted back, not a second observer
+   74 minutes and 195 actions, including a read-only 43-call pass, 129
+   scrolls, and 12 type or key actions. The parent Task strings had asked
+   for whole-form screenshots, verify-each-field, and report-every-widget.
+   I compiled those strings into fixtures. `scripts/compile_cu_task.py lint`
+   rejects them now. The same day, a compiled Ashby G1 unit on a different
+   form ran in 3.4 plus 5.7 minutes. That is not a controlled
+   before-and-after.
+2. **I inspected stored computerUse transcripts.** Four isolation clickers
+   on 24 August 2026 each left one user message (1147 to 2395 characters)
+   and no `AGENTS.md` or `knowledge/*` in the stored file. The unpublished
+   computer-use prompt is not in that file. Writing a better rule file does
+   not change the next clicker unless a parent copies the standing slice
+   into the Task string. That is a handoff problem, not a "the model forgot
+   the rules" problem.
+3. **I split control-plane reasoning from local browser execution.** Daily
+   cloud discovery cannot see my Jobright session. A public ATS resolver
+   covers only a slice of keeps. Nested cloud children can boot the
+   harness disk and still lack `computerUse`. Polar reported using Jobright
+   Original Job Post, reaching Greenhouse, filling visible standing fields,
+   mapping sponsorship No onto a different work-authorization widget, and
+   stopping before Submit in about 6 minutes on one Quantbot intern form.
+   That is a Polar self-report I pasted back, not a second observer
    watching the browser.
 
 I am not claiming the 6-minute Polar fill and the 74-minute Twitch Computer
@@ -109,7 +113,7 @@ A few correspondences are unusually tight. I did not force the rest.
 
 | Polar problem | What I hit | Evidence |
 |---|---|---|
-| Cloud agents, device-bound auth, datacenter IPs | Jobright Original Job Post only exists in a local logged-in session. Cloud Copilot vanishes without a snapshot. One crowded cloud Ashby session was flagged as possible spam. | [`FRONTIER_MAP.md`](FRONTIER_MAP.md) |
+| Cloud agents, device-bound auth, datacenter IPs | Daily cloud discovery lacked Jobright cookies. Original Job Post appeared in the tested logged-in local session. Cloud Copilot vanishes without a snapshot. One crowded cloud Ashby session was flagged as possible spam. A later snapshotted cloud session did four short Ashby Submits. | [`FRONTIER_MAP.md`](FRONTIER_MAP.md) |
 | Self-improving agent harness | Failures became YAML, then a compiler and tests, instead of another long prompt. | `scripts/compile_cu_task.py`, `knowledge/form_strategy.yaml` |
 | Agent-human interface, agent-to-agent communication | Parent understands the form. Child sees pixels and one Task string. | isolation experiment, 2026-08-24 |
 

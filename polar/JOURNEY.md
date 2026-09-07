@@ -29,10 +29,10 @@ needed.
 Simplify Copilot. Stop before Submit.
 
 **Result.** 10 of 10 autofilled. Median 44 percent of visible fields, with
-a stated caveat that Greenhouse custom widgets under-count. Every keep on
-`main` still pointed at Jobright, and Jobright's Apply now opened a signup
-wall. Only 27 percent of 55 keeps resolved to a public board API
-(`exact`).
+a stated caveat that Greenhouse custom widgets under-count. All 55 keeps
+on `main` pointed at Jobright URLs. The signup wall was reproduced on the
+first two keeps tried. Only 27 percent of 55 keeps resolved to a public
+board API (`exact`).
 
 **Change.** `scripts/resolve_apply_url.py` is born the same day. Autofill
 is treated as the identity pass, not the whole application.
@@ -67,9 +67,10 @@ Source. [`docs/experiments/2026-08-21_harness_snapshot_clone.md`](../docs/experi
 
 ## 2026-08-22. Copilot on the same ten employers
 
-**Result.** Identity and resume are reliable when the harness is present.
-Copilot still misfills work-authorization widgets. Essays stay empty.
-Nothing is submitted.
+**Result.** With the harness present, Copilot filled name, email, phone,
+LinkedIn, and resume on the live tabs. Work-authorization, EEO, and some
+education widgets were wrong or unverified. Essays stay empty. Nothing
+is submitted.
 
 Source. [`docs/experiments/2026-08-22_ten_tab_copilot_review.md`](../docs/experiments/2026-08-22_ten_tab_copilot_review.md)
 
@@ -120,7 +121,8 @@ or `knowledge/*`.
 
 **Result.** Four isolation Submit children. Each stored transcript is one
 user message. No `system` role in the stored file. No `AGENTS.md`. Prompt
-lengths 1147 to 2395 characters.
+lengths 1147 to 2395 characters. That is the stored file, not a dump of
+runtime context. The unpublished computer-use prompt is not in it.
 
 **Change.** `computer_use_context_isolation` and
 `leftover_typing_one_pass` in form strategy. The parent must compile the
@@ -212,18 +214,20 @@ Copied onto this branch from `ed40f98` on
 `origin/cursor/polar-first-pilot-5afa` so the result is auditable here.
 
 **Method.** Cursor selected a KEEP. I pasted a bounded markdown packet
-into Polar. Polar opened Jobright, clicked Original Job Post only, used
-Simplify Autofill once, applied standing corrections, and stopped before
-Submit.
+into Polar. Polar reported opening Jobright, clicking Original Job Post
+only, using Simplify Autofill once, applying listed corrections, and
+stopping before Submit.
 
 **Polar report.** Greenhouse embed URL. About 6 minutes. `submitted=no`.
 No CAPTCHA. One work-authorization widget was mapped to sponsorship No
-and marked `needs_review`. That mapping is a known hazard in
-`form_strategy.yaml`.
+and marked `needs_review`. That widget was not the standing sponsorship
+question. The pilot cites `visa_sponsorship.do_not_auto_map`, which is
+not a key in `form_strategy.yaml`. This is a partial fill.
 
-**What this proves.** Polar can consume a Cursor-selected Jobright row
-and reach an employer form on my machine. It does not prove Workflow,
-ledger write-back, or every ATS family.
+**What Polar reported.** It consumed a Cursor-selected Jobright row and
+reached an employer form on my machine. Cursor did not watch the
+browser. This does not prove Workflow, ledger write-back, or every ATS
+family.
 
 Source. [`docs/experiments/2026-09-04_polar_first_pilot.md`](../docs/experiments/2026-09-04_polar_first_pilot.md)
 
@@ -253,8 +257,10 @@ Sources.
 2. Autofill is an identity bootstrap, not the product.
 3. Computer Use is a compiled, mode-bounded child. It does not inherit
    the rulebook.
-4. Cloud and laptop do not share cookies. Jobright Original Job Post is
-   a local-session tool.
+4. Cloud and laptop do not share cookies. Jobright Original Job Post
+   appeared in the tested logged-in local session. Daily cloud discovery
+   lacked those cookies. A later snapshotted cloud session still ran
+   short Ashby Submits.
 5. Polar is the local execution plane. Cursor still picks the job.
 6. Submit stays behind `docs/policy/SUBMIT_ROLLOUT.md`. G2 is closed.
 

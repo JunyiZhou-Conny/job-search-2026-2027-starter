@@ -3,7 +3,10 @@
 Every significant claim I am willing to show Polar. Types are closed.
 
 - `directly_measured` means a count or timing from a named artifact.
-- `owner_observed` means I reported a live Polar or laptop fact.
+- `owner_observed` means I watched or reported a live laptop or
+  cloud-agent fact.
+- `executor_self_report` means Polar or another executor wrote the
+  result. Cursor did not independently observe it.
 - `repository_verified` means the file or commit exists as described.
 - `public_polar` means Polar's own site or post.
 - `architectural_inference` means a boundary we chose.
@@ -27,8 +30,8 @@ machinery on the scale-stage branch is still not here.
 - sources:
   - docs/experiments/2026-09-03_twitch_cu_cost.md
 - date: 2026-09-03
-- confidence: high
-- does_not_prove: That every Computer Use form costs this much. That the unpublished computer-use system prompt is the sole cause. That Polar is faster on the same form. The counter script was `/tmp/analyze_cu_transcripts.py` and is not in git. Re-count needs the original transcripts.
+- confidence: medium
+- does_not_prove: That every Computer Use form costs this much. That the unpublished computer-use system prompt is the sole cause. That Polar is faster on the same form. That 195 actions were one child. The total includes a deliberately read-only 43-call pass. The counter script was `/tmp/analyze_cu_transcripts.py` and is not in git. Re-count needs the original transcripts.
 
 ### C002. Twitch parent prompts invited the loops
 
@@ -54,16 +57,16 @@ machinery on the scale-stage branch is still not here.
 - confidence: high
 - does_not_prove: That later parents always compile. Lint only catches strings that match the regexes.
 
-### C004. computerUse children start clean
+### C004. Isolation stored transcripts omit parent rule files
 
-- claim: Four isolation Submit children each had one user message, 1147 to 2395 characters, no AGENTS.md or knowledge files in the stored transcript.
+- claim: Four isolation Submit children each left a stored transcript with one user message, 1147 to 2395 characters, and no AGENTS.md or knowledge files in that file.
 - evidence_type: directly_measured
 - sources:
   - docs/experiments/2026-08-24_computer_use_context_isolation.md
   - knowledge/form_strategy.yaml
 - date: 2026-08-24
 - confidence: high
-- does_not_prove: The contents of Cursor's unpublished computerUse system prompt. The file says not to ask a child to dump it. It also does not prove a later parent will copy standing rules without being told. The four child transcripts are not stored in git. The table is the surviving measurement.
+- does_not_prove: Runtime context the child actually received. Cursor's unpublished computerUse system prompt is not in the stored file. The designed parent-compiler follow-up was never run. The four child transcripts are not stored in git. The table is the surviving measurement.
 
 ### C005. Nested cloud Task can lack computerUse
 
@@ -101,13 +104,13 @@ machinery on the scale-stage branch is still not here.
 
 ### C008. July 31 autofill trial coverage and Jobright wall
 
-- claim: 10 of 10 resolved postings autofilled, median 44 percent of visible fields, nothing submitted, and all 55 keeps on main pointed at Jobright pages that could not be applied on without an account. 15 of 55 keeps resolved exact on a public board.
+- claim: 10 of 10 resolved postings autofilled, median 44 percent of visible fields, nothing submitted. All 55 keeps on main pointed at Jobright URLs. The signup wall was reproduced on the first two keeps tried. 15 of 55 keeps resolved exact on a public board.
 - evidence_type: directly_measured
 - sources:
   - docs/experiments/2026-07-31_apply_trial.md
 - date: 2026-07-31
 - confidence: high
-- does_not_prove: Current keep-list coverage. The 27 percent figure is that day's 55 keeps. Greenhouse coverage is a floor because custom widgets often lack a DOM value.
+- does_not_prove: That all 55 Jobright pages were opened. Only 2 of 2 tested pages showed the signup wall. Current keep-list coverage. The 27 percent figure is that day's 55 keeps. Greenhouse coverage is a floor because custom widgets often lack a DOM value.
 
 ### C009. Run Autofill Again can wipe corrections
 
@@ -153,25 +156,25 @@ machinery on the scale-stage branch is still not here.
 
 ### C013. Polar Quantbot fill report
 
-- claim: On 2026-09-04 Polar reported using Jobright Original Job Post, landing on a Quantbot Greenhouse embed, running Simplify Autofill once, applying listed corrections, remaining unsubmitted, and taking about 6 minutes.
-- evidence_type: owner_observed
+- claim: On 2026-09-04 Polar reported using Jobright Original Job Post, landing on a Quantbot Greenhouse embed, running Simplify Autofill once, applying listed corrections, remaining unsubmitted, and taking about 6 minutes. Polar also reported mapping sponsorship No onto a different work-authorization widget and leaving that field needs_review.
+- evidence_type: executor_self_report
 - sources:
   - docs/experiments/2026-09-04_polar_first_pilot.md
 - date: 2026-09-04
 - confidence: medium
-- does_not_prove: Independent observation. Cursor did not watch the browser. The writeup says the facts are Polar's report. It does not prove Polar bypasses ATS bot detection. It does not prove Workflow or any other ATS family. One work-authorization widget was mapped to sponsorship No and marked needs_review.
+- does_not_prove: Independent observation. Cursor did not watch the browser. Screenshots and trajectory logs are not in git. This is a partial fill, not a proven Greenhouse fill. The pilot cites `visa_sponsorship.do_not_auto_map`, which is not a key in `knowledge/form_strategy.yaml`. It does not prove Polar bypasses ATS bot detection. It does not prove Workflow or any other ATS family.
 
 ### C014. Polar Rakuten Workday reach
 
 - claim: Polar reported leaving Jobright, landing on rakuten.wd1.myworkdayjobs.com for Platform Engineer in San Mateo, clicking Apply once, then Workday Autofill with Resume, then hitting Create Account / Sign In. About 4 minutes. submitted=no. No form fields were reachable.
-- evidence_type: owner_observed
+- evidence_type: executor_self_report
 - sources:
   - docs/experiments/2026-09-04_polar_second_pilot.md
   - generated/polar/results/P-20260904-002.md
   - docs/experiments/polar_ats_matrix.md
 - date: 2026-09-05
 - confidence: medium
-- does_not_prove: A Workday fill. Polar stopped after Workday's own Autofill control, not at the first Jobright click. It does not prove Polar can register or should register.
+- does_not_prove: A Workday fill. Independent observation. Cursor did not watch the browser. The Rakuten result file is a normalized pasted report. Polar stopped after Workday's own Autofill control, not at the first Jobright click. It does not prove Polar can register or should register.
 
 ### C015. Polar is a second execution environment, not a second system
 
@@ -225,6 +228,40 @@ machinery on the scale-stage branch is still not here.
 - date: 2026-09-07
 - confidence: high
 - does_not_prove: That Polar is faster or more accurate. Any 6-minute versus 74-minute contrast in conversation is informal.
+
+### C020. computerUse cannot read a textarea DOM value
+
+- claim: The Computer Use contract states that a computerUse child cannot read a textarea DOM value and must not prove a paste with Ctrl+F.
+- evidence_type: repository_verified
+- sources:
+  - docs/automation/COMPUTER_USE_PROMPT.md
+  - knowledge/form_strategy.yaml
+- date: 2026-08-24
+- confidence: high
+- does_not_prove: Polar's tool surface. This is contract language from leftover-typing, not a Polar measurement.
+
+### C021. Copilot identity fields versus work-authorization
+
+- claim: On 2026-08-22, with the harness ready, Copilot filled name, email, phone, LinkedIn, and resume on the live employer tabs. Work-authorization, EEO, and some education widgets were wrong or unverified.
+- evidence_type: owner_observed
+- sources:
+  - docs/experiments/2026-08-22_ten_tab_copilot_review.md
+- date: 2026-08-22
+- confidence: medium
+- does_not_prove: That identity fill is reliable on every ATS. The checker still reported identity_match unknown. Work-authorization is not in the reliable set.
+
+### C022. Auth difference is session and provisioning, not locality
+
+- claim: Daily cloud discovery lacked Jobright cookies. Original Job Post appeared in the tested logged-in local session. A later authenticated cloud snapshot kept Copilot and recorded four short Ashby Cloud Submits.
+- evidence_type: repository_verified
+- sources:
+  - docs/automation/POLAR.md
+  - docs/state/REALITY_MAP.md
+  - docs/experiments/2026-08-21_harness_snapshot_clone.md
+  - docs/experiments/2026-08-24_ashby_three_trivial_submits.md
+- date: 2026-08-24
+- confidence: high
+- does_not_prove: That cloud can never do logged-in apply. That Original Job Post exists only on a laptop. That Polar is required for any authenticated session.
 
 ## Ranking notes for the 2-3 stories
 

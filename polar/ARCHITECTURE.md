@@ -87,13 +87,16 @@ G2 closed. Prioritized rows always stop for a review packet.
    personal snapshot become mandatory. Copilot misfills sponsorship
    and U.S. Person widgets. Autofill Again undoes corrections.
 4. **24 August.** Nested cloud children cannot click. Isolation
-   transcripts show a clean child context. Leftover typing becomes
-   one paste. Token sinks are named.
+   stored transcripts each contained one user message and no copied
+   rule files. Leftover typing becomes one paste. Token sinks are
+   named.
 5. **3 September.** Twitch measures the observation loop. The parent
    compiler and lint fixtures land.
 6. **4 September.** Polar is named as the local execution plane. The
-   same day, a Polar packet fills Quantbot Greenhouse and stops.
-   The next Polar packet reaches Workday and dies on Create Account.
+   same day, Polar reported a Quantbot Greenhouse partial fill and
+   stopped, with one work-authorization widget still `needs_review`.
+   The next
+   Polar packet reaches Workday and dies on Create Account.
 
 The interesting part is the repeated move. When a layer failed, I did
 not add a synonym for "try harder." I moved the responsibility.
@@ -103,7 +106,7 @@ not add a synonym for "try harder." I moved the responsibility.
 - Child missing rules → parent compiler.
 - Child missing the clicker tool → dashboard agent, not a nested Task.
 - Observation loops → lint, not a longer "please don't scroll" sentence.
-- Polar succeeding locally → keep Cursor as the brain anyway.
+- Polar reporting a local fill → keep Cursor as the brain anyway.
 
 ## Where things live
 

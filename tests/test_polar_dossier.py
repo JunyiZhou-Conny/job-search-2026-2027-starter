@@ -43,6 +43,9 @@ class TestPolarDossier(unittest.TestCase):
         self.assertEqual(claims[0]["sources"], ["docs/automation/POLAR.md"])
         self.assertEqual(claims[0]["evidence_type"], "directly_measured")
 
+    def test_executor_self_report_is_a_valid_type(self):
+        self.assertIn("executor_self_report", dossier.EVIDENCE_TYPES)
+
 
 if __name__ == "__main__":
     unittest.main()

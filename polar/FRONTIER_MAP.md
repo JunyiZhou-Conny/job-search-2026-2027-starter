@@ -42,9 +42,12 @@ devices for long-running work.
 **Evidence.** July 31 trial F1 and F4. Apply harness. Ashby isolation.
 `docs/automation/POLAR.md` environments section.
 
-**What I learned.** Cloud is a good control plane and a bad home for
-logged-in apply. The missing object is the user's browser, not another
-prompt.
+**What I learned.** Cloud is a good control plane. Logged-in apply
+failed on the daily cloud sessions that lacked Jobright cookies and,
+unless snapshotted, Copilot. A later authenticated cloud snapshot kept
+Copilot and recorded four short Ashby Submits. The constraint is session
+and provisioning, not locality as a law. The missing object is a
+browser that already has the needed cookies, not another prompt.
 
 **Unanswered.** Whether the Charta spam wall was datacenter IP, session
 reputation, retry count, Why-us length, or something else.
@@ -93,7 +96,8 @@ agents and keep communication smooth across layers.
 
 **What I hit.**
 
-- The clicker starts with a clean context. It sees pixels, the Task
+- The stored computerUse transcript contained one user message and no
+  copied rule files. Runtime context still includes pixels, the Task
   string, and Cursor's unpublished computer-use prompt.
 - A short Task is a parent compiler failure.
 - Nested `Task environment=cloud` is a different process class. It can
@@ -106,8 +110,8 @@ markdown packet. Polar reading `generated/polar/LIVE.md` from git is
 unproven. Polar writing git is unproven. I am the paste bus.
 
 **What I learned.** The interface problem is not only human-to-agent.
-It is parent-to-child. The child cannot share your memory unless you
-serialize it.
+It is parent-to-child. A stored transcript with one user message is
+not the same as proving the child received nothing else at runtime.
 
 **Unanswered.** The isolation file's own follow-up test, a fresh parent
 that copies standing rules without me restating them, was never run.
@@ -123,10 +127,10 @@ one machine yet. Polar began with browser use. Extending to computer
 use is a later step.
 
 **What I hit.** I used Cursor `computerUse` as the cloud clicker. It is
-not Cursor's public Browser built-in. It screenshots often. It cannot
-read a textarea DOM value. Asking it to prove a paste with Ctrl+F is
-how leftover-typing burned tokens. Twitch widgets reverted after they
-looked correct.
+not Cursor's public Browser built-in. It screenshots often. The
+Computer Use contract says it cannot read a textarea DOM value. Asking
+it to prove a paste with Ctrl+F is how leftover-typing burned tokens.
+Twitch widgets reverted after they looked correct. See C020.
 
 **Evidence.** Isolation experiment. Computer Use contract. Twitch
 education widget note in `COMPUTER_USE_PROMPT.md`.
@@ -137,7 +141,7 @@ one named mutation. Polar's Chromium-fork bet is a different tool
 surface. I should not wrap Polar inside a `computerUse` Task.
 
 **Unanswered.** I have no Polar-internal tool inventory. I only have
-product prose and one Greenhouse fill report.
+product prose and one Polar-reported Greenhouse partial fill.
 
 ## Medium correspondences. Do not over-read
 

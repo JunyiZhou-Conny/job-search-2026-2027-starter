@@ -24,6 +24,7 @@ REQUIRED_FILES = (
 EVIDENCE_TYPES = {
     "directly_measured",
     "owner_observed",
+    "executor_self_report",
     "repository_verified",
     "public_polar",
     "architectural_inference",
@@ -50,6 +51,10 @@ BANNED = (
     "polar solved",
     "the spawn is rejected",
     "spam-flagged",
+    "starts clean",
+    "actually receives",
+    "cloud is a bad home",
+    "i have not submitted an application",
 )
 
 CLAIM_HEAD = re.compile(r"^### (C\d+)\.\s+(.+)$")
