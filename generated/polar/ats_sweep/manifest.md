@@ -45,8 +45,8 @@ Greenhouse and Workday are not in this batch. Quantbot already filled Greenhouse
 | Greenhouse | proven (Quantbot) | no account wall on that job | not required | proven |
 | Workday | proven (Rakuten) | account wall on that job | not prepared | not tested |
 | Oracle Cloud | proven (Tallgrass land) | unknown | not prepared | not tested |
-| SmartRecruiters | pending this batch | unknown until Polar reports | none | not tested |
-| custom (Citadel) | pending this batch | unknown until Polar reports | none | not tested |
+| SmartRecruiters | proven (Solidigm) | no account wall on Easy Apply | not required | proven |
+| custom (Citadel) | proven (citadel.com) | no account wall | not required | partial |
 | Ashby | not tested | unknown | none | not tested |
 | Lever | not tested | unknown | none | not tested |
 | iCIMS | not tested | unknown | none | not tested |

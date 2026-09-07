@@ -3,10 +3,10 @@
 | Field | Value |
 |---|---|
 | Date | 2026-09-06 |
-| Ledger id | none |
+| Ledger id | J20260907-002 |
 | Expected ATS | custom employer form |
 | Discovery URL | https://jobright.ai/jobs/info/6a7a308fbb6ca93ae561a556 |
-| Apply URL | none. Resolver confidence is none. Polar uses Original Job Post. |
+| Apply URL | https://www.citadel.com/careers/details/sector-data-scientist-2027-intern-us/ (observed after Original Job Post; resolver had none) |
 | Polar packet | `generated/polar/ats_sweep/citadel.md` |
 | `form_status` | `drafted` |
 | `submitted` | no |

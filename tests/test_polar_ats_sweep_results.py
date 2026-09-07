@@ -76,6 +76,11 @@ class TestPolarAtsSweepResults(unittest.TestCase):
         self.assertEqual(by_id["J20260907-002"]["status"], "ready_to_apply")
         self.assertEqual(by_id["J20260907-001"]["company"], "Solidigm")
         self.assertEqual(by_id["J20260907-002"]["company"], "Citadel")
+        self.assertEqual(by_id["J20260904-001"]["employment_type"], "internship")
+        self.assertEqual(by_id["J20260907-001"]["employment_type"], "internship")
+        self.assertEqual(by_id["J20260907-002"]["employment_type"], "internship")
+        self.assertEqual(by_id["J20260907-002"]["needs_review"], "true")
+        self.assertNotIn("J20260906-001", job_ids)
 
 
 if __name__ == "__main__":
