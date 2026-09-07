@@ -15,7 +15,8 @@ on F-1 status and I am looking at Summer 2027 internships and 2027 new-grad
 roles.
 
 The relevant fact for Polar is not the degree line. Since late July I have
-been building an end-to-end apply system in public git, then instrumenting
+been building a control plane and two incomplete browser executors in
+public git, then instrumenting
 why the browser half kept failing or getting expensive.
 
 ## Why Polar maps onto this repo
@@ -110,7 +111,7 @@ A few correspondences are unusually tight. I did not force the rest.
 |---|---|---|
 | Cloud agents, device-bound auth, datacenter IPs | Jobright Original Job Post only exists in a local logged-in session. Cloud Copilot vanishes without a snapshot. One crowded cloud Ashby session was flagged as possible spam. | [`FRONTIER_MAP.md`](FRONTIER_MAP.md) |
 | Self-improving agent harness | Failures became YAML, then a compiler and tests, instead of another long prompt. | `scripts/compile_cu_task.py`, `knowledge/form_strategy.yaml` |
-| Agent-human interface, agent-to-agent communication | Parent understands the form. Child sees pixels and one Task string. Polar later receives a pasted markdown packet, not the repo. | isolation experiment, Polar Live Slot notes |
+| Agent-human interface, agent-to-agent communication | Parent understands the form. Child sees pixels and one Task string. | isolation experiment, 2026-08-24 |
 
 I do not have a match for owning the model layer, next-browser-action
 prediction, or Polar's blank-slate consumer problem.

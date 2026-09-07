@@ -73,8 +73,10 @@ each became a named rule after a dated incident.
 `leftover_typing_one_pass`.
 
 **What I learned.** A trajectory is only useful if the next parent
-cannot repeat the failed instruction. The compiler is a small version
-of Polar's harness loop. A human still promotes the rule.
+cannot repeat the failed instruction. I encoded one incident as lint
+fixtures. A human still writes the rule. That is not Polar's
+self-improving harness. Polar wants an agent that proposes the next
+change. I do not have that.
 
 **Unanswered.** I do not have an agent that proposes the next lint
 rule from a transcript without me.
@@ -96,12 +98,12 @@ agents and keep communication smooth across layers.
 - A short Task is a parent compiler failure.
 - Nested `Task environment=cloud` is a different process class. It can
   have the disk and still lack the clicker tool.
-- Polar later receives a pasted markdown packet. Polar reading
-  `generated/polar/LIVE.md` from git is unproven. Polar writing git is
-  unproven. I am the paste bus.
 
-**Evidence.** Isolation experiment. Ashby isolation `not_run`. Polar
-Live Slot notes on `origin/cursor/polar-scale-stage-5afa`.
+**Evidence.** Isolation experiment. Ashby isolation `not_run`.
+
+**Later, Polar-aware.** After 4 September, Polar receives a pasted
+markdown packet. Polar reading `generated/polar/LIVE.md` from git is
+unproven. Polar writing git is unproven. I am the paste bus.
 
 **What I learned.** The interface problem is not only human-to-agent.
 It is parent-to-child. The child cannot share your memory unless you

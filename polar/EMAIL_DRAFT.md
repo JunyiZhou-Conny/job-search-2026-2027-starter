@@ -18,8 +18,9 @@ Three things from that work.
    scrolls, to get 12 type or key events on one Greenhouse form. Three
    passes, about 74 minutes. The parent had asked it to verify every
    widget and screenshot the whole page. I turned those prompts into
-   lint fixtures. The next parent has to compile an action sheet or
-   the spawn is rejected.
+   lint fixtures. `compile_cu_task.py lint` fails those strings when
+   a parent runs it. Cursor will still spawn computerUse if the parent
+   freehands.
 2. I pulled four computerUse transcripts and checked what the child
    actually receives. One user message. No parent chat. No AGENTS.md.
    1147 to 2395 characters. A short clicker prompt is a handoff bug,
@@ -27,9 +28,9 @@ Three things from that work.
 3. I then split the repo. Cursor keeps selection and facts. The
    browser that can see my logged-in Jobright and Simplify sessions
    runs on my machine. Polar took a packet, followed Original Job
-   Post, filled a Greenhouse intern form, and stopped before Submit
-   in about 6 minutes. That is Polar's report, not a claim that Polar
-   beats ATS bot detection.
+   Post, filled a Greenhouse intern form, and stopped before Submit.
+   Polar reported about 6 minutes. That is a different form and a
+   different instrument from the Twitch count. It is not a bakeoff.
 
 Polar is first named in this repo on 4 September, after those
 Computer Use measurements. I cannot prove the hour I first opened

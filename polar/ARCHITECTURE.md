@@ -132,6 +132,7 @@ Quantbot and Rakuten packets are copied onto this branch from
   Original Job Post.
 - Polar Workflow as a product feature is owner-observed. Unattended
   consumption of this repo's queue is unproven.
-- One Polar fill that was not spam-flagged is one fill.
+- Quantbot Polar fill stopped before Submit. It has no spam-wall
+  result.
 - REALITY_MAP is a 2026-09-03 snapshot. Some counts in it are older
   than Polar and older than later ledger imports.

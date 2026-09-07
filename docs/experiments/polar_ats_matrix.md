@@ -3,13 +3,21 @@
 Polar execution only. Cloud Computer Use does not count. A public
 career page does not count.
 
+## This-branch correction (2026-09-07)
+
+The Oracle Cloud / Tallgrass row below is not Polar execution. The
+Polar packet was written and not run (`docs/state/decisions.tsv`).
+`docs/automation/POLAR.md` records an owner-observed Jobright
+Original Job Post URL. Treat Tallgrass as owner-observed URL reach,
+not a Polar land.
+
 ## Proven
 
 | ATS | Path | Job | Land | Fill | Note |
 |---|---|---|---|---|---|
 | Greenhouse | Jobright OJP | Quantbot Technologies LP, Machine Learning Research Engineer Internship 2027 | proven | proven | Polar report 2026-09-04. About 6 minutes. submitted=no. Final host family was Greenhouse. |
-| Oracle Cloud | Jobright OJP | Tallgrass, Intern-AI and Data Solutions | proven | not tested | Owner-observed land. Fill was never asked. |
-| Workday | Jobright OJP | Rakuten Rewards, Platform Engineer | proven | not tested | Polar report P-20260904-002. About 4 minutes. submitted=no. Host `rakuten.wd1.myworkdayjobs.com`. Create Account / Sign In wall. Simplify Create Account & Autofill not clicked. No ledger start. P1 closed. |
+| Oracle Cloud | Jobright OJP | Tallgrass, Intern-AI and Data Solutions | not Polar execution | not tested | Owner-observed Jobright URL in POLAR.md. Polar packet not run. |
+| Workday | Jobright OJP | Rakuten Rewards, Platform Engineer | proven | not tested | Polar report P-20260904-002. About 4 minutes. submitted=no. Host `rakuten.wd1.myworkdayjobs.com`. Polar clicked Apply, then Workday Autofill with Resume, then the account wall. Simplify Create Account & Autofill not clicked. No ledger start. P1 closed. |
 
 ## Assumed
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Check that polar/ dossier files exist and EVIDENCE claims resolve."""
 
 from __future__ import annotations
 
@@ -49,6 +48,8 @@ BANNED = (
     "universally bypasses",
     "invisible to ats",
     "polar solved",
+    "the spawn is rejected",
+    "spam-flagged",
 )
 
 CLAIM_HEAD = re.compile(r"^### (C\d+)\.\s+(.+)$")

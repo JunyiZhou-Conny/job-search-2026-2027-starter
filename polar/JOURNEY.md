@@ -199,11 +199,12 @@ KEEP list.
 
 Owner-observed the same day, in that file. Polar runs locally, logged
 in. Polar accepted instructions and repository context. Workflow exists
-as a product concept. One real Polar fill was not flagged the way some
-cloud submits were. That fill is unnamed in `POLAR.md`. I treat it as
-the same event as the Quantbot report unless a second job is named.
-The Tallgrass Original Job Post packet in that file was written and
-not run (`docs/state/decisions.tsv`).
+as a product concept. `POLAR.md` also says one Polar fill was not
+flagged like some cloud submits. This dossier does not keep that
+comparison. Quantbot stopped before Submit, so it has no submit-time
+spam result. The unnamed fill and Quantbot count as one event until a
+second job is named. The Tallgrass Original Job Post packet was written
+and not run (`docs/state/decisions.tsv`).
 
 ## 2026-09-04. Quantbot Polar fill, off this branch
 
@@ -232,8 +233,10 @@ Copied onto this branch from `b49d073` on
 `origin/cursor/polar-scale-stage-5afa`.
 
 **Polar report.** Original Job Post reached
-`rakuten.wd1.myworkdayjobs.com`. Posting matched. Workday Create Account
-wall. Fill failed. About 4 minutes. `submitted=no`.
+`rakuten.wd1.myworkdayjobs.com`. Polar clicked Apply once, then Workday
+Autofill with Resume, then hit Create Account / Sign In. No form
+fields were reachable. Simplify Create Account and Autofill was not
+clicked. About 4 minutes. `submitted=no`.
 
 **Change on that branch.** Reach and fill become different cells on an
 ATS matrix. A Live Slot is one markdown packet, not a Polar-owned job

@@ -13,9 +13,10 @@ Every significant claim I am willing to show Polar. Types are closed.
 Do not upgrade a lower type. A Polar engineer should be able to open
 the source and see the same sentence I used.
 
-Polar fill packets from sibling branches are copied onto this branch
-so a reviewer does not need those remotes. Original commits remain
-`ed40f98` and `b49d073`.
+Polar fill packets from sibling branches are copied onto this branch.
+Original commits remain `ed40f98` and `b49d073`. The Rakuten Polar
+report is `generated/polar/results/P-20260904-002.md`. Live Slot
+machinery on the scale-stage branch is still not here.
 
 ## Claim list
 
@@ -162,14 +163,15 @@ so a reviewer does not need those remotes. Original commits remain
 
 ### C014. Polar Rakuten Workday reach
 
-- claim: Polar reported leaving Jobright, landing on rakuten.wd1.myworkdayjobs.com for Platform Engineer in San Mateo, then stopping on Create Account / Sign In after about 4 minutes, submitted=no.
+- claim: Polar reported leaving Jobright, landing on rakuten.wd1.myworkdayjobs.com for Platform Engineer in San Mateo, clicking Apply once, then Workday Autofill with Resume, then hitting Create Account / Sign In. About 4 minutes. submitted=no. No form fields were reachable.
 - evidence_type: owner_observed
 - sources:
   - docs/experiments/2026-09-04_polar_second_pilot.md
+  - generated/polar/results/P-20260904-002.md
   - docs/experiments/polar_ats_matrix.md
 - date: 2026-09-05
 - confidence: medium
-- does_not_prove: A Workday fill. The matrix records reach, not fill. It does not prove Polar can register or should register.
+- does_not_prove: A Workday fill. Polar stopped after Workday's own Autofill control, not at the first Jobright click. It does not prove Polar can register or should register.
 
 ### C015. Polar is a second execution environment, not a second system
 
@@ -182,16 +184,16 @@ so a reviewer does not need those remotes. Original commits remain
 - confidence: high
 - does_not_prove: That Polar the product agrees with this boundary. POLAR.md says the boundary is ours.
 
-### C016. One Polar fill was not flagged like some cloud submits
+### C016. Quantbot has no submit-time spam result
 
-- claim: POLAR.md says I filled a real application with Polar and that test was not flagged the way some cloud-browser submits were. The job is unnamed in that file.
-- evidence_type: owner_observed
+- claim: The named Polar fill (Quantbot) stopped before Submit. A fill that never hits Submit cannot be compared to Charta's submit-time Ashby spam wall.
+- evidence_type: repository_verified
 - sources:
-  - docs/automation/POLAR.md
   - docs/experiments/2026-09-04_polar_first_pilot.md
+  - docs/automation/POLAR.md
 - date: 2026-09-04
-- confidence: low
-- does_not_prove: Two separate Polar fills. I treat this sentence and the Quantbot report as one event until a second company is named. It also does not prove Polar evades ATS spam filters. POLAR.md already forbids that upgrade.
+- confidence: high
+- does_not_prove: That Polar evades or trips ATS spam filters. POLAR.md still contains the older one-test sentence. This dossier does not adopt it.
 
 ### C017. Exact hour I first read Frontier Problems
 
@@ -206,13 +208,12 @@ so a reviewer does not need those remotes. Original commits remain
 ### C019. Compiled Anyscale G1 wall time
 
 - claim: On 2026-09-03 a compiled Computer Use bootstrap execute on Anyscale Ray Data took 3.4 minutes and 23 tool messages. A compiled 4-field correction execute took 5.7 minutes and 74 tool messages. Submit was not clicked.
-- evidence_type: directly_measured
+- evidence_type: owner_observed
 - sources:
   - docs/experiments/2026-09-03_anyscale_g1_unit.md
-  - generated/apply_runs/2026-09-03T15/expected_vs_observed.md
 - date: 2026-09-03
-- confidence: high
-- does_not_prove: That the compiler caused the lower time versus Twitch. The file says the counts are not Twitch-style action taxonomy. Different ATS. No verify pass.
+- confidence: medium
+- does_not_prove: That the compiler caused the lower time versus Twitch. The file says the counts are not Twitch-style action taxonomy. Different ATS. No verify pass. Worker createdAt and tool-message logs are not in git. `expected_vs_observed.md` is a field audit and has no timings.
 
 ### C018. Fair Computer Use versus Polar comparison
 
