@@ -71,8 +71,8 @@ execution plane. See [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## The two or three strongest things
 
-These survived an evidence review. They are not the most flattering
-sentences. They are the ones I can defend.
+These are the stories I can defend after checking the original files.
+They are not the most flattering sentences.
 
 1. **I measured an observation-loop tax, then encoded it.** On 3 September
    2026 three Computer Use passes on one Twitch Greenhouse form took about

@@ -27,7 +27,7 @@ so a reviewer does not need those remotes. Original commits remain
   - docs/experiments/2026-09-03_twitch_cu_cost.md
 - date: 2026-09-03
 - confidence: high
-- does_not_prove: That every Computer Use form costs this much. That the unpublished computer-use system prompt is the sole cause. That Polar is faster on the same form.
+- does_not_prove: That every Computer Use form costs this much. That the unpublished computer-use system prompt is the sole cause. That Polar is faster on the same form. The counter script was `/tmp/analyze_cu_transcripts.py` and is not in git. Re-count needs the original transcripts.
 
 ### C002. Twitch parent prompts invited the loops
 
@@ -62,7 +62,7 @@ so a reviewer does not need those remotes. Original commits remain
   - knowledge/form_strategy.yaml
 - date: 2026-08-24
 - confidence: high
-- does_not_prove: The contents of Cursor's unpublished computerUse system prompt. The file says not to ask a child to dump it. It also does not prove a later parent will copy standing rules without being told.
+- does_not_prove: The contents of Cursor's unpublished computerUse system prompt. The file says not to ask a child to dump it. It also does not prove a later parent will copy standing rules without being told. The four child transcripts are not stored in git. The table is the surviving measurement.
 
 ### C005. Nested cloud Task can lack computerUse
 
