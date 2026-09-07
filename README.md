@@ -1,5 +1,7 @@
 # Job Search 2026–2027 Operating System
 
+**Polar Browser application dossier (this branch):** start at [`polar/README.md`](polar/README.md).
+
 Strategy and memory layer on top of Simplify and discovery tools. Simplify is the
 application ledger of record; this repo holds *why* — resume version, pursuit lane,
 sponsorship signal, work-authorization answers, networking, and next actions.
