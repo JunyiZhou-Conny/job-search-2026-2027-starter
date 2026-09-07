@@ -6,10 +6,11 @@ send it myself if I send it at all.
 To: hiring@polarbrowser.com
 Subject: I measured Computer Use observation loops on real ATS forms
 
-I spent the last two months trying to automate my own 2026–2027 job
+Since late July I have been trying to automate my own 2026–2027 job
 search. Discovery, triage, standing answers, ATS URL resolution,
 browser fill, review, submit policy, ledger. I ran that loop on real
-Ashby, Greenhouse, Workday, and Jobright pages.
+Ashby, Greenhouse, and Jobright pages, and I reached Workday account
+walls without filling them.
 
 Three things from that work.
 
@@ -30,8 +31,9 @@ Three things from that work.
    in about 6 minutes. That is Polar's report, not a claim that Polar
    beats ATS bot detection.
 
-I read Frontier Problems after those Computer Use measurements were
-already in git. The cloud-agents paragraph, the self-improving
+Polar is first named in this repo on 4 September, after those
+Computer Use measurements. I cannot prove the hour I first opened
+Frontier Problems. The cloud-agents paragraph, the self-improving
 harness, and agent-to-agent communication are the same seams.
 
 Dossier, with sources and "does not prove" lines:

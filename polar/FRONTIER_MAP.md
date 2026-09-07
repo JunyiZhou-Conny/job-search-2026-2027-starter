@@ -156,8 +156,9 @@ Polar talks about days-to-months runs and organizations of agents.
 
 My longest measured Computer Use cluster is about 74 minutes across
 three passes on one form. Polar's Quantbot report is about 6 minutes.
-I have not run a 10-hour apply agent. I have run a 39-day discovery
-automation that writes artifacts and never submits.
+I have not run a 10-hour apply agent. REALITY_MAP records a 39-day
+discovery stretch on an older main that wrote artifacts and never
+submitted. That count is a 2026-09-03 snapshot.
 
 The correspondence is orchestration and stop rules, not duration.
 

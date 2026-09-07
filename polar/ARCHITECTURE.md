@@ -59,8 +59,9 @@ flowchart TD
   import --> gitState
 ```
 
-Discovery never writes the ledger. That boundary held for the 39-day
-window recorded in [`docs/state/REALITY_MAP.md`](../docs/state/REALITY_MAP.md).
+Discovery never writes the ledger. [`docs/state/REALITY_MAP.md`](../docs/state/REALITY_MAP.md)
+recorded that boundary as holding for a 39-day window ending 2026-09-03
+on an older `main`. Treat the count as that snapshot, not a live metric.
 
 Apply URL resolution is a complement, not a replacement, for Original
 Job Post. Public board APIs help cloud runs that have no Jobright

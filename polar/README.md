@@ -14,13 +14,15 @@ Chan, previously Applied Mathematics and Statistics at Emory. I am in Boston
 on F-1 status and I am looking at Summer 2027 internships and 2027 new-grad
 roles.
 
-The relevant fact for Polar is not the degree line. For several months I have
+The relevant fact for Polar is not the degree line. Since late July I have
 been building an end-to-end apply system in public git, then instrumenting
 why the browser half kept failing or getting expensive.
 
-## Why Polar landed immediately
+## Why Polar maps onto this repo
 
-I did not start from Polar's blog and then hunt for a matching story.
+Git does not show Polar in the apply or Computer Use writeups before
+4 September 2026. That is the chronology I can defend. I am not
+claiming a private reading history.
 
 From late July through 3 September 2026 this repo records a sequence of
 browser-agent failures. Jobright pages that cannot be applied on. Cloud
