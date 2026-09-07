@@ -1,0 +1,8 @@
+ts	phase	decision	why	evidence	result
+2026-09-07T00:05:57Z	frame	framed dossier as evidence-auditable polar/ markdown set plus check script	done predicate is files exist, claims classified, cited paths resolve, no Polar contact, 2-3 stories ranked from repo evidence	figure-it-out Phase A	open
+2026-09-07T00:05:57Z	frame	chose figure-it-out over investigation-only or feature	task starts as archaeology then writes artifacts and a PR, so read-only investigation playbook cannot finish it	poteto-mode/playbooks/investigation.md vs figure-it-out	chose figure-it-out
+2026-09-07T00:05:57Z	frame	rigor high on claims and chronology, low on new software	Polar will read this; overclaiming is the one-way door. Extra code is not.	user mission Phase 3	open
+2026-09-07T00:05:57Z	workflow	skip architect and arena for dossier structure	user already specified polar/ files; competing structures would add delay without changing the evidence	laziness protocol	skipped
+2026-09-07T00:05:57Z	workflow	why investigators limited to git plus repo docs plus GitHub issues	no Slack, Sentry, Datadog, or warehouse MCP; null results from those would be environment gaps not Polar evidence	why skill skip-with-justification	scoped
+2026-09-07T00:10:54Z	write	wrote polar/ dossier from primary experiment files	investigation first, then smallest markdown set the user named	polar/check_dossier.py PASS	VERIFIED
+2026-09-07T00:10:54Z	write	copied Quantbot and Rakuten experiment files onto this branch	PR reviewers cannot see sibling-branch git objects	docs/experiments/2026-09-04_polar_*.md	copied
