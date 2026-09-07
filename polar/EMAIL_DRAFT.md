@@ -35,11 +35,14 @@ Three things from that work.
    different instrument from the Twitch count. It is not a bakeoff.
 
 Polar is first named in this repo on 4 September, after those
-Computer Use measurements. I cannot prove the hour I first opened
-Frontier Problems. The cloud-agents paragraph, the self-improving
-harness, and agent-to-agent communication are the same seams.
+Computer Use measurements. Frontier Problems was published on
+18 August. I cannot prove the hour I first opened that post. The
+Future products Cloud agents paragraph, the self-improving harness,
+and agent-to-agent communication are the same seams.
 
-Dossier, with sources and "does not prove" lines:
+This GitHub repo is public and personal. Start at polar/. That
+folder is the dossier. Do not treat experiment packets outside it
+as the application.
 
 https://github.com/JunyiZhou-Conny/job-search-2026-2027-starter/tree/cursor/polar-browser-application-cad3/polar
 

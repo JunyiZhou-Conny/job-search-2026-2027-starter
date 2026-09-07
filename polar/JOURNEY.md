@@ -231,7 +231,7 @@ family.
 
 Source. [`docs/experiments/2026-09-04_polar_first_pilot.md`](../docs/experiments/2026-09-04_polar_first_pilot.md)
 
-## 2026-09-04 to 2026-09-05. Rakuten reach, off this branch
+## 2026-09-04. Rakuten reach, off this branch
 
 Copied onto this branch from `b49d073` on
 `origin/cursor/polar-scale-stage-5afa`.

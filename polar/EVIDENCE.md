@@ -142,17 +142,17 @@ machinery on the scale-stage branch is still not here.
   - https://polarbrowser.com/blog
 - date: 2026-08-18
 - confidence: high
-- does_not_prove: Polar's internal roadmap priority. Blog order is not a hiring rubric.
+- does_not_prove: Polar's internal roadmap priority. Blog order is not a hiring rubric. The checker does not fetch this URL.
 
 ### C012. Polar names device-bound auth and datacenter IPs
 
-- claim: Polar's Frontier Problems cloud-agents section says 2FA/SSO/passkeys are increasingly device-bound, many sites ban datacenter IPs, and for now agents must run on user devices to do long-running tasks.
+- claim: Polar's Frontier Problems Future products Cloud agents bullet says 2FA/SSO/passkeys are increasingly device-bound, many sites ban datacenter IPs, and for now agents must run on user devices to do long-running tasks.
 - evidence_type: public_polar
 - sources:
   - https://polarbrowser.com/blog/frontier-problems
 - date: 2026-08-18
 - confidence: high
-- does_not_prove: That Polar has solved those constraints. Polar presents them as open problems.
+- does_not_prove: That Polar has abandoned cloud agents. The same paragraph says there are workarounds, and that Polar wants to run in a cloud computer after nailing the AI browser. Cloud agents is not one of the eight named Frontier Problems. The checker does not fetch this URL.
 
 ### C013. Polar Quantbot fill report
 
@@ -172,7 +172,7 @@ machinery on the scale-stage branch is still not here.
   - docs/experiments/2026-09-04_polar_second_pilot.md
   - generated/polar/results/P-20260904-002.md
   - docs/experiments/polar_ats_matrix.md
-- date: 2026-09-05
+- date: 2026-09-04
 - confidence: medium
 - does_not_prove: A Workday fill. Independent observation. Cursor did not watch the browser. The Rakuten result file is a normalized pasted report. Polar stopped after Workday's own Autofill control, not at the first Jobright click. It does not prove Polar can register or should register.
 
@@ -262,6 +262,16 @@ machinery on the scale-stage branch is still not here.
 - date: 2026-08-24
 - confidence: high
 - does_not_prove: That cloud can never do logged-in apply. That Original Job Post exists only on a laptop. That Polar is required for any authenticated session.
+
+### C023. Discovery stretch on the 2026-09-03 reality map
+
+- claim: REALITY_MAP dated 2026-09-03 records 68 discovery-triage runs over 39 days on an older main, with nothing merged since 2026-08-23.
+- evidence_type: repository_verified
+- sources:
+  - docs/state/REALITY_MAP.md
+- date: 2026-09-03
+- confidence: high
+- does_not_prove: A 39-day continuous browser agent. Those were short scheduled discovery runs that wrote artifacts and did not submit. The count is that snapshot, not a live metric.
 
 ## Ranking notes for the 2-3 stories
 

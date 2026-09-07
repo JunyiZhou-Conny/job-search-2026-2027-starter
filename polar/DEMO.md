@@ -59,6 +59,9 @@ result, which is interesting, but it is not an executor bakeoff.
 - Do not open a sibling requisition if the posting is closed.
 - Do not paste passwords, cookies, or 2FA codes into git or the video
   description.
+- `polar/check_dossier.py` only scans `polar/` for phone strings. The
+  public repo already has personal apply facts in experiment files
+  outside that folder. The email draft should point at `polar/` only.
 - Prefer a posting I already have a session for, or a form that does
   not require a new account.
 - If the only remaining KEEP is a Workday wall, stop at reach. That

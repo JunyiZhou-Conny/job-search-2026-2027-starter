@@ -64,11 +64,11 @@ HTTP_SOURCE = re.compile(r"^https?://")
 PHONE = re.compile(r"\+1\s*\d{3}[-.\s]?\d{3}[-.\s]?\d{4}")
 
 
-def _git_ok(sha: str, path: str) -> bool:
+def _git_ok(sha: str, path: str, git_root: Path = ROOT) -> bool:
     spec = f"{sha}:{path}"
     result = subprocess.run(
         ["git", "cat-file", "-e", spec],
-        cwd=ROOT,
+        cwd=git_root,
         capture_output=True,
         check=False,
     )
@@ -120,14 +120,15 @@ def parse_claims(text: str) -> list[dict]:
     return claims
 
 
-def check() -> list[str]:
+def check_paths(root: Path) -> list[str]:
+    polar = root / "polar"
     errors: list[str] = []
     for name in REQUIRED_FILES:
-        path = POLAR / name
+        path = polar / name
         if not path.is_file():
-            errors.append(f"missing {path.relative_to(ROOT)}")
+            errors.append(f"missing polar/{name}")
 
-    readme = ROOT / "README.md"
+    readme = root / "README.md"
     if readme.is_file():
         head = "".join(readme.read_text(encoding="utf-8").splitlines(True)[:20])
         if "polar/README.md" not in head:
@@ -135,7 +136,7 @@ def check() -> list[str]:
     else:
         errors.append("missing README.md")
 
-    evidence_path = POLAR / "EVIDENCE.md"
+    evidence_path = polar / "EVIDENCE.md"
     if not evidence_path.is_file():
         return errors
 
@@ -164,16 +165,16 @@ def check() -> list[str]:
             git_match = GIT_SOURCE.match(source)
             if git_match:
                 sha, path = git_match.group(1), git_match.group(2)
-                if not _git_ok(sha, path):
+                if not _git_ok(sha, path, git_root=ROOT):
                     errors.append(f"{cid} missing git object {source}")
                 continue
             if HTTP_SOURCE.match(source):
                 continue
-            repo_path = ROOT / source
+            repo_path = root / source
             if not repo_path.exists():
                 errors.append(f"{cid} missing source {source}")
 
-    email = POLAR / "EMAIL_DRAFT.md"
+    email = polar / "EMAIL_DRAFT.md"
     if email.is_file():
         email_text = email.read_text(encoding="utf-8")
         if "do not send" not in email_text.lower():
@@ -182,18 +183,22 @@ def check() -> list[str]:
             errors.append("EMAIL_DRAFT.md must name hiring@polarbrowser.com")
 
     for name in REQUIRED_FILES:
-        path = POLAR / name
+        path = polar / name
         if not path.is_file():
             continue
         text = path.read_text(encoding="utf-8")
         lowered = text.lower()
         for phrase in BANNED:
             if phrase in lowered:
-                errors.append(f"{path.relative_to(ROOT)} contains banned phrase: {phrase}")
+                errors.append(f"polar/{name} contains banned phrase: {phrase}")
         if PHONE.search(text):
-            errors.append(f"{path.relative_to(ROOT)} looks like it contains a phone number")
+            errors.append(f"polar/{name} looks like it contains a phone number")
 
     return errors
+
+
+def check() -> list[str]:
+    return check_paths(ROOT)
 
 
 def main() -> int:

@@ -23,28 +23,29 @@ why the browser half kept failing or getting expensive.
 ## Why Polar maps onto this repo
 
 Git does not show Polar in the apply or Computer Use writeups before
-4 September 2026. That is the chronology I can defend. I am not
-claiming a private reading history.
+4 September 2026. Frontier Problems was published on 18 August 2026.
+Those are different dates. I am not claiming a private reading history.
 
 From late July through 3 September 2026 this repo records a sequence of
-browser-agent failures. Jobright pages that cannot be applied on. Cloud
-sessions that lose Simplify Copilot. A Computer Use child that does not
-inherit the parent rulebook. Parent prompts that spend most of their budget
-scrolling and verifying. One Ashby spam wall on a crowded cloud Chrome
-session. Nested `Task environment=cloud` children that have no `computerUse`
-tool at all.
+browser-agent failures. All 55 keeps on 31 July pointed at Jobright
+URLs. The signup wall was reproduced on the first two keeps tried.
+Cloud sessions lose Simplify Copilot unless someone snapshotted a
+login. Stored computerUse transcripts omit the parent rulebook.
+Parent prompts spend most of their budget scrolling and verifying.
+One Ashby spam wall on a crowded cloud Chrome session. Nested
+`Task environment=cloud` children that have no `computerUse` tool.
 
 Polar first appears in this repository on 4 September 2026, in
-[`docs/automation/POLAR.md`](../docs/automation/POLAR.md). Polar's
-[Frontier Problems](https://polarbrowser.com/blog/frontier-problems) post is
-dated 18 August 2026. I cannot prove the exact hour I first read that post.
-I can prove that the Computer Use cost, isolation, and compiler work is
-dated before Polar is mentioned in git.
+[`docs/automation/POLAR.md`](../docs/automation/POLAR.md). The July
+apply trial predates the post. Isolation, Twitch, and the compiler are
+after the post and before Polar is named in git. I cannot prove I
+measured those without having read the post.
 
-The overlap is specific. Polar writes that cloud browser agents look
-attractive until 2FA and datacenter IPs get in the way, and that agents
-need to run on the user's device for long logged-in work. That is the
-split this repo already had to make.
+The overlap is still specific. Polar's Future products Cloud agents
+bullet says 2FA and datacenter IPs get in the way, so for now agents
+must run on the user's device. Polar then says they want to extend
+Polar to a cloud computer after nailing the AI browser. This repo had
+to split control plane from a logged-in browser either way.
 
 ## What I have been building
 
@@ -107,15 +108,17 @@ Use pass are a controlled comparison. Different forms, different days,
 different measurement methods. [`DEMO.md`](DEMO.md) says what a fair test
 would require.
 
-## Frontier Problems I hit before Polar is in this repo
+## Where this repo sits on Polar's map
 
-A few correspondences are unusually tight. I did not force the rest.
+A few correspondences are tight. I did not force the rest. Cloud
+agents is a Future products bullet, not one of the eight named
+Frontier Problems.
 
-| Polar problem | What I hit | Evidence |
-|---|---|---|
-| Cloud agents, device-bound auth, datacenter IPs | Daily cloud discovery lacked Jobright cookies. Original Job Post appeared in the tested logged-in local session. Cloud Copilot vanishes without a snapshot. One crowded cloud Ashby session was flagged as possible spam. A later snapshotted cloud session did four short Ashby Submits. | [`FRONTIER_MAP.md`](FRONTIER_MAP.md) |
-| Self-improving agent harness | Failures became YAML, then a compiler and tests, instead of another long prompt. | `scripts/compile_cu_task.py`, `knowledge/form_strategy.yaml` |
-| Agent-human interface, agent-to-agent communication | Parent understands the form. Child sees pixels and one Task string. | isolation experiment, 2026-08-24 |
+| Polar item | Kind | What I hit | Evidence |
+|---|---|---|---|
+| Cloud agents, device-bound auth, datacenter IPs | Future products | Daily cloud discovery lacked Jobright cookies. Original Job Post appeared in the tested logged-in local session. Cloud Copilot vanishes without a snapshot. One crowded cloud Ashby session was flagged as possible spam. A later snapshotted cloud session did four short Ashby Submits. | [`FRONTIER_MAP.md`](FRONTIER_MAP.md) |
+| Self-improving agent harness | Named Frontier Problem | Failures became YAML, then a compiler and tests, instead of another long prompt. | `scripts/compile_cu_task.py`, `knowledge/form_strategy.yaml` |
+| Agent-human interface, agent-to-agent communication | Named Frontier Problem | Parent understands the form. Stored child transcripts omit the rule files. | isolation experiment, 2026-08-24 |
 
 I do not have a match for owning the model layer, next-browser-action
 prediction, or Polar's blank-slate consumer problem.
@@ -127,8 +130,8 @@ the operating system.
 
 - [`JOURNEY.md`](JOURNEY.md) is the chronology.
 - [`FRONTIER_MAP.md`](FRONTIER_MAP.md) is Polar problem to repo evidence.
-- [`EVIDENCE.md`](EVIDENCE.md) is the claim index. Every important number
-  lives there with a type and a "does not prove" line.
+- [`EVIDENCE.md`](EVIDENCE.md) types the headline claims. Supporting
+  counts that are not in that index are not independently classified.
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) is the split that actually emerged.
 - [`DEMO.md`](DEMO.md) is a small demo I could record later.
 - [`NEXT_EXPERIMENTS.md`](NEXT_EXPERIMENTS.md) is the eval I would run next.
