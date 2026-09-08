@@ -1,5 +1,9 @@
 # About the Polar Live Slot
 
+Owner decision 2026-09-08. Production is no longer one Live Slot.
+`docs/automation/POLAR.md` is the current architecture. This file keeps
+the Quantbot-to-P1 experiment ladder so that lineage is not deleted.
+
 `docs/automation/POLAR.md` stays the only full Polar essay. This file
 is the scale stage after the Quantbot Greenhouse fill.
 

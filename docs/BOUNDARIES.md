@@ -28,8 +28,11 @@ The model does not remember your skills across chats unless these files are pres
 
 ## 3. Daily discovery runs as a Cursor Automation, from a committed file
 
+Polar Local now also discovers on an hourly Workflow. This Cloud
+Automation stays as shadow and fallback during migration.
+
 `.cursor/rules` and `.cursor/commands` do **not** fire on a timer. The scheduled
-run is a **Cursor Automation** ("Daily Job Discovery") on a weekday cron.
+Cloud run is a **Cursor Automation** ("Daily Job Discovery") on a weekday cron.
 
 - The Automations UI holds only the short pointer in `docs/automation/UI_POINTER.md`.
 - The real instructions live in `docs/automation/DAILY_JOB_DISCOVERY.md`; rule changes
@@ -58,12 +61,14 @@ against **their** fork. Two Pro accounts do not share automations. See
 - Polar keeps its sessions on Junyi's computer. Do not export Polar cookies
   into this repo.
 
-## 5. Polar executes. It does not discover.
+## 5. Polar is the local production operator
 
-Polar is a local browser execution environment (`docs/automation/POLAR.md`).
-It consumes one GitHub packet (`generated/polar/LIVE.md`) and returns an
-execution result. It must not iterate a job list.
+Polar runs hourly discovery and application execution on Junyi's Mac
+(`docs/automation/POLAR.md`). It reads one compiled file,
+`generated/polar/runtime/POLAR_RUNTIME.md`, and checkpoints the Google
+Sheet. The Live Slot mailbox `generated/polar/LIVE.md` is pilot history.
 
-It must **not** run a second discovery, rank, dedupe, or priority loop.
-It must **not** own `data/applications.csv`. Cursor reconciles results
-into the ledger when we add that write path.
+It must **not** own `data/applications.csv` or mint ledger ids.
+Cursor reconciles verified Sheet results into the ledger.
+Cloud discovery stays as shadow and fallback until the 48-hour
+comparison says otherwise.

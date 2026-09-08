@@ -2,6 +2,11 @@
 
 **Single source of truth** for the Cursor Automation “Daily Job Discovery”.
 
+During Polar Local migration this Automation is shadow and fallback.
+Do not turn it off on day one. Polar hourly discovery is the production
+candidate. Compare the two after about 48 hours of Polar runs. See
+`docs/automation/POLAR.md`.
+
 - Edit **this file** in git when rules change, then `git push`.
 - The Automations UI should only contain a short pointer (see
   `docs/automation/UI_POINTER.md`), not a full copy of these rules.

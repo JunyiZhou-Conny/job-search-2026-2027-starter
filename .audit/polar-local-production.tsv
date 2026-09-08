@@ -1,0 +1,6 @@
+ts	phase	decision	why	evidence	result
+2026-09-08T02:23:06Z	frame	Polar Local is the production operator. Cloud discovery stays shadow.	Owner decision 2026-09-08 replaced the Live Slot pilot. Arena skipped because the shape was already concrete.	docs/automation/POLAR.md	framed
+2026-09-08T02:23:06Z	lineage	Branch from PR 109 HEAD. Do not merge 107 or 108 separately.	109 already reconciled Quantbot Rakuten Solidigm Citadel P1. Duplicate Quantbot ids are the failure.	origin/cursor/polar-ats-sweep-5afa b13a139	verified merge-tree clean, 16 ahead of main
+2026-09-08T02:23:06Z	harness	Compiler writes one POLAR_RUNTIME. Tests refuse secrets and identity drift.	Polar must not reread ten YAML files. The lever is the compiler.	scripts/build_polar_runtime.py tests/test_polar_runtime.py	10 runtime tests plus 34 Polar lineage tests green
+2026-09-08T02:23:06Z	design	Sheet is runtime. GitHub is memory. ATS family is metadata only.	Owner forbade a database and a second ledger. Recovery must survive a locked Mac.	docs/automation/POLAR_QUEUE.md knowledge/polar_operator.yaml	schema written
+2026-09-08T02:23:06Z	policy	Split cursor_cloud ATS gates from polar_local capability gates.	Cloud evidence stays. Polar Submit is not ATS-centric.	docs/policy/SUBMIT_ROLLOUT.md config/submit_gates.yaml	caps 3 per run and 10 per local day
