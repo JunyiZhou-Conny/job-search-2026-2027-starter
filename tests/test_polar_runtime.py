@@ -25,6 +25,10 @@ REQUIRED_HEADINGS = [
     "## I. Prohibited fabrication",
     "## J. Runtime status semantics",
     "## K. Historical duplicate guard",
+    "## L. Schema-safe Sheet writes",
+    "## M. Browser lease",
+    "## N. Run and incident telemetry",
+    "## O. Employer requisition identity",
 ]
 
 STATUSES = [
@@ -50,15 +54,9 @@ def compile_text() -> str:
 
 
 def workflow_prompt(name: str) -> str:
-    text = (ROOT / "docs" / "automation" / "POLAR_WORKFLOWS.md").read_text(
+    return (ROOT / "generated" / "polar" / "workflows" / f"{name}.md").read_text(
         encoding="utf-8"
     )
-    marker = f"## {name}"
-    start = text.index(marker)
-    rest = text[start:]
-    fence = rest.index("```text")
-    body = rest[fence + len("```text") :]
-    return body[: body.index("```")]
 
 
 class TestPolarRuntime(unittest.TestCase):
@@ -100,7 +98,9 @@ class TestPolarRuntime(unittest.TestCase):
 
     def test_phone_and_email_are_not_copied(self):
         text = compile_text()
-        self.assertIn("Phone and email live in the local Polar profile", text)
+        self.assertIn("Phone numbers live in the local Polar profile", text)
+        self.assertIn("dedicated local APPLICATION mailbox", text)
+        self.assertIn("street_address_source: local Polar or private profile", text)
         self.assertNotRegex(text, r"\b\d{3}[-.\s]\d{3}[-.\s]\d{4}\b")
         self.assertNotRegex(text, r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
 
@@ -110,7 +110,8 @@ class TestPolarRuntime(unittest.TestCase):
             self.assertIn(status, text, status)
         self.assertIn("Regular jobs per apply-ready-jobs run: 3", text)
         self.assertIn("Regular submissions per local calendar day (America/New_York): 10", text)
-        self.assertIn("Prioritized auto-submit: False", text)
+        self.assertIn("Prioritized auto-submit: True", text)
+        self.assertIn("Reserved READY_PRIORITY slots per run: 1", text)
         self.assertIn("writing_observation_mode: True", text)
         self.assertIn("SUBMISSION_UNKNOWN first", text)
 
@@ -148,6 +149,16 @@ class TestPolarRuntime(unittest.TestCase):
             encoding="utf-8"
         ).strip()
         self.assertEqual(heartbeat.split(","), operator["heartbeat_columns"])
+        for name, key in (
+            ("run_log_schema.csv", "run_log_columns"),
+            ("incident_log_schema.csv", "incident_log_columns"),
+            ("control_schema.csv", "control_columns"),
+            ("learning_reports_schema.csv", "learning_reports_columns"),
+        ):
+            header = (ROOT / "generated" / "polar" / name).read_text(encoding="utf-8").strip()
+            self.assertEqual(header.split(","), operator[key], name)
+        self.assertIn("apply_url_confidence", operator["queue_columns"])
+        self.assertEqual(operator["queue_columns"].index("apply_url_confidence"), 8)
 
     def test_workflow_prompts_are_paste_ready(self):
         text = (ROOT / "docs" / "automation" / "POLAR_WORKFLOWS.md").read_text(
@@ -157,13 +168,15 @@ class TestPolarRuntime(unittest.TestCase):
             "discover-jobs-hourly",
             "apply-ready-jobs",
             "daily-job-summary",
+            "production-learning-daily",
             "polar-scheduler-heartbeat",
         ):
             self.assertIn(name, text)
-        self.assertIn("Never click Jobright APPLY WITH AUTOFILL", text)
-        self.assertIn("Never blindly resubmit", text)
-        self.assertIn("REVIEW_READY", text)
-        self.assertIn("example.com", text)
+            self.assertIn(
+                f"generated/polar/workflows/{name}.md",
+                text,
+            )
+        self.assertIn("thin bootstrap", text)
 
     def test_apply_ledger_still_loads_gates(self):
         import yaml

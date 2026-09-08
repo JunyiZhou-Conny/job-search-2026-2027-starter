@@ -1,0 +1,1 @@
+run_id,workflow,workflow_version,started_at,ended_at,duration_minutes,result,lock_result,jobs_seen,jobs_attempted,submitted_regular,submitted_priority,blocked,skipped,submission_unknown,simplify_attempted,simplify_fallback_count,notes

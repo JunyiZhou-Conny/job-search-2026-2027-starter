@@ -1,0 +1,1 @@
+incident_id,run_id,job_key,company,stage,category,time_lost_category,severity,summary,evidence,minutes_lost,resolved_in_run,repeat_key,durable_candidate,recorded_at
