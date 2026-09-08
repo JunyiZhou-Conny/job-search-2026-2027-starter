@@ -8,3 +8,4 @@ ts	phase	decision	why	evidence	result
 2026-09-08T23:57:00Z	policy	Polar Local prioritized rows may Submit. Cursor Cloud stays review-first.	Owner asked for post-submit oversight, not a second Submit plane on Cloud.	docs/policy/SUBMIT_ROLLOUT.md knowledge/polar_operator.yaml	prioritized_auto_submit true
 2026-09-08T23:58:00Z	policy	Reserve one READY_PRIORITY slot per apply-ready-jobs run.	Regular backlog was starving priority. Caps stay 3 per run and 10 regular per day.	scripts/polar_policy.py select_apply_batch	tests green
 2026-09-08T23:59:00Z	verify	Polar suites plus full unittest discover are green.	Need a real artifact check, not a self-report.	python3 -m unittest discover -s tests	205 OK
+2026-09-08T23:56:00Z	review	Lease TTL now comes only from polar_operator.yaml. Deleted the unused reason and the Python duplicate.	Comment Sicko caught two sources of 180.	knowledge/polar_operator.yaml scripts/polar_policy.py	48 Polar tests OK

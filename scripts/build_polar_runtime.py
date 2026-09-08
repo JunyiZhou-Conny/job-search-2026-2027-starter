@@ -716,7 +716,7 @@ def compile_sections() -> Dict[str, str]:
         [
             f"Lock tab: {lease.get('tab') or 'control'}.",
             f"Lock key: {lease.get('key') or 'polar_browser'}.",
-            f"TTL minutes: {lease.get('ttl_minutes') or 180}.",
+            f"TTL minutes: {lease['ttl_minutes']}.",
             "discover-jobs-hourly and apply-ready-jobs must acquire this lock before driving Jobright or employer pages.",
             "If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.",
             "Refresh the lock when a long run has under 60 minutes remaining.",

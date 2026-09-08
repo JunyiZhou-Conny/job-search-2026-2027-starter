@@ -17,10 +17,6 @@ lease:
   key: polar_browser
   ttl_minutes: 180
   refresh_if_remaining_below_minutes: 60
-  reason: >
-    Owner-reported apply runs reached about 35, 45, 65, 75, and 105
-    minutes. A 180 minute lease covers one long apply plus a crashed-run
-    buffer so the next hourly Workflow does not fight the same browser.
 
 simplify:
   role: optional_accelerator

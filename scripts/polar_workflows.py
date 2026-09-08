@@ -13,7 +13,6 @@ from polar_policy import (
     INCIDENT_LOG_COLUMNS,
     LEARNING_REPORTS_COLUMNS,
     LEASE_KEY,
-    LEASE_TTL_MINUTES,
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     RUN_LOG_COLUMNS,
@@ -104,13 +103,16 @@ def _secrets_ban() -> str:
     )
 
 
-def _lease_block(name: str) -> str:
+def _lease_block(name: str, operator: Dict[str, Any]) -> str:
+    lease = operator.get("lease") or {}
+    ttl = int(lease["ttl_minutes"])
+    refresh = int(lease["refresh_if_remaining_below_minutes"])
     if not needs_browser_lock(name):
         return _lines(
             [
                 "## Browser lease",
                 "",
-                f"needs_browser_lock: false",
+                "needs_browser_lock: false",
                 f"This workflow does not take the {LEASE_KEY} lock.",
                 "If apply-ready-jobs or discover-jobs-hourly holds the lock, continue anyway.",
                 "",
@@ -120,15 +122,15 @@ def _lease_block(name: str) -> str:
         [
             "## Browser lease",
             "",
-            f"needs_browser_lock: true",
+            "needs_browser_lock: true",
             f"lock_key: {LEASE_KEY}",
-            f"ttl_minutes: {LEASE_TTL_MINUTES}",
+            f"ttl_minutes: {ttl}",
             "tab: control",
             "",
             "At start, read the control row whose key is polar_browser.",
             "If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.",
-            "If the lock is free or expired, acquire it with this run_id, this workflow, acquired_at now, and expires_at now plus 180 minutes.",
-            "If this long run is still active and remaining time is under 60 minutes, refresh expires_at to now plus 180 minutes.",
+            f"If the lock is free or expired, acquire it with this run_id, this workflow, acquired_at now, and expires_at now plus {ttl} minutes.",
+            f"If this long run is still active and remaining time is under {refresh} minutes, refresh expires_at to now plus {ttl} minutes.",
             "Release the lock on normal completion by clearing owner_run_id.",
             "A crashed run must not lock the browser forever. Treat an expired expires_at as free.",
             "",
@@ -225,7 +227,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
         [
             _open_files(),
             _secrets_ban(),
-            _lease_block("discover-jobs-hourly"),
+            _lease_block("discover-jobs-hourly", operator),
             _sheet_write_contract(),
             _telemetry_block(),
             "## Work order",
@@ -270,7 +272,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
         [
             _open_files(),
             _secrets_ban(),
-            _lease_block("apply-ready-jobs"),
+            _lease_block("apply-ready-jobs", operator),
             _sheet_write_contract(),
             _telemetry_block(),
             _identity_block(),
@@ -362,7 +364,7 @@ def render_summary(operator: Dict[str, Any]) -> str:
         [
             _open_files(),
             _secrets_ban(),
-            _lease_block("daily-job-summary"),
+            _lease_block("daily-job-summary", operator),
             _sheet_write_contract(),
             _telemetry_block(include_incidents=False),
             "## Work order",
@@ -406,7 +408,7 @@ def render_learning(operator: Dict[str, Any]) -> str:
         [
             _open_files(),
             _secrets_ban(),
-            _lease_block("production-learning-daily"),
+            _lease_block("production-learning-daily", operator),
             _sheet_write_contract(),
             _telemetry_block(),
             "## Work order",
@@ -475,7 +477,7 @@ def render_github_canary(operator: Dict[str, Any]) -> str:
         [
             _open_files(),
             _secrets_ban(),
-            _lease_block("polar-github-write-canary"),
+            _lease_block("polar-github-write-canary", operator),
             "## Work order",
             "",
             "status: manual_canary",

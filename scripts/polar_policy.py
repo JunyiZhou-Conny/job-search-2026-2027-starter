@@ -15,8 +15,6 @@ from js_lib import canonical_url, normalize_text
 ROOT = Path(__file__).resolve().parents[1]
 
 LEASE_KEY = "polar_browser"
-LEASE_TTL_MINUTES = 180
-LEASE_REFRESH_IF_REMAINING_BELOW_MINUTES = 60
 
 GITHUB_RAW_BASE = (
     "https://raw.githubusercontent.com/JunyiZhou-Conny/"
@@ -240,6 +238,24 @@ def load_operator(root: Optional[Path] = None) -> Dict[str, Any]:
     return data
 
 
+def lease_ttl_minutes(root: Optional[Path] = None) -> int:
+    raw = (load_operator(root).get("lease") or {}).get("ttl_minutes")
+    if raw is None:
+        raise ValueError("lease.ttl_minutes is missing from polar_operator.yaml")
+    return int(raw)
+
+
+def lease_refresh_minutes(root: Optional[Path] = None) -> int:
+    raw = (load_operator(root).get("lease") or {}).get(
+        "refresh_if_remaining_below_minutes"
+    )
+    if raw is None:
+        raise ValueError(
+            "lease.refresh_if_remaining_below_minutes is missing from polar_operator.yaml"
+        )
+    return int(raw)
+
+
 def load_documents(root: Optional[Path] = None) -> List[Dict[str, Any]]:
     base = Path(root) if root else ROOT
     data = load_yaml(base / "knowledge" / "polar_documents.yaml")
@@ -308,9 +324,16 @@ def decide_lease(
     run_id: str,
     workflow: str,
     needs_lock: bool,
-    ttl_minutes: int = LEASE_TTL_MINUTES,
+    ttl_minutes: Optional[int] = None,
+    refresh_below_minutes: Optional[int] = None,
     key: str = LEASE_KEY,
 ) -> LeaseDecision:
+    ttl = lease_ttl_minutes() if ttl_minutes is None else ttl_minutes
+    refresh_after = (
+        lease_refresh_minutes()
+        if refresh_below_minutes is None
+        else refresh_below_minutes
+    )
     if not needs_lock:
         return LeaseDecision(
             action="skip",
@@ -324,7 +347,7 @@ def decide_lease(
     owner = str(row.get("owner_run_id") or "").strip()
     expires = parse_timestamp(str(row.get("expires_at") or ""))
     expired = expires is None or expires <= now
-    expiry = (now + timedelta(minutes=ttl_minutes)).isoformat()
+    expiry = (now + timedelta(minutes=ttl)).isoformat()
     if owner and owner != run_id and not expired:
         return LeaseDecision(
             action="abort",
@@ -336,7 +359,7 @@ def decide_lease(
         )
     if owner == run_id and not expired:
         remaining = expires - now if expires else timedelta(0)
-        if remaining <= timedelta(minutes=LEASE_REFRESH_IF_REMAINING_BELOW_MINUTES):
+        if remaining <= timedelta(minutes=refresh_after):
             return LeaseDecision(
                 action="refresh",
                 lock_result="REFRESHED",

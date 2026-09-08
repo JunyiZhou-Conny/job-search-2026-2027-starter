@@ -16,6 +16,7 @@ from polar_policy import (  # noqa: E402
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     bootstrap_prompt,
+    lease_ttl_minutes,
     parse_contract_block,
     raw_workflow_url,
     sanitize_learning_text,
@@ -66,7 +67,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
             lease = parse_contract_block(text, "Browser lease")
             if name in ("discover-jobs-hourly", "apply-ready-jobs"):
                 self.assertEqual(lease.get("needs_browser_lock"), "true")
-                self.assertEqual(lease.get("ttl_minutes"), "180")
+                self.assertEqual(lease.get("ttl_minutes"), str(lease_ttl_minutes(ROOT)))
                 self.assertIn("SKIPPED_LOCKED", text)
             else:
                 self.assertEqual(lease.get("needs_browser_lock"), "false")
