@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""Compile generated/polar/runtime/POLAR_RUNTIME.md from canonical repo files.
-
-The markdown is COMPILED. Edit the YAML and docs this script reads.
-Do not treat the output as a second source of truth.
-"""
 
 from __future__ import annotations
 
@@ -144,6 +139,9 @@ def compile_sections() -> Dict[str, str]:
     always = form.get("always") or {}
     anchors = triage.get("profile_anchors") or {}
     polar_local = gates.get("polar_local") or {}
+    cloud = gates.get("cursor_cloud") or {}
+    cloud_ladder = cloud.get("gates") or gates.get("gates") or {}
+    cloud_cap = cloud.get("regular_submit_cap_per_run", gates.get("regular_submit_cap_per_run"))
     canary = operator.get("canary") or {}
 
     standing: List[str] = []
@@ -371,9 +369,9 @@ def compile_sections() -> Dict[str, str]:
         [
             "Two Submit planes. Do not mix them.",
             "",
-            "cursor_cloud still uses ATS-family gates in config/submit_gates.yaml `gates`.",
-            f"Cloud open gates: {md_escape(gates.get('gates'))}.",
-            f"Cloud regular cap per run: {gates.get('regular_submit_cap_per_run')}.",
+            "cursor_cloud still uses ATS-family gates in config/submit_gates.yaml `cursor_cloud.gates`.",
+            f"Cloud open gates: {md_escape(cloud_ladder)}.",
+            f"Cloud regular cap per run: {cloud_cap}.",
             "Cloud G2 remains closed. Polar Local does not inherit those ATS gates.",
             "",
             "polar_local uses capability and policy checks, not ATS family.",

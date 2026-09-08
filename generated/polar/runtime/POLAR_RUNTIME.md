@@ -257,7 +257,7 @@ ATS family is diagnostic metadata only. Do not organize work by ATS worker class
 
 Two Submit planes. Do not mix them.
 
-cursor_cloud still uses ATS-family gates in config/submit_gates.yaml `gates`.
+cursor_cloud still uses ATS-family gates in config/submit_gates.yaml `cursor_cloud.gates`.
 Cloud open gates: {'ashby': 'G1', 'greenhouse': 'G1', 'lever': 'G0', 'workday': 'G0', 'other': 'G0'}.
 Cloud regular cap per run: 3.
 Cloud G2 remains closed. Polar Local does not inherit those ATS gates.

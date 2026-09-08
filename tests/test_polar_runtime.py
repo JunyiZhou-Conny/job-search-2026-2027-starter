@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Invariants for the compiled Polar runtime artifact."""
 
 from __future__ import annotations
 
@@ -143,8 +142,12 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("example.com", text)
 
     def test_apply_ledger_still_loads_gates(self):
+        import yaml
         from apply_ledger import load_gates
 
+        raw = yaml.safe_load((ROOT / "config" / "submit_gates.yaml").read_text(encoding="utf-8"))
+        self.assertIn("ashby", raw["cursor_cloud"]["gates"])
+        self.assertNotIn("gates", raw)
         gates = load_gates()
         self.assertIn("ashby", gates["gates"])
         self.assertEqual(gates["regular_submit_cap_per_run"], 3)

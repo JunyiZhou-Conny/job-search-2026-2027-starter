@@ -57,7 +57,16 @@ GATES_FILE = ROOT / "config" / "submit_gates.yaml"
 
 def load_gates(path: Path = GATES_FILE) -> Dict:
     import yaml
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
+    raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    cloud = raw.get("cursor_cloud") or raw
+    return {
+        "gates": cloud.get("gates") or {},
+        "regular_submit_cap_per_run": cloud.get(
+            "regular_submit_cap_per_run", raw.get("regular_submit_cap_per_run", 3)
+        ),
+        "polar_local": raw.get("polar_local") or {},
+        "cursor_cloud": cloud,
+    }
 
 
 def gate_at_least(open_gate: str, wanted: str) -> bool:

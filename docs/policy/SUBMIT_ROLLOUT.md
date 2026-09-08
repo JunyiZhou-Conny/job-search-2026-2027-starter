@@ -10,7 +10,7 @@ There are two execution planes. Do not mix their gates.
 
 | Plane | Root rule | Machine file |
 |---|---|---|
-| `cursor_cloud` | ATS-family ladder from the Cloud Computer Use experiments | `config/submit_gates.yaml` `gates` |
+| `cursor_cloud` | ATS-family ladder from the Cloud Computer Use experiments | `config/submit_gates.yaml` `cursor_cloud.gates` |
 | `polar_local` | Capability and policy checks on Junyi's Mac | `config/submit_gates.yaml` `polar_local` and `knowledge/polar_operator.yaml` |
 
 The ATS matrix and G0 through G3 evidence stay. They still bind Cloud
