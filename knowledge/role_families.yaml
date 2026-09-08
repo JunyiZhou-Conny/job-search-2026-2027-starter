@@ -27,9 +27,9 @@ forward_deployed_engineer:
     - "FDE"
     - "Forward Deployment"
   not_automatic:
-    - "Customer Success" only
-    - "Solutions Engineer" with no implementation / AI last-mile
-    - "Professional Services" with no engineering
+    - "Customer Success only"
+    - "Solutions Engineer with no implementation / AI last-mile"
+    - "Professional Services with no engineering"
   do_not_claim:
     - Palantir employment
     - On-site customer FDE work already done

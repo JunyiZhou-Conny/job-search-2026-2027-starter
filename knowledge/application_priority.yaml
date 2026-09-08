@@ -3,22 +3,22 @@
 # Labels are suggestions until Junyi confirms (docs/BOUNDARIES.md).
 # Do not Submit, send LinkedIn, or send 1point3acres/email from this file.
 
-last_updated: "2026-08-24"
-source: "Junyi Charta FDE notes plus Lila / Hayden reviews"
+last_updated: "2026-09-08"
+source: "Junyi Charta FDE notes plus Lila / Hayden reviews; Polar local owner decision 2026-09-08"
 
 # Two chunks
 application_weight:
   regular:
-    meaning: "Mass autofill is fine. Cluster resume. Short, prompt-faithful free response."
+    meaning: "Fast truthful autonomous execution on Polar Local once polar_local caps allow it. Cluster resume. Short, prompt-faithful free response."
   prioritized:
     meaning: >
       Extra judgment. Tailor resume toward the JD using only evidence-bank
       facts. Free-response gets a real answer to the prompt, not a project
       dump. Full form prep, then stop before Submit and hand Junyi a
-      review packet (docs/policy/SUBMIT_ROLLOUT.md, 2026-09-03). Do not
-      wait for a referral / insider-page check before preparing the
-      packet. Junyi 2026-08-24: those pages are rare; the public pool is
-      closer to FIFO, so waiting costs more than it saves.
+      review packet (docs/policy/SUBMIT_ROLLOUT.md). Polar Local writes
+      REVIEW_READY. Do not wait for a referral / insider-page check before
+      preparing the packet. Junyi 2026-08-24: those pages are rare; the
+      public pool is closer to FIFO, so waiting costs more than it saves.
     subfields:
       - id: gtc_2026
         meaning: "Company appears on NVIDIA GTC 2026 sponsors/exhibitors."
@@ -36,6 +36,20 @@ application_weight:
         meaning: "Top big tech, biomedical, or research institute Junyi values."
         source: "knowledge/company_lists.yaml big_tech / biotech is a hint only."
         note: "Hint, not a confirmation. Junyi decides."
+      - id: fortune_500_or_major
+        meaning: "A Fortune 500 or other major company Junyi values."
+        note: "Strong signal only. Not every large employer."
+      - id: biotech_health_ai
+        meaning: "Biotech or health AI with real product fit."
+        note: "Do not mark a generic hospital admin role."
+      - id: biostat_data_science_bio
+        meaning: "Unusually strong biostatistics, data-science, or bio fit."
+        note: >
+          Do not mark every generic analyst or data role prioritized
+          only because the title contains data.
+      - id: personal_fit
+        meaning: "Unusually strong personal fit. Rare."
+        note: "Owner judgment. Not a default."
       - id: fde
         meaning: >
           Forward-deployed engineer / Forward Deployed AI. Palantir-coined
@@ -91,17 +105,27 @@ do_not_conflate:
 
 apply_behavior:
   regular:
-    - Copilot + standing form_strategy
     - Cluster resume
+    - Simplify once when useful, then read the visible widgets
+    - Standing form_strategy answers
     - Free response answers the prompt; no project dump
     - Cover letter stays empty unless Junyi asks
+    - Polar Local: validate, Submit once, verify, persist
+    - cursor_cloud: Submit only when that ATS-family gate is open
   prioritized:
     - Same standing yes/no rules (relocate, sponsorship, salary floor)
     - More time on Why-us / JD-specific writing
-    - Visually confirm phone, resume attachment, sponsorship — do not trust Copilot "Completed"
+    - Visually confirm phone, resume attachment, sponsorship. Do not trust Copilot Completed
     - Default next_action: review packet for Junyi when the form is ready; do not wait for a referral URL
+    - Polar Local: status REVIEW_READY, no Submit while prioritized_auto_submit is false
     - Draft coffee-chat / LinkedIn only; never send without Junyi confirm
     - 1point3acres is a noisy research source, not an auto-apply channel
+  writing_observation:
+    mode_file: knowledge/polar_operator.yaml
+    rule: >
+      While writing_observation_mode is true, store exact question and
+      answer used for every nontrivial free response. Regular answers
+      may still submit. Prioritized answers stay in the review packet.
 
 referral_risk:
   decided: "2026-08-23"

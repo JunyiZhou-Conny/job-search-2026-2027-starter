@@ -1,0 +1,121 @@
+# Polar local production operator.
+# Canonical for schedules, caps, statuses, and writing observation.
+# Compiled into generated/polar/runtime/POLAR_RUNTIME.md.
+# Do not store passwords, cookies, OTP codes, or session files here.
+
+last_updated: "2026-09-08"
+source: "Owner decision 2026-09-08. Polar local is the production operator."
+timezone: "America/New_York"
+
+writing_observation_mode: true
+
+canary:
+  max_regular_jobs_per_run: 3
+  max_regular_submissions_per_local_day: 10
+  prioritized_auto_submit: false
+
+schedules:
+  discover_jobs_hourly:
+    workflow: discover-jobs-hourly
+    cron_et: "0 * * * *"
+    meaning: "Every hour at minute 00 Eastern Time"
+    polar_mode: "Saved Polar Workflow on the named local browser profile. Discovery and queue only."
+  apply_ready_jobs:
+    workflow: apply-ready-jobs
+    cron_et: "20 * * * *"
+    meaning: "Every hour at minute 20 Eastern Time"
+    polar_mode: "Saved Polar Workflow on the same named local browser profile. Application execution."
+  daily_job_summary:
+    workflow: daily-job-summary
+    cron_et: "30 21 * * *"
+    meaning: "Once each evening at 21:30 Eastern Time"
+    polar_mode: "Saved Polar Workflow. Queue read and one email. No application clicks."
+  scheduler_heartbeat:
+    workflow: polar-scheduler-heartbeat
+    cron_et: "5 * * * *"
+    meaning: "Harmless locked-screen proof. Every hour at minute 05 Eastern Time until the owner records a result."
+    polar_mode: "Saved Polar Workflow. Open a harmless page. Write one Sheet row. Never apply."
+
+statuses:
+  - NEW
+  - READY_REGULAR
+  - READY_PRIORITY
+  - IN_PROGRESS
+  - REVIEW_READY
+  - SUBMITTED
+  - SUBMISSION_UNKNOWN
+  - BLOCKED
+  - SKIP
+
+last_stages:
+  - discovered
+  - source_resolved
+  - application_open
+  - authenticated
+  - form_filled
+  - reviewed
+  - submit_clicked
+  - confirmation_seen
+
+recovery_order:
+  - SUBMISSION_UNKNOWN
+  - IN_PROGRESS
+  - READY_REGULAR
+  - READY_PRIORITY
+
+queue_columns:
+  - job_key
+  - discovered_at
+  - company
+  - role
+  - location
+  - track
+  - source_url
+  - apply_url
+  - apply_url_confidence
+  - weight
+  - priority_reason
+  - lane
+  - resume_cluster
+  - status
+  - last_stage
+  - attempt_count
+  - blocker
+  - writing_summary
+  - submitted_at
+  - confirmation
+  - updated_at
+
+writing_log_columns:
+  - job_key
+  - company
+  - role
+  - weight
+  - exact_question
+  - answer_used
+  - evidence_note
+  - recorded_at
+
+heartbeat_columns:
+  - recorded_at
+  - workflow
+  - result
+  - page_opened
+  - notes
+
+job_key_rule: >
+  Prefer the Jobright job id when the source is Jobright
+  (the last path segment of https://jobright.ai/jobs/info/<id>).
+  Store the employer URL in apply_url. Deduplicate again by
+  normalized company + role + location when a Jobright id is missing.
+
+apply_url_confidence_values:
+  - exact
+  - strong
+  - weak
+  - none
+
+runtime_url:
+  path: generated/polar/runtime/POLAR_RUNTIME.md
+  raw_main: "https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md"
+  raw_branch_note: "Until main has this file, Polar may read the same path on the production branch."
