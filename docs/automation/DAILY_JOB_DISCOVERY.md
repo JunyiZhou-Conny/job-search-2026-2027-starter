@@ -2,6 +2,11 @@
 
 **Single source of truth** for the Cursor Automation “Daily Job Discovery”.
 
+During Polar Local migration this Automation is shadow and fallback.
+Do not turn it off on day one. Polar hourly discovery is the production
+candidate. Compare the two after about 48 hours of Polar runs. See
+`docs/automation/POLAR.md`.
+
 - Edit **this file** in git when rules change, then `git push`.
 - The Automations UI should only contain a short pointer (see
   `docs/automation/UI_POINTER.md`), not a full copy of these rules.
@@ -38,7 +43,8 @@ Template-owner example (Junyi) — ignore on a personalized fork:
   (that is the person, not the job cycle).
 - Do NOT hard-skip only for “December 2026” / “Spring/March 2027” graduation wording
   when the job itself is a 2027 cycle
-- Skip graduation windows only if they match NEITHER real date
+- An exclusive graduation window that matches neither real date is a
+  non-blocking eligibility note, not a skip. Do not invent a graduation date.
 - Set grad_display_hint on each keep: program_end | dual_date | either | n/a
 - Tracks are CO-PRIMARY: 2027 new-grad AND 2027 internships (esp. Summer 2027)
 - remote_ok: false → fully remote roles should be skip
@@ -231,10 +237,12 @@ For each row assign exactly one: keep | later | skip
    unrelated non-tech). Adjacent cyber/quant → later, not auto-skip.
 
 3) hard_gate (hard → skip only if explicit on board text)
-   PhD-only; polygraph/TS-SCI; exclusive graduation/enrollment window that matches
-   NEITHER (A) program end 2026-12-18 / Dec 2026 completion NOR (B) commencement March 2027
-   (e.g. must graduate Dec 2027–Jun 2028 only). Soft/vague “currently pursuing a degree”
-   → NOT skip. Return-to-school conflicts: if unclear, prefer later/keep and note uncertainty.
+   PhD-only; polygraph/TS-SCI. An exclusive graduation/enrollment window that
+   matches NEITHER (A) program end 2026-12-18 / Dec 2026 completion NOR (B)
+   commencement March 2027 is a non-blocking eligibility note, not a skip.
+   Soft/vague “currently pursuing a degree” is also a note. Return-to-school
+   conflicts: if unclear, prefer later/keep and note uncertainty. Do not invent
+   a graduation date.
 
 4) start_date_conflict (hard → skip)
    Job term/start in 2026 → skip (Summer/Fall/Spring 2026 intern, 2026 Intern,

@@ -1,59 +1,99 @@
-# Polar as a local execution plane
+# Polar as the local production operator
 
 This file is the only full Polar essay. Other docs may point here. They must not retell it.
 
-Status is architecture only. This repo has no Polar runtime, SDK, or scheduler.
+Operator config is `knowledge/polar_operator.yaml`.
+The file Polar opens every hour is `generated/polar/runtime/POLAR_RUNTIME.md`.
+Queue columns and statuses are `docs/automation/POLAR_QUEUE.md`.
+Paste-ready Workflow text is `docs/automation/POLAR_WORKFLOWS.md`.
+The 48-hour Cloud comparison is `docs/automation/POLAR_SHADOW.md`.
+Pilot packets and the ATS matrix stay under `docs/experiments/` and `generated/polar/`.
 
-Polar is a second execution environment, not a second job-search system.
+The 2026-09-04 Live Slot design in `docs/automation/POLAR_SCALE.md` is the pilot lineage. It is not the production shape.
 
 ```text
-                 GitHub repository
-             canonical state / handoff
-                       |
-           +-----------+-----------+
-           |                       |
-           v                       v
-     Cursor / Cloud            Polar / Local
-     control plane             execution plane
-
-     what to apply to          how to execute
-     discovery, triage         logged-in browser
-     dedupe, priority          Original Job Post
-     queue, facts, ledger      employer ATS
+GitHub
+canonical memory, configuration, policy, evidence, audit
+        |
+        +----------------------+----------------------+
+        |                                             |
+        v                                             v
+Cursor / Cloud                                  Polar / Local
+engineer, maintainer                            authenticated production
+fallback discovery                              hourly discovery
+reconciliation                                  Jobright source_url
+                                                form execution
+                                                lane-aware submit
+                                                result reporting
 ```
 
-Cursor answers what we apply to. Polar answers how an already-approved browser task runs on Junyi's machine.
+## Owner decision
+
+The product goal is no longer one Cursor discovery pass, one pasted job, and one Polar experiment.
+
+The production loop is hourly authenticated local discovery, a durable queue, local Polar execution, resumable state, automatic Submit on regular jobs, review-first work on prioritized jobs, and a daily digest.
+
+ATS family is diagnostic metadata only. It is not the root abstraction.
+
+The root loop is:
+
+```text
+READY job
+  -> reach the original employer application
+  -> authenticate if needed
+  -> fill
+  -> answer
+  -> validate
+  -> submit or prepare for review
+  -> verify
+  -> persist state
+```
 
 ## Evidence kinds
 
 Treat each claim as one of these. Do not upgrade a lower kind.
 
-- **Owner-observed (2026-09-04).** Junyi's live Polar and Jobright use.
+- **Owner-observed.** Junyi's live Polar, Jobright, and Mac use.
 - **Public product docs.** Polar's own site and press. Cited when used.
-- **Architectural inference.** A boundary we chose so the repo stays one system.
+- **Architectural inference.** A boundary we chose so GitHub stays one memory system.
 
 ## Roles
 
-Cursor is the control plane. It owns discovery, merge, dedupe, triage, KEEP or SKIP, lanes, the resolver, the apply queue, form strategy, Submit policy, and ledger writes. Cloud Computer Use stays available for clicks on a Cloud Agent VM. See `docs/automation/DAILY_JOB_DISCOVERY.md` and `docs/automation/COMPUTER_USE_PROMPT.md`.
+GitHub is canonical memory. Policy, evidence, resume metadata, and audit live here. Polar reads one compiled file from a stable raw URL. Polar writes runtime checkpoints to the Google Sheet, not a second git ledger.
 
-Polar is the execution plane. It does local agentic browser work after GitHub already named the job. It opens the right URL. When the handoff is still a Jobright discovery link, it follows **Original Job Post**. It fills or prepares the employer form only when the handoff says so. It stops at `stop_rule`.
+Cursor and Cloud remain the engineer. They maintain this repo, compile `POLAR_RUNTIME`, reconcile the Sheet into `data/applications.csv` when a result is verified, and keep Cloud discovery running as shadow and fallback. Cloud Computer Use stays available on a Cloud Agent VM. See `docs/automation/DAILY_JOB_DISCOVERY.md` and `docs/automation/COMPUTER_USE_PROMPT.md`.
 
-GitHub is the handoff and the durable state. Polar must not invent a parallel KEEP list. Cursor later reconciles Polar's result into `data/applications.csv` and `data/apply_attempts.csv`. Until that write path exists, Junyi or a later Cursor turn copies the result by hand.
+Polar is the local production operator. It runs on Junyi's Mac with the real browser profile. It does hourly Jobright discovery. apply-ready-jobs resolves Original Job Post on demand. Polar also does ordinary account creation and auth, writing, Submit according to lane, and result reporting.
 
-Junyi observed that Polar runs on Junyi's computer in a real local browser, already logged into services that matter for applications. Polar accepted instructions and GitHub repository context. Polar has **Workflow**. Workflows can be saved and scheduled.
+Junyi is willing to leave the Mac powered on and online. Polar Workflows can use a named profile, save reusable instructions, attach files, and run on a schedule, including an hourly schedule at a selected minute.
 
 Polar's own introduction says it "clicks, types, and navigates the web the way you would, logged in as you" ([Introducing Polar](https://polarbrowser.com/blog/introducing-polar)). Polar describes itself as a Chromium fork ([A New Interface for Composer](https://polarbrowser.com/blog/new-interface)). TechCrunch reports that users can schedule workflows and save prompts ([29 July 2026](https://techcrunch.com/2026/07/29/perplexity-employee-who-worked-on-comet-launches-an-ai-browser-aimed-at-knowledge-work/)).
 
-GitHub stays in the middle so Polar cannot become a second source of truth. That is our boundary, not a Polar product claim.
-
 ## What Polar must not do
 
-- Redo discovery, ranking, dedupe, or priority.
-- Own `data/applications.csv` or become a second ledger.
-- Treat Jobright as the final application URL.
-- Click **APPLY WITH AUTOFILL**. That is Jobright's apply product, not the employer ATS.
-- Submit unless `docs/policy/SUBMIT_ROLLOUT.md` has an open gate and the handoff allows Submit.
-- Receive passwords, 2FA codes, or cookies in git or in a Cursor chat.
+Polar must not become a second job-search truth system.
+
+- Own `data/applications.csv` or mint ledger ids.
+- Click Jobright **APPLY WITH AUTOFILL**.
+- Copy the whole repository into the Workflow prompt.
+- Store passwords, cookies, OTP codes, or 2FA secrets in git, the Sheet, or mail.
+- Invent metrics, projects, employers, referrals, clearance, or technologies outside the evidence bank.
+- Auto-submit a prioritized row while `prioritized_auto_submit` is false.
+- Disable Cloud discovery on day one.
+- Organize execution as ATS-family worker classes.
+- Build a database, Redis, a web service, parallel browser workers, or a custom scheduler.
+
+## One compiled runtime
+
+Polar should not reread ten YAML files every hour.
+
+`scripts/build_polar_runtime.py` compiles canonical repo state into `generated/polar/runtime/POLAR_RUNTIME.md`. That file is COMPILED, not canonical. After `main` has it, Polar opens:
+
+`https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md`
+
+Until `main` has the file, use the same path on the production branch.
+
+The compiler must stay the only writer of that file. Tests refuse passwords, cookies, OTP assignments, leaked phone or email, missing policy sections, and contradictory identity facts.
 
 ## URL rules
 
@@ -61,18 +101,112 @@ These two fields are not interchangeable.
 
 | Field | Meaning |
 |---|---|
-| `discovery_url` | Where we found the row. Often `https://jobright.ai/jobs/info/...`. |
-| `apply_url` | Employer or source application URL when we trust it. |
+| `source_url` | Where Polar found the row. Often `https://jobright.ai/jobs/info/...`. |
+| `apply_url` | Employer application URL when Polar trusts it. |
 
 If `apply_url` is present and `apply_url_confidence` is `exact` or `strong`, Polar opens that URL. Do not open Jobright first.
 
-If `apply_url` is empty and `discovery_url` is a Jobright job page, Polar opens that page in the local logged-in session and clicks **Original Job Post** only. Follow one redirect if the click needs it. Keep the result only when the final host is not `jobright.ai`.
+discover-jobs-hourly does not open Original Job Post. It keeps the Jobright `source_url`.
+
+If `apply_url` is empty and `source_url` is a Jobright job page, apply-ready-jobs opens that page in the local logged-in session and clicks **Original Job Post** only. Follow one redirect if the click needs it. Keep the result only when the final host is not `jobright.ai`.
 
 Junyi observed that logged-in Jobright shows **Original Job Post**. For Tallgrass Intern-AI and Data Solutions, that link was `https://epix.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/4239?jr_id=6a9b267b90a313642c658c5f`.
 
-This path complements `scripts/resolve_apply_url.py`. It does not delete the resolver. Public ATS APIs still help cloud runs that have no Jobright session.
+`scripts/resolve_apply_url.py` still helps cloud runs that have no Jobright session. Polar does not need it when Original Job Post works.
 
-`apply_url_confidence` of `weak` or `none` is not a license to invent a board URL. On Polar, prefer Original Job Post. Otherwise leave `apply_url` blank.
+If Original Job Post cannot be resolved, keep the Jobright URL. Application execution must still be able to resolve it later. The resolver is an optimization, not a prerequisite.
+
+Do not resolve Original Job Post for obvious SKIP rows.
+
+## Durable state
+
+Do not rely on a Polar tab.
+
+The Google Sheet is the operational store. GitHub is not the hourly checkpoint.
+
+Recovery must survive Mac shutdown, Wi-Fi loss, browser restart, Workflow interruption, and the laptop leaving the desk.
+
+See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery order.
+
+`last_stage` is a coarse checkpoint. Status is the state machine. Do not add more statuses without an owner decision.
+
+## Regular versus prioritized
+
+`application_weight` stays. It is production policy, not a pilot leftover.
+
+Regular work is fast and truthful. Use the cluster resume. Use Simplify once when it helps. Correct visible fields. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist.
+
+Prioritized work gets more care. Signals include startup or scale-up Junyi values, Fortune 500 or major companies, NVIDIA GTC, prestige, biotech or health AI, strong biostatistics or bio data-science fit, FDE, and unusually strong personal fit. Do not mark a generic analyst or data role prioritized only because the title contains "data".
+
+For prioritized rows, research the JD, write a better Why-us from the evidence bank only, tailor the resume only when justified, finish the form, save the exact questions and drafts, and stop at `REVIEW_READY`. Include those rows in the digest. Prioritized stays review-first while we watch Polar's writing.
+
+## Writing observation
+
+`writing_observation_mode` is true in `knowledge/polar_operator.yaml`.
+
+For every nontrivial free-response question, write a `writing_log` row with company, role, exact question, answer used, and a short evidence note. Regular answers may still submit when the facts support them. Prioritized answers stay in the review packet.
+
+The point is 10 to 20 real examples Junyi can use to improve the writing policy.
+
+## Authentication and blockers
+
+A required new application account is normal execution.
+
+Attempt ordinary user-facing completion for account creation, a browser-generated strong password, saved credentials, forgot-password, email verification, email OTP, SMS on the Mac, ordinary consent, multi-page forms, unknown widgets, and required writing.
+
+Use only normal browser flows for security or anti-abuse challenges. Do not implement CAPTCHA-bypass services, fingerprint spoofing, or anti-abuse evasion.
+
+Escalate to `BLOCKED` only after this local environment cannot complete a required step. Persist the blocker. Continue to the next READY job.
+
+## Two Submit planes
+
+`docs/policy/SUBMIT_ROLLOUT.md` now separates `cursor_cloud` gates from `polar_local` gates.
+
+Cloud Computer Use still uses ATS-family gates in `config/submit_gates.yaml`. Those gates stay because that is the evidence we have for cloud Chrome. G2 stays closed there.
+
+Polar Local uses capability and policy checks. A regular job may be submitted once when the duplicate check passes, company and title match, the correct resume is attached, identity is correct, required facts are resolved, no unsupported claim was invented, writing is evidence-grounded, weight is regular, final review passes, one Submit is used, and the result is verified or marked `SUBMISSION_UNKNOWN`.
+
+Initial canary caps live in `knowledge/polar_operator.yaml` and `config/submit_gates.yaml` `polar_local`:
+
+- 3 regular jobs per `apply-ready-jobs` run
+- 10 regular submissions per local calendar day in America/New_York
+
+Junyi can raise those caps after production evidence is good.
+
+## Three workflows
+
+Do not merge these into one giant Workflow.
+
+| Workflow | Eastern Time | Polar mode |
+|---|---|---|
+| `discover-jobs-hourly` | minute 00 every hour | Saved Workflow on the named local profile. Discovery and queue only. |
+| `apply-ready-jobs` | minute 20 every hour | Saved Workflow on the same profile. Execution with the run cap. |
+| `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. |
+
+Paste the prompts from `docs/automation/POLAR_WORKFLOWS.md`.
+
+## Cloud discovery stays as shadow
+
+Do not disable the existing Cursor Automation on day one.
+
+For the first 48 hours after Polar hourly discovery is actually running:
+
+- Polar hourly discovery is the production candidate.
+- Cloud morning and evening discovery is shadow and fallback.
+
+Compare jobs found by both, jobs only Cloud found, jobs only Polar found, duplicate rate, latency, false KEEP or SKIP, and employer URL resolution.
+
+The checklist is `docs/automation/POLAR_SHADOW.md`.
+
+Keep Cloud as fallback, reduce it, or retire it only after that evidence exists.
+
+## Locked-screen scheduler test
+
+Before overnight autonomous Submit, run `polar-scheduler-heartbeat`.
+
+The Workflow opens a harmless page and writes one `heartbeat` row while Polar is backgrounded, the screen is locked, and the Mac stays powered and online.
+
+Do not assume sleep or lock behavior. Record the result before raising overnight Submit confidence.
 
 ## Environments
 
@@ -80,69 +214,39 @@ This path complements `scripts/resolve_apply_url.py`. It does not delete the res
 
 Cursor Cloud Agents and the daily discovery Automation run in a fresh checkout. They do not see Junyi's laptop sessions. `secrets/jobright_storage.json` is gitignored and has been absent from every recent cloud discovery pack.
 
-Polar sees the local browser. That is why Original Job Post is available there and not on the daily discovery VM.
+Polar sees the local browser. That is why Original Job Post and ordinary auth are available there.
 
 Polar's May 2026 product note says Polar is macOS only for now ([A New Interface for Composer](https://polarbrowser.com/blog/new-interface)). Do not assume a Windows Polar exists.
 
-Cloud Computer Use still uses `scripts/compile_cu_task.py` on cloud Chrome. Polar does not load that compiler. Do not wrap Polar inside a `computerUse` Task.
-
-## Handoff shape
-
-No API in this change. A later Cursor turn may write one markdown packet Polar can paste. Minimum fields:
-
-- `company`
-- `role`
-- `discovery_url`
-- `apply_url` (may be empty)
-- `apply_url_confidence` (`exact`, `strong`, `weak`, `none`, or blank)
-- `stop_rule`
-- pointers to `knowledge/form_strategy.yaml`, `knowledge/work_authorization.yaml`, and `docs/policy/SUBMIT_ROLLOUT.md`
-
-The first experiment uses this default `stop_rule`. Reach the source posting. Fill only if the packet says to fill. Do not Submit.
-
-## Result shape
-
-Polar returns these observations. Cursor or Junyi later writes durable state. Do not add ledger columns until a result exists.
-
-- `opened_url`
-- `original_job_post_url` (if that path was used)
-- `apply_url_used`
-- `filled` (`yes`, `no`, or `partial`)
-- `submitted` (`no` unless authorized)
-- `notes`
-
-Junyi filled a real application with Polar. That test was not flagged the way some cloud-browser submits were. That is one test. It is not a general claim that Polar is invisible to ATS spam filters.
+Cloud Computer Use still uses `scripts/compile_cu_task.py` on cloud Chrome. Do not wrap Polar inside a `computerUse` Task.
 
 ## Proven versus unproven
 
 | Claim | Kind | Status |
 |---|---|---|
 | Polar runs locally, logged in as Junyi | owner-observed | Proven 2026-09-04 |
-| Polar filled one real application | owner-observed | Proven 2026-09-04 |
-| That one test was not flagged like some cloud submits | owner-observed | Proven for that test only |
-| Workflow exists and can be saved or scheduled | owner-observed. Public press agrees. | Proven as a product concept |
-| Polar can take repo context | owner-observed | Proven |
-| Jobright Original Job Post reaches the Tallgrass Oracle Cloud URL | owner-observed | Proven for that job |
-| Polar Workflow can consume this repo's queue unattended | inference | Unproven |
-| Every Original Job Post is an employer ATS | inference | Unproven. The link may be LinkedIn or a tracker. |
+| Polar can start from a Jobright URL, use Original Job Post, and reach employer applications | owner-observed | Proven across several jobs |
+| Polar filled one real application in the first pilot | owner-observed | Proven 2026-09-04 |
+| Polar filled Quantbot Greenhouse and stopped before Submit | Polar report, 2026-09-04 | Proven. About 6 minutes. No CAPTCHA. |
+| Polar reached Rakuten Rewards Workday | Polar report P-20260904-002 | Proven land. Create Account wall. submitted=no. |
+| Polar filled Solidigm SmartRecruiters and stopped before Submit | Polar report P-20260906-001 | Proven. Guest Easy Apply. About 6 minutes. submitted=no. P1 open. |
+| Polar reached Citadel custom careers | Polar report P-20260906-002 | Proven land. Fill partial. Two Yes/No prompts have no approved answer. |
+| Polar completed a real Grainger / SAP SuccessFactors application after an earlier auth experiment | owner-observed, 2026-09-08 | Proven only as that high-level success. No detailed report is in this repo. Do not invent steps. |
+| Workflow exists and can use a named profile, saved instructions, attachments, and an hourly schedule | owner-observed. Public press agrees. | Proven as a product capability |
+| Junyi will leave the Mac powered and online | owner-observed | Stated 2026-09-08 |
+| Polar Workflow can consume `POLAR_RUNTIME` from a raw GitHub URL unattended | inference | Unproven |
+| Polar Workflow writes the Google Sheet while the screen is locked | inference | Unproven until the heartbeat test |
+| Polar hourly discovery matches Cloud discovery quality | inference | Unproven until the 48-hour shadow |
+| Every Original Job Post is an employer ATS | inference | Unproven |
 | Polar can write `apply_attempts.csv` without a human | inference | Unproven |
 | Daily Cursor Automations can use Polar sessions | inference | False unless someone runs Polar locally |
 
-## First experiment packet
+## Pilot history
 
-Do not run this packet in a Cursor Cloud Agent turn. The next Cursor turn may turn it into a Polar prompt.
+Do not delete the Quantbot, Rakuten, Solidigm, Citadel, or P1 evidence.
 
-This job is owner-named. It is not a row in `data/applications.csv` in the 2026-09-04 checkout. The packet is still the GitHub handoff. Polar must not scrape a replacement job.
+The first land-only packet was Tallgrass. The first fill-and-stop was Quantbot Greenhouse. Experiment 2 was Rakuten Rewards. The ATS sweep results are `generated/polar/results/P-20260906-001.md` and `generated/polar/results/P-20260906-002.md`. Ledger ids already minted on that lineage stay. Do not mint a second Quantbot id.
 
-| Field | Value |
-|---|---|
-| `company` | Tallgrass |
-| `role` | Intern-AI and Data Solutions |
-| `discovery_url` | `https://jobright.ai/jobs/info/6a9b267b90a313642c658c5f` |
-| `apply_url` | empty |
-| `apply_url_confidence` | blank |
-| Expected Original Job Post | `https://epix.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/4239?jr_id=6a9b267b90a313642c658c5f` |
-| `stop_rule` | Open Jobright while logged in. Click **Original Job Post** only. Confirm host `epix.fa.us2.oraclecloud.com` and job `4239`. Do not click **APPLY WITH AUTOFILL**. Do not fill. Do not Submit. |
-| Weight | Regular. Not a G2 Ashby protocol unit. |
+`generated/polar/LIVE.md` remains a mailbox for a single pasted job. Production no longer depends on that mailbox.
 
-Pass condition. Polar left Jobright and landed on the source posting. Cursor did not rediscover the job. Polar returns `opened_url`, `original_job_post_url`, `apply_url_used`, `filled=no`, `submitted=no`, and a short note.
+G2 stays closed on the Cursor Cloud plane.

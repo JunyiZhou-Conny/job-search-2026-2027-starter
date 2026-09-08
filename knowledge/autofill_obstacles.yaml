@@ -15,8 +15,8 @@ purpose: >
 
 # status: missing | in_repo_unused | needs_human | observed_ok | do_not_guess
 
-last_updated: "2026-08-24"
-last_source: "Ashby isolation Submit (Anyscale Ray Core 2026-08-24) plus second 10-tab Copilot review"
+last_updated: "2026-09-07"
+last_source: "Polar ATS sweep P-20260906-001 Solidigm and P-20260906-002 Citadel"
 
 # Two memories (documented 2026-08-23 after Junyi asked which "Copilot")
 #
@@ -376,8 +376,11 @@ gaps:
     already_in: "knowledge/form_strategy.yaml account_creation_wall"
     form_effect: >
       CVS Health Workday (Data Science Analyst R0993501-1) stopped at
-      account creation. Tab closed. No account created. Not a closed
-      posting.
+      account creation on Cloud Chrome. Polar-local hit the same wall
+      on Rakuten Rewards Platform Engineer (P-20260904-002, host
+      rakuten.wd1.myworkdayjobs.com). Create Account / Sign In before
+      any fields. Simplify offered Create Account & Autofill. Polar
+      did not click it and did not register. Not a closed posting.
     ask_later: "None. Later agents close Workday walls the same way."
 
   - id: us_person_export_control
@@ -467,6 +470,37 @@ gaps:
       Junyi: one story, chosen after the company mission. Types are
       marked. Stories are not written.
     ask_later: "Junyi will pick stories later. Do not brainstorm in chat."
+
+  - id: citadel_summer_return_offer
+    status: needs_human
+    observed: "2026-09-07"
+    company: Citadel
+    meaning: >
+      Polar P-20260906-002 left empty. The widget asks whether a
+      summer internship this year produced a return offer. The repo
+      has prior_internship_count 2 and no summer-2026 return-offer
+      fact.
+    ask_later: "Yes or No for that exact Citadel wording."
+
+  - id: citadel_late_stage_competing
+    status: needs_human
+    observed: "2026-09-07"
+    company: Citadel
+    meaning: >
+      Polar P-20260906-002 left empty. The widget asks whether Junyi
+      is in late-stage processes with competing companies, including
+      offer stage. Applied ledger rows are not that fact.
+    ask_later: "Yes or No for that exact Citadel wording."
+
+  - id: polar_report_contact_fields
+    status: observed_ok
+    observed: "2026-09-07"
+    company: Citadel
+    meaning: >
+      Polar pasted phone and email into the chat report because the
+      custom form had no Copilot icon. Those values stay in Simplify.
+      Do not copy them into git.
+    implication: "Redact Polar reports before commit."
 
 do_not_put_in_this_file:
   - passport

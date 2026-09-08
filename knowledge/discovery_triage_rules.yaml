@@ -5,8 +5,8 @@
 # Decisions: keep | later | skip
 # Only user-confirmed keep rows should be ingested into data/applications.csv.
 
-version: 4
-updated: "2026-08-24"
+version: 5
+updated: "2026-09-08"
 
 profile_anchors:
   # On a personal fork, rewrite these anchors to match config/profile.yaml.
@@ -81,14 +81,20 @@ guide_rules:
     severity: hard
     default_decision: skip
     guidance: >
-      Skip only when board text clearly shows an incompatible hard gate:
-      PhD-only, polygraph/TS-SCI when not viable, or a graduation/enrollment
-      window that matches NEITHER real date:
-        (A) program end 2026-12-18 / December 2026 completion, NOR
-        (B) commencement / school-listed March 2027.
+      Skip only when board text clearly shows an incompatible hard gate
+      that is independent of graduation wording: PhD-only, or
+      polygraph/TS-SCI when not viable.
+      An exclusive graduation or enrollment window that matches NEITHER
+      (A) program end 2026-12-18 / December 2026 completion, NOR
+      (B) commencement / school-listed March 2027
+      is a non-blocking eligibility note, not a skip, unless another hard
+      rule independently applies (remote, non_us_location, start_date_conflict /
+      2026 job term, PhD-only, TS-SCI).
+      Do not invent a graduation date. Application time still answers
+      widgets truthfully (2026-12-18 / year 2027).
       Examples that should NOT auto-skip: "graduating Spring 2027",
       "December 2026 graduates", "currently pursuing a degree".
-      Soft/vague windows → do not skip. Return-to-school after internship:
+      Soft/vague windows stay a note. Return-to-school after internship:
       evaluate against still being a student through program end and ceremony
       timing; if unclear, prefer later/keep over skip and note uncertainty.
 

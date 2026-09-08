@@ -27,34 +27,49 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Keep practice-lane applications roughly 15–25% of applied volume unless funnel data justifies a change.
 - Apply **weight** is separate: `regular` | `prioritized` (GTC 2026 / startup / prestige / **FDE**).
   See `knowledge/application_priority.yaml` and `knowledge/role_families.yaml`.
-  Forward Deployed / FDE titles → keep and mark. Prioritized: more Why-us
+  Forward Deployed / FDE titles → keep and mark. Polar may assign
+  READY_PRIORITY when a strong configured signal is present (fde,
+  gtc_2026, confirmed_prioritized, clear fortune_500_or_major, clear
+  biotech_health_ai). Junyi does not confirm every priority label
+  before the queue can move. Priority controls execution effort,
+  writing depth, and review-before-Submit. It is not permission to
+  invent company facts. Weak signals (startup / prestige hints,
+  personal_fit, generic data titles) stay regular unless clearly
+  justified. Prioritized: more Why-us
   care, JD-tuned resume from the evidence bank only, full form prep, then
   a review packet for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`).
   Do not wait for a referral / insider page on regular rows (Junyi
   2026-08-24: those pages are rare; FIFO in the queue matters more).
-  Labels stay suggestions until Junyi confirms. Do not claim FDE
-  customer-on-site work already done.
+  Do not claim FDE customer-on-site work already done.
 - ITAR / EAR / U.S. Person / export compliance (rocket, defense): keep in
   discovery. Do not filter out. Care is low. No need to submit. Form
   answer: I am not a U.S. Person. Do not rewrite Why-us for this family.
 
 ## Platforms
 
-- Discovery: Jobright, LinkedIn, Handshake, career pages. Cursor owns scrape, triage, and priority. Polar does not redo that pipeline.
-- Base ledger: Simplify.
+- Discovery: Jobright, LinkedIn, Handshake, career pages. Polar Local is
+  the production discovery operator on the Mac. Cursor Cloud discovery
+  stays as shadow and fallback. See `docs/automation/POLAR.md`.
+- Base ledger: Simplify. Polar runtime state lives in the Google Sheet,
+  not a second `applications.csv`.
 - Local repo: resume version, lane, sponsorship signal, auth Q&A, networking, interview learning, next actions.
-- Browser execution has two environments. Cursor cloud Computer Use, and Polar on Junyi's machine. Polar follows a GitHub handoff. Prefer a trusted `apply_url`. If the handoff is still Jobright, Polar uses **Original Job Post**, never **APPLY WITH AUTOFILL**. See `docs/automation/POLAR.md`.
+- Browser execution has two environments. Cursor cloud Computer Use, and Polar on Junyi's machine. Polar reads `generated/polar/runtime/POLAR_RUNTIME.md`. Prefer a trusted `apply_url`. If the source is still Jobright, Polar uses **Original Job Post**, never **APPLY WITH AUTOFILL**.
 - Prefer one-way `import-simplify` over retyping every application. See `docs/platforms.md`.
 
 ## Boundaries (see `docs/BOUNDARIES.md`)
 
 1. **Labels are suggestions** until the user confirms (`confirm_labels.py` / `label_job.py --apply`).
 2. **Skills live in the repo** (`knowledge/evidence_bank.yaml` + profile) — not in chat memory.
-3. **Scheduled discovery is a Cursor Automation**, driven by `docs/automation/DAILY_JOB_DISCOVERY.md`
-   in a fresh cloud checkout of `main`. Rules and commands are not timers, and no OS scheduler is
-   wired — uncommitted work is invisible to the run.
+3. **Cloud scheduled discovery is a Cursor Automation**, driven by
+   `docs/automation/DAILY_JOB_DISCOVERY.md` in a fresh checkout of
+   `main`. Polar Local runs its own hourly Workflow. Cloud stays shadow
+   during migration. Uncommitted work is invisible to the Cloud run.
 4. **Credentials stay out of git and chat.** Polar sessions stay on Junyi's computer.
-5. **Polar executes. It does not discover.** See `docs/automation/POLAR.md`.
+5. **Polar is the local production operator.** GitHub stays memory.
+   Cursor stays engineer and Cloud-discovery fallback. Polar does
+   hourly local discovery and application execution. See
+   `docs/automation/POLAR.md`. Cloud discovery stays as shadow during
+   the first 48 hours of Polar hourly discovery.
 
 ## Collaborators
 

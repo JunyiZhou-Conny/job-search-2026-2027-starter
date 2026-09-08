@@ -1,29 +1,69 @@
 # Submit policy and rollout ladder
 
-Owner intent as of 2026-09-03. This file is the single source for when an
+Owner intent as of 2026-09-08. This file is the single source for when an
 agent may click Submit. Every other file that mentions Submit points here.
 The older blanket rule "never Submit without explicit confirmation" was a
 stage of experimentation, not a permanent product requirement. It is
 retired as policy. Facts about Junyi are unchanged by this file.
 
+There are two execution planes. Do not mix their gates.
+
+| Plane | Root rule | Machine file |
+|---|---|---|
+| `cursor_cloud` | ATS-family ladder from the Cloud Computer Use experiments | `config/submit_gates.yaml` `cursor_cloud.gates` |
+| `polar_local` | Capability and policy checks on Junyi's Mac | `config/submit_gates.yaml` `polar_local` and `knowledge/polar_operator.yaml` |
+
+The ATS matrix and G0 through G3 evidence stay. They still bind Cloud
+Chrome. They are not the Polar Local root abstraction.
+
 ## Two lanes
 
 | Weight | Who submits | What the agent does |
 |---|---|---|
-| `regular` | the agent, once the gate for the ATS family is open | cluster resume, truthful concise answers, fill, validate, Submit once, verify, record |
-| `prioritized` | Junyi, after a review packet | deeper research, tailored resume from the evidence bank, real Why-us, referral check, full form prep, stop before Submit, compact packet |
+| `regular` | the agent, once that plane's regular gate is open | cluster resume, truthful concise answers, fill, validate, Submit once, verify, record |
+| `prioritized` | Junyi, after a review packet | deeper research, tailored resume from the evidence bank, real Why-us, full form prep, stop before Submit, compact packet |
 
 `prioritized` is decided by `knowledge/application_priority.yaml`. The
 FIFO argument (do not wait for a rare insider page) applies to regular
 rows. For prioritized rows the agent does more work before Junyi sees
-it, and Junyi clicks or says "submit it".
+it, and Junyi clicks or says "submit it". Polar Local keeps prioritized
+review-first while writing quality is under observation.
 
-## Ladder
+## Polar Local production gate
 
-Gates open per ATS family. They open on evidence, never on time. The
-machine-readable copy is `config/submit_gates.yaml`;
-`scripts/apply_ledger.py preflight` refuses any attempt above the open
-gate, and the two files must agree.
+Polar Local may click Submit on a regular job only when every item holds.
+
+- Duplicate check passes against the Sheet and known ledger memory.
+- Company and title on the page match the queue row.
+- Correct cluster resume is attached.
+- Identity is correct after a visible read-back.
+- Required factual fields are resolved from `POLAR_RUNTIME` or left for Junyi.
+- No unsupported claim was invented.
+- Writing is evidence-grounded.
+- `application_weight` is `regular`.
+- Final review of visible widgets passes.
+- One final Submit is used.
+- Result is verified, or status becomes `SUBMISSION_UNKNOWN`.
+
+Never blindly resubmit a `SUBMISSION_UNKNOWN` row.
+
+Initial canary caps, also in `knowledge/polar_operator.yaml`:
+
+- max 3 regular jobs per `apply-ready-jobs` run
+- max 10 regular submissions per local calendar day in America/New_York
+
+`writing_observation_mode` is true. Regular writing may still submit when
+the facts support it. Prioritized writing is saved and the row stops at
+`REVIEW_READY`.
+
+Do not organize this gate by ATS family. A Workday account wall is
+ordinary local auth work until this Mac cannot complete it.
+
+## Cloud ladder
+
+Gates on `cursor_cloud` open per ATS family. They open on evidence, never
+on time. `scripts/apply_ledger.py preflight` refuses any Cloud attempt
+above the open gate, and the two files must agree.
 
 | Gate | Condition to open | Ashby | Greenhouse | Lever | Workday |
 |---|---|---|---|---|---|
