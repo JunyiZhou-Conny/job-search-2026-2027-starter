@@ -21,7 +21,7 @@ canonical memory, configuration, policy, evidence, audit
 Cursor / Cloud                                  Polar / Local
 engineer, maintainer                            authenticated production
 fallback discovery                              hourly discovery
-reconciliation                                  Jobright + Original Job Post
+reconciliation                                  Jobright source_url
                                                 form execution
                                                 lane-aware submit
                                                 result reporting
@@ -63,7 +63,7 @@ GitHub is canonical memory. Policy, evidence, resume metadata, and audit live he
 
 Cursor and Cloud remain the engineer. They maintain this repo, compile `POLAR_RUNTIME`, reconcile the Sheet into `data/applications.csv` when a result is verified, and keep Cloud discovery running as shadow and fallback. Cloud Computer Use stays available on a Cloud Agent VM. See `docs/automation/DAILY_JOB_DISCOVERY.md` and `docs/automation/COMPUTER_USE_PROMPT.md`.
 
-Polar is the local production operator. It runs on Junyi's Mac with the real browser profile. It does hourly Jobright discovery, Original Job Post resolution, ordinary account creation and auth, writing, Submit according to lane, and result reporting.
+Polar is the local production operator. It runs on Junyi's Mac with the real browser profile. It does hourly Jobright discovery. apply-ready-jobs resolves Original Job Post on demand. Polar also does ordinary account creation and auth, writing, Submit according to lane, and result reporting.
 
 Junyi is willing to leave the Mac powered on and online. Polar Workflows can use a named profile, save reusable instructions, attach files, and run on a schedule, including an hourly schedule at a selected minute.
 
@@ -106,7 +106,9 @@ These two fields are not interchangeable.
 
 If `apply_url` is present and `apply_url_confidence` is `exact` or `strong`, Polar opens that URL. Do not open Jobright first.
 
-If `apply_url` is empty and `source_url` is a Jobright job page, Polar opens that page in the local logged-in session and clicks **Original Job Post** only. Follow one redirect if the click needs it. Keep the result only when the final host is not `jobright.ai`.
+discover-jobs-hourly does not open Original Job Post. It keeps the Jobright `source_url`.
+
+If `apply_url` is empty and `source_url` is a Jobright job page, apply-ready-jobs opens that page in the local logged-in session and clicks **Original Job Post** only. Follow one redirect if the click needs it. Keep the result only when the final host is not `jobright.ai`.
 
 Junyi observed that logged-in Jobright shows **Original Job Post**. For Tallgrass Intern-AI and Data Solutions, that link was `https://epix.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/4239?jr_id=6a9b267b90a313642c658c5f`.
 

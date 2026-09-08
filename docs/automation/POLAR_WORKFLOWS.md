@@ -46,12 +46,12 @@ Work order:
 4. Inspect the intern and newgrad minisite boards listed in section B.
 5. For each unseen card, write or update one queue row.
 6. job_key is the Jobright job id when the URL is https://jobright.ai/jobs/info/<id>.
-7. Deduplicate by job_key first, then company + role + location.
-8. Triage with section C. Hard skips become status SKIP. Do not resolve Original Job Post for SKIP.
-9. For KEEP rows, set READY_REGULAR or READY_PRIORITY using section D. Set resume_cluster from section E.
-10. For READY rows only, open the exact Jobright job and click Original Job Post when that is practical. Store the employer URL in apply_url. Set apply_url_confidence exact or strong only when the final host is not jobright.ai.
-11. If Original Job Post fails, keep source_url. Leave apply_url empty. Status stays READY.
-12. last_stage is discovered or source_resolved.
+7. Deduplicate by job_key first, then company + role + location, then section K.
+8. Triage with section C. Hard skips become status SKIP.
+9. If a section K key matches, do not set READY_REGULAR or READY_PRIORITY. Write SKIP or leave non-READY. Do not auto-Submit.
+10. For KEEP rows that pass section K, set READY_REGULAR or READY_PRIORITY using section D. Set resume_cluster from section E.
+11. Keep Jobright source_url. last_stage stays discovered.
+12. Do not open Original Job Post in this Workflow.
 13. Never start apply-ready-jobs work in this Workflow.
 
 Stop when the first loaded pages of the configured boards are covered. Do not infinite-scroll the whole internet.
@@ -86,6 +86,8 @@ Recovery order:
 1. Inspect every SUBMISSION_UNKNOWN row first. Open the employer portal, confirmation page, or mail. Verify. Set SUBMITTED or keep SUBMISSION_UNKNOWN. Never blindly resubmit.
 2. Resume the oldest IN_PROGRESS row. Continue from last_stage. Do not restart the queue from Job 1.
 3. Then take READY_REGULAR, then READY_PRIORITY.
+
+Before setting or keeping READY_REGULAR or READY_PRIORITY, check section K in addition to the Sheet. If any key matches, do not set READY. Do not auto-Submit. Write SKIP or leave non-READY.
 
 For each job you process:
 1. Set status IN_PROGRESS and bump attempt_count. Write updated_at now.
