@@ -1,5 +1,6 @@
 # Role families to mark on discovery / apply, beyond the three resume clusters.
-# Labels are suggestions until Junyi confirms. Do not invent FDE experience.
+# Polar may assign READY_PRIORITY on an FDE title without waiting for Junyi.
+# applications.csv ingest still follows docs/BOUNDARIES.md. Do not invent FDE experience.
 
 last_updated: "2026-08-24"
 source: "Junyi on Charta Health Forward Deployed AI Engineer"
@@ -27,9 +28,9 @@ forward_deployed_engineer:
     - "FDE"
     - "Forward Deployment"
   not_automatic:
-    - "Customer Success" only
-    - "Solutions Engineer" with no implementation / AI last-mile
-    - "Professional Services" with no engineering
+    - "Customer Success only"
+    - "Solutions Engineer with no implementation / AI last-mile"
+    - "Professional Services with no engineering"
   do_not_claim:
     - Palantir employment
     - On-site customer FDE work already done
@@ -42,4 +43,4 @@ forward_deployed_engineer:
     suggested_lane: core
     suggested_cluster: health_ai when the company is health/biomed; else data_ml
     application_weight: prioritized
-    confirm_with_junyi: true
+    confirm_with_junyi: false

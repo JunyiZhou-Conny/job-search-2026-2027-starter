@@ -3,7 +3,7 @@
 # Cursor / computer-use must apply these after Copilot, or Junyi types them.
 # Submit is governed by docs/policy/SUBMIT_ROLLOUT.md.
 
-last_updated: "2026-08-27"
+last_updated: "2026-09-07"
 source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules; Junyi 2026-08-25 work-auth / GPA / website / discipline; Junyi leftover rules after Advanced Space redo 2026-08-25"
 
 always:
@@ -34,6 +34,14 @@ always:
       sponsorship? / visa sponsorship yes-no / None. Prefer the exact No
       wording if the widget is a radio. If None is an option, pick None.
       If it is free text, type the sentence.
+    do_not_auto_map:
+      - >
+        Will you now or in the future require work authorization to
+        work in the U.S.?
+    do_not_auto_map_seen: >
+      Quantbot Greenhouse 2026-09-04. Polar set No from the standing
+      sponsorship answer. The widget says work authorization, not visa
+      sponsorship. Leave for Junyi until that wording is confirmed.
     supersedes: "2026-08-23 broad-Yes flip (Lila/Hayden/Relativity/Scale)"
     before_any_submit: >
       Re-read the sponsorship widget. If it is Yes, stop. Junyi: this
@@ -158,6 +166,38 @@ always:
     form_answer: "2"
     when: "How many prior internships / how many internships have you had?"
     reason: "Junyi Notion 2026-08-24: always 2."
+
+  current_or_most_recent_employer:
+    decided: "2026-09-07"
+    form_answer: ""
+    when: "Current or Most Recent Employer / Current company"
+    reason: >
+      Student. Do not invent an employer. Anyscale Copilot once put
+      Harvard University here and it was cleared. Citadel Polar 2026-09-07
+      left the box blank. Keep it blank.
+
+  summer_internship_return_offer:
+    status: needs_human
+    decided: "2026-09-07"
+    form_answer: unknown
+    when: >
+      If you completed an internship this summer, please indicate
+      whether you received a return offer.
+    reason: >
+      Citadel Polar P-20260906-002. No repo fact. prior_internship_count
+      is 2 and does not say which summer or whether a return offer
+      exists. Do not guess.
+
+  late_stage_competing_processes:
+    status: needs_human
+    decided: "2026-09-07"
+    form_answer: unknown
+    when: >
+      Are you in any late stage processes with competing companies,
+      including offer stage?
+    reason: >
+      Citadel Polar P-20260906-002. Applied rows in the ledger are not
+      a late-stage proof. Do not infer No.
 
   engineering_role_interest:
     decided: "2026-08-24"

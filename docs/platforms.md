@@ -6,6 +6,10 @@ Jobright, LinkedIn, Handshake, 1point3acres, company career pages, new-grad list
 
 Question answered: *What roles exist right now?*
 
+Polar Local is the production discovery operator on Junyi's Mac. It uses
+the logged-in Jobright session. Cursor Cloud discovery stays as shadow
+and fallback during migration. See `docs/automation/POLAR.md`.
+
 ## Layer 2 — Application execution + base ledger
 
 Simplify Autofill and Tracker, plus the company ATS.
@@ -18,7 +22,10 @@ Two execution environments share this layer. They do not share cookies.
 - **Cursor cloud.** Computer Use on a Cloud Agent VM. Needs the apply harness. See `docs/automation/APPLY_HARNESS.md` and `docs/automation/COMPUTER_USE_PROMPT.md`.
 - **Polar local.** Polar is Junyi's agentic browser on Junyi's computer. It uses logged-in Jobright, Original Job Post, and the employer ATS. See `docs/automation/POLAR.md`.
 
-Cursor still decides what to apply to. Polar or cloud Computer Use executes a named job. GitHub holds the handoff. Polar does not scrape or triage a second job list.
+Polar Local discovers, triages, and executes on the Mac. Cursor Cloud
+remains engineer, reconciler, and shadow discovery. GitHub holds
+configuration and audit. The Google Sheet holds Polar runtime state.
+Polar must not own `data/applications.csv`.
 
 ## Layer 3 — Local Cursor strategy system
 

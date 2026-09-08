@@ -1,12 +1,16 @@
-# Machine-readable half of docs/policy/SUBMIT_ROLLOUT.md.
-# scripts/apply_ledger.py preflight refuses any Submit attempt whose ATS gate
-# is below the requested gate. Change this file only with the evidence the
-# policy names, and log the change in docs/state/decisions.tsv.
-updated: "2026-09-03"
-gates:
-  ashby: G1        # 4 of 4 controlled Submits on 2026-08-24, but no wanted-role unit yet. G2 opens after unit 4 of REALITY_MAP section 11 is verified.
-  greenhouse: G1
-  lever: G0
-  workday: G0      # account wall
-  other: G0
-regular_submit_cap_per_run: 3
+updated: "2026-09-08"
+cursor_cloud:
+  gates:
+    ashby: G1
+    greenhouse: G1
+    lever: G0
+    workday: G0
+    other: G0
+  regular_submit_cap_per_run: 3
+polar_local:
+  gate_model: capability_policy
+  writing_observation_mode: true
+  prioritized_auto_submit: false
+  regular_submit_cap_per_run: 3
+  regular_submit_cap_per_local_day: 10
+  timezone: America/New_York

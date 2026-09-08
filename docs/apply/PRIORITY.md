@@ -14,21 +14,36 @@ letter `priority` (A / B / C / D).
 | `regular` | Mass autofill. Cluster resume. Free response answers the prompt and stops. |
 | `prioritized` | More judgment. JD-tuned resume from the evidence bank only. Why-us actually answers the prompt. Full form prep, then a **review packet** for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`). Do not wait for a referral / insider page to prepare it. Coffee-chat drafts only, never sent without confirm. |
 
-## Three subfields under prioritized
+## Subfields under prioritized
 
-1. **GTC 2026** — company is on NVIDIA GTC 2026 sponsors/exhibitors.
+Use a signal only when it is strong. Do not mark a generic analyst or
+data role prioritized only because the title contains data.
+
+1. **GTC 2026.** Company is on NVIDIA GTC 2026 sponsors/exhibitors.
    List already in the repo: `knowledge/market_signals/gtc2026_sponsors_exhibitors.md`
    (435 names, from https://www.nvidia.com/gtc/sponsors/).
    Lila Sciences is an **Exhibitor**. Baseten is **Gold** (suggestion only).
-2. **Startup** — vibrant / engaging / can be pushy. `company_lists.yaml`
+2. **Startup.** Vibrant / engaging / can be pushy. `company_lists.yaml`
    `startup_or_scaleup` is a hint, not a confirmation.
-3. **Prestige** — top big tech, biomedical, or research institute Junyi
+3. **Prestige.** Top big tech, biomedical, or research institute Junyi
    values. `big_tech` / `biotech` lists are hints.
-4. **FDE** — Forward Deployed / Forward-Deployed AI. Palantir-coined
+4. **Fortune 500 or major.** A major company Junyi values, not every
+   large employer.
+5. **Biotech / health AI.** Real product fit, not generic hospital admin.
+6. **Biostat / data-science / bio.** Unusually strong personal fit to
+   the science. Not every data title.
+7. **Personal fit.** Rare. Owner judgment.
+8. **FDE.** Forward Deployed / Forward-Deployed AI. Palantir-coined
    last-mile role. See `knowledge/role_families.yaml`. Junyi 2026-08-24:
    mark these; they are suitable. Charta is the type example.
 
-Labels stay suggestions until Junyi confirms.
+Polar may assign READY_PRIORITY when a strong configured signal is present. Junyi does not confirm every priority label before the queue can move. Priority controls execution effort, writing depth, and review-before-Submit. It is not permission to invent company facts.
+
+Strong signals. Assign READY_PRIORITY: fde title, gtc_2026 company on the NVIDIA GTC 2026 list, confirmed_prioritized YAML match, clear fortune_500_or_major, clear biotech_health_ai.
+
+Weak signals. Stay READY_REGULAR unless clearly justified: startup or prestige hints, personal_fit, generic data or analyst titles.
+
+READY_PRIORITY still stops at REVIEW_READY.
 
 ## Confirmed so far
 

@@ -201,6 +201,20 @@ def company_role_key(company: str, role: str) -> str:
     return f"{normalize_text(company)}|{normalize_text(role)}"
 
 
+def company_role_location_key(company: str, role: str, location: str = "") -> str:
+    return f"{company_role_key(company, role)}|{normalize_text(location)}"
+
+
+JOBRIGHT_INFO_ID_RE = re.compile(
+    r"https?://(?:www\.)?jobright\.ai/jobs/info/([^/?#\s]+)",
+    re.I,
+)
+
+
+def jobright_ids_from_text(text: str) -> List[str]:
+    return [m.group(1).rstrip("/") for m in JOBRIGHT_INFO_ID_RE.finditer(text or "")]
+
+
 def parse_iso(value: str) -> Optional[date]:
     if not value:
         return None
