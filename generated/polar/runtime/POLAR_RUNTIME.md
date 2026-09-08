@@ -59,10 +59,11 @@ Standing widget answers (owner-confirmed). Apply them verbatim.
 - employed_by_this_company_before: No. When: Have you been employed by [this company] in the past?.
 - open_to_relocating: Yes. When: Are you open to relocating?.
 - h1b_named_question_only: No.
-- visa_sponsorship: No. When: Will you now or in the future require visa sponsorship? / require sponsorship? / visa sponsorship yes-no / None. Prefer the exact No wording if the widget is a radio. If None is an option, pick None. If it is free text, type the sentence..
+- visa_sponsorship: No. When: Will you now or in the future require visa sponsorship? / require sponsorship? / visa sponsorship yes-no / None. Prefer the exact No wording if the widget is a radio. If None is an option, pick None. If it is free text, type the sentence.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
 - citizenship_country: China. When: Country of citizenship / nationality. Also the export-control country widget..
 - permanent_resident_elsewhere: No. When: Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?.
 - eligible_to_begin_employment_immediately: Yes. When: If offered employment, would you be legally eligible to begin employment immediately?.
+- eeo_self_identification: Preserve the values Simplify Copilot fills from Junyi's profile. Do not clear them. Do not change them. Confirmed: gender Male; hispanic_latino No; race Asian; veteran_status I am not a protected veteran; disability No, I do not have a disability and have not had one in the past.
 - years_of_relevant_experience: 2. When: How many years of relevant / work / professional experience do you have?.
 - automated_script_or_spoofing: No. When: Are you applying via an automated script or spoofing?.
 - prior_internship_or_coop_in_general: Yes. When: Do you have prior internship or co-op experience?.

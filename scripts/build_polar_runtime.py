@@ -62,12 +62,36 @@ def md_escape(value: Any) -> str:
     return " ".join(text.split())
 
 
+def auto_map_ban(block: Dict[str, Any]) -> str:
+    banned = block.get("do_not_auto_map")
+    if not banned:
+        return ""
+    if isinstance(banned, str):
+        phrases = [md_escape(banned)]
+    else:
+        phrases = [md_escape(x) for x in banned if md_escape(x)]
+    if not phrases:
+        return ""
+    extra = (
+        " DO NOT AUTO-MAP: "
+        + " / ".join(phrases)
+        + ". Do not treat that wording as this answer. Leave it unresolved."
+    )
+    seen = md_escape(block.get("do_not_auto_map_seen", ""))
+    if seen:
+        extra += f" Seen: {seen}"
+    return extra
+
+
 def form_answer_line(name: str, block: Any) -> str:
     if not isinstance(block, dict):
         return ""
     if block.get("status") == "needs_human" or block.get("form_answer") == "unknown":
         when = md_escape(block.get("when", name))
-        return f"{name}: leave for Junyi. No approved answer. When: {when}"
+        return (
+            f"{name}: leave for Junyi. No approved answer. When: {when}"
+            + auto_map_ban(block)
+        )
     answer = block.get("form_answer")
     if answer is None and "harvard_masters" in block:
         return (
@@ -88,12 +112,19 @@ def form_answer_line(name: str, block: Any) -> str:
     if "prefer_in_order" in block and answer is None:
         order = ", ".join(str(x) for x in block["prefer_in_order"])
         return f"{name}: prefer in order {order}"
+    if answer is None and block.get("rule"):
+        line = f"{name}: {md_escape(block.get('rule'))}"
+        confirmed = block.get("junyi_confirmed_values")
+        if isinstance(confirmed, dict) and confirmed:
+            bits = [f"{k} {md_escape(v)}" for k, v in confirmed.items()]
+            line += " Confirmed: " + "; ".join(bits) + "."
+        return line + auto_map_ban(block)
     if answer is None:
         return ""
     shown = "(blank)" if answer == "" else md_escape(answer)
     when = md_escape(block.get("when", ""))
     extra = f" When: {when}." if when else ""
-    return f"{name}: {shown}.{extra}"
+    return f"{name}: {shown}.{extra}" + auto_map_ban(block)
 
 
 def eligible_skills(bank: Dict[str, Any]) -> List[str]:

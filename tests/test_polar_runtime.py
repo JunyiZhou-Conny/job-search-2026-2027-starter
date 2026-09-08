@@ -73,6 +73,17 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Remote ok: False", text)
         self.assertNotIn("Citizenship country (form and fact): United States", text)
         self.assertNotIn("Broad visa-sponsorship widget: Yes", text)
+        self.assertIn("visa_sponsorship: No.", text)
+        self.assertIn("DO NOT AUTO-MAP", text)
+        self.assertIn("require work authorization", text)
+        self.assertIn("Do not treat that wording as this answer", text)
+        self.assertIn("eeo_self_identification:", text)
+        self.assertIn("Do not clear them", text)
+        self.assertIn("Do not change them", text)
+        self.assertIn("gender Male", text)
+        self.assertIn("hispanic_latino No", text)
+        self.assertIn("race Asian", text)
+        self.assertIn("veteran_status I am not a protected veteran", text)
 
     def test_phone_and_email_are_not_copied(self):
         text = compile_text()
