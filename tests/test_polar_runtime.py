@@ -24,6 +24,7 @@ REQUIRED_HEADINGS = [
     "## H. Submission behavior",
     "## I. Prohibited fabrication",
     "## J. Runtime status semantics",
+    "## K. Historical duplicate guard",
 ]
 
 STATUSES = [
@@ -46,6 +47,18 @@ SECRET_LINE = re.compile(
 
 def compile_text() -> str:
     return render(compile_sections())
+
+
+def workflow_prompt(name: str) -> str:
+    text = (ROOT / "docs" / "automation" / "POLAR_WORKFLOWS.md").read_text(
+        encoding="utf-8"
+    )
+    marker = f"## {name}"
+    start = text.index(marker)
+    rest = text[start:]
+    fence = rest.index("```text")
+    body = rest[fence + len("```text") :]
+    return body[: body.index("```")]
 
 
 class TestPolarRuntime(unittest.TestCase):
@@ -163,6 +176,62 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("ashby", gates["gates"])
         self.assertEqual(gates["regular_submit_cap_per_run"], 3)
         self.assertEqual(gates["polar_local"]["regular_submit_cap_per_local_day"], 10)
+
+    def test_historical_guard_includes_known_ledger_keys(self):
+        text = compile_text()
+        self.assertIn("## K. Historical duplicate guard", text)
+        self.assertIn("An empty Google Sheet is not a clean slate.", text)
+        self.assertIn("6a9b1602fe45b8490f606c9f", text)
+        self.assertIn(
+            "https://job-boards.greenhouse.io/embed/job_app?for=quantbot-technologies&jr_id=6a9b1602fe45b8490f606c9f",
+            text,
+        )
+        self.assertIn("6a9b756513883870605981ea", text)
+        self.assertIn("https://jobs.smartrecruiters.com/solidigm/744000147613769", text)
+        self.assertIn("6a7a308fbb6ca93ae561a556", text)
+        self.assertIn(
+            "https://www.citadel.com/careers/details/sector-data-scientist-2027-intern-us",
+            text,
+        )
+        self.assertIn(
+            "https://job-boards.greenhouse.io/togetherai/jobs/5157661007", text
+        )
+        self.assertIn(
+            "https://jobs.ashbyhq.com/chartahealth/3088555d-de93-4236-add1-41005bf0933b",
+            text,
+        )
+
+    def test_historical_guard_is_compact(self):
+        text = compile_text()
+        self.assertNotIn("id,job_id,company,role,job_url", text)
+        self.assertNotIn("Widget says work authorization", text)
+        self.assertNotIn("System trial: compile cloud_swe", text)
+        self.assertNotIn("attempt_id,job_id,run_id", text)
+
+    def test_discover_forbids_ojp_apply_still_resolves(self):
+        discover = workflow_prompt("discover-jobs-hourly")
+        apply = workflow_prompt("apply-ready-jobs")
+        self.assertIn("Do not open Original Job Post in this Workflow.", discover)
+        self.assertNotIn("click Original Job Post", discover)
+        self.assertIn("section K", discover)
+        self.assertIn("Original Job Post", apply)
+        self.assertIn("section K", apply)
+
+    def test_ready_priority_auto_assign_without_label_gate(self):
+        text = compile_text()
+        self.assertIn(
+            "Polar may assign READY_PRIORITY when a strong configured signal is present.",
+            text,
+        )
+        self.assertNotIn("Labels stay suggestions until Junyi confirms.", text)
+
+    def test_graduation_window_is_note_not_skip(self):
+        text = compile_text()
+        self.assertIn(
+            "An exclusive graduation or enrollment window is an eligibility note, not a skip.",
+            text,
+        )
+        self.assertIn("non-blocking eligibility note, not a skip", text)
 
 
 if __name__ == "__main__":

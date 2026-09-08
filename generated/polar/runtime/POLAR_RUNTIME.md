@@ -19,6 +19,9 @@ Canonical sources:
 - `knowledge/written_response_bank.yaml`
 - `knowledge/role_families.yaml`
 - `docs/policy/SUBMIT_ROLLOUT.md`
+- `data/applications.csv` (keys only)
+- `data/job_decisions.csv` (keys only)
+- `data/apply_attempts.csv` (keys only)
 
 Secrets stay out. No passwords, cookies, OTP codes, 2FA secrets, or session files.
 
@@ -113,13 +116,13 @@ Healthcare board: Expected to yield ~0 rows after filtering. Page-one content is
 
 ## C. Triage rules
 
-Triage after discover and dedupe. Then resolve Original Job Post only for READY jobs.
-SKIP and obvious later rows keep the Jobright URL. Do not resolve them.
-If Original Job Post fails, keep the Jobright URL. Resolution is an optimization.
+Triage after discover and dedupe.
+Discovery keeps the Jobright source_url. Do not open Original Job Post during discover-jobs-hourly.
+apply-ready-jobs resolves Original Job Post on demand.
 
 - `remote` (hard, default skip): If work_model (or clear title/notes) indicates fully remote / remote-only, skip. Hybrid or on-site is fine. If work_model blank, do not assume remote; use later or keep based on other fit, and say evidence is incomplete.
 - `non_target_role` (hard, default skip): Skip roles clearly outside SWE / data / ML / AI infra targets (e.g. data-center technician, pure QA-only, unrelated clinical non-tech, wholesale sales). Adjacent cyber/quant may be later, not automatic skip.
-- `hard_gate` (hard, default skip): Skip only when board text clearly shows an incompatible hard gate: PhD-only, polygraph/TS-SCI when not viable, or a graduation/enrollment window that matches NEITHER real date: (A) program end 2026-12-18 / December 2026 completion, NOR (B) commencement / school-listed March 2027. Examples that should NOT auto-skip: "graduating Spring 2027", "December 2026 graduates", "currently pursuing a degree". Soft/vague windows → do not skip. Return-to-school after internship: evaluate against still being a student through program end and ceremony timing; if unclear, prefer later/keep over skip and note uncertainty.
+- `hard_gate` (hard, default skip): Skip only when board text clearly shows an incompatible hard gate that is independent of graduation wording: PhD-only, or polygraph/TS-SCI when not viable. An exclusive graduation or enrollment window that matches NEITHER (A) program end 2026-12-18 / December 2026 completion, NOR (B) commencement / school-listed March 2027 is a non-blocking eligibility note, not a skip, unless another hard rule independently applies (remote, non_us_location, start_date_conflict / 2026 job term, PhD-only, TS-SCI). Do not invent a graduation date. Application time still answers widgets truthfully (2026-12-18 / year 2027). Examples that should NOT auto-skip: "graduating Spring 2027", "December 2026 graduates", "currently pursuing a degree". Soft/vague windows stay a note. Return-to-school after internship: evaluate against still being a student through program end and ceremony timing; if unclear, prefer later/keep over skip and note uncertainty.
 - `start_date_conflict` (hard, default skip): Candidate target work window: internships starting Summer 2027 (preferred), and full-time on/after 2027-01-18. SKIP when the ROLE TERM / START is in 2026: - "Summer 2026", "Fall 2026", "Spring 2026", "Winter 2026" intern/co-op - "2026 Intern", "Intern 2026", "new grad 2026 start", start Jun–Dec 2026 - Any clear employment start before 2027-01-18 KEEP/review targets: Summer 2027 intern, Fall 2027 if relevant, 2027 FT. IMPORTANT — do NOT skip only because text mentions the candidate's graduation / program end "December 2026" / "2026-12-18". That is the person's date, not the job's start year. Skip on job-cycle/start-year 2026.
 - `timing_expired` (hard, default skip): Same policy as start_date_conflict for intern cycles: any 2026 internship term is out of scope (not only "already over"). Prefer skip when the posting is a 2026 intern/new-grad cycle. Summer 2027+ is the default keep window for internships.
 - `traditional_student_coop` (soft, default later_or_skip): Heavy "must be enrolled full-time undergrad / credit-hour co-op" framing with weak SWE fit → skip or later. Do not skip strong SWE/ML internships merely because they say "currently pursuing a degree" — candidate remains in program through December 2026 program end (commencement March 2027).
@@ -130,6 +133,8 @@ If Original Job Post fails, keep the Jobright URL. Resolution is an optimization
 - `non_us_location` (hard, default skip): Skip when the board location is clearly outside the United States (city or country of work). Example: Perplexity Search ML intern listed Belgrade (2026-08-23 intern_list pick miss; Junyi 2026-08-24: automatic no). Profile search.country is United States; any US city is fine. Do not skip a US-site row only because the company also has a foreign office. If location is blank, do not assume non-US.
 - `export_compliance` (policy, default keep): ITAR / EAR / U.S. Person / export compliance on a rocket, defense, or aerospace posting is NOT a skip. Mass apply may still surface these. Junyi 2026-08-24 (Relativity Space): do not filter them out. Do not mark ineligible for this reason alone. Care is low. No need to submit. Do not spend a prioritized Why-us. If a form asks U.S. Person, the answer is I am not a U.S. Person. See knowledge/form_strategy.yaml us_person_export_control.
 
+An exclusive graduation or enrollment window is an eligibility note, not a skip.
+Do not invent a graduation date.
 Sponsorship unknown or no is not a skip.
 Do not invent work_model, location, graduation windows, or H1B facts.
 Blank location is not an automatic skip.
@@ -155,9 +160,26 @@ Prioritized signals, only when strongly applicable:
 - personal_fit: unusually strong personal fit. Rare.
 - Do not mark a generic analyst or data role prioritized only because the title contains data.
 
-Labels stay suggestions until Junyi confirms.
+Polar may assign READY_PRIORITY when a strong configured signal is present.
+Junyi does not confirm every priority label before the queue can move.
+Priority controls execution effort, writing depth, and review-before-Submit.
+It is not permission to invent company facts.
+
+Strong signals. Assign READY_PRIORITY:
+- fde (title)
+- gtc_2026 (company on the NVIDIA GTC 2026 list)
+- confirmed_prioritized (YAML list match)
+- clear fortune_500_or_major
+- clear biotech_health_ai
+
+Weak signals. Stay READY_REGULAR unless clearly justified:
+- startup or prestige hints
+- personal_fit
+- generic data or analyst titles
+
 FDE / Forward Deployed titles stay and are marked prioritized.
 Do not claim customer on-site FDE work already done.
+READY_PRIORITY still stops at REVIEW_READY.
 
 ## E. Resume-cluster selection
 
@@ -270,7 +292,7 @@ Regular submissions per local calendar day (America/New_York): 10.
 Prioritized auto-submit: False.
 
 A regular job may be submitted once only when every item holds:
-- Duplicate check passes against the Sheet and known ledger memory.
+- Duplicate check passes against the Sheet and section K.
 - Company and title on the page match the queue row.
 - Correct cluster resume is attached.
 - Identity fields are correct after a visible read-back.
@@ -306,6 +328,7 @@ Copilot Completed is not proof a widget has a value. Look at the page.
 
 GitHub holds configuration, policy, evidence, and audit.
 The Google Sheet holds runtime queue state. It is not a second applications.csv.
+An empty Sheet is not a clean slate. Check section K in addition to the Sheet.
 
 Statuses:
 - NEW: seen and written. Not yet READY.
@@ -324,8 +347,179 @@ Recovery order: SUBMISSION_UNKNOWN then IN_PROGRESS then READY_REGULAR then READ
 If the Mac slept during Job 6 IN_PROGRESS, resume Job 6. Do not restart Job 1.
 
 Queue columns: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at
-Prefer the Jobright job id when the source is Jobright (the last path segment of https://jobright.ai/jobs/info/<id>). Store the employer URL in apply_url. Deduplicate again by normalized company + role + location when a Jobright id is missing.
+Prefer the Jobright job id when the source is Jobright (the last path segment of https://jobright.ai/jobs/info/<id>). Discovery stores the Jobright source_url. Do not require an employer URL during discovery. apply-ready-jobs fills apply_url later. Deduplicate again by normalized company + role + location when a Jobright id is missing.
 
 Workflows never apply during discover-jobs-hourly.
 apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then IN_PROGRESS, then READY rows.
 daily-job-summary never includes passwords, OTP codes, or cookies.
+
+## K. Historical duplicate guard
+
+An empty Google Sheet is not a clean slate.
+The GitHub ledger already holds applied, closed, ready, and in-progress keys.
+discover-jobs-hourly and apply-ready-jobs check this guard in addition to the Sheet.
+If any key matches, do not set READY_REGULAR or READY_PRIORITY.
+Do not auto-Submit.
+Write SKIP or leave the row non-READY.
+Match order: Jobright id, then trusted employer/application URL, then company|role|location.
+
+Jobright ids:
+- 693b5c7ab309e37800871f1d
+- 69cfed37366bb95ba5519b76
+- 6a32cef229c90c607e4d829a
+- 6a34dc64649fdf16292f767d
+- 6a4b99ed971cd25b06f97bbd
+- 6a51b5f2ae4052672fe99710
+- 6a5744fff7517b519ad59ad4
+- 6a5a8d8f686b4755d1e15ce0
+- 6a5ade8f63a8f619507c89d4
+- 6a5dfad0050c423c792ecae1
+- 6a5e3a10050c423c792eddd0
+- 6a5e49e7050c423c792ee390
+- 6a5e4d52050c423c792ee502
+- 6a5e4d57f29acc1a1174697a
+- 6a5e558127bf767ea68f61f4
+- 6a5e6994f3674a0545d28d24
+- 6a7a308fbb6ca93ae561a556
+- 6a9b1602fe45b8490f606c9f
+- 6a9b756513883870605981ea
+
+Employer / application URLs:
+- https://account.amazon.jobs/en-us/applicant/jobs/3159355/apply?cmpid=splicx0248m&ss=paid
+- https://boards.greenhouse.io/applovin/jobs/4655740006
+- https://boards.greenhouse.io/apptronik/jobs/5985132004
+- https://boards.greenhouse.io/apptronik/jobs/6128057004
+- https://boards.greenhouse.io/embed/job_app?for=gemini&gh_jid=7875125&token=7875125
+- https://boards.greenhouse.io/embed/job_app?for=gemini&gh_jid=7951195&token=7951195
+- https://boards.greenhouse.io/embed/job_app?token=4034001009
+- https://boards.greenhouse.io/neuralink/jobs/6594261003
+- https://boards.greenhouse.io/neuralink/jobs/6648992003
+- https://boards.greenhouse.io/relativity/jobs/8726261002
+- https://boards.greenhouse.io/spacex/jobs/8493079002
+- https://bostonscientific.eightfold.ai/careers/apply?domain=bostonscientific.com&pid=563602808714260
+- https://bostonscientific.eightfold.ai/careers/job/563602808549558
+- https://cat.wd5.myworkdayjobs.com/caterpillarcareers/job/chicago-illinois/xmlname-2026-summer-corporate-intern---digital-and-analytics_r0000345613
+- https://edel.fa.us2.oraclecloud.com/hcmui/candidateexperience/en/sites/cx_2001/job/21952
+- https://fa-exdv-saasfaprod1.fa.ocs.oraclecloud.com/hcmui/candidateexperience/en/sites/careers/job/11514/apply/section/1
+- https://iaziqy.fa.ocs.oraclecloud.com/hcmui/candidateexperience/en/sites/ubercareers/job/300697/apply/section/1?jr_id=6a5e880e270e3033b045e811
+- https://jmp-sas.icims.com/jobs/41235/job?mobile=true&needsredirect=false
+- https://job-boards.greenhouse.io/advancedspace/jobs/4324875009
+- https://job-boards.greenhouse.io/appian/jobs/8088282
+- https://job-boards.greenhouse.io/bamboohr17/jobs/5755725004
+- https://job-boards.greenhouse.io/darkwolfsolutions/jobs/7597991003
+- https://job-boards.greenhouse.io/embed/job_app?for=quantbot-technologies&jr_id=6a9b1602fe45b8490f606c9f
+- https://job-boards.greenhouse.io/kodiak/jobs/4377407009
+- https://job-boards.greenhouse.io/lilasciences/jobs/4186444009
+- https://job-boards.greenhouse.io/nirmata/jobs/4606513008
+- https://job-boards.greenhouse.io/scaleai/jobs/4703343005
+- https://job-boards.greenhouse.io/tenstorrent/jobs/5023673007
+- https://job-boards.greenhouse.io/togetherai/jobs/5157559007
+- https://job-boards.greenhouse.io/togetherai/jobs/5157661007
+- https://job-boards.greenhouse.io/twitch/jobs/8459320002
+- https://job-boards.greenhouse.io/virtru/jobs/4653402005
+- https://jobs.ashbyhq.com/anyscale/01aef589-e268-4b22-b513-d1f9f076210f
+- https://jobs.ashbyhq.com/anyscale/73a973b1-6377-4144-a6e5-610b78719882
+- https://jobs.ashbyhq.com/baseten/db6477fc-111a-4340-bf00-525fe023e6f3
+- https://jobs.ashbyhq.com/baseten/fc6e5f2e-eb2d-4a6c-8a51-8422e8662bde
+- https://jobs.ashbyhq.com/bild-ai/b333f0f7-0ca6-4509-8697-9303396b5364
+- https://jobs.ashbyhq.com/chartahealth/3088555d-de93-4236-add1-41005bf0933b
+- https://jobs.ashbyhq.com/clera/3dc0a0f6-6a53-4a8c-bc70-b007113c348a
+- https://jobs.ashbyhq.com/datologyai/17d51801-5d5f-41ad-baec-f1ac5a255d02
+- https://jobs.ashbyhq.com/etched/6f23713f-5409-45b7-aae8-adb8710cdbc3
+- https://jobs.ashbyhq.com/haydenai/6951fb04-478b-46f5-b918-123a69a28925
+- https://jobs.ashbyhq.com/lightfield/fc93a467-773d-4805-b342-bf470950732d
+- https://jobs.ashbyhq.com/meshy/262d74c7-8aab-474e-9fc6-8c8c48ec6572
+- https://jobs.ashbyhq.com/meshy/c2f596a3-378c-4a57-b2cd-0bccd88866d7
+- https://jobs.ashbyhq.com/midjourney/68e8eed8-ba7e-4530-bee1-4baf3d368d55
+- https://jobs.ashbyhq.com/notion/3fba1c39-c5cb-47d7-9ad2-1cec4d7e9d0c
+- https://jobs.ashbyhq.com/openai/19fc3e36-3bf3-4a7c-b65f-498d89220436
+- https://jobs.ashbyhq.com/perplexity/9246cf02-26fd-4ae8-90c5-639c6e85e9e2
+- https://jobs.ashbyhq.com/runway/82789f66-9216-4ef3-bfeb-6cef4b416e63
+- https://jobs.ashbyhq.com/traba/e1761ab2-21f1-46d6-8c69-9b4a73d9430f
+- https://jobs.lever.co/hive/a06ede4e-46e3-40c8-b2e6-69af1658ab50/apply
+- https://jobs.smartrecruiters.com/solidigm/744000147613769
+- https://recruiting2.ultipro.com/hun1007huind/jobboard/9d4c9b3a-f0e0-45f2-8b3c-5fb03c6eb7f5/opportunitydetail?opportunityid=e6026c8b-203f-46f8-9ef2-5e3eeab205e1
+- https://sentinelgroup.applytojob.com/apply/m6jwdqxd50/software-developer-summer-python-intern-2026
+- https://sjobs.brassring.com/tgnewui/search/home/homewithpreload?pagetype=jobdetails&jobid=1381249&partnerid=26173&siteid=5197
+- https://waystar.wd1.myworkdayjobs.com/waystar/job/atlanta-ga/application-engineering-internship_r2767-1
+- https://www.citadel.com/careers/details/sector-data-scientist-2027-intern-us
+- https://www.google.com/about/careers/applications/dashboard
+- https://www.optiver.com/join-us/jobs/technology/chicago/graduate-software-engineer-2027-start
+
+Company|role|location:
+- advanced space|2027 machine learning summer internship|westminster, co
+- altera|ai software development engineer - intern|
+- amazon|data center infrastructure engineer intern|usa, ms, canton
+- anyscale|software engineer (ray core)|san francisco, ca, usa
+- anyscale|software engineer (ray data)|san francisco
+- appian|database engineer|mclean, va, usa
+- applovin|ml infrastructure engineer|palo alto, ca, usa
+- apptronik|robotics software intern|austin, tx, usa
+- apptronik|software engineer intern|austin, tx, usa
+- bamboohr|software engineer intern|draper, ut, usa
+- baseten|ai inference engineer|montreal, qc, canada | new york, ny, usa | remote in usa | san francisco, ca, usa | toronto, on, canada
+- baseten|software engineer|montreal, qc, canada | new york, ny, usa | san francisco, ca, usa | toronto, on, canada
+- bild ai|ai/software engineer intern|san francisco, ca, usa
+- bild ai|ai/swe intern|san francisco, ca, united states
+- boston scientific|r&d software engineer intern|roseville, mn, usa
+- cadence|software engineering intern|
+- caterpillar inc.|2026 summer corporate intern|chicago, il, usa | irving, tx, usa | peoria, il, usa
+- cfo.ai|forward deployed finance partner|remote in usa
+- charta health|forward deployed ai engineer|new york, ny, usa | san francisco, ca, usa
+- citadel|sector data scientist – 2027 intern (us)|new york, ny
+- clera|founding ai engineer|san francisco, ca, usa
+- dark wolf solutions|uf college fair – internship|tampa, fl, usa
+- datologyai|software engineer intern, infrastructure (winter 2027)|
+- etched|inference architecture intern|san jose, ca, usa
+- etched|inference intern|san jose, ca, united states
+- exowatt|software engineering intern - agent platform (ai)|
+- fortinet|software development intern|santa clara, ca, usa
+- gemini|design developer|new york, ny, usa
+- gemini|software engineer intern|new york, ny, usa
+- google|software engineering inter, ms, summer 2027|united states
+- google|software engineering intern, bs, summer 2027|mountain view, ca, usa
+- google|software engineering intern, ms, summer 2027|mountain view, ca, united states
+- hadrian|all levels: backend software engineer|los angeles, ca
+- hayden ai|associate data scientist|san francisco, ca, usa
+- hive|machine learning engineer|seattle, wa, usa
+- hunter industries brand|intern - software engineer|unknown location
+- hyperlight|software engineer intern|multi locations: cambridge, ma, united states; cambridge, massachusetts, united states
+- jmp statistical discovery|2026 jmp summer intern; advanced analytics testing|morrisville, nc, usa
+- kodiak robotics|artificial intelligence/machine learning intern|mountain view, ca, usa
+- lightfield|software engineer|san francisco, ca, usa
+- lila sciences|intern, security & cloud engineering|cambridge, ma usa
+- lila sciences|software engineer 1|cambridge, ma, usa
+- meshyai|infrastructure intern|sunnyvale, ca, usa
+- meshy|fullstack engineer intern|sunnyvale, ca, usa
+- midjourney|qa analyst|new york, ny, usa | san francisco, ca, usa
+- neuralink|firmware engineer intern|south san francisco, ca, usa
+- neuralink|machine learning engineer intern|south san francisco, ca, usa
+- nirmata|ai software engineer intern|san jose, hybrid
+- notion|software engineer intern|new york, ny, usa | san francisco, ca, usa
+- openai|performance modeling engineer|san francisco, ca, usa | seattle, wa, usa
+- optiver|graduate software engineer (2027 start)|chicago
+- perplexity ai|internship|belgrade | belgrade, serbia
+- plusai|software engineer intern - data|
+- publix super markets, inc|intern – industrial operations software engineer|lakeland, fl, usa
+- quantbot technologies lp|machine learning research engineer internship - 2027 [new york]|new york, ny
+- relativity space|ai software engineer|long beach, ca, usa
+- rivian and volkswagen group technologies|data engineering intern - ai & analytics (fall 2026)|
+- scale ai|ai builder intern|san francisco, ca, usa
+- sentinel group - career page|software developer summer (python) intern 2026|remote
+- software development engineer intern 2026 | boston scientific|r&d systems engineer intern|unknown location
+- solidigm|2027 graduate software, firmware & ai engineering internships - us|rancho cordova, ca
+- spacex|new graduate engineer, software|hawthorne, ca
+- spacex|new graduate engineer|west athens, ca, usa
+- spreeai|software engineer intern (ai infrastructure / training / inference)|
+- tdk sensei|data engineering intern|
+- tenstorrent|software engineer|austin, tx, usa | santa clara, ca, usa | toronto, on, canada
+- tiktok|software engineer intern (recommendation infrastructure) - 2026 fall (bs/ms)|san jose, ca, united states
+- together ai|research intern, model shaping (fall 2026)|
+- together ai|systems research engineer intern|san francisco, ca, usa
+- traba|software engineer (ai agents)|new york city, ny, united states
+- traba|software engineer|new york, ny, usa
+- twitch|software engineer i, commerce engineering|
+- uber|2027 software engineering internship, uber career prep|san francisco, ca, united states
+- virtru|graduate software developer intern|washington, dc, usa
+- waystar|application engineering intern|atlanta, ga, usa | duluth, ga, usa | lehi, ut, usa | louisville, ky, usa
+- westfield|wsp it intern, berkeley heights office (2026 summer)|berkeley heights, nj, united states

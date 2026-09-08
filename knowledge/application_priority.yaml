@@ -1,6 +1,8 @@
 # Regular vs prioritized apply weight.
 # Orthogonal to pursuit_lane (core/broad/practice) and letter priority (A/B/C/D).
-# Labels are suggestions until Junyi confirms (docs/BOUNDARIES.md).
+# Polar may assign READY_PRIORITY from a strong configured signal without
+# waiting for Junyi to confirm each label. Hard-eligibility labels and
+# applications.csv ingest still follow docs/BOUNDARIES.md.
 # Do not Submit, send LinkedIn, or send 1point3acres/email from this file.
 
 last_updated: "2026-09-08"

@@ -101,8 +101,10 @@ heartbeat_columns:
 job_key_rule: >
   Prefer the Jobright job id when the source is Jobright
   (the last path segment of https://jobright.ai/jobs/info/<id>).
-  Store the employer URL in apply_url. Deduplicate again by
-  normalized company + role + location when a Jobright id is missing.
+  Discovery stores the Jobright source_url. Do not require an
+  employer URL during discovery. apply-ready-jobs fills apply_url
+  later. Deduplicate again by normalized company + role + location
+  when a Jobright id is missing.
 
 apply_url_confidence_values:
   - exact

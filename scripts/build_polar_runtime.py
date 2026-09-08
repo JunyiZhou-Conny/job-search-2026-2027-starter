@@ -3,12 +3,29 @@
 from __future__ import annotations
 
 import argparse
+import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
+from urllib.parse import urlparse
+
+from js_lib import (
+    canonical_url,
+    company_role_location_key,
+    jobright_ids_from_text,
+    normalize_text,
+    read_rows,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DEFAULT = ROOT / "generated" / "polar" / "runtime" / "POLAR_RUNTIME.md"
+DATA = ROOT / "data"
+
+BLOCKING_ATTEMPT_OUTCOMES = frozenset(
+    {"submitted_verified", "submitted_unverified", "in_progress"}
+)
+HTTP_URL_RE = re.compile(r"https?://[^\s<>\"')\]]+", re.I)
 
 PROFILE_SKIP_KEYS = {
     "phone",
@@ -44,7 +61,104 @@ SECTION_ORDER = [
     ("H. Submission behavior", "section_h"),
     ("I. Prohibited fabrication", "section_i"),
     ("J. Runtime status semantics", "section_j"),
+    ("K. Historical duplicate guard", "section_k"),
 ]
+
+
+def _http_urls(text: str) -> List[str]:
+    return HTTP_URL_RE.findall(text or "")
+
+
+def _is_jobright_host(url: str) -> bool:
+    host = (urlparse(url).hostname or "").lower()
+    return host == "jobright.ai" or host.endswith(".jobright.ai")
+
+
+def _employer_urls(text: str) -> List[str]:
+    keys: List[str] = []
+    for raw in _http_urls(text):
+        if _is_jobright_host(raw):
+            continue
+        key = canonical_url(raw)
+        if key:
+            keys.append(key)
+    return keys
+
+
+def _usable_company_role_location(company: str, role: str, location: str = "") -> str:
+    if not normalize_text(company) and not normalize_text(role):
+        return ""
+    return company_role_location_key(company, role, location)
+
+
+@dataclass(frozen=True)
+class HistoricalGuard:
+    jobright_ids: tuple[str, ...]
+    urls: tuple[str, ...]
+    company_role_locations: tuple[str, ...]
+
+    @classmethod
+    def compile(cls, data_dir: Optional[Path] = None) -> "HistoricalGuard":
+        data = Path(data_dir) if data_dir else DATA
+        ids: Set[str] = set()
+        urls: Set[str] = set()
+        crls: Set[str] = set()
+
+        for row in read_rows(data / "applications.csv"):
+            ids.update(jobright_ids_from_text(row.get("source_detail", "")))
+            ids.update(jobright_ids_from_text(row.get("job_url", "")))
+            ids.update(jobright_ids_from_text(row.get("posting_url", "")))
+            urls.update(_employer_urls(row.get("job_url", "")))
+            urls.update(_employer_urls(row.get("posting_url", "")))
+            crl = _usable_company_role_location(
+                row.get("company", ""), row.get("role", ""), row.get("location", "")
+            )
+            if crl:
+                crls.add(crl)
+
+        for row in read_rows(data / "job_decisions.csv"):
+            ids.update(jobright_ids_from_text(row.get("url", "")))
+            urls.update(_employer_urls(row.get("url", "")))
+            crl = _usable_company_role_location(
+                row.get("company", ""), row.get("role", ""), row.get("location", "")
+            )
+            if crl:
+                crls.add(crl)
+
+        for row in read_rows(data / "apply_attempts.csv"):
+            if row.get("outcome", "") not in BLOCKING_ATTEMPT_OUTCOMES:
+                continue
+            apply_url = row.get("apply_url", "")
+            ids.update(jobright_ids_from_text(apply_url))
+            urls.update(_employer_urls(apply_url))
+
+        return cls(
+            jobright_ids=tuple(sorted(ids)),
+            urls=tuple(sorted(urls)),
+            company_role_locations=tuple(sorted(crls)),
+        )
+
+    def render(self) -> str:
+        return "\n".join(
+            [
+                "An empty Google Sheet is not a clean slate.",
+                "The GitHub ledger already holds applied, closed, ready, and in-progress keys.",
+                "discover-jobs-hourly and apply-ready-jobs check this guard in addition to the Sheet.",
+                "If any key matches, do not set READY_REGULAR or READY_PRIORITY.",
+                "Do not auto-Submit.",
+                "Write SKIP or leave the row non-READY.",
+                "Match order: Jobright id, then trusted employer/application URL, then company|role|location.",
+                "",
+                "Jobright ids:",
+                bullet(list(self.jobright_ids)),
+                "",
+                "Employer / application URLs:",
+                bullet(list(self.urls)),
+                "",
+                "Company|role|location:",
+                bullet(list(self.company_role_locations)),
+            ]
+        )
 
 
 def load_yaml(path: Path) -> Any:
@@ -278,12 +392,14 @@ def compile_sections() -> Dict[str, str]:
         )
     section_c = "\n".join(
         [
-            "Triage after discover and dedupe. Then resolve Original Job Post only for READY jobs.",
-            "SKIP and obvious later rows keep the Jobright URL. Do not resolve them.",
-            "If Original Job Post fails, keep the Jobright URL. Resolution is an optimization.",
+            "Triage after discover and dedupe.",
+            "Discovery keeps the Jobright source_url. Do not open Original Job Post during discover-jobs-hourly.",
+            "apply-ready-jobs resolves Original Job Post on demand.",
             "",
             bullet(rule_lines),
             "",
+            "An exclusive graduation or enrollment window is an eligibility note, not a skip.",
+            "Do not invent a graduation date.",
             "Sponsorship unknown or no is not a skip.",
             "Do not invent work_model, location, graduation windows, or H1B facts.",
             "Blank location is not an automatic skip.",
@@ -316,9 +432,34 @@ def compile_sections() -> Dict[str, str]:
                 ]
             ),
             "",
-            "Labels stay suggestions until Junyi confirms.",
+            "Polar may assign READY_PRIORITY when a strong configured signal is present.",
+            "Junyi does not confirm every priority label before the queue can move.",
+            "Priority controls execution effort, writing depth, and review-before-Submit.",
+            "It is not permission to invent company facts.",
+            "",
+            "Strong signals. Assign READY_PRIORITY:",
+            bullet(
+                [
+                    "fde (title)",
+                    "gtc_2026 (company on the NVIDIA GTC 2026 list)",
+                    "confirmed_prioritized (YAML list match)",
+                    "clear fortune_500_or_major",
+                    "clear biotech_health_ai",
+                ]
+            ),
+            "",
+            "Weak signals. Stay READY_REGULAR unless clearly justified:",
+            bullet(
+                [
+                    "startup or prestige hints",
+                    "personal_fit",
+                    "generic data or analyst titles",
+                ]
+            ),
+            "",
             "FDE / Forward Deployed titles stay and are marked prioritized.",
             "Do not claim customer on-site FDE work already done.",
+            "READY_PRIORITY still stops at REVIEW_READY.",
         ]
     )
 
@@ -414,7 +555,7 @@ def compile_sections() -> Dict[str, str]:
             "A regular job may be submitted once only when every item holds:",
             bullet(
                 [
-                    "Duplicate check passes against the Sheet and known ledger memory.",
+                    "Duplicate check passes against the Sheet and section K.",
                     "Company and title on the page match the queue row.",
                     "Correct cluster resume is attached.",
                     "Identity fields are correct after a visible read-back.",
@@ -464,6 +605,7 @@ def compile_sections() -> Dict[str, str]:
         [
             "GitHub holds configuration, policy, evidence, and audit.",
             "The Google Sheet holds runtime queue state. It is not a second applications.csv.",
+            "An empty Sheet is not a clean slate. Check section K in addition to the Sheet.",
             "",
             "Statuses:",
             bullet(
@@ -494,6 +636,8 @@ def compile_sections() -> Dict[str, str]:
         ]
     )
 
+    section_k = HistoricalGuard.compile().render()
+
     probe = "\n".join(
         [
             section_a,
@@ -506,6 +650,7 @@ def compile_sections() -> Dict[str, str]:
             section_h,
             section_i,
             section_j,
+            section_k,
         ]
     )
     for value in forbidden_profile_values(profile if isinstance(profile, dict) else {}):
@@ -523,6 +668,7 @@ def compile_sections() -> Dict[str, str]:
         "section_h": section_h,
         "section_i": section_i,
         "section_j": section_j,
+        "section_k": section_k,
     }
 
 
@@ -549,6 +695,9 @@ def render(parts: Dict[str, str]) -> str:
         "- `knowledge/written_response_bank.yaml`",
         "- `knowledge/role_families.yaml`",
         "- `docs/policy/SUBMIT_ROLLOUT.md`",
+        "- `data/applications.csv` (keys only)",
+        "- `data/job_decisions.csv` (keys only)",
+        "- `data/apply_attempts.csv` (keys only)",
         "",
         "Secrets stay out. No passwords, cookies, OTP codes, 2FA secrets, or session files.",
         "",
