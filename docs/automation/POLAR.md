@@ -6,6 +6,7 @@ Operator config is `knowledge/polar_operator.yaml`.
 The file Polar opens every hour is `generated/polar/runtime/POLAR_RUNTIME.md`.
 Queue columns and statuses are `docs/automation/POLAR_QUEUE.md`.
 Paste-ready Workflow text is `docs/automation/POLAR_WORKFLOWS.md`.
+The 48-hour Cloud comparison is `docs/automation/POLAR_SHADOW.md`.
 Pilot packets and the ATS matrix stay under `docs/experiments/` and `generated/polar/`.
 
 The 2026-09-04 Live Slot design in `docs/automation/POLAR_SCALE.md` is the pilot lineage. It is not the production shape.
@@ -192,6 +193,8 @@ For the first 48 hours after Polar hourly discovery is actually running:
 - Cloud morning and evening discovery is shadow and fallback.
 
 Compare jobs found by both, jobs only Cloud found, jobs only Polar found, duplicate rate, latency, false KEEP or SKIP, and employer URL resolution.
+
+The checklist is `docs/automation/POLAR_SHADOW.md`.
 
 Keep Cloud as fallback, reduce it, or retire it only after that evidence exists.
 
