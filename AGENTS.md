@@ -10,7 +10,7 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Preserve existing IDs and append history rather than rewriting it.
 - Every active record should have one concrete `next_action` and, where useful, a `next_action_date`.
 - Prefer a few role-cluster resumes plus targeted bullet edits over creating a completely new resume for every job.
-- Submit is governed by `docs/policy/SUBMIT_ROLLOUT.md`. Regular rows may be submitted autonomously once that ATS gate is open. Prioritized rows always stop for a review packet. Never send a message on Junyi's behalf or claim an action was completed without evidence.
+- Submit is governed by `docs/policy/SUBMIT_ROLLOUT.md`. Regular rows may be submitted autonomously once that ATS gate is open. Polar Local may also Submit prioritized rows after mandatory writing_log. Cursor Cloud prioritized rows still stop for a review packet. Never send a message on Junyi's behalf or claim an action was completed without evidence.
 
 ## Eligibility and sponsorship
 
@@ -32,12 +32,13 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
   gtc_2026, confirmed_prioritized, clear fortune_500_or_major, clear
   biotech_health_ai). Junyi does not confirm every priority label
   before the queue can move. Priority controls execution effort,
-  writing depth, and review-before-Submit. It is not permission to
+  writing depth, and post-submit writing audit. It is not permission to
   invent company facts. Weak signals (startup / prestige hints,
   personal_fit, generic data titles) stay regular unless clearly
   justified. Prioritized: more Why-us
-  care, JD-tuned resume from the evidence bank only, full form prep, then
-  a review packet for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`).
+  care, JD-tuned resume from the evidence bank only, full form prep,
+  mandatory writing_log, then Polar Local may Submit
+  (`docs/policy/SUBMIT_ROLLOUT.md`).
   Do not wait for a referral / insider page on regular rows (Junyi
   2026-08-24: those pages are rare; FIFO in the queue matters more).
   Do not claim FDE customer-on-site work already done.

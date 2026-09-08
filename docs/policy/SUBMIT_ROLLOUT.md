@@ -21,17 +21,18 @@ Chrome. They are not the Polar Local root abstraction.
 | Weight | Who submits | What the agent does |
 |---|---|---|
 | `regular` | the agent, once that plane's regular gate is open | cluster resume, truthful concise answers, fill, validate, Submit once, verify, record |
-| `prioritized` | Junyi, after a review packet | deeper research, tailored resume from the evidence bank, real Why-us, full form prep, stop before Submit, compact packet |
+| `prioritized` | Polar Local may Submit. Cursor Cloud still stops for a review packet. | deeper research, tailored resume from the evidence bank, real Why-us, full form prep, mandatory writing_log, then Submit on Polar Local |
 
 `prioritized` is decided by `knowledge/application_priority.yaml`. The
 FIFO argument (do not wait for a rare insider page) applies to regular
-rows. For prioritized rows the agent does more work before Junyi sees
-it, and Junyi clicks or says "submit it". Polar Local keeps prioritized
-review-first while writing quality is under observation.
+rows. For prioritized rows Polar Local does more writing work, logs
+every meaningful custom answer, Submits when validation passes, and
+puts those rows in the daily digest for post-submit oversight. Cursor
+Cloud still stops for a review packet.
 
 ## Polar Local production gate
 
-Polar Local may click Submit on a regular job only when every item holds.
+Polar Local may click Submit on a regular or prioritized job only when every item holds.
 
 - Duplicate check passes against the Sheet and known ledger memory.
 - Company and title on the page match the queue row.
@@ -40,7 +41,7 @@ Polar Local may click Submit on a regular job only when every item holds.
 - Required factual fields are resolved from `POLAR_RUNTIME` or left for Junyi.
 - No unsupported claim was invented.
 - Writing is evidence-grounded.
-- `application_weight` is `regular`.
+- `application_weight` is `regular`, or it is `prioritized` and every meaningful custom question is in `writing_log` with the exact answer used.
 - Final review of visible widgets passes.
 - One final Submit is used.
 - Result is verified, or status becomes `SUBMISSION_UNKNOWN`.
@@ -53,8 +54,8 @@ Initial canary caps, also in `knowledge/polar_operator.yaml`:
 - max 10 regular submissions per local calendar day in America/New_York
 
 `writing_observation_mode` is true. Regular writing may still submit when
-the facts support it. Prioritized writing is saved and the row stops at
-`REVIEW_READY`.
+the facts support it. Prioritized writing must be logged before Submit.
+`REVIEW_READY` is only for a missing owner fact or an explicit hold.
 
 Do not organize this gate by ATS family. A Workday account wall is
 ordinary local auth work until this Mac cannot complete it.
@@ -92,7 +93,8 @@ Block Submit and record the reason when any of these hold.
 - Non-US work location.
 - An external artifact (exercise URL, portfolio piece) is required and
   not in the profile.
-- `application_weight = prioritized`.
+- `application_weight = prioritized` on the `cursor_cloud` plane only.
+  Polar Local may Submit prioritized rows when writing_log is complete.
 
 ## Protocol for a G2 Submit
 
