@@ -54,6 +54,10 @@ form_strategy:
       future / require sponsorship to work in the US. Any broad wording.
     history: "2026-08-24 recorded No (agent prose); 2026-09-03 set to leave_for_junyi pending confirmation; 2026-09-03 confirmed No by Junyi."
     fact_unchanged: "future_sponsorship_required remains true. The widget answer is the owner's decision, applied verbatim."
+    explicit_status_instruction: >
+      Polar Production 2026-09-09. A form may tell F-1/J-1/M-1 holders
+      to answer Yes or No. Follow that instruction. Do not treat it as
+      a company-specific rule. The standing broad-widget answer stays No.
   citizenship_country:
     decided: "2026-09-03"
     form_answer: "China"
@@ -96,6 +100,7 @@ standard_question_answers:
 
 questions_requiring_manual_review:
   - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"
+  - "Forms that give an explicit F-1/J-1/M-1 Yes or No instruction. Follow the instruction. If it still conflicts with a stored fact, leave the field."
   - "Questions asking if you need sponsorship 'to begin work' when OPT covers start"
   - "Will you now or in the future require work authorization to work in the U.S.? (Quantbot Greenhouse 2026-09-04. Polar set No. Not the standing visa-sponsorship widget until Junyi confirms.)"
   - "Forms that ask only 'graduation date' without distinguishing program end vs commencement — prefer December 2026 / 2026-12-18 unless they explicitly mean ceremony"

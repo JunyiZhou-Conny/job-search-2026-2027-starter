@@ -116,6 +116,9 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("polar_policy.priority_submit_permitted", text)
         self.assertIn("writing_observation_mode: True", text)
         self.assertIn("SUBMISSION_UNKNOWN first", text)
+        self.assertIn("degree_level_gate_missed_at_discovery", text)
+        self.assertIn("github_write_canary must not overwrite polar_browser", text)
+        self.assertIn("explicitly tells F-1, J-1, or M-1 holders", text)
 
     def test_committed_file_matches_compiler(self):
         generated = compile_text()

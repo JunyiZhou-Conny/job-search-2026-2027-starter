@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-08.learning-loop+bc7456cae9c7
+workflow_version: 2026-09-09.prod-learn+f5734268754a
 status: production
 enabled: true
 needs_browser_lock: true
@@ -30,12 +30,16 @@ lock_key: polar_browser
 ttl_minutes: 180
 tab: control
 
-At start, read the control row whose key is polar_browser.
+At start, locate the control row by the key cell polar_browser. Do not pick a visually empty row.
 If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.
 If the lock is free or expired, acquire it with this run_id, this workflow, acquired_at now, and expires_at now plus 180 minutes.
+Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL. Notes may say acquired.
+A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.
 If this long run is still active and remaining time is under 60 minutes, refresh expires_at to now plus 180 minutes.
-Release the lock on normal completion by clearing owner_run_id.
+After each job stage, refresh control notes with polar_policy.lease_checkpoint_notes(job_key, last_stage).
+Release the lock on normal completion by clearing owner_run_id. Keep the checkpoint until then.
 A crashed run must not lock the browser forever. Treat an expired expires_at as free.
+Do not weaken the lease to recover a crashed run.
 
 ## Sheet write contract
 
@@ -52,6 +56,14 @@ never_omit: apply_url_confidence
 6. After an important queue write, read back job_key, status, and last_stage.
 7. If those three fields do not match what you meant, repair the row before the next job.
 
+Control tab writes are key upserts.
+Locate the row by the key cell. Never choose a row because it looks empty on screen.
+If the target key is missing, append a new row. If the visible row has a different key, abort.
+Commit the edit. Then reread key, owner_run_id, notes.
+A cell that looked correct is not proof the write persisted. The reread is the proof.
+github_write_canary must never overwrite polar_browser.
+Use polar_policy.plan_control_write and polar_policy.control_write_persisted.
+
 Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.
 Named writes are the fix. Prose that says remember column I is not the fix.
 
@@ -65,10 +77,14 @@ result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, or NO_WORK.
 
 Write an incident_log row when something material happens.
 Use one category from this list:
-UI_ONE_OFF, LOCAL_PRIVATE_FACT, MISSING_DOCUMENT, FACT_POLICY, TRIAGE, QUEUE_STATE, DEDUP, WRITING, AUTH, PERFORMANCE, NO_ACTION.
+UI_ONE_OFF, LOCAL_PRIVATE_FACT, MISSING_DOCUMENT, MISSING_FACT, FACT_POLICY, TRIAGE, QUEUE_STATE, DEDUP, WRITING, AUTH, PERFORMANCE, NO_ACTION.
 If minutes were lost, also set time_lost_category from:
 AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPDOWN_UI, DUPLICATE, SUBMIT_VERIFY, OTHER.
-repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift.
+repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, degree_level_gate_missed_at_discovery.
+Degree-level hard gates that discovery missed use that one repeat_key. Do not invent phd_only_missed_at_discovery variants.
+incident_id is polar_policy.next_incident_id on today's America/New_York date. Format INC-YYYYMMDD-NNN.
+Read existing incident_id values first. Never reuse one. Do not write INC-YYYYMMDD-01.
+A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
 durable_candidate is yes only when a repo policy or compiler change would prevent a repeat.
 Evidence must be enough for an engineer. No secrets.
 
@@ -120,13 +136,19 @@ If Simplify materially slowed the run, write a PERFORMANCE incident with repeat_
 
 ## Apply-time hard eligibility
 
-Before major fill, read the full employer posting.
-Re-apply the existing hard rules from POLAR_RUNTIME section C.
-Skip when the fuller JD shows a 2026 role or start, employment start before 2027-01-18,
-a non-US work location, PhD-only, or an incompatible TS-SCI or polygraph requirement.
+Immediately after the employer JD is readable, before login, account creation, or form fill,
+run polar_policy.degree_level_hard_skip on the posting text.
+Skip PhD-only and undergraduate-only gates. Master's study is not PhD and is not undergraduate-only.
+If that function returns a skip, status SKIP. Do not authenticate. Do not fill.
+Incident repeat_key is degree_level_gate_missed_at_discovery. Category TRIAGE.
+Also skip a 2026 role or start, employment start before 2027-01-18,
+a non-US work location, or an incompatible TS-SCI or polygraph requirement.
+If the apply URL is 404, removed, or no longer open, polar_policy.closed_posting_action is skip_no_sibling.
+Close the tab. Do not open a sibling requisition.
 Sponsorship unknown or no is not a skip.
 An exclusive graduation window remains a note, not a skip.
 Do not change graduation-window policy.
+Do not move Original Job Post resolution into hourly discovery.
 
 ## Employer requisition dedupe
 
@@ -149,24 +171,30 @@ For each selected job:
 1. Set status IN_PROGRESS and bump attempt_count. Write updated_at now. Read back job_key, status, last_stage.
 2. Open apply_url when confidence is exact or strong. Otherwise open source_url and use Original Job Post.
 3. Confirm company and title match the queue row. If they do not match, BLOCKED or SKIP.
-4. Capture employer identity and run requisition dedupe before extensive fill.
-5. Re-check hard eligibility on the full posting before extensive fill.
-6. Authenticate with ordinary browser flows when asked. Account creation is normal work.
-7. Attach the resume_cluster from the row. Use Simplify at most once. Then read the visible widgets.
-8. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.
-9. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
-10. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
-11. Regular row. Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
-12. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.
+4. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
+5. Read the full employer JD now. Run the apply-time hard eligibility check before login or form work.
+6. Capture employer identity and run requisition dedupe. Then authenticate only if the job is still eligible.
+7. Authenticate with ordinary browser flows when asked. Account creation is normal work.
+8. Attach the resume_cluster from the row. Use Simplify at most once. Then read the visible widgets.
+9. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.
+   For sponsorship widgets, use polar_policy.sponsorship_form_action.
+   Follow an explicit F-1/J-1/M-1 instruction on the form. Do not apply standing No over that instruction.
+   Country-only sponsorship lists and work-authorization wording stay unresolved.
+   The standing broad visa-sponsorship answer remains No. future_sponsorship_required remains true.
+   If those facts and the widget still conflict, leave the field and mark BLOCKED. Do not guess.
+10. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
+11. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
+12. Regular row. Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
+13. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.
     Apply polar_policy.priority_submit_permitted before Submit.
     If any meaningful custom question is unanswered in writing_log, do not Submit. Mark BLOCKED.
     A logged question with a blank answer or a blank evidence_note is a Submit blocker.
     If writing_log is complete and final validation passes, Submit once and verify.
     REVIEW_READY is only for a missing owner fact or an explicit hold. It is not the default for prioritized rows.
-13. If this environment cannot complete a required step after a normal attempt, status BLOCKED. Continue.
-14. Update the Sheet after every meaningful stage with named writes.
+14. If this environment cannot complete a required step after a normal attempt, status BLOCKED. Continue.
+15. Update the Sheet after every meaningful stage with named writes. Refresh the lease checkpoint notes.
 
 ATS family is only a note.
 Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion.
-Write the run_log row, including submitted_regular, submitted_priority, simplify_attempted, and simplify_fallback_count.
+Update the same run_id run_log row, including submitted_regular, submitted_priority, simplify_attempted, and simplify_fallback_count.
 Release the lock.

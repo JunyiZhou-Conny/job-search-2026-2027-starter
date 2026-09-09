@@ -3,7 +3,7 @@
 # Cursor / computer-use must apply these after Copilot, or Junyi types them.
 # Submit is governed by docs/policy/SUBMIT_ROLLOUT.md.
 
-last_updated: "2026-09-07"
+last_updated: "2026-09-09"
 source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules; Junyi 2026-08-25 work-auth / GPA / website / discipline; Junyi leftover rules after Advanced Space redo 2026-08-25"
 
 always:
@@ -44,9 +44,14 @@ always:
       sponsorship. Leave for Junyi until that wording is confirmed.
     supersedes: "2026-08-23 broad-Yes flip (Lila/Hayden/Relativity/Scale)"
     before_any_submit: >
-      Re-read the sponsorship widget. If it is Yes, stop. Junyi: this
-      answer is crucial for not getting filtered out.
+      Re-read the sponsorship widget. If it is Yes and the form did not
+      explicitly instruct F-1, J-1, or M-1 holders to answer Yes, stop.
     fact_unchanged: "future_sponsorship_required remains true"
+    explicit_status_instruction: >
+      If the form itself tells holders of a named current status which
+      Yes or No to select, follow that instruction for F-1. That is not
+      the standing broad-widget No. If the instruction is missing or the
+      facts still conflict, leave the widget and block that field.
     reason: >
       Junyi Hayden review 2026-08-24. Computer-use had flipped Hayden
       from Copilot No to Yes under the old rule. Form still shows Yes.

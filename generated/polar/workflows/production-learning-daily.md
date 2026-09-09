@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-08.learning-loop+0d5f20e2867c
+workflow_version: 2026-09-09.prod-learn+ce3f5fbd9d28
 status: production
 enabled: true
 needs_browser_lock: false
@@ -44,6 +44,14 @@ never_omit: apply_url_confidence
 6. After an important queue write, read back job_key, status, and last_stage.
 7. If those three fields do not match what you meant, repair the row before the next job.
 
+Control tab writes are key upserts.
+Locate the row by the key cell. Never choose a row because it looks empty on screen.
+If the target key is missing, append a new row. If the visible row has a different key, abort.
+Commit the edit. Then reread key, owner_run_id, notes.
+A cell that looked correct is not proof the write persisted. The reread is the proof.
+github_write_canary must never overwrite polar_browser.
+Use polar_policy.plan_control_write and polar_policy.control_write_persisted.
+
 Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.
 Named writes are the fix. Prose that says remember column I is not the fix.
 
@@ -57,10 +65,14 @@ result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, or NO_WORK.
 
 Write an incident_log row when something material happens.
 Use one category from this list:
-UI_ONE_OFF, LOCAL_PRIVATE_FACT, MISSING_DOCUMENT, FACT_POLICY, TRIAGE, QUEUE_STATE, DEDUP, WRITING, AUTH, PERFORMANCE, NO_ACTION.
+UI_ONE_OFF, LOCAL_PRIVATE_FACT, MISSING_DOCUMENT, MISSING_FACT, FACT_POLICY, TRIAGE, QUEUE_STATE, DEDUP, WRITING, AUTH, PERFORMANCE, NO_ACTION.
 If minutes were lost, also set time_lost_category from:
 AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPDOWN_UI, DUPLICATE, SUBMIT_VERIFY, OTHER.
-repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift.
+repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, degree_level_gate_missed_at_discovery.
+Degree-level hard gates that discovery missed use that one repeat_key. Do not invent phd_only_missed_at_discovery variants.
+incident_id is polar_policy.next_incident_id on today's America/New_York date. Format INC-YYYYMMDD-NNN.
+Read existing incident_id values first. Never reuse one. Do not write INC-YYYYMMDD-01.
+A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
 durable_candidate is yes only when a repo policy or compiler change would prevent a repeat.
 Evidence must be enough for an engineer. No secrets.
 

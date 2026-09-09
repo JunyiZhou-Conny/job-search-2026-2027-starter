@@ -25,6 +25,7 @@ INCIDENT_CATEGORIES = (
     "UI_ONE_OFF",
     "LOCAL_PRIVATE_FACT",
     "MISSING_DOCUMENT",
+    "MISSING_FACT",
     "FACT_POLICY",
     "TRIAGE",
     "QUEUE_STATE",
@@ -65,6 +66,9 @@ LOCK_RESULTS = (
 )
 
 REQUIRED_QUEUE_READBACK = ("job_key", "status", "last_stage")
+CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
+DEGREE_LEVEL_REPEAT_KEY = "degree_level_gate_missed_at_discovery"
+INCIDENT_ID_RE = re.compile(r"^INC-(\d{8})-(\d{1,3})$")
 
 BROWSER_LOCK_WORKFLOWS = (
     "discover-jobs-hourly",
@@ -403,6 +407,237 @@ def release_lease(run_id: str, workflow: str, now: datetime) -> LeaseDecision:
         expires_at=now.isoformat(),
         notes=f"released by {run_id}",
     )
+
+
+@dataclass(frozen=True)
+class ControlWritePlan:
+    action: str
+    row_index: Optional[int]
+    key: str
+    notes: str
+
+
+def locate_row_by_key(
+    rows: Sequence[Mapping[str, Any]],
+    key: str,
+    field: str = "key",
+) -> Optional[int]:
+    target = normalize_text(key)
+    matches = [
+        index
+        for index, row in enumerate(rows)
+        if normalize_text(str(row.get(field) or "")) == target
+    ]
+    if len(matches) > 1:
+        raise ValueError(f"duplicate {field} {key}")
+    if not matches:
+        return None
+    return matches[0]
+
+
+def control_row_is_writable(row: Mapping[str, Any], intended_key: str) -> bool:
+    existing = normalize_text(str(row.get("key") or ""))
+    if not existing:
+        return True
+    return existing == normalize_text(intended_key)
+
+
+def plan_control_write(
+    rows: Sequence[Mapping[str, Any]],
+    key: str,
+) -> ControlWritePlan:
+    index = locate_row_by_key(rows, key, "key")
+    if index is None:
+        return ControlWritePlan("append", None, key, "append new control key")
+    row = rows[index]
+    if not control_row_is_writable(row, key):
+        return ControlWritePlan("abort", index, key, "refusing to overwrite a different control key")
+    return ControlWritePlan("update", index, key, "update existing control key")
+
+
+def control_write_persisted(
+    after_rows: Sequence[Mapping[str, Any]],
+    *,
+    key: str,
+    intended: Mapping[str, Any],
+    protected_keys: Sequence[str] = (),
+    before_rows: Sequence[Mapping[str, Any]] = (),
+) -> bool:
+    index = locate_row_by_key(after_rows, key, "key")
+    if index is None:
+        return False
+    row = after_rows[index]
+    for field, value in intended.items():
+        if str(row.get(field) or "") != str(value):
+            return False
+    before_by_key = {
+        normalize_text(str(row.get("key") or "")): row
+        for row in before_rows
+        if str(row.get("key") or "").strip()
+    }
+    for protected in protected_keys:
+        protected_norm = normalize_text(protected)
+        if protected_norm == normalize_text(key):
+            continue
+        prior = before_by_key.get(protected_norm)
+        if prior is None:
+            continue
+        later_index = locate_row_by_key(after_rows, protected, "key")
+        if later_index is None:
+            return False
+        later = after_rows[later_index]
+        for field in CONTROL_REQUIRED_READBACK:
+            if str(later.get(field) or "") != str(prior.get(field) or ""):
+                return False
+    return True
+
+
+def lease_checkpoint_notes(job_key: str, last_stage: str) -> str:
+    return f"checkpoint job_key={job_key} last_stage={last_stage}"
+
+
+def parse_lease_checkpoint(notes: str) -> Optional[Tuple[str, str]]:
+    text = notes or ""
+    job_match = re.search(r"job_key=([A-Za-z0-9._:-]+)", text)
+    stage_match = re.search(r"last_stage=([A-Za-z0-9._:-]+)", text)
+    if not job_match or not stage_match:
+        return None
+    return job_match.group(1), stage_match.group(1)
+
+
+def plan_run_log_write(
+    rows: Sequence[Mapping[str, Any]],
+    run_id: str,
+) -> ControlWritePlan:
+    index = locate_row_by_key(rows, run_id, "run_id")
+    if index is None:
+        return ControlWritePlan("append", None, run_id, "append new run_log row")
+    return ControlWritePlan("update", index, run_id, "update existing run_log row")
+
+
+def parse_incident_id(value: str) -> Optional[Tuple[str, int]]:
+    match = INCIDENT_ID_RE.match((value or "").strip())
+    if not match:
+        return None
+    return match.group(1), int(match.group(2))
+
+
+def next_incident_id(existing: Sequence[str], day: str) -> str:
+    compact = (day or "").replace("-", "")
+    if len(compact) != 8 or not compact.isdigit():
+        raise ValueError("incident day must be YYYY-MM-DD or YYYYMMDD")
+    used = {
+        number
+        for parsed in (parse_incident_id(raw) for raw in existing)
+        if parsed and parsed[0] == compact
+        for number in (parsed[1],)
+    }
+    next_number = 1
+    while next_number in used:
+        next_number += 1
+    return f"INC-{compact}-{next_number:03d}"
+
+
+def incident_ids_are_unique(existing: Sequence[str]) -> bool:
+    values = [str(raw).strip() for raw in existing if str(raw).strip()]
+    if len(values) != len(set(values)):
+        return False
+    parsed = [parse_incident_id(value) for value in values]
+    valid = [item for item in parsed if item]
+    return len(valid) == len(set(valid))
+
+
+def degree_level_hard_skip(jd_text: str) -> Optional[str]:
+    text = normalize_text(jd_text)
+    if not text:
+        return None
+    phd_markers = (
+        "phd only",
+        "ph.d. only",
+        "ph.d only",
+        "doctoral students only",
+        "phd students only",
+        "must be a current phd",
+        "must be pursuing a phd",
+        "candidates must be pursuing a phd",
+    )
+    undergrad_markers = (
+        "undergraduate students only",
+        "undergraduates only",
+        "current undergraduate students only",
+        "must be an undergraduate",
+        "bachelor's students only",
+        "bachelors students only",
+    )
+    if any(marker in text for marker in phd_markers):
+        return "phd_only"
+    if any(marker in text for marker in undergrad_markers):
+        return "undergrad_only"
+    return None
+
+
+def closed_posting_action(page_signal: str) -> str:
+    text = normalize_text(page_signal)
+    if any(token in text for token in ("404", "no longer open", "removed", "no longer accepting")):
+        return "skip_no_sibling"
+    return "continue"
+
+
+def _explicit_status_answer(text: str) -> Optional[str]:
+    normalized = normalize_text(text)
+    if not normalized:
+        return None
+    if normalized in {"yes", "answer yes", "select yes"}:
+        return "yes"
+    if normalized in {"no", "answer no", "select no"}:
+        return "no"
+    if not re.search(r"\b(f-1|f1|j-1|j1|m-1|m1)\b", normalized):
+        return None
+    if re.search(r"\b(answer|select|choose)\s+yes\b", normalized):
+        return "yes"
+    if re.search(r"\b(answer|select|choose)\s+no\b", normalized):
+        return "no"
+    return None
+
+
+def _unclear_status_instruction(*texts: str) -> bool:
+    for text in texts:
+        normalized = normalize_text(text)
+        if not normalized:
+            continue
+        if not re.search(r"\b(f-1|f1|j-1|j1|m-1|m1)\b", normalized):
+            continue
+        if re.search(r"\b(answer|select|choose)\b", normalized):
+            return True
+    return False
+
+
+def sponsorship_form_action(
+    *,
+    widget_text: str,
+    explicit_status_instruction: str = "",
+    names_non_us_countries_only: bool = False,
+    says_work_authorization_not_sponsorship: bool = False,
+) -> Tuple[str, str]:
+    instructed = _explicit_status_answer(explicit_status_instruction) or _explicit_status_answer(
+        widget_text
+    )
+    if instructed == "yes":
+        return "answer_yes", "explicit_status_instruction"
+    if instructed == "no":
+        return "answer_no", "explicit_status_instruction"
+    if instructed is None and _unclear_status_instruction(
+        explicit_status_instruction, widget_text
+    ):
+        return "leave_unresolved", "explicit_status_instruction_unclear"
+    if names_non_us_countries_only:
+        return "leave_unresolved", "country_specific_sponsorship"
+    if says_work_authorization_not_sponsorship:
+        return "leave_unresolved", "work_authorization_wording"
+    text = normalize_text(widget_text)
+    if "work authorization" in text and "sponsorship" not in text:
+        return "leave_unresolved", "work_authorization_wording"
+    return "answer_no", "standing_visa_sponsorship"
 
 
 @dataclass(frozen=True)

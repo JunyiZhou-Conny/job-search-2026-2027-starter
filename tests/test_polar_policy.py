@@ -12,15 +12,26 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from polar_policy import (  # noqa: E402
     APPLY_URL_CONFIDENCE,
+    INCIDENT_CATEGORIES,
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     TIME_LOST_CATEGORIES,
     apply_run_caps,
+    closed_posting_action,
+    control_row_is_writable,
+    control_write_persisted,
     decide_lease,
+    degree_level_hard_skip,
     document_availability,
     header_map,
+    incident_ids_are_unique,
+    lease_checkpoint_notes,
     named_row,
+    next_incident_id,
+    parse_lease_checkpoint,
     pick_canonical_requisition_row,
+    plan_control_write,
+    plan_run_log_write,
     priority_submit_permitted,
     readback_fields,
     release_lease,
@@ -29,6 +40,7 @@ from polar_policy import (  # noqa: E402
     sanitize_learning_text,
     select_apply_batch,
     sibling_job_keys,
+    sponsorship_form_action,
     workflow_version,
     writing_log_status,
 )
@@ -432,6 +444,175 @@ class TestWorkflowVersionAndDocuments(unittest.TestCase):
                 "OTHER",
             ),
         )
+
+    def test_incident_categories_include_missing_fact(self):
+        import yaml
+
+        operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(tuple(operator["incident_categories"]), INCIDENT_CATEGORIES)
+        self.assertIn("MISSING_FACT", INCIDENT_CATEGORIES)
+        self.assertGreater(
+            INCIDENT_CATEGORIES.index("MISSING_FACT"),
+            INCIDENT_CATEGORIES.index("MISSING_DOCUMENT"),
+        )
+
+
+class TestControlKeyUpsert(unittest.TestCase):
+    def test_canary_must_not_overwrite_browser_lock(self):
+        rows = [
+            {
+                "key": "polar_browser",
+                "owner_run_id": "R-20260909-0420",
+                "notes": "",
+            }
+        ]
+        self.assertFalse(control_row_is_writable(rows[0], "github_write_canary"))
+        plan = plan_control_write(rows, "github_write_canary")
+        self.assertEqual(plan.action, "append")
+        self.assertIsNone(plan.row_index)
+
+    def test_empty_looking_lock_row_is_still_protected(self):
+        row = {"key": "polar_browser", "owner_run_id": "", "notes": ""}
+        self.assertFalse(control_row_is_writable(row, "github_write_canary"))
+
+    def test_persisted_canary_keeps_browser_lock(self):
+        before = [
+            {"key": "polar_browser", "owner_run_id": "R-1", "notes": "checkpoint job_key=abc last_stage=form_filled"},
+        ]
+        after_bad = [
+            {"key": "github_write_canary", "owner_run_id": "", "notes": "success"},
+        ]
+        self.assertFalse(
+            control_write_persisted(
+                after_bad,
+                key="github_write_canary",
+                intended={"key": "github_write_canary", "notes": "success"},
+                protected_keys=("polar_browser",),
+                before_rows=before,
+            )
+        )
+        after_good = [
+            {"key": "polar_browser", "owner_run_id": "R-1", "notes": "checkpoint job_key=abc last_stage=form_filled"},
+            {"key": "github_write_canary", "owner_run_id": "", "notes": "success; https://example.com/114"},
+        ]
+        self.assertTrue(
+            control_write_persisted(
+                after_good,
+                key="github_write_canary",
+                intended={
+                    "key": "github_write_canary",
+                    "notes": "success; https://example.com/114",
+                },
+                protected_keys=("polar_browser",),
+                before_rows=before,
+            )
+        )
+
+
+class TestCrashCheckpoint(unittest.TestCase):
+    def test_checkpoint_round_trip(self):
+        notes = lease_checkpoint_notes("uber-301056", "application_open")
+        self.assertEqual(parse_lease_checkpoint(notes), ("uber-301056", "application_open"))
+
+    def test_run_log_upserts_same_run_id(self):
+        rows = [{"run_id": "R-20260909-0420", "result": "PARTIAL"}]
+        plan = plan_run_log_write(rows, "R-20260909-0420")
+        self.assertEqual(plan.action, "update")
+        self.assertEqual(plan.row_index, 0)
+        self.assertEqual(plan_run_log_write([], "R-20260909-0420").action, "append")
+
+
+class TestIncidentIds(unittest.TestCase):
+    def test_mixed_widths_and_duplicate_do_not_reuse(self):
+        existing = ["INC-20260909-001", "INC-20260909-01", "INC-20260909-003", "INC-20260909-003"]
+        self.assertFalse(incident_ids_are_unique(existing))
+        self.assertFalse(incident_ids_are_unique(["INC-20260909-001", "INC-20260909-01"]))
+        self.assertEqual(next_incident_id(existing, "2026-09-09"), "INC-20260909-002")
+
+    def test_next_id_after_three_is_four(self):
+        existing = ["INC-20260909-001", "INC-20260909-002", "INC-20260909-003"]
+        self.assertEqual(next_incident_id(existing, "20260909"), "INC-20260909-004")
+        self.assertTrue(incident_ids_are_unique(existing))
+
+
+class TestDegreeLevelGate(unittest.TestCase):
+    def test_phd_only_full_jd_is_skip(self):
+        self.assertEqual(
+            degree_level_hard_skip("This internship is PhD students only."),
+            "phd_only",
+        )
+
+    def test_undergrad_only_full_jd_is_skip(self):
+        self.assertEqual(
+            degree_level_hard_skip("Current undergraduate students only may apply."),
+            "undergrad_only",
+        )
+
+    def test_pursuing_a_degree_is_not_a_skip(self):
+        self.assertIsNone(degree_level_hard_skip("Must be currently pursuing a degree."))
+
+    def test_phd_preferred_is_not_a_skip(self):
+        self.assertIsNone(degree_level_hard_skip("PhD preferred. Master's students are welcome."))
+
+    def test_phd_and_masters_is_not_a_skip(self):
+        self.assertIsNone(
+            degree_level_hard_skip("This position is for PhD and Master's students.")
+        )
+
+
+class TestClosedPostingAndSponsorship(unittest.TestCase):
+    def test_removed_posting_does_not_open_a_sibling(self):
+        self.assertEqual(closed_posting_action("This requisition has been removed"), "skip_no_sibling")
+        self.assertEqual(closed_posting_action("404"), "skip_no_sibling")
+        self.assertEqual(closed_posting_action("Apply now"), "continue")
+
+    def test_explicit_f1_instruction_overrides_standing_no(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you require visa sponsorship now or in the future?",
+            explicit_status_instruction="F-1, J-1, or M-1 holders must answer Yes",
+        )
+        self.assertEqual(action, "answer_yes")
+        self.assertEqual(reason, "explicit_status_instruction")
+
+    def test_standing_broad_widget_stays_no(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?"
+        )
+        self.assertEqual(action, "answer_no")
+        self.assertEqual(reason, "standing_visa_sponsorship")
+
+    def test_work_authorization_wording_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require work authorization to work in the U.S.?"
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "work_authorization_wording")
+
+    def test_country_list_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Does HPE sponsor in the United Kingdom or Germany?",
+            names_non_us_countries_only=True,
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "country_specific_sponsorship")
+
+    def test_f1_welcome_without_yes_no_keeps_standing_no(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            explicit_status_instruction="F-1 students are welcome to apply.",
+        )
+        self.assertEqual(action, "answer_no")
+        self.assertEqual(reason, "standing_visa_sponsorship")
+
+    def test_unclear_f1_select_instruction_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            explicit_status_instruction="F-1 holders must select the first option.",
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "explicit_status_instruction_unclear")
 
 
 if __name__ == "__main__":

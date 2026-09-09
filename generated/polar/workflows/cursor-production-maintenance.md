@@ -1,7 +1,7 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-08.learning-loop+21b841a26ef0
+workflow_version: 2026-09-09.prod-learn+21b841a26ef0
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
