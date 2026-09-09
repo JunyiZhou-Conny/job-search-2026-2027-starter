@@ -5,3 +5,4 @@ ts	phase	decision	why	evidence	result
 2026-09-09T13:25:00Z	design	chatgpt_required true is a load error. Cursor reads the Polar Production title directly.	The nightly path must not open ChatGPT.	resolve_maintenance_policy	encoded
 2026-09-09T13:26:00Z	compiler	Rewrite cursor-production-maintenance and keep chatgpt-production-review compiled and disabled.	Optional tooling stays. It is not a gate.	scripts/polar_workflows.py	compiled
 2026-09-09T13:27:00Z	policy	Maintenance stays disabled until a real report exists. Recommended 22:35 ET later.	Do not race production-learning-daily. Do not take polar_browser.	knowledge/polar_operator.yaml maintenance	disabled_until_proven
+2026-09-09T13:28:00Z	verify	Full unittest discover after the direct Cursor maintenance encoding.	Need a real artifact check, not a self-report.	python3 -m unittest discover -s tests	229 OK
