@@ -22,6 +22,7 @@ greenhouse:
   Gallup: gallup  # verified 2026-09-08; Summer 2027 intern titles unique (AI/ML 4395921009 / DS 4395491009 / SWE 4395897009 SF)
   Gemini: gemini
   # Google DeepMind product branding sometimes appears as Gemini on boards
+  "IMC Trading": imc  # verified 2026-09-09; Machine Learning Research Intern Summer 2027 Chicago 4907430101 (eu.greenhouse host; job location Chicago US)
   Inversion: inversionspace  # verified 2026-09-06; slug guess inversion 404s; Autonomy Engineer I, Arc Vehicle 4705511005 Playa Vista
   Kodiak: kodiak  # verified 2026-09-04; Winter 2027 Intern, Data Engineering 4396622009
   "Lila Sciences": lilasciences  # verified 2026-08-23
@@ -41,6 +42,7 @@ greenhouse:
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
+  "Allen Control Systems": allen-control-systems  # verified 2026-09-09; CV/ML Intern 2027 a7831fef / SWE Intern 2027 ed5c58a7 Austin
   Anyscale: anyscale  # verified 2026-08-24; isolation Submit test (Ray Core SF Hybrid)
   Baseten: baseten
   "Bild AI": bild-ai
@@ -48,6 +50,7 @@ ashby:
   Etched: etched
   Fab2: fab2  # verified 2026-09-05; Infrastructure Software Engineering Intern - Summer 53f3fe23 (Austin)
   "Hayden AI": haydenai  # verified 2026-08-23
+  Kustomer: kustomer  # verified 2026-09-09; Software Engineer, Full Stack (Early Career) 4037272a
   MeshyAI: meshy  # verified 2026-08-23; includes AI Infrastructure Engineer (Bay Area)
   Midjourney: midjourney  # verified 2026-08-24; QA Analyst form
   Northwood: northwoodspace  # verified 2026-09-04; company key is Northwood, slug is northwoodspace
