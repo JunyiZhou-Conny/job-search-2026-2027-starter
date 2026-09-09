@@ -55,9 +55,10 @@ form_strategy:
     history: "2026-08-24 recorded No (agent prose); 2026-09-03 set to leave_for_junyi pending confirmation; 2026-09-03 confirmed No by Junyi."
     fact_unchanged: "future_sponsorship_required remains true. The widget answer is the owner's decision, applied verbatim."
     explicit_status_instruction: >
-      Polar Production 2026-09-09. A form may tell F-1/J-1/M-1 holders
-      to answer Yes or No. Follow that instruction. Do not treat it as
-      a company-specific rule. The standing broad-widget answer stays No.
+      Polar Production 2026-09-09. If the form names F-1/J-1/M-1 and
+      clearly says answer Yes or answer No, follow that polarity on
+      that widget. Select Yes or No, or not/never with Yes, stays
+      unresolved. The standing broad-widget answer stays No.
   citizenship_country:
     decided: "2026-09-03"
     form_answer: "China"

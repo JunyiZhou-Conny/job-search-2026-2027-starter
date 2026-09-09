@@ -18,9 +18,12 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Never mark a role `ineligible` only because sponsorship is `no` or `unclear`.
 - Visa-sponsorship **form** answer, confirmed by Junyi in writing on
   2026-09-03: **No** on any broad "now or in the future" widget.
-  Citizenship widgets: **China**. If they ask for visa **type**, put
-  **F-1**. Re-read these widgets after every autofill (Copilot set United
-  States once). The fact `future_sponsorship_required: true` is unchanged.
+  If the form names F-1/J-1/M-1 and clearly says answer Yes or answer
+  No, follow that polarity on that widget. If polarity is unclear,
+  leave the field. Citizenship widgets: **China**. If they ask for visa
+  **type**, put **F-1**. Re-read these widgets after every autofill
+  (Copilot set United States once). The fact
+  `future_sponsorship_required: true` is unchanged.
 - Graduation **date** widgets: **2026-12-18**. Year-only widgets: **2027**.
 - Non-US work location (Belgrade, etc.) → skip. Do not Submit.
 - Use `pursuit_lane`: `core` | `broad` | `practice`.

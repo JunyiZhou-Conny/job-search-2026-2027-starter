@@ -94,12 +94,12 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("## Employer requisition dedupe", text)
         self.assertIn("## Apply-time hard eligibility", text)
         self.assertIn("Sponsorship unknown or no is not a skip.", text)
-        self.assertIn("degree_level_hard_skip", text)
+        self.assertIn("phd candidates only", text)
         self.assertIn("degree_level_gate_missed_at_discovery", text)
         self.assertIn("before login or form work", text)
         self.assertIn("Do not pick a sibling from the employer's current openings.", text)
-        self.assertIn("sponsorship_form_action", text)
-        self.assertIn("Do not apply standing No over that instruction.", text)
+        self.assertIn("clearly says answer Yes or answer No", text)
+        self.assertIn("Barriers removed is not a closed page.", text)
         self.assertIn("Do not move Original Job Post resolution into hourly discovery.", text)
 
     def test_control_writes_are_key_upserts(self):
@@ -111,9 +111,10 @@ class TestGeneratedWorkflows(unittest.TestCase):
             self.assertIn("The reread is the proof.", text)
         self.assertIn("upsert a run_log row for this run_id", apply_text)
         self.assertIn("lease_checkpoint_notes", apply_text)
-        self.assertIn("next_incident_id", apply_text)
         self.assertIn("INC-YYYYMMDD-NNN", apply_text)
+        self.assertIn("01 and 001 count as the same number", apply_text)
         self.assertIn("MISSING_FACT, not MISSING_DOCUMENT", apply_text)
+        self.assertIn("acquired_at, and expires_at", canary)
         self.assertIn("Never write into the polar_browser row.", canary)
 
     def test_daily_summary_highlights_priority_submits(self):

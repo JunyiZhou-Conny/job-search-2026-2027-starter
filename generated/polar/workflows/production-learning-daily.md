@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-09.prod-learn+ce3f5fbd9d28
+workflow_version: 2026-09-09.prod-learn+883ef0571767
 status: production
 enabled: true
 needs_browser_lock: false
@@ -46,11 +46,15 @@ never_omit: apply_url_confidence
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
-If the target key is missing, append a new row. If the visible row has a different key, abort.
+If the target key is missing, append a new row.
+If the visible row has a different key, or no key, abort. Do not write that row.
+If two rows share the same key, abort.
 Commit the edit. Then reread key, owner_run_id, notes.
 A cell that looked correct is not proof the write persisted. The reread is the proof.
 github_write_canary must never overwrite polar_browser.
-Use polar_policy.plan_control_write and polar_policy.control_write_persisted.
+After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
+Those four cells must still match the values from before the canary write. Notes on that lock may change.
+These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.
 
 Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.
 Named writes are the fix. Prose that says remember column I is not the fix.
@@ -70,8 +74,9 @@ If minutes were lost, also set time_lost_category from:
 AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPDOWN_UI, DUPLICATE, SUBMIT_VERIFY, OTHER.
 repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, degree_level_gate_missed_at_discovery.
 Degree-level hard gates that discovery missed use that one repeat_key. Do not invent phd_only_missed_at_discovery variants.
-incident_id is polar_policy.next_incident_id on today's America/New_York date. Format INC-YYYYMMDD-NNN.
+incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits.
 Read existing incident_id values first. Never reuse one. Do not write INC-YYYYMMDD-01.
+If 001 and 003 exist, the next id is 002. 01 and 001 count as the same number.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
 durable_candidate is yes only when a repo policy or compiler change would prevent a repeat.
 Evidence must be enough for an engineer. No secrets.

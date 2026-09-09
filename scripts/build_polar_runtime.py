@@ -373,7 +373,7 @@ def compile_sections() -> Dict[str, str]:
                     f"Current visa type when asked: {visa}",
                     f"Future sponsorship required (standing fact): {auth.get('future_sponsorship_required')}",
                     f"Broad visa-sponsorship widget: {sponsorship_form}",
-                    "If the form explicitly tells F-1, J-1, or M-1 holders which Yes or No to select, follow that instruction. Do not apply standing No over it.",
+                    "If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.",
                     "Country-only sponsorship lists and work-authorization wording stay unresolved.",
                     "H-1B-named widget: No",
                     f"Program end / I-20 date: {program_end}",
@@ -717,7 +717,8 @@ def compile_sections() -> Dict[str, str]:
             "After an important queue write, read back job_key, status, and last_stage.",
             "If those fields do not match, repair the row before the next job.",
             "Control writes locate the row by key. Never pick a visually empty row.",
-            "If the visible row has a different key, abort. github_write_canary must not overwrite polar_browser.",
+            "If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.",
+            "After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.",
             "Commit the edit, then reread key, owner_run_id, and notes. Looking correct is not persistence.",
         ]
     )
@@ -739,7 +740,7 @@ def compile_sections() -> Dict[str, str]:
         [
             "One workflow invocation upserts one run_log row by run_id and copies workflow_version from the instruction file.",
             "Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.",
-            "incident_id is INC-YYYYMMDD-NNN from polar_policy.next_incident_id. Never reuse a value.",
+            "incident_id is INC-YYYYMMDD-NNN with three digits. Read existing values first. Never reuse one. 01 and 001 count as the same number.",
             "Degree-level apply-time skips share repeat_key degree_level_gate_missed_at_discovery.",
             "A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.",
             "If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.",

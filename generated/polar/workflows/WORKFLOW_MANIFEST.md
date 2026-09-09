@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the bootstrap prompt from docs/automation/POLAR_WORKFLOWS.md.
 They open the raw main URL on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-09.prod-learn+ad7bb16a34c6`
-- `apply-ready-jobs` workflow_version `2026-09-09.prod-learn+f5734268754a`
-- `daily-job-summary` workflow_version `2026-09-09.prod-learn+e5bd040b8b98`
-- `production-learning-daily` workflow_version `2026-09-09.prod-learn+ce3f5fbd9d28`
+- `discover-jobs-hourly` workflow_version `2026-09-09.prod-learn+b2681682cb94`
+- `apply-ready-jobs` workflow_version `2026-09-09.prod-learn+30a2eb63308d`
+- `daily-job-summary` workflow_version `2026-09-09.prod-learn+56b0e68af85d`
+- `production-learning-daily` workflow_version `2026-09-09.prod-learn+883ef0571767`
 - `polar-scheduler-heartbeat` workflow_version `2026-09-09.prod-learn+d99af025ea26`
-- `polar-github-write-canary` workflow_version `2026-09-09.prod-learn+53cbf7dfb38c`
+- `polar-github-write-canary` workflow_version `2026-09-09.prod-learn+dbeea5e727df`
 - `chatgpt-production-review` workflow_version `2026-09-09.prod-learn+1689f8dc545a`
 - `cursor-production-maintenance` workflow_version `2026-09-09.prod-learn+21b841a26ef0`
-- `polar-sheet-migration` workflow_version `2026-09-09.prod-learn+861a01032a6c`
+- `polar-sheet-migration` workflow_version `2026-09-09.prod-learn+876410de385b`

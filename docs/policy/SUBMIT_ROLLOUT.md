@@ -130,11 +130,13 @@ Block Submit and record the reason when any of these hold.
 
 - Broad sponsorship question. Resolved 2026-09-03. Junyi confirmed in
   writing: answer No on any "now or in the future need sponsorship or
-  immigration support" widget. Citizenship China, no permanent residence
-  elsewhere, eligible to begin immediately Yes, and Copilot's EEO values
-  preserved. Recorded in `knowledge/work_authorization.yaml` and
-  `knowledge/form_strategy.yaml`. The fact `future_sponsorship_required:
-  true` is unchanged.
+  immigration support" widget. If the form names F-1/J-1/M-1 and
+  clearly says answer Yes or answer No, that polarity governs that
+  widget. If polarity is unclear, leave the field. Citizenship China, no
+  permanent residence elsewhere, eligible to begin immediately Yes, and
+  Copilot's EEO values preserved. Recorded in
+  `knowledge/work_authorization.yaml` and `knowledge/form_strategy.yaml`.
+  The fact `future_sponsorship_required: true` is unchanged.
 - Outlook MCP authentication for confirmation-email verification.
 
 ## History

@@ -25,6 +25,7 @@ from polar_policy import (  # noqa: E402
     document_availability,
     header_map,
     incident_ids_are_unique,
+    inspect_visible_control_row,
     lease_checkpoint_notes,
     named_row,
     next_incident_id,
@@ -476,30 +477,55 @@ class TestControlKeyUpsert(unittest.TestCase):
     def test_empty_looking_lock_row_is_still_protected(self):
         row = {"key": "polar_browser", "owner_run_id": "", "notes": ""}
         self.assertFalse(control_row_is_writable(row, "github_write_canary"))
+        self.assertEqual(inspect_visible_control_row(row, "github_write_canary").action, "abort")
 
-    def test_persisted_canary_keeps_browser_lock(self):
+    def test_visually_empty_row_is_not_writable(self):
+        row = {"key": "", "owner_run_id": "", "notes": ""}
+        self.assertFalse(control_row_is_writable(row, "github_write_canary"))
+        self.assertEqual(inspect_visible_control_row(row, "github_write_canary").action, "abort")
+
+    def test_persisted_canary_keeps_lease_times(self):
         before = [
-            {"key": "polar_browser", "owner_run_id": "R-1", "notes": "checkpoint job_key=abc last_stage=form_filled"},
+            {
+                "key": "polar_browser",
+                "owner_run_id": "R-1",
+                "acquired_at": "2026-09-09T04:20:00-04:00",
+                "expires_at": "2026-09-09T07:20:00-04:00",
+                "notes": "checkpoint job_key=abc last_stage=form_filled",
+            }
         ]
-        after_bad = [
+        after_stolen = [
+            {
+                "key": "polar_browser",
+                "owner_run_id": "R-1",
+                "acquired_at": "",
+                "expires_at": "",
+                "notes": "checkpoint job_key=abc last_stage=form_filled",
+            },
             {"key": "github_write_canary", "owner_run_id": "", "notes": "success"},
         ]
         self.assertFalse(
             control_write_persisted(
-                after_bad,
+                after_stolen,
                 key="github_write_canary",
                 intended={"key": "github_write_canary", "notes": "success"},
                 protected_keys=("polar_browser",),
                 before_rows=before,
             )
         )
-        after_good = [
-            {"key": "polar_browser", "owner_run_id": "R-1", "notes": "checkpoint job_key=abc last_stage=form_filled"},
+        after_checkpoint = [
+            {
+                "key": "polar_browser",
+                "owner_run_id": "R-1",
+                "acquired_at": "2026-09-09T04:20:00-04:00",
+                "expires_at": "2026-09-09T07:20:00-04:00",
+                "notes": "checkpoint job_key=uber last_stage=application_open",
+            },
             {"key": "github_write_canary", "owner_run_id": "", "notes": "success; https://example.com/114"},
         ]
         self.assertTrue(
             control_write_persisted(
-                after_good,
+                after_checkpoint,
                 key="github_write_canary",
                 intended={
                     "key": "github_write_canary",
@@ -561,12 +587,36 @@ class TestDegreeLevelGate(unittest.TestCase):
             degree_level_hard_skip("This position is for PhD and Master's students.")
         )
 
+    def test_negated_phd_only_is_not_a_skip(self):
+        self.assertIsNone(
+            degree_level_hard_skip(
+                "This role is not PhD only; Master's students are encouraged to apply."
+            )
+        )
+
+    def test_enrolled_in_phd_and_candidates_only_are_skips(self):
+        self.assertEqual(
+            degree_level_hard_skip("Applicants must be enrolled in a PhD program."),
+            "phd_only",
+        )
+        self.assertEqual(
+            degree_level_hard_skip("Open to PhD candidates only."),
+            "phd_only",
+        )
+
+    def test_enrolled_in_a_degree_is_not_a_skip(self):
+        self.assertIsNone(
+            degree_level_hard_skip("Currently enrolled in an undergraduate program.")
+        )
+
 
 class TestClosedPostingAndSponsorship(unittest.TestCase):
     def test_removed_posting_does_not_open_a_sibling(self):
         self.assertEqual(closed_posting_action("This requisition has been removed"), "skip_no_sibling")
         self.assertEqual(closed_posting_action("404"), "skip_no_sibling")
         self.assertEqual(closed_posting_action("Apply now"), "continue")
+        self.assertEqual(closed_posting_action("Job ID: R404123 Software Engineer Intern"), "continue")
+        self.assertEqual(closed_posting_action("Barriers removed for candidates"), "continue")
 
     def test_explicit_f1_instruction_overrides_standing_no(self):
         action, reason = sponsorship_form_action(
@@ -610,6 +660,22 @@ class TestClosedPostingAndSponsorship(unittest.TestCase):
         action, reason = sponsorship_form_action(
             widget_text="Will you now or in the future require visa sponsorship?",
             explicit_status_instruction="F-1 holders must select the first option.",
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "explicit_status_instruction_unclear")
+
+    def test_yes_or_no_menu_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            explicit_status_instruction="If you are on F-1, select Yes or No below",
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "explicit_status_instruction_unclear")
+
+    def test_negated_answer_yes_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            explicit_status_instruction="F-1 holders should NOT answer Yes",
         )
         self.assertEqual(action, "leave_unresolved")
         self.assertEqual(reason, "explicit_status_instruction_unclear")

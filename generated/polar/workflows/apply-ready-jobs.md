@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-09.prod-learn+f5734268754a
+workflow_version: 2026-09-09.prod-learn+30a2eb63308d
 status: production
 enabled: true
 needs_browser_lock: true
@@ -58,11 +58,15 @@ never_omit: apply_url_confidence
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
-If the target key is missing, append a new row. If the visible row has a different key, abort.
+If the target key is missing, append a new row.
+If the visible row has a different key, or no key, abort. Do not write that row.
+If two rows share the same key, abort.
 Commit the edit. Then reread key, owner_run_id, notes.
 A cell that looked correct is not proof the write persisted. The reread is the proof.
 github_write_canary must never overwrite polar_browser.
-Use polar_policy.plan_control_write and polar_policy.control_write_persisted.
+After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
+Those four cells must still match the values from before the canary write. Notes on that lock may change.
+These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.
 
 Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.
 Named writes are the fix. Prose that says remember column I is not the fix.
@@ -82,8 +86,9 @@ If minutes were lost, also set time_lost_category from:
 AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPDOWN_UI, DUPLICATE, SUBMIT_VERIFY, OTHER.
 repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, degree_level_gate_missed_at_discovery.
 Degree-level hard gates that discovery missed use that one repeat_key. Do not invent phd_only_missed_at_discovery variants.
-incident_id is polar_policy.next_incident_id on today's America/New_York date. Format INC-YYYYMMDD-NNN.
+incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits.
 Read existing incident_id values first. Never reuse one. Do not write INC-YYYYMMDD-01.
+If 001 and 003 exist, the next id is 002. 01 and 001 count as the same number.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
 durable_candidate is yes only when a repo policy or compiler change would prevent a repeat.
 Evidence must be enough for an engineer. No secrets.
@@ -137,13 +142,20 @@ If Simplify materially slowed the run, write a PERFORMANCE incident with repeat_
 ## Apply-time hard eligibility
 
 Immediately after the employer JD is readable, before login, account creation, or form fill,
-run polar_policy.degree_level_hard_skip on the posting text.
-Skip PhD-only and undergraduate-only gates. Master's study is not PhD and is not undergraduate-only.
-If that function returns a skip, status SKIP. Do not authenticate. Do not fill.
+skip PhD-only and undergraduate-only gates.
+Skip phrases include phd only, phd students only, phd candidates only, doctoral students only,
+must be pursuing a phd, must be enrolled in a phd, undergraduate students only,
+undergraduates only, and must be an undergraduate.
+Do not skip PhD preferred, PhD and Master's, or a sentence that says the role is not PhD only.
+Do not skip a line that only says the student must be enrolled in a degree.
+Master's study is not PhD and is not undergraduate-only.
+If the posting matches a skip phrase, status SKIP. Do not authenticate. Do not fill.
 Incident repeat_key is degree_level_gate_missed_at_discovery. Category TRIAGE.
 Also skip a 2026 role or start, employment start before 2027-01-18,
 a non-US work location, or an incompatible TS-SCI or polygraph requirement.
-If the apply URL is 404, removed, or no longer open, polar_policy.closed_posting_action is skip_no_sibling.
+If the page is an HTTP 404, says page not found, no longer open, no longer accepting,
+or that this job or requisition has been removed or closed, SKIP.
+A job id that contains the digits 404 is not a closed page. Barriers removed is not a closed page.
 Close the tab. Do not open a sibling requisition.
 Sponsorship unknown or no is not a skip.
 An exclusive graduation window remains a note, not a skip.
@@ -177,10 +189,11 @@ For each selected job:
 7. Authenticate with ordinary browser flows when asked. Account creation is normal work.
 8. Attach the resume_cluster from the row. Use Simplify at most once. Then read the visible widgets.
 9. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.
-   For sponsorship widgets, use polar_policy.sponsorship_form_action.
-   Follow an explicit F-1/J-1/M-1 instruction on the form. Do not apply standing No over that instruction.
+   For sponsorship widgets, the standing broad visa-sponsorship answer is No.
+   If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget.
+   If it says select Yes or No, or uses not or never with Yes, leave the field.
    Country-only sponsorship lists and work-authorization wording stay unresolved.
-   The standing broad visa-sponsorship answer remains No. future_sponsorship_required remains true.
+   future_sponsorship_required remains true.
    If those facts and the widget still conflict, leave the field and mark BLOCKED. Do not guess.
 10. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
 11. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.

@@ -67,6 +67,7 @@ LOCK_RESULTS = (
 
 REQUIRED_QUEUE_READBACK = ("job_key", "status", "last_stage")
 CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
+CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
 DEGREE_LEVEL_REPEAT_KEY = "degree_level_gate_missed_at_discovery"
 INCIDENT_ID_RE = re.compile(r"^INC-(\d{8})-(\d{1,3})$")
 
@@ -438,8 +439,30 @@ def locate_row_by_key(
 def control_row_is_writable(row: Mapping[str, Any], intended_key: str) -> bool:
     existing = normalize_text(str(row.get("key") or ""))
     if not existing:
-        return True
+        return False
     return existing == normalize_text(intended_key)
+
+
+def inspect_visible_control_row(
+    row: Mapping[str, Any],
+    intended_key: str,
+) -> ControlWritePlan:
+    existing = normalize_text(str(row.get("key") or ""))
+    if not existing:
+        return ControlWritePlan(
+            "abort",
+            None,
+            intended_key,
+            "do not write a visually empty row",
+        )
+    if existing != normalize_text(intended_key):
+        return ControlWritePlan(
+            "abort",
+            None,
+            intended_key,
+            "visible row has a different key",
+        )
+    return ControlWritePlan("update", None, intended_key, "visible row is the intended key")
 
 
 def plan_control_write(
@@ -449,9 +472,6 @@ def plan_control_write(
     index = locate_row_by_key(rows, key, "key")
     if index is None:
         return ControlWritePlan("append", None, key, "append new control key")
-    row = rows[index]
-    if not control_row_is_writable(row, key):
-        return ControlWritePlan("abort", index, key, "refusing to overwrite a different control key")
     return ControlWritePlan("update", index, key, "update existing control key")
 
 
@@ -486,7 +506,7 @@ def control_write_persisted(
         if later_index is None:
             return False
         later = after_rows[later_index]
-        for field in CONTROL_REQUIRED_READBACK:
+        for field in CONTROL_LEASE_READBACK:
             if str(later.get(field) or "") != str(prior.get(field) or ""):
                 return False
     return True
@@ -547,6 +567,15 @@ def incident_ids_are_unique(existing: Sequence[str]) -> bool:
     return len(valid) == len(set(valid))
 
 
+def _marker_without_negation(text: str, marker: str) -> bool:
+    for match in re.finditer(re.escape(marker), text):
+        prefix = text[max(0, match.start() - 28) : match.start()]
+        if re.search(r"\b(not|no longer|except)\b.{0,20}$", prefix):
+            continue
+        return True
+    return False
+
+
 def degree_level_hard_skip(jd_text: str) -> Optional[str]:
     text = normalize_text(jd_text)
     if not text:
@@ -556,9 +585,13 @@ def degree_level_hard_skip(jd_text: str) -> Optional[str]:
         "ph.d. only",
         "ph.d only",
         "doctoral students only",
+        "doctoral candidates only",
         "phd students only",
+        "phd candidates only",
         "must be a current phd",
         "must be pursuing a phd",
+        "must be enrolled in a phd",
+        "must be enrolled in a ph.d",
         "candidates must be pursuing a phd",
     )
     undergrad_markers = (
@@ -569,33 +602,49 @@ def degree_level_hard_skip(jd_text: str) -> Optional[str]:
         "bachelor's students only",
         "bachelors students only",
     )
-    if any(marker in text for marker in phd_markers):
+    if any(_marker_without_negation(text, marker) for marker in phd_markers):
         return "phd_only"
-    if any(marker in text for marker in undergrad_markers):
+    if any(_marker_without_negation(text, marker) for marker in undergrad_markers):
         return "undergrad_only"
     return None
 
 
+_CLOSED_PAGE_RE = re.compile(
+    r"(?:\b404\b|page not found|no longer open|no longer accepting|"
+    r"(?:this |the )?(?:job|requisition|posting|application)(?: has been)? "
+    r"(?:removed|closed))"
+)
+
+
 def closed_posting_action(page_signal: str) -> str:
     text = normalize_text(page_signal)
-    if any(token in text for token in ("404", "no longer open", "removed", "no longer accepting")):
+    if _CLOSED_PAGE_RE.search(text):
         return "skip_no_sibling"
     return "continue"
 
 
+_STATUS_RE = re.compile(r"\b(f-1|f1|j-1|j1|m-1|m1)\b")
+_YES_OR_NO_RE = re.compile(r"\byes\s+or\s+no\b|\bno\s+or\s+yes\b")
+_NEGATION_RE = re.compile(r"\b(not|never|do not|don't|dont|cannot|must not)\b")
+_ANSWER_YES_RE = re.compile(r"\b(?:answer|select|choose|pick)\s+yes\b")
+_ANSWER_NO_RE = re.compile(r"\b(?:answer|select|choose|pick)\s+no\b")
+
+
 def _explicit_status_answer(text: str) -> Optional[str]:
     normalized = normalize_text(text)
-    if not normalized:
+    if not normalized or not _STATUS_RE.search(normalized):
         return None
-    if normalized in {"yes", "answer yes", "select yes"}:
-        return "yes"
-    if normalized in {"no", "answer no", "select no"}:
-        return "no"
-    if not re.search(r"\b(f-1|f1|j-1|j1|m-1|m1)\b", normalized):
+    if _YES_OR_NO_RE.search(normalized):
         return None
-    if re.search(r"\b(answer|select|choose)\s+yes\b", normalized):
+    has_yes = bool(_ANSWER_YES_RE.search(normalized))
+    has_no = bool(_ANSWER_NO_RE.search(normalized))
+    if has_yes and has_no:
+        return None
+    if _NEGATION_RE.search(normalized) and (has_yes or has_no):
+        return None
+    if has_yes:
         return "yes"
-    if re.search(r"\b(answer|select|choose)\s+no\b", normalized):
+    if has_no:
         return "no"
     return None
 
@@ -603,11 +652,9 @@ def _explicit_status_answer(text: str) -> Optional[str]:
 def _unclear_status_instruction(*texts: str) -> bool:
     for text in texts:
         normalized = normalize_text(text)
-        if not normalized:
+        if not normalized or not _STATUS_RE.search(normalized):
             continue
-        if not re.search(r"\b(f-1|f1|j-1|j1|m-1|m1)\b", normalized):
-            continue
-        if re.search(r"\b(answer|select|choose)\b", normalized):
+        if re.search(r"\b(answer|select|choose|pick)\b", normalized):
             return True
     return False
 
