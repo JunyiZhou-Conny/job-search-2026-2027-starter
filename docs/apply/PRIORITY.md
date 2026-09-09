@@ -12,7 +12,7 @@ letter `priority` (A / B / C / D).
 | Weight | What changes |
 |---|---|
 | `regular` | Mass autofill. Cluster resume. Free response answers the prompt and stops. |
-| `prioritized` | More judgment. JD-tuned resume from the evidence bank only. Why-us actually answers the prompt. Full form prep, then a **review packet** for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`). Do not wait for a referral / insider page to prepare it. Coffee-chat drafts only, never sent without confirm. |
+| `prioritized` | More judgment. JD-tuned resume from the evidence bank only. Why-us actually answers the prompt. Full form prep, mandatory writing_log, then Polar Local may Submit (`docs/policy/SUBMIT_ROLLOUT.md`). Daily digest is post-submit oversight. Do not wait for a referral / insider page. Coffee-chat drafts only, never sent without confirm. |
 
 ## Subfields under prioritized
 
@@ -37,13 +37,13 @@ data role prioritized only because the title contains data.
    last-mile role. See `knowledge/role_families.yaml`. Junyi 2026-08-24:
    mark these; they are suitable. Charta is the type example.
 
-Polar may assign READY_PRIORITY when a strong configured signal is present. Junyi does not confirm every priority label before the queue can move. Priority controls execution effort, writing depth, and review-before-Submit. It is not permission to invent company facts.
+Polar may assign READY_PRIORITY when a strong configured signal is present. Junyi does not confirm every priority label before the queue can move. Priority controls execution effort, writing depth, and post-submit writing audit. It is not permission to invent company facts.
 
 Strong signals. Assign READY_PRIORITY: fde title, gtc_2026 company on the NVIDIA GTC 2026 list, confirmed_prioritized YAML match, clear fortune_500_or_major, clear biotech_health_ai.
 
 Weak signals. Stay READY_REGULAR unless clearly justified: startup or prestige hints, personal_fit, generic data or analyst titles.
 
-READY_PRIORITY still stops at REVIEW_READY.
+READY_PRIORITY no longer waits behind a permanent READY_REGULAR backlog. Polar Local may Submit after writing_log is complete.
 
 ## Confirmed so far
 

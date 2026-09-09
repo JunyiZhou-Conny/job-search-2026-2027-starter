@@ -17,6 +17,18 @@ from js_lib import (
     normalize_text,
     read_rows,
 )
+from polar_policy import (
+    CONTROL_COLUMNS,
+    HEARTBEAT_COLUMNS,
+    INCIDENT_LOG_COLUMNS,
+    LEARNING_REPORTS_COLUMNS,
+    QUEUE_COLUMNS,
+    RUN_LOG_COLUMNS,
+    WRITING_LOG_COLUMNS,
+    apply_run_caps,
+    document_availability,
+)
+from polar_workflows import write_schema_csvs, write_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DEFAULT = ROOT / "generated" / "polar" / "runtime" / "POLAR_RUNTIME.md"
@@ -62,6 +74,10 @@ SECTION_ORDER = [
     ("I. Prohibited fabrication", "section_i"),
     ("J. Runtime status semantics", "section_j"),
     ("K. Historical duplicate guard", "section_k"),
+    ("L. Schema-safe Sheet writes", "section_l"),
+    ("M. Browser lease", "section_m"),
+    ("N. Run and incident telemetry", "section_n"),
+    ("O. Employer requisition identity", "section_o"),
 ]
 
 
@@ -165,6 +181,22 @@ def load_yaml(path: Path) -> Any:
     import yaml
 
     return yaml.safe_load(path.read_text(encoding="utf-8"))
+
+
+def assert_operator_columns(operator: Dict[str, Any]) -> None:
+    expected = {
+        "queue_columns": QUEUE_COLUMNS,
+        "writing_log_columns": WRITING_LOG_COLUMNS,
+        "heartbeat_columns": HEARTBEAT_COLUMNS,
+        "run_log_columns": RUN_LOG_COLUMNS,
+        "incident_log_columns": INCIDENT_LOG_COLUMNS,
+        "control_columns": CONTROL_COLUMNS,
+        "learning_reports_columns": LEARNING_REPORTS_COLUMNS,
+    }
+    for key, columns in expected.items():
+        got = operator.get(key)
+        if got != columns:
+            raise SystemExit(f"{key} in polar_operator.yaml does not match polar_policy.py")
 
 
 def bullet(items: List[str], indent: str = "- ") -> str:
@@ -280,6 +312,7 @@ def compile_sections() -> Dict[str, str]:
     roles = load_yaml(ROOT / "knowledge" / "role_families.yaml")
     operator = load_yaml(ROOT / "knowledge" / "polar_operator.yaml")
     gates = load_yaml(ROOT / "config" / "submit_gates.yaml")
+    assert_operator_columns(operator)
 
     always = form.get("always") or {}
     anchors = triage.get("profile_anchors") or {}
@@ -287,7 +320,7 @@ def compile_sections() -> Dict[str, str]:
     cloud = gates.get("cursor_cloud") or {}
     cloud_ladder = cloud.get("gates") or gates.get("gates") or {}
     cloud_cap = cloud.get("regular_submit_cap_per_run", gates.get("regular_submit_cap_per_run"))
-    canary = operator.get("canary") or {}
+    caps = apply_run_caps()
 
     standing: List[str] = []
     for name, block in always.items():
@@ -303,10 +336,27 @@ def compile_sections() -> Dict[str, str]:
     earliest_ft = md_escape(auth.get("earliest_full_time_start") or profile.get("earliest_start_date"))
     sponsorship_form = md_escape((auth_form.get("visa_sponsorship") or {}).get("form_answer") or "No")
 
+    docs = document_availability()
+    doc_lines = []
+    for doc in docs:
+        avail = "available in repo" if doc.get("exists") else "not in repo"
+        doc_lines.append(
+            f"{doc.get('id')}: `{doc.get('approved_path')}` ({avail}). "
+            f"{md_escape(doc.get('purpose'))}."
+        )
+
     section_a = "\n".join(
         [
-            "Phone and email live in the local Polar profile and in Simplify.",
-            "They are not compiled here.",
+            "Phone numbers live in the local Polar profile and in Simplify. They are not compiled here.",
+            "Normal ATS email, candidate account email, preferred application contact, and password-reset email",
+            "use the dedicated local APPLICATION mailbox from Polar, Simplify, or the browser profile.",
+            "If a field asks for school email, university email, or institutional email, use the local academic mailbox.",
+            "A resume parser that fills Harvard email into a normal contact field is wrong. Correct it before Submit.",
+            "Do not create a second employer account only to change email.",
+            "street_address_source: local Polar or private profile. Do not compile or log the street value.",
+            "",
+            "Approved documents. Attach only when the form asks for that class. Never paste contents.",
+            bullet(doc_lines) if doc_lines else "- No approved documents are registered.",
             "",
             bullet(
                 [
@@ -403,6 +453,8 @@ def compile_sections() -> Dict[str, str]:
             "Sponsorship unknown or no is not a skip.",
             "Do not invent work_model, location, graduation windows, or H1B facts.",
             "Blank location is not an automatic skip.",
+            "apply-ready-jobs re-reads the full employer posting before major fill and applies these same hard rules.",
+            "A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, or TS-SCI/polygraph skip that discovery missed.",
         ]
     )
 
@@ -434,7 +486,8 @@ def compile_sections() -> Dict[str, str]:
             "",
             "Polar may assign READY_PRIORITY when a strong configured signal is present.",
             "Junyi does not confirm every priority label before the queue can move.",
-            "Priority controls execution effort, writing depth, and review-before-Submit.",
+            "Priority controls execution effort, writing depth, and post-submit writing audit.",
+            "Polar Local may Submit a prioritized row when writing_log is complete and final validation passes.",
             "It is not permission to invent company facts.",
             "",
             "Strong signals. Assign READY_PRIORITY:",
@@ -459,7 +512,8 @@ def compile_sections() -> Dict[str, str]:
             "",
             "FDE / Forward Deployed titles stay and are marked prioritized.",
             "Do not claim customer on-site FDE work already done.",
-            "READY_PRIORITY still stops at REVIEW_READY.",
+            "READY_PRIORITY no longer waits behind a permanent READY_REGULAR backlog.",
+            f"Reserve up to {caps.reserved_priority_slots} new-execution slot per apply-ready-jobs run for READY_PRIORITY when one exists.",
         ]
     )
 
@@ -493,7 +547,7 @@ def compile_sections() -> Dict[str, str]:
             "For every nontrivial free-response question, append one writing_log row.",
             "Record company, role, exact question, answer used, and a short evidence note.",
             "Regular writing may still submit when the facts support it.",
-            "Prioritized writing stays in the review packet. Do not Submit.",
+            "Prioritized writing must be logged before Submit. Missing writing_log is a Submit blocker.",
             "",
             "Ideology bank is for week, meaning, and culture prompts only.",
             "Use when:",
@@ -534,6 +588,10 @@ def compile_sections() -> Dict[str, str]:
             "Escalate to BLOCKED only after this local environment cannot complete a required step.",
             "A blocked job must not stall the queue. Persist the blocker and continue to the next READY job.",
             "ATS family is diagnostic metadata only. Do not organize work by ATS worker class.",
+            "Simplify is optional acceleration. Try it at most once per application when it is already useful.",
+            "If onboarding, missing injection, a broken session, or repeat navigation appears, fall back immediately",
+            "to POLAR_RUNTIME, the approved resume or document registry, and the local Polar profile.",
+            "Do not spend the run repairing Simplify. Record a PERFORMANCE incident if it materially slowed the run.",
         ]
     )
 
@@ -548,9 +606,11 @@ def compile_sections() -> Dict[str, str]:
             "",
             "polar_local uses capability and policy checks, not ATS family.",
             f"Gate model: {polar_local.get('gate_model')}.",
-            f"Regular jobs per apply-ready-jobs run: {canary.get('max_regular_jobs_per_run') or polar_local.get('regular_submit_cap_per_run')}.",
-            f"Regular submissions per local calendar day ({operator.get('timezone')}): {canary.get('max_regular_submissions_per_local_day') or polar_local.get('regular_submit_cap_per_local_day')}.",
-            f"Prioritized auto-submit: {canary.get('prioritized_auto_submit')}.",
+            f"Shared new-execution pool per apply-ready-jobs run: {caps.max_new_jobs}.",
+            f"READY_PRIORITY reservation: {caps.reserved_priority_slots} slot taken from that pool, not added to it.",
+            "If no READY_PRIORITY exists, READY_REGULAR may use the whole pool.",
+            f"Regular submissions per local calendar day ({operator.get('timezone')}): {caps.max_regular_submissions_per_local_day}.",
+            f"Prioritized auto-submit: {caps.prioritized_auto_submit}.",
             "",
             "A regular job may be submitted once only when every item holds:",
             bullet(
@@ -569,7 +629,10 @@ def compile_sections() -> Dict[str, str]:
                 ]
             ),
             "",
-            "Prioritized jobs stop at REVIEW_READY. Include them in the daily digest.",
+            "A prioritized job may be submitted once when every regular item holds and polar_policy.priority_submit_permitted is true.",
+            "That function is false when writing_log is missing a custom question, the answer is blank, or the evidence note is blank.",
+            "Include prioritized SUBMITTED rows in the daily digest under PRIORITY APPLICATIONS SUBMITTED TODAY.",
+            "REVIEW_READY is only for a missing owner fact or an explicit hold.",
         ]
     )
 
@@ -612,9 +675,9 @@ def compile_sections() -> Dict[str, str]:
                 [
                     "NEW: seen and written. Not yet READY.",
                     "READY_REGULAR: triaged keep, regular weight, eligible to execute.",
-                    "READY_PRIORITY: triaged keep, prioritized weight, eligible to prepare.",
+                    "READY_PRIORITY: triaged keep, prioritized weight, eligible to execute with deeper writing.",
                     "IN_PROGRESS: this job is the active execution. At most one should be live.",
-                    "REVIEW_READY: prioritized form is complete. Stop before Submit.",
+                    "REVIEW_READY: form is complete but Polar stopped for a missing owner fact or explicit hold.",
                     "SUBMITTED: Submit clicked and verification succeeded.",
                     "SUBMISSION_UNKNOWN: Submit may have happened. Verify before any retry. Never blindly resubmit.",
                     "BLOCKED: this environment cannot finish a required step. Queue continues.",
@@ -631,12 +694,59 @@ def compile_sections() -> Dict[str, str]:
             md_escape(operator.get("job_key_rule")),
             "",
             "Workflows never apply during discover-jobs-hourly.",
-            "apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then IN_PROGRESS, then READY rows.",
+            "apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then IN_PROGRESS.",
+            "It then reserves one new-execution slot for READY_PRIORITY when one exists, and uses remaining slots for READY_REGULAR.",
             "daily-job-summary never includes passwords, OTP codes, or cookies.",
+            "production-learning-daily writes a sanitized report and does not change GitHub policy.",
         ]
     )
 
     section_k = HistoricalGuard.compile().render()
+
+    lease = operator.get("lease") or {}
+    section_l = "\n".join(
+        [
+            "Read the actual header row before every Sheet write.",
+            "Build a field-name to column mapping from those headers.",
+            "Write by header name. Write explicit blanks. Do not shorten a positional row.",
+            "apply_url_confidence must stay in its named column even when the value is none or blank.",
+            "After an important queue write, read back job_key, status, and last_stage.",
+            "If those fields do not match, repair the row before the next job.",
+        ]
+    )
+    section_m = "\n".join(
+        [
+            f"Lock tab: {lease.get('tab') or 'control'}.",
+            f"Lock key: {lease.get('key') or 'polar_browser'}.",
+            f"TTL minutes: {lease['ttl_minutes']}.",
+            "discover-jobs-hourly and apply-ready-jobs must acquire this lock before driving Jobright or employer pages.",
+            "If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.",
+            "Refresh the lock when a long run has under 60 minutes remaining.",
+            "Release on normal completion. Treat an expired lock as free.",
+            "Heartbeat, daily summary, and production-learning-daily do not take this lock.",
+        ]
+    )
+    section_n = "\n".join(
+        [
+            "One workflow invocation writes one run_log row and copies workflow_version from the instruction file.",
+            "Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.",
+            "If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.",
+            "Do not count every click. Coarse stage timing is enough.",
+            "production-learning-daily aggregates today's telemetry into a sanitized Markdown report.",
+            "Do not put secrets in telemetry.",
+        ]
+    )
+    section_o = "\n".join(
+        [
+            "After Original Job Post or the employer application is resolved, capture employer_requisition_id,",
+            "canonical employer apply_url, and ats_job_id.",
+            "If multiple Jobright rows point at the same employer requisition, keep one canonical row.",
+            "Mark siblings SKIP with the canonical job_key.",
+            "Do not submit the same employer requisition twice.",
+            "Jobright ids and company+role+location remain useful. They are not enough once the employer identity is known.",
+            "Section K still applies.",
+        ]
+    )
 
     probe = "\n".join(
         [
@@ -651,6 +761,10 @@ def compile_sections() -> Dict[str, str]:
             section_i,
             section_j,
             section_k,
+            section_l,
+            section_m,
+            section_n,
+            section_o,
         ]
     )
     for value in forbidden_profile_values(profile if isinstance(profile, dict) else {}):
@@ -669,6 +783,10 @@ def compile_sections() -> Dict[str, str]:
         "section_i": section_i,
         "section_j": section_j,
         "section_k": section_k,
+        "section_l": section_l,
+        "section_m": section_m,
+        "section_n": section_n,
+        "section_o": section_o,
     }
 
 
@@ -686,6 +804,7 @@ def render(parts: Dict[str, str]) -> str:
         "- `config/profile.yaml`",
         "- `config/submit_gates.yaml`",
         "- `knowledge/polar_operator.yaml`",
+        "- `knowledge/polar_documents.yaml`",
         "- `knowledge/work_authorization.yaml`",
         "- `knowledge/form_strategy.yaml`",
         "- `knowledge/application_priority.yaml`",
@@ -715,6 +834,13 @@ def main(argv: Optional[List[str]] = None) -> int:
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(text, encoding="utf-8")
     print(args.out)
+    if args.out == OUT_DEFAULT:
+        operator = load_yaml(ROOT / "knowledge" / "polar_operator.yaml")
+        for path in write_schema_csvs(ROOT):
+            print(path)
+        _, workflow_paths = write_workflows(operator, ROOT)
+        for path in workflow_paths:
+            print(path)
     return 0
 
 

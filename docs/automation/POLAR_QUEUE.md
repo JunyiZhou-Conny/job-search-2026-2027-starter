@@ -9,6 +9,10 @@ Import the header rows from:
 - `generated/polar/queue_schema.csv`
 - `generated/polar/writing_log_schema.csv`
 - `generated/polar/heartbeat_schema.csv`
+- `generated/polar/run_log_schema.csv`
+- `generated/polar/incident_log_schema.csv`
+- `generated/polar/control_schema.csv`
+- `generated/polar/learning_reports_schema.csv`
 
 Canonical field lists live in `knowledge/polar_operator.yaml`.
 
@@ -19,6 +23,10 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `queue` | One row per discovered job. Recovery reads this tab. |
 | `writing_log` | One row per nontrivial free-response answer while `writing_observation_mode` is true. |
 | `heartbeat` | Locked-screen scheduler proof. Not a job row. |
+| `run_log` | One row per workflow invocation. |
+| `incident_log` | One row per material event. No secrets. |
+| `control` | Browser lease and canary flags. |
+| `learning_reports` | Sanitized daily production-learning Markdown. |
 
 ## `queue` columns
 
@@ -45,6 +53,8 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `submitted_at` | When Submit was clicked, or blank. |
 | `confirmation` | Banner text, application id, or `unknown`. |
 | `updated_at` | Last Sheet write for this row. |
+| `employer_requisition_id` | Employer requisition id when known. Blank until apply-ready-jobs resolves it. |
+| `ats_job_id` | ATS job id when known. Blank until apply-ready-jobs resolves it. |
 
 ## Status values
 
@@ -52,9 +62,9 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 |---|---|
 | `NEW` | Seen and written. Not yet READY. |
 | `READY_REGULAR` | Keep, regular weight, eligible to execute. |
-| `READY_PRIORITY` | Keep, prioritized weight, eligible to prepare. |
+| `READY_PRIORITY` | Keep, prioritized weight, eligible to execute with deeper writing. |
 | `IN_PROGRESS` | This job is the active execution. Keep at most one live. |
-| `REVIEW_READY` | Prioritized form is complete. Stop before Submit. |
+| `REVIEW_READY` | Form is complete but Polar stopped for a missing owner fact or explicit hold. |
 | `SUBMITTED` | Submit clicked and verification succeeded. |
 | `SUBMISSION_UNKNOWN` | Submit may have happened. Verify before any retry. |
 | `BLOCKED` | This environment cannot finish a required step. The queue continues. |
@@ -70,13 +80,22 @@ Read the Sheet. Do not trust a leftover browser tab.
 
 1. Inspect every `SUBMISSION_UNKNOWN` row. Open the employer portal, confirmation page, or mail. Never blindly resubmit.
 2. Resume the oldest `IN_PROGRESS` row.
-3. Process `READY_REGULAR` then `READY_PRIORITY` up to the run cap.
+3. If `READY_PRIORITY` exists, reserve one new-execution slot for it.
+4. Use remaining new-execution slots for `READY_REGULAR`.
+
+## Schema-safe writes
+
+Read the live header row. Map field names to columns. Write by name. Write explicit blanks. Never omit `apply_url_confidence`. After an important queue write, read back `job_key`, `status`, and `last_stage`.
+
+## Browser lease
+
+`discover-jobs-hourly` and `apply-ready-jobs` take the `control` row `polar_browser` for 180 minutes. If another non-expired production workflow owns it, write `run_log` result `SKIPPED_LOCKED` and exit.
 
 If the Mac slept while Job 6 was `IN_PROGRESS`, resume Job 6. Do not start over from Job 1.
 
 ## Dedup
 
-Match `job_key` first. If Jobright id is missing, match normalized company + role + location. Update the existing row. Do not append a second key for the same posting.
+Match `job_key` first. If Jobright id is missing, match normalized company + role + location. After Original Job Post is resolved, also match `employer_requisition_id`, `ats_job_id`, or canonical employer `apply_url`. Keep one canonical row. Mark siblings `SKIP`.
 
 ## What the Sheet is not
 
