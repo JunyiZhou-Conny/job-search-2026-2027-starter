@@ -552,9 +552,7 @@ def next_incident_id(existing: Sequence[str], day: str) -> str:
         if parsed and parsed[0] == compact
         for number in (parsed[1],)
     }
-    next_number = 1
-    while next_number in used:
-        next_number += 1
+    next_number = max(used) + 1 if used else 1
     return f"INC-{compact}-{next_number:03d}"
 
 
@@ -659,12 +657,67 @@ def _unclear_status_instruction(*texts: str) -> bool:
     return False
 
 
+@dataclass(frozen=True)
+class SponsorshipFacts:
+    future_sponsorship_required: Optional[bool]
+    standing_form_answer: Optional[str]
+
+
+def _optional_bool(value: Any) -> Optional[bool]:
+    if value is True or value is False:
+        return value
+    text = normalize_text(str(value or ""))
+    if text in {"true", "yes"}:
+        return True
+    if text in {"false", "no"}:
+        return False
+    return None
+
+
+def _yes_no_token(value: Any) -> Optional[str]:
+    text = normalize_text(str(value or ""))
+    if text in {"yes", "true", "answer_yes", "answer yes"}:
+        return "yes"
+    if text in {"no", "false", "answer_no", "answer no"}:
+        return "no"
+    return None
+
+
+def load_sponsorship_facts(root: Optional[Path] = None) -> SponsorshipFacts:
+    base = Path(root) if root else ROOT
+    data = load_yaml(base / "knowledge" / "work_authorization.yaml")
+    if not isinstance(data, dict):
+        raise ValueError("work_authorization.yaml must be a mapping")
+    visa = ((data.get("form_strategy") or {}).get("visa_sponsorship") or {})
+    return SponsorshipFacts(
+        future_sponsorship_required=_optional_bool(data.get("future_sponsorship_required")),
+        standing_form_answer=_yes_no_token(visa.get("form_answer")),
+    )
+
+
+def _broad_sponsorship_from_facts(facts: SponsorshipFacts) -> Tuple[str, str]:
+    derived = None
+    if facts.future_sponsorship_required is True:
+        derived = "yes"
+    elif facts.future_sponsorship_required is False:
+        derived = "no"
+    mapping = facts.standing_form_answer
+    if derived and mapping and derived != mapping:
+        return "leave_unresolved", "fact_mapping_conflict"
+    if derived:
+        return f"answer_{derived}", "canonical_fact"
+    if mapping:
+        return f"answer_{mapping}", "standing_form_answer"
+    return "leave_unresolved", "sponsorship_fact_unknown"
+
+
 def sponsorship_form_action(
     *,
     widget_text: str,
     explicit_status_instruction: str = "",
     names_non_us_countries_only: bool = False,
     says_work_authorization_not_sponsorship: bool = False,
+    facts: Optional[SponsorshipFacts] = None,
 ) -> Tuple[str, str]:
     instructed = _explicit_status_answer(explicit_status_instruction) or _explicit_status_answer(
         widget_text
@@ -684,7 +737,7 @@ def sponsorship_form_action(
     text = normalize_text(widget_text)
     if "work authorization" in text and "sponsorship" not in text:
         return "leave_unresolved", "work_authorization_wording"
-    return "answer_no", "standing_visa_sponsorship"
+    return _broad_sponsorship_from_facts(facts if facts is not None else load_sponsorship_facts())
 
 
 @dataclass(frozen=True)

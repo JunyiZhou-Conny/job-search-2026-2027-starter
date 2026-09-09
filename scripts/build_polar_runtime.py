@@ -232,6 +232,13 @@ def auto_map_ban(block: Dict[str, Any]) -> str:
 def form_answer_line(name: str, block: Any) -> str:
     if not isinstance(block, dict):
         return ""
+    if block.get("execution") == "leave_unresolved":
+        when = md_escape(block.get("when", name))
+        return (
+            f"{name}: leave unresolved. Do not apply a historical Yes or No "
+            f"while it conflicts with a stored fact. When: {when}"
+            + auto_map_ban(block)
+        )
     if block.get("status") == "needs_human" or block.get("form_answer") == "unknown":
         when = md_escape(block.get("when", name))
         return (
@@ -334,7 +341,9 @@ def compile_sections() -> Dict[str, str]:
     program_end = md_escape(auth.get("program_end_date") or anchors.get("program_end_date"))
     commencement = md_escape(auth.get("commencement_date") or anchors.get("commencement_date"))
     earliest_ft = md_escape(auth.get("earliest_full_time_start") or profile.get("earliest_start_date"))
-    sponsorship_form = md_escape((auth_form.get("visa_sponsorship") or {}).get("form_answer") or "No")
+    visa_block = auth_form.get("visa_sponsorship") or {}
+    sponsorship_form = md_escape(visa_block.get("form_answer") or "unknown")
+    sponsorship_execution = md_escape(visa_block.get("execution") or "")
 
     docs = document_availability()
     doc_lines = []
@@ -372,7 +381,8 @@ def compile_sections() -> Dict[str, str]:
                     "Permanent resident elsewhere since citizenship: No",
                     f"Current visa type when asked: {visa}",
                     f"Future sponsorship required (standing fact): {auth.get('future_sponsorship_required')}",
-                    f"Broad visa-sponsorship widget: {sponsorship_form}",
+                    f"Historical broad visa-sponsorship mapping: {sponsorship_form}. Execution: {sponsorship_execution or 'derive from facts'}.",
+                    "future_sponsorship_required is true and the historical mapping is No. Those conflict. Leave a broad sponsorship widget empty and mark BLOCKED. Do not answer No to hide the conflict. Do not invent Yes.",
                     "If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.",
                     "Country-only sponsorship lists and work-authorization wording stay unresolved.",
                     "H-1B-named widget: No",
@@ -740,7 +750,7 @@ def compile_sections() -> Dict[str, str]:
         [
             "One workflow invocation upserts one run_log row by run_id and copies workflow_version from the instruction file.",
             "Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.",
-            "incident_id is INC-YYYYMMDD-NNN with three digits. Read existing values first. Never reuse one. 01 and 001 count as the same number.",
+            "incident_id is INC-YYYYMMDD-NNN with three digits. The sequence is monotonic. The next id is one more than the highest number for that date. If 001 and 003 exist, write 004. 01 and 001 count as the same number.",
             "Degree-level apply-time skips share repeat_key degree_level_gate_missed_at_discovery.",
             "A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.",
             "If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.",

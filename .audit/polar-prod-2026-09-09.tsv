@@ -15,3 +15,4 @@ ts	phase	decision	why	evidence	result
 2026-09-09T14:24:00Z	verify	Focused Polar tests 79 OK. Full suite 236 OK.	Need proof on the helpers, not a compile-only check.	/opt/cursor/artifacts/polar-prod-learn-0909-unittest.log	236 OK
 2026-09-09T14:25:00Z	handback	One maintenance PR. Stop before merge. ChatGPT not required.	Issue 115 asked for tomorrow to behave better, not more code.	cursor/polar-prod-learn-0909-9a03	open
 2026-09-09T14:28:00Z	verify	Second-look found parser and lock-readback bugs. Tightened helpers and restored the owner No quote.	Negated F-1 Yes, yes-or-no menus, not-PhD-only, R404 job ids, and blanked expires_at would have made tomorrow worse.	tests/test_polar_policy.py	242 OK
+2026-09-09T14:56:00Z	verify	Broad sponsorship no longer defaults to No. Incident ids are monotonic.	Fact true and mapping No now leave_unresolved. 001 and 003 yield 004.	scripts/polar_policy.py	244 OK

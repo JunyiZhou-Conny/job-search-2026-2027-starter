@@ -52,7 +52,8 @@ Approved documents. Attach only when the form asks for that class. Never paste c
 - Permanent resident elsewhere since citizenship: No
 - Current visa type when asked: F-1
 - Future sponsorship required (standing fact): True
-- Broad visa-sponsorship widget: No
+- Historical broad visa-sponsorship mapping: No. Execution: leave_unresolved.
+- future_sponsorship_required is true and the historical mapping is No. Those conflict. Leave a broad sponsorship widget empty and mark BLOCKED. Do not answer No to hide the conflict. Do not invent Yes.
 - If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.
 - Country-only sponsorship lists and work-authorization wording stay unresolved.
 - H-1B-named widget: No
@@ -74,7 +75,7 @@ Standing widget answers (owner-confirmed). Apply them verbatim.
 - employed_by_this_company_before: No. When: Have you been employed by [this company] in the past?.
 - open_to_relocating: Yes. When: Are you open to relocating?.
 - h1b_named_question_only: No.
-- visa_sponsorship: No. When: Will you now or in the future require visa sponsorship? / require sponsorship? / visa sponsorship yes-no / None. Prefer the exact No wording if the widget is a radio. If None is an option, pick None. If it is free text, type the sentence.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
+- visa_sponsorship: leave unresolved. Do not apply a historical Yes or No while it conflicts with a stored fact. When: Will you now or in the future require visa sponsorship? / require sponsorship? / visa sponsorship yes-no / None. Polar does not apply this historical No while future_sponsorship_required is true. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
 - citizenship_country: China. When: Country of citizenship / nationality. Also the export-control country widget..
 - permanent_resident_elsewhere: No. When: Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?.
 - eligible_to_begin_employment_immediately: Yes. When: If offered employment, would you be legally eligible to begin employment immediately?.
@@ -583,7 +584,7 @@ Heartbeat, daily summary, and production-learning-daily do not take this lock.
 
 One workflow invocation upserts one run_log row by run_id and copies workflow_version from the instruction file.
 Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.
-incident_id is INC-YYYYMMDD-NNN with three digits. Read existing values first. Never reuse one. 01 and 001 count as the same number.
+incident_id is INC-YYYYMMDD-NNN with three digits. The sequence is monotonic. The next id is one more than the highest number for that date. If 001 and 003 exist, write 004. 01 and 001 count as the same number.
 Degree-level apply-time skips share repeat_key degree_level_gate_missed_at_discovery.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
 If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.

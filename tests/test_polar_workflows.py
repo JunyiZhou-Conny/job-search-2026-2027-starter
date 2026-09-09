@@ -99,6 +99,8 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("before login or form work", text)
         self.assertIn("Do not pick a sibling from the employer's current openings.", text)
         self.assertIn("clearly says answer Yes or answer No", text)
+        self.assertIn("Those conflict.", text)
+        self.assertIn("Do not answer No to hide the conflict.", text)
         self.assertIn("Barriers removed is not a closed page.", text)
         self.assertIn("Do not move Original Job Post resolution into hourly discovery.", text)
 
@@ -113,6 +115,8 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("lease_checkpoint_notes", apply_text)
         self.assertIn("INC-YYYYMMDD-NNN", apply_text)
         self.assertIn("01 and 001 count as the same number", apply_text)
+        self.assertIn("If 001 and 003 exist, write 004.", apply_text)
+        self.assertIn("The sequence is monotonic.", apply_text)
         self.assertIn("MISSING_FACT, not MISSING_DOCUMENT", apply_text)
         self.assertIn("acquired_at, and expires_at", canary)
         self.assertIn("Never write into the polar_browser row.", canary)

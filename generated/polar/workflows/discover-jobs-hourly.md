@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-09.prod-learn+b2681682cb94
+workflow_version: 2026-09-09.prod-learn+6e0fc83b4283
 status: production
 enabled: true
 needs_browser_lock: true
@@ -87,8 +87,9 @@ AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPD
 repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, degree_level_gate_missed_at_discovery.
 Degree-level hard gates that discovery missed use that one repeat_key. Do not invent phd_only_missed_at_discovery variants.
 incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits.
-Read existing incident_id values first. Never reuse one. Do not write INC-YYYYMMDD-01.
-If 001 and 003 exist, the next id is 002. 01 and 001 count as the same number.
+The sequence is monotonic. Read existing values for that date. The next id is one more than the highest number.
+If 001 and 003 exist, write 004. Do not fill gaps. Never reuse one. Do not write INC-YYYYMMDD-01.
+01 and 001 count as the same number.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
 durable_candidate is yes only when a repo policy or compiler change would prevent a repeat.
 Evidence must be enough for an engineer. No secrets.

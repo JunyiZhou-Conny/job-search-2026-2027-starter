@@ -44,21 +44,23 @@ form_strategy:
     see: "knowledge/form_strategy.yaml always.visa_type_named"
 
   visa_sponsorship:
-    status: owner_confirmed
+    status: fact_mapping_conflict
     confirmed_by: "Junyi, written, 2026-09-03 (Twitch review; the widget text counted STEM OPT Training Plan as support)"
     form_answer: "No"
+    execution: leave_unresolved
     accept_also: ["No, I do not need sponsorship", "None"]
     when: >
       Do you need, or will you need in the future, any immigration related
       support or sponsorship / require visa sponsorship now or in the
       future / require sponsorship to work in the US. Any broad wording.
-    history: "2026-08-24 recorded No (agent prose); 2026-09-03 set to leave_for_junyi pending confirmation; 2026-09-03 confirmed No by Junyi."
-    fact_unchanged: "future_sponsorship_required remains true. The widget answer is the owner's decision, applied verbatim."
+    history: "2026-08-24 recorded No (agent prose); 2026-09-03 set to leave_for_junyi pending confirmation; 2026-09-03 confirmed No by Junyi; 2026-09-09 Polar execution stops applying that No while future_sponsorship_required is true."
+    fact_unchanged: "future_sponsorship_required remains true. Polar does not apply the historical No mapping while that fact is true."
     explicit_status_instruction: >
       Polar Production 2026-09-09. If the form names F-1/J-1/M-1 and
       clearly says answer Yes or answer No, follow that polarity on
       that widget. Select Yes or No, or not/never with Yes, stays
-      unresolved. The standing broad-widget answer stays No.
+      unresolved. A broad widget stays unresolved while the fact and
+      the historical mapping conflict.
   citizenship_country:
     decided: "2026-09-03"
     form_answer: "China"

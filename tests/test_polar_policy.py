@@ -41,6 +41,7 @@ from polar_policy import (  # noqa: E402
     sanitize_learning_text,
     select_apply_batch,
     sibling_job_keys,
+    SponsorshipFacts,
     sponsorship_form_action,
     workflow_version,
     writing_log_status,
@@ -555,7 +556,7 @@ class TestIncidentIds(unittest.TestCase):
         existing = ["INC-20260909-001", "INC-20260909-01", "INC-20260909-003", "INC-20260909-003"]
         self.assertFalse(incident_ids_are_unique(existing))
         self.assertFalse(incident_ids_are_unique(["INC-20260909-001", "INC-20260909-01"]))
-        self.assertEqual(next_incident_id(existing, "2026-09-09"), "INC-20260909-002")
+        self.assertEqual(next_incident_id(existing, "2026-09-09"), "INC-20260909-004")
 
     def test_next_id_after_three_is_four(self):
         existing = ["INC-20260909-001", "INC-20260909-002", "INC-20260909-003"]
@@ -626,12 +627,34 @@ class TestClosedPostingAndSponsorship(unittest.TestCase):
         self.assertEqual(action, "answer_yes")
         self.assertEqual(reason, "explicit_status_instruction")
 
-    def test_standing_broad_widget_stays_no(self):
+    def test_repo_facts_block_broad_widget(self):
         action, reason = sponsorship_form_action(
             widget_text="Will you now or in the future require visa sponsorship?"
         )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "fact_mapping_conflict")
+
+    def test_agreed_no_facts_answer_no(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            facts=SponsorshipFacts(
+                future_sponsorship_required=False,
+                standing_form_answer="no",
+            ),
+        )
         self.assertEqual(action, "answer_no")
-        self.assertEqual(reason, "standing_visa_sponsorship")
+        self.assertEqual(reason, "canonical_fact")
+
+    def test_fact_only_true_answers_yes(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            facts=SponsorshipFacts(
+                future_sponsorship_required=True,
+                standing_form_answer=None,
+            ),
+        )
+        self.assertEqual(action, "answer_yes")
+        self.assertEqual(reason, "canonical_fact")
 
     def test_work_authorization_wording_stays_unresolved(self):
         action, reason = sponsorship_form_action(
@@ -648,13 +671,13 @@ class TestClosedPostingAndSponsorship(unittest.TestCase):
         self.assertEqual(action, "leave_unresolved")
         self.assertEqual(reason, "country_specific_sponsorship")
 
-    def test_f1_welcome_without_yes_no_keeps_standing_no(self):
+    def test_f1_welcome_without_yes_no_uses_facts(self):
         action, reason = sponsorship_form_action(
             widget_text="Will you now or in the future require visa sponsorship?",
             explicit_status_instruction="F-1 students are welcome to apply.",
         )
-        self.assertEqual(action, "answer_no")
-        self.assertEqual(reason, "standing_visa_sponsorship")
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "fact_mapping_conflict")
 
     def test_unclear_f1_select_instruction_stays_unresolved(self):
         action, reason = sponsorship_form_action(

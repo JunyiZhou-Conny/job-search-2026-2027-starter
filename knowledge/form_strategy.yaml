@@ -24,16 +24,16 @@ always:
     form_answer: "No"
 
   visa_sponsorship:
-    status: owner_confirmed
+    status: fact_mapping_conflict
     confirmed_by: "Junyi, written, 2026-09-03 (Twitch review)"
     form_answer: "No"
+    execution: leave_unresolved
     accept_also: ["No, I do not need sponsorship", "None"]
     see: "knowledge/work_authorization.yaml form_strategy.visa_sponsorship"
     when: >
       Will you now or in the future require visa sponsorship? / require
-      sponsorship? / visa sponsorship yes-no / None. Prefer the exact No
-      wording if the widget is a radio. If None is an option, pick None.
-      If it is free text, type the sentence.
+      sponsorship? / visa sponsorship yes-no / None. Polar does not apply
+      this historical No while future_sponsorship_required is true.
     do_not_auto_map:
       - >
         Will you now or in the future require work authorization to
@@ -44,12 +44,13 @@ always:
       sponsorship. Leave for Junyi until that wording is confirmed.
     supersedes: "2026-08-23 broad-Yes flip (Lila/Hayden/Relativity/Scale)"
     before_any_submit: >
-      Re-read the sponsorship widget. Junyi: this answer is crucial for
-      not getting filtered out. Standing broad-widget answer is No. If
-      the form names F-1, J-1, or M-1 and clearly says answer Yes or
-      answer No, that polarity governs that widget. If polarity is
-      unclear, leave the field. If the widget is Yes without that
-      instruction, stop.
+      Re-read the sponsorship widget. If the form names F-1, J-1, or M-1
+      and clearly says answer Yes or answer No, that polarity governs
+      that widget. If polarity is unclear, leave the field. On a broad
+      now-or-future sponsorship widget, leave the field. The stored fact
+      future_sponsorship_required is true and the historical mapping is
+      No. Do not Submit with either answer until the owner resolves that
+      conflict.
     fact_unchanged: "future_sponsorship_required remains true"
     explicit_status_instruction: >
       Follow a clear F-1, J-1, or M-1 Yes or No instruction on that

@@ -20,10 +20,10 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the bootstrap prompt from docs/automation/POLAR_WORKFLOWS.md.
 They open the raw main URL on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-09.prod-learn+b2681682cb94`
-- `apply-ready-jobs` workflow_version `2026-09-09.prod-learn+30a2eb63308d`
+- `discover-jobs-hourly` workflow_version `2026-09-09.prod-learn+6e0fc83b4283`
+- `apply-ready-jobs` workflow_version `2026-09-09.prod-learn+564aea9d54b7`
 - `daily-job-summary` workflow_version `2026-09-09.prod-learn+56b0e68af85d`
-- `production-learning-daily` workflow_version `2026-09-09.prod-learn+883ef0571767`
+- `production-learning-daily` workflow_version `2026-09-09.prod-learn+b384c9ca0fe4`
 - `polar-scheduler-heartbeat` workflow_version `2026-09-09.prod-learn+d99af025ea26`
 - `polar-github-write-canary` workflow_version `2026-09-09.prod-learn+dbeea5e727df`
 - `chatgpt-production-review` workflow_version `2026-09-09.prod-learn+1689f8dc545a`

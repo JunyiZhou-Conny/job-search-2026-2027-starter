@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-09.prod-learn+30a2eb63308d
+workflow_version: 2026-09-09.prod-learn+564aea9d54b7
 status: production
 enabled: true
 needs_browser_lock: true
@@ -87,8 +87,9 @@ AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPD
 repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, degree_level_gate_missed_at_discovery.
 Degree-level hard gates that discovery missed use that one repeat_key. Do not invent phd_only_missed_at_discovery variants.
 incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits.
-Read existing incident_id values first. Never reuse one. Do not write INC-YYYYMMDD-01.
-If 001 and 003 exist, the next id is 002. 01 and 001 count as the same number.
+The sequence is monotonic. Read existing values for that date. The next id is one more than the highest number.
+If 001 and 003 exist, write 004. Do not fill gaps. Never reuse one. Do not write INC-YYYYMMDD-01.
+01 and 001 count as the same number.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
 durable_candidate is yes only when a repo policy or compiler change would prevent a repeat.
 Evidence must be enough for an engineer. No secrets.
@@ -189,12 +190,14 @@ For each selected job:
 7. Authenticate with ordinary browser flows when asked. Account creation is normal work.
 8. Attach the resume_cluster from the row. Use Simplify at most once. Then read the visible widgets.
 9. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.
-   For sponsorship widgets, the standing broad visa-sponsorship answer is No.
+   For sponsorship widgets:
    If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget.
-   If it says select Yes or No, or uses not or never with Yes, leave the field.
-   Country-only sponsorship lists and work-authorization wording stay unresolved.
-   future_sponsorship_required remains true.
-   If those facts and the widget still conflict, leave the field and mark BLOCKED. Do not guess.
+   If it says select Yes or No, or uses not or never with Yes, leave the field and mark BLOCKED.
+   Country-only sponsorship lists and work-authorization wording stay unresolved. Mark BLOCKED.
+   Broad visa-sponsorship wording is derived from knowledge/work_authorization.yaml future_sponsorship_required.
+   That fact is true. The historical form mapping is No. Those conflict.
+   Leave the broad widget empty and mark BLOCKED. Do not answer No to hide the conflict. Do not invent Yes.
+   H-1B-named widgets stay No. Sponsorship unknown or no is not a discovery skip.
 10. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
 11. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
 12. Regular row. Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
