@@ -1,7 +1,7 @@
 # polar-sheet-migration
 
 workflow: polar-sheet-migration
-workflow_version: 2026-09-08.learning-loop+a4365da234b6
+workflow_version: 2026-09-09.direct-maintenance+a4365da234b6
 status: manual_once
 enabled: false
 needs_browser_lock: false

@@ -1,6 +1,6 @@
-last_updated: "2026-09-08"
-policy_revision: "2026-09-08.learning-loop"
-source: "Owner decision 2026-09-08. Polar local is the production operator. Learning loop close 2026-09-08."
+last_updated: "2026-09-09"
+policy_revision: "2026-09-09.direct-maintenance"
+source: "Owner decision 2026-09-09. Cursor reads Polar Production reports directly. ChatGPT is optional."
 timezone: "America/New_York"
 
 writing_observation_mode: true
@@ -88,17 +88,17 @@ schedules:
   chatgpt_production_review:
     workflow: chatgpt-production-review
     cron_et: ""
-    meaning: "Optional later bridge. Disabled until the GitHub write path and ChatGPT handoff are proven."
+    meaning: "Optional independent review. Never a Cursor gate. Manual when Junyi wants a second opinion."
     enabled: false
     needs_browser_lock: false
-    polar_mode: "Disabled. Manual only after proof."
+    polar_mode: "Disabled. Optional and manual. Absence must not block cursor-production-maintenance."
   cursor_production_maintenance:
     workflow: cursor-production-maintenance
     cron_et: ""
-    meaning: "Optional later Cursor maintenance. Disabled until the browser handoff is proven. Never merge."
+    meaning: "Disabled. Future 22:35 ET after production-learning-daily. Reads Polar Production report directly. ChatGPT is not required. Never merge."
     enabled: false
     needs_browser_lock: false
-    polar_mode: "Disabled. Manual only after proof. Stop before merge."
+    polar_mode: "Disabled. Manual after a real report exists. Stop before merge."
   polar_sheet_migration:
     workflow: polar-sheet-migration
     cron_et: ""
@@ -229,6 +229,20 @@ learning_reports_columns:
   - publish_status
   - github_url
   - notes
+
+maintenance:
+  chatgpt_required: false
+  chatgpt_role: optional_independent_review
+  cursor_reads_report_directly: true
+  status: disabled_until_proven
+  recommended_cron_et: "35 22 * * *"
+  report_title_pattern: "[Polar Production] YYYY-MM-DD"
+  dispositions:
+    - FIX
+    - OBSERVE
+    - LOCAL_ONLY
+    - NO_ACTION
+    - FIXED_ALREADY
 
 incident_categories:
   - UI_ONE_OFF

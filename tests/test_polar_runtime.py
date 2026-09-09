@@ -116,6 +116,7 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("polar_policy.priority_submit_permitted", text)
         self.assertIn("writing_observation_mode: True", text)
         self.assertIn("SUBMISSION_UNKNOWN first", text)
+        self.assertIn("ChatGPT review is optional and never a gate", text)
 
     def test_committed_file_matches_compiler(self):
         generated = compile_text()

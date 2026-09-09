@@ -1,7 +1,7 @@
 # chatgpt-production-review
 
 workflow: chatgpt-production-review
-workflow_version: 2026-09-08.learning-loop+1689f8dc545a
+workflow_version: 2026-09-09.direct-maintenance+d82cbcaa3180
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
@@ -26,15 +26,19 @@ Phone and email values stay in the local Polar profile.
 ## Status
 
 status: disabled_until_proven
+chatgpt_required: false
+chatgpt_role: optional_independent_review
 Do not schedule this Workflow.
-Do not run it until github_write_canary is success and Junyi names the ChatGPT conversation.
+Run it only when Junyi explicitly wants an independent second opinion.
+Absence of this review must never block cursor-production-maintenance.
 
 ## Designed work order
 
-1. Open today's sanitized Polar Production GitHub artifact.
+1. Open today's sanitized Polar Production report if it exists.
 2. Open the owner-designated ChatGPT conversation only if Polar Preferences already record it.
-3. If that conversation is missing, stop and write run_log result FAILED with notes chatgpt_context_missing.
-4. Ask ChatGPT to classify each incident into one-off, local-only, missing document, durable policy, triage, queue/state, dedupe, writing, performance, or no action.
-5. Ask for P0 durable fixes, P1 durable fixes, local-only actions, no-action items, and ONE Cursor-ready implementation prompt.
-6. Persist that review back to the same GitHub artifact as a comment only if the canary write path is proven.
+3. If that conversation is missing, write run_log result NO_WORK with notes chatgpt_optional_skipped.
+   Then stop. Do not treat this as a Cursor blocker.
+4. Ask ChatGPT to classify each incident using the existing Sheet categories.
+5. Ask for durable-candidate lessons, observe items, local-only items, and no-action items.
+6. Persist that review as a comment only if github_write_canary is success.
 7. Never paste secrets into ChatGPT. Use the already sanitized report.

@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-08.learning-loop+422dece0d58a
+workflow_version: 2026-09-09.direct-maintenance+422dece0d58a
 status: production
 enabled: true
 needs_browser_lock: false

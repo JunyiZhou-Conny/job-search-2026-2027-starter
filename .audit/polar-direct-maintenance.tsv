@@ -1,0 +1,7 @@
+ts	phase	decision	why	evidence	result
+2026-09-09T13:22:00Z	frame	Prepare direct Cursor maintenance. Do not add a second learning stack.	Owner named Polar report to Cursor. ChatGPT stays optional. Arena skipped because the loop was already concrete.	user brief 2026-09-09	framed
+2026-09-09T13:23:00Z	inspect	PR 112 is merged on main. Existing workflows and telemetry stay.	Do not recreate run_log, incident_log, or production-learning-daily.	origin/main bdb9410	verified
+2026-09-09T13:24:00Z	design	Put FIX OBSERVE LOCAL_ONLY NO_ACTION FIXED_ALREADY in polar_policy.classify_maintenance_item.	A second prose copy would replay the ChatGPT-required gate.	scripts/polar_policy.py	encoded
+2026-09-09T13:25:00Z	design	chatgpt_required true is a load error. Cursor reads the Polar Production title directly.	The nightly path must not open ChatGPT.	resolve_maintenance_policy	encoded
+2026-09-09T13:26:00Z	compiler	Rewrite cursor-production-maintenance and keep chatgpt-production-review compiled and disabled.	Optional tooling stays. It is not a gate.	scripts/polar_workflows.py	compiled
+2026-09-09T13:27:00Z	policy	Maintenance stays disabled until a real report exists. Recommended 22:35 ET later.	Do not race production-learning-daily. Do not take polar_browser.	knowledge/polar_operator.yaml maintenance	disabled_until_proven

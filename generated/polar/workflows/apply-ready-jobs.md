@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-08.learning-loop+bc7456cae9c7
+workflow_version: 2026-09-09.direct-maintenance+bc7456cae9c7
 status: production
 enabled: true
 needs_browser_lock: true

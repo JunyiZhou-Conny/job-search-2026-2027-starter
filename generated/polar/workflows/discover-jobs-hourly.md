@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-08.learning-loop+19a7760d4388
+workflow_version: 2026-09-09.direct-maintenance+19a7760d4388
 status: production
 enabled: true
 needs_browser_lock: true

@@ -109,10 +109,33 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertNotIn("then merge the PR", text)
         self.assertNotIn("merge it after tests pass", text)
 
-    def test_phase_two_is_disabled(self):
+    def test_cursor_maintenance_does_not_require_chatgpt(self):
+        text = read_workflow("cursor-production-maintenance")
+        contract = parse_contract_block(text, "Maintenance contract")
+        self.assertEqual(contract.get("chatgpt_required"), "false")
+        self.assertEqual(contract.get("cursor_reads_report_directly"), "true")
+        self.assertEqual(
+            contract.get("classify_with"),
+            "polar_policy.classify_maintenance_item",
+        )
+        self.assertIn("Do not wait for chatgpt-production-review.", text)
+        self.assertIn("Do not invent a Polar Production report.", text)
+        self.assertIn("needs_browser_lock: false", text)
+        self.assertNotIn("until the ChatGPT review path", text)
+        self.assertNotIn("Read the ChatGPT production review if present.", text)
+        self.assertIn("A report claim is ambiguous or may be misleading.", text)
+        self.assertIn("At least two credible fixes have meaningful tradeoffs.", text)
+        self.assertIn("new durable data shape, state machine", text)
+        self.assertIn("Was the new workflow_version actually used?", text)
+
+    def test_chatgpt_review_stays_optional(self):
         text = read_workflow("chatgpt-production-review")
         self.assertIn("status: disabled_until_proven", text)
         self.assertIn("Do not schedule this Workflow.", text)
+        self.assertIn("chatgpt_required: false", text)
+        self.assertIn("must never block cursor-production-maintenance", text)
+        self.assertIn("chatgpt_optional_skipped", text)
+        self.assertNotIn("ONE Cursor-ready implementation prompt", text)
 
     def test_compiled_artifacts_have_no_secrets(self):
         paths = list(WORKFLOW_DIR.glob("*.md"))

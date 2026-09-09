@@ -25,8 +25,8 @@ Queue reference: `docs/automation/POLAR_QUEUE.md`.
 | `production-learning-daily` | `0 22 * * *` (22:00) | Saved Workflow. Sanitized learning report. No application clicks. |
 | `polar-scheduler-heartbeat` | `5 * * * *` until proven | Saved Workflow. Harmless page plus one heartbeat row. |
 | `polar-github-write-canary` | manual | One-time proof. Do not schedule. |
-| `chatgpt-production-review` | disabled | Manual after proof. |
-| `cursor-production-maintenance` | disabled | Manual after proof. Stop before merge. |
+| `chatgpt-production-review` | disabled | Optional second opinion. Never a Cursor gate. |
+| `cursor-production-maintenance` | disabled | Reads Polar Production report directly. Stop before merge. |
 | `polar-sheet-migration` | manual once | Add missing Sheet tabs. Preserve current rows. |
 
 Attach no secrets. Phone and email stay in the browser profile.
@@ -111,7 +111,7 @@ Do not browse the rest of GitHub.
 
 ## chatgpt-production-review
 
-Disabled until the GitHub write canary and the ChatGPT handoff are proven.
+Optional. Manual when Junyi wants an independent second opinion. Never required for Cursor maintenance.
 
 ```text
 Open https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/workflows/chatgpt-production-review.md
@@ -123,7 +123,7 @@ Do not browse the rest of GitHub.
 
 ## cursor-production-maintenance
 
-Disabled until the browser handoff is proven. Stop before merge.
+Disabled until a real Polar Production report exists. Cursor reads that report directly. ChatGPT is not required. Stop before merge.
 
 ```text
 Open https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/workflows/cursor-production-maintenance.md

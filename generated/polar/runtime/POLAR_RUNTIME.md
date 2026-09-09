@@ -377,6 +377,7 @@ apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then IN_PROGRESS.
 It then reserves one new-execution slot for READY_PRIORITY when one exists, and uses remaining slots for READY_REGULAR.
 daily-job-summary never includes passwords, OTP codes, or cookies.
 production-learning-daily writes a sanitized report and does not change GitHub policy.
+cursor-production-maintenance reads that Polar Production report directly. ChatGPT review is optional and never a gate.
 
 ## K. Historical duplicate guard
 
@@ -567,7 +568,7 @@ discover-jobs-hourly and apply-ready-jobs must acquire this lock before driving 
 If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.
 Refresh the lock when a long run has under 60 minutes remaining.
 Release on normal completion. Treat an expired lock as free.
-Heartbeat, daily summary, and production-learning-daily do not take this lock.
+Heartbeat, daily summary, production-learning-daily, and cursor-production-maintenance do not take this lock.
 
 ## N. Run and incident telemetry
 
@@ -576,6 +577,7 @@ Write incident_log rows for material events. Use the small category list in know
 If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.
 Do not count every click. Coarse stage timing is enough.
 production-learning-daily aggregates today's telemetry into a sanitized Markdown report.
+Cursor reads that report directly. Do not wait for ChatGPT.
 Do not put secrets in telemetry.
 
 ## O. Employer requisition identity
