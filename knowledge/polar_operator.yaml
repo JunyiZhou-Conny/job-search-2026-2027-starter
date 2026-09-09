@@ -1,35 +1,111 @@
 last_updated: "2026-09-08"
-source: "Owner decision 2026-09-08. Polar local is the production operator."
+policy_revision: "2026-09-08.learning-loop"
+source: "Owner decision 2026-09-08. Polar local is the production operator. Learning loop close 2026-09-08."
 timezone: "America/New_York"
 
 writing_observation_mode: true
 
 canary:
+  # Shared new-execution pool. These two numbers must stay equal.
+  # READY_PRIORITY reservation is taken from this pool, not added to it.
+  max_jobs_per_run: 3
   max_regular_jobs_per_run: 3
+  reserved_priority_slots_per_run: 1
   max_regular_submissions_per_local_day: 10
-  prioritized_auto_submit: false
+  prioritized_auto_submit: true
+
+lease:
+  tab: control
+  key: polar_browser
+  ttl_minutes: 180
+  refresh_if_remaining_below_minutes: 60
+
+simplify:
+  role: optional_accelerator
+  max_attempts_per_application: 1
+  fallback_when:
+    - onboarding_wall
+    - extension_not_injected
+    - logged_out_or_broken_session
+    - obvious_repeat_navigation
+
+contact_email:
+  default_source: local_application_mailbox
+  academic_source: local_academic_mailbox
+  academic_when:
+    - school email
+    - university email
+    - institutional email
+  resume_parser_is_not_authoritative: true
+
+street_address:
+  source: local_polar_private_profile
+  do_not_compile_value: true
 
 schedules:
   discover_jobs_hourly:
     workflow: discover-jobs-hourly
     cron_et: "0 * * * *"
     meaning: "Every hour at minute 00 Eastern Time"
+    enabled: true
+    needs_browser_lock: true
     polar_mode: "Saved Polar Workflow on the named local browser profile. Discovery and queue only."
   apply_ready_jobs:
     workflow: apply-ready-jobs
     cron_et: "20 * * * *"
     meaning: "Every hour at minute 20 Eastern Time"
+    enabled: true
+    needs_browser_lock: true
     polar_mode: "Saved Polar Workflow on the same named local browser profile. Application execution."
   daily_job_summary:
     workflow: daily-job-summary
     cron_et: "30 21 * * *"
     meaning: "Once each evening at 21:30 Eastern Time"
+    enabled: true
+    needs_browser_lock: false
     polar_mode: "Saved Polar Workflow. Queue read and one email. No application clicks."
+  production_learning_daily:
+    workflow: production-learning-daily
+    cron_et: "0 22 * * *"
+    meaning: "Once each evening at 22:00 Eastern Time"
+    enabled: true
+    needs_browser_lock: false
+    polar_mode: "Saved Polar Workflow. Sheet read and one sanitized learning report. No application clicks."
   scheduler_heartbeat:
     workflow: polar-scheduler-heartbeat
     cron_et: "5 * * * *"
     meaning: "Harmless locked-screen proof. Every hour at minute 05 Eastern Time until the owner records a result."
+    enabled: true
+    needs_browser_lock: false
     polar_mode: "Saved Polar Workflow. Open a harmless page. Write one Sheet row. Never apply."
+  polar_github_write_canary:
+    workflow: polar-github-write-canary
+    cron_et: ""
+    meaning: "Manual one-time proof that Polar can open a harmless GitHub Issue."
+    enabled: false
+    needs_browser_lock: false
+    polar_mode: "Manual. Do not schedule until the owner pastes it once."
+  chatgpt_production_review:
+    workflow: chatgpt-production-review
+    cron_et: ""
+    meaning: "Optional later bridge. Disabled until the GitHub write path and ChatGPT handoff are proven."
+    enabled: false
+    needs_browser_lock: false
+    polar_mode: "Disabled. Manual only after proof."
+  cursor_production_maintenance:
+    workflow: cursor-production-maintenance
+    cron_et: ""
+    meaning: "Optional later Cursor maintenance. Disabled until the browser handoff is proven. Never merge."
+    enabled: false
+    needs_browser_lock: false
+    polar_mode: "Disabled. Manual only after proof. Stop before merge."
+  polar_sheet_migration:
+    workflow: polar-sheet-migration
+    cron_et: ""
+    meaning: "One-time Sheet tab and header migration."
+    enabled: false
+    needs_browser_lock: false
+    polar_mode: "Manual once. Preserve existing queue, writing_log, and heartbeat rows."
 
 statuses:
   - NEW
@@ -55,8 +131,8 @@ last_stages:
 recovery_order:
   - SUBMISSION_UNKNOWN
   - IN_PROGRESS
-  - READY_REGULAR
   - READY_PRIORITY
+  - READY_REGULAR
 
 queue_columns:
   - job_key
@@ -80,6 +156,8 @@ queue_columns:
   - submitted_at
   - confirmation
   - updated_at
+  - employer_requisition_id
+  - ats_job_id
 
 writing_log_columns:
   - job_key
@@ -98,13 +176,94 @@ heartbeat_columns:
   - page_opened
   - notes
 
+run_log_columns:
+  - run_id
+  - workflow
+  - workflow_version
+  - started_at
+  - ended_at
+  - duration_minutes
+  - result
+  - lock_result
+  - jobs_seen
+  - jobs_attempted
+  - submitted_regular
+  - submitted_priority
+  - blocked
+  - skipped
+  - submission_unknown
+  - simplify_attempted
+  - simplify_fallback_count
+  - notes
+
+incident_log_columns:
+  - incident_id
+  - run_id
+  - job_key
+  - company
+  - stage
+  - category
+  - time_lost_category
+  - severity
+  - summary
+  - evidence
+  - minutes_lost
+  - resolved_in_run
+  - repeat_key
+  - durable_candidate
+  - recorded_at
+
+control_columns:
+  - key
+  - owner_run_id
+  - workflow
+  - acquired_at
+  - expires_at
+  - notes
+
+learning_reports_columns:
+  - report_date
+  - recorded_at
+  - workflow_version
+  - body_markdown
+  - publish_status
+  - github_url
+  - notes
+
+incident_categories:
+  - UI_ONE_OFF
+  - LOCAL_PRIVATE_FACT
+  - MISSING_DOCUMENT
+  - FACT_POLICY
+  - TRIAGE
+  - QUEUE_STATE
+  - DEDUP
+  - WRITING
+  - AUTH
+  - PERFORMANCE
+  - NO_ACTION
+
+time_lost_categories:
+  - AUTH
+  - ACCOUNT_CREATION
+  - SIMPLIFY
+  - MISSING_FACT
+  - MISSING_DOCUMENT
+  - WRITING
+  - DROPDOWN_UI
+  - DUPLICATE
+  - SUBMIT_VERIFY
+  - OTHER
+
 job_key_rule: >
   Prefer the Jobright job id when the source is Jobright
   (the last path segment of https://jobright.ai/jobs/info/<id>).
   Discovery stores the Jobright source_url. Do not require an
   employer URL during discovery. apply-ready-jobs fills apply_url
   later. Deduplicate again by normalized company + role + location
-  when a Jobright id is missing.
+  when a Jobright id is missing. After Original Job Post is resolved,
+  also deduplicate by employer requisition id, ATS job id, or
+  canonical employer apply URL.
 
 apply_url_confidence_values:
   - exact
@@ -116,3 +275,7 @@ runtime_url:
   path: generated/polar/runtime/POLAR_RUNTIME.md
   raw_main: "https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md"
   raw_branch_note: "Until main has this file, Polar may read the same path on the production branch."
+
+workflow_url:
+  dir: generated/polar/workflows
+  raw_main_dir: "https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/workflows"

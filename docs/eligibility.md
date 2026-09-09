@@ -40,10 +40,15 @@ Values: `verified` | `likely` | `unclear` | `no`
 
 `regular` vs `prioritized` (GTC 2026 / startup / prestige). Not the letter
 `priority` field. See `knowledge/application_priority.yaml` and
-`docs/apply/PRIORITY.md`. Prioritized: full form prep, then a review
-packet for Junyi before Submit (`docs/policy/SUBMIT_ROLLOUT.md`). The
-referral hold was retired 2026-08-24. Confirm the weight before writing
-it onto a ledger row.
+`docs/apply/PRIORITY.md`. Prioritized on Polar Local: full form prep,
+mandatory writing_log, then Submit. Cursor Cloud still uses a review
+packet. The referral hold was retired 2026-08-24. Confirm the weight
+before writing it onto a ledger row.
+
+apply-ready-jobs re-reads the full employer posting before major fill
+and applies these same hard rules. A fuller JD can reveal a skip that
+discovery missed. Sponsorship unknown or no is still not a skip.
+Graduation-window policy is unchanged.
 
 ## Dual graduation dates (both real)
 

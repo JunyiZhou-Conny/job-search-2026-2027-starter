@@ -10,6 +10,7 @@ Canonical sources:
 - `config/profile.yaml`
 - `config/submit_gates.yaml`
 - `knowledge/polar_operator.yaml`
+- `knowledge/polar_documents.yaml`
 - `knowledge/work_authorization.yaml`
 - `knowledge/form_strategy.yaml`
 - `knowledge/application_priority.yaml`
@@ -27,8 +28,17 @@ Secrets stay out. No passwords, cookies, OTP codes, 2FA secrets, or session file
 
 ## A. Candidate facts
 
-Phone and email live in the local Polar profile and in Simplify.
-They are not compiled here.
+Phone numbers live in the local Polar profile and in Simplify. They are not compiled here.
+Normal ATS email, candidate account email, preferred application contact, and password-reset email
+use the dedicated local APPLICATION mailbox from Polar, Simplify, or the browser profile.
+If a field asks for school email, university email, or institutional email, use the local academic mailbox.
+A resume parser that fills Harvard email into a normal contact field is wrong. Correct it before Submit.
+Do not create a second employer account only to change email.
+street_address_source: local Polar or private profile. Do not compile or log the street value.
+
+Approved documents. Attach only when the form asks for that class. Never paste contents.
+- emory_official_transcript: `Emory_Official_Transcript.pdf` (available in repo). official undergraduate transcript.
+- harvard_unofficial_transcript: `Harvard_unofficial_transcript.pdf` (available in repo). unofficial current-program transcript.
 
 - Legal name: Junyi Zhou
 - Preferred name: Junyi
@@ -138,11 +148,13 @@ Do not invent a graduation date.
 Sponsorship unknown or no is not a skip.
 Do not invent work_model, location, graduation windows, or H1B facts.
 Blank location is not an automatic skip.
+apply-ready-jobs re-reads the full employer posting before major fill and applies these same hard rules.
+A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, or TS-SCI/polygraph skip that discovery missed.
 
 ## D. Regular vs prioritized policy
 
 Regular: Fast truthful autonomous execution on Polar Local once polar_local caps allow it. Cluster resume. Short, prompt-faithful free response.
-Prioritized: Extra judgment. Tailor resume toward the JD using only evidence-bank facts. Free-response gets a real answer to the prompt, not a project dump. Full form prep, then stop before Submit and hand Junyi a review packet (docs/policy/SUBMIT_ROLLOUT.md). Polar Local writes REVIEW_READY. Do not wait for a referral / insider-page check before preparing the packet. Junyi 2026-08-24: those pages are rare; the public pool is closer to FIFO, so waiting costs more than it saves.
+Prioritized: Extra judgment. Tailor resume toward the JD using only evidence-bank facts. Free-response gets a real answer to the prompt, not a project dump. Full form prep, mandatory writing_log of every meaningful custom question, then Polar Local may Submit when final validation passes (docs/policy/SUBMIT_ROLLOUT.md). Daily digest gives Junyi post-submit oversight. Do not wait for a referral / insider-page check. Junyi 2026-08-24: those pages are rare; the public pool is closer to FIFO, so waiting costs more than it saves.
 
 Prioritized signals, only when strongly applicable:
 
@@ -162,7 +174,8 @@ Prioritized signals, only when strongly applicable:
 
 Polar may assign READY_PRIORITY when a strong configured signal is present.
 Junyi does not confirm every priority label before the queue can move.
-Priority controls execution effort, writing depth, and review-before-Submit.
+Priority controls execution effort, writing depth, and post-submit writing audit.
+Polar Local may Submit a prioritized row when writing_log is complete and final validation passes.
 It is not permission to invent company facts.
 
 Strong signals. Assign READY_PRIORITY:
@@ -179,7 +192,8 @@ Weak signals. Stay READY_REGULAR unless clearly justified:
 
 FDE / Forward Deployed titles stay and are marked prioritized.
 Do not claim customer on-site FDE work already done.
-READY_PRIORITY still stops at REVIEW_READY.
+READY_PRIORITY no longer waits behind a permanent READY_REGULAR backlog.
+Reserve up to 1 new-execution slot per apply-ready-jobs run for READY_PRIORITY when one exists.
 
 ## E. Resume-cluster selection
 
@@ -199,7 +213,7 @@ writing_observation_mode: True
 For every nontrivial free-response question, append one writing_log row.
 Record company, role, exact question, answer used, and a short evidence note.
 Regular writing may still submit when the facts support it.
-Prioritized writing stays in the review packet. Do not Submit.
+Prioritized writing must be logged before Submit. Missing writing_log is a Submit blocker.
 
 Ideology bank is for week, meaning, and culture prompts only.
 Use when:
@@ -275,6 +289,10 @@ Do not implement CAPTCHA-bypass services, fingerprint spoofing, or anti-abuse ev
 Escalate to BLOCKED only after this local environment cannot complete a required step.
 A blocked job must not stall the queue. Persist the blocker and continue to the next READY job.
 ATS family is diagnostic metadata only. Do not organize work by ATS worker class.
+Simplify is optional acceleration. Try it at most once per application when it is already useful.
+If onboarding, missing injection, a broken session, or repeat navigation appears, fall back immediately
+to POLAR_RUNTIME, the approved resume or document registry, and the local Polar profile.
+Do not spend the run repairing Simplify. Record a PERFORMANCE incident if it materially slowed the run.
 
 ## H. Submission behavior
 
@@ -287,9 +305,11 @@ Cloud G2 remains closed. Polar Local does not inherit those ATS gates.
 
 polar_local uses capability and policy checks, not ATS family.
 Gate model: capability_policy.
-Regular jobs per apply-ready-jobs run: 3.
+Shared new-execution pool per apply-ready-jobs run: 3.
+READY_PRIORITY reservation: 1 slot taken from that pool, not added to it.
+If no READY_PRIORITY exists, READY_REGULAR may use the whole pool.
 Regular submissions per local calendar day (America/New_York): 10.
-Prioritized auto-submit: False.
+Prioritized auto-submit: True.
 
 A regular job may be submitted once only when every item holds:
 - Duplicate check passes against the Sheet and section K.
@@ -304,7 +324,10 @@ A regular job may be submitted once only when every item holds:
 - One final Submit is used.
 - Result is verified, or status becomes SUBMISSION_UNKNOWN.
 
-Prioritized jobs stop at REVIEW_READY. Include them in the daily digest.
+A prioritized job may be submitted once when every regular item holds and polar_policy.priority_submit_permitted is true.
+That function is false when writing_log is missing a custom question, the answer is blank, or the evidence note is blank.
+Include prioritized SUBMITTED rows in the daily digest under PRIORITY APPLICATIONS SUBMITTED TODAY.
+REVIEW_READY is only for a missing owner fact or an explicit hold.
 
 ## I. Prohibited fabrication
 
@@ -333,9 +356,9 @@ An empty Sheet is not a clean slate. Check section K in addition to the Sheet.
 Statuses:
 - NEW: seen and written. Not yet READY.
 - READY_REGULAR: triaged keep, regular weight, eligible to execute.
-- READY_PRIORITY: triaged keep, prioritized weight, eligible to prepare.
+- READY_PRIORITY: triaged keep, prioritized weight, eligible to execute with deeper writing.
 - IN_PROGRESS: this job is the active execution. At most one should be live.
-- REVIEW_READY: prioritized form is complete. Stop before Submit.
+- REVIEW_READY: form is complete but Polar stopped for a missing owner fact or explicit hold.
 - SUBMITTED: Submit clicked and verification succeeded.
 - SUBMISSION_UNKNOWN: Submit may have happened. Verify before any retry. Never blindly resubmit.
 - BLOCKED: this environment cannot finish a required step. Queue continues.
@@ -343,15 +366,17 @@ Statuses:
 
 Allowed status values: NEW, READY_REGULAR, READY_PRIORITY, IN_PROGRESS, REVIEW_READY, SUBMITTED, SUBMISSION_UNKNOWN, BLOCKED, SKIP
 Allowed last_stage values: discovered, source_resolved, application_open, authenticated, form_filled, reviewed, submit_clicked, confirmation_seen
-Recovery order: SUBMISSION_UNKNOWN then IN_PROGRESS then READY_REGULAR then READY_PRIORITY.
+Recovery order: SUBMISSION_UNKNOWN then IN_PROGRESS then READY_PRIORITY then READY_REGULAR.
 If the Mac slept during Job 6 IN_PROGRESS, resume Job 6. Do not restart Job 1.
 
-Queue columns: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at
-Prefer the Jobright job id when the source is Jobright (the last path segment of https://jobright.ai/jobs/info/<id>). Discovery stores the Jobright source_url. Do not require an employer URL during discovery. apply-ready-jobs fills apply_url later. Deduplicate again by normalized company + role + location when a Jobright id is missing.
+Queue columns: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id
+Prefer the Jobright job id when the source is Jobright (the last path segment of https://jobright.ai/jobs/info/<id>). Discovery stores the Jobright source_url. Do not require an employer URL during discovery. apply-ready-jobs fills apply_url later. Deduplicate again by normalized company + role + location when a Jobright id is missing. After Original Job Post is resolved, also deduplicate by employer requisition id, ATS job id, or canonical employer apply URL.
 
 Workflows never apply during discover-jobs-hourly.
-apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then IN_PROGRESS, then READY rows.
+apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then IN_PROGRESS.
+It then reserves one new-execution slot for READY_PRIORITY when one exists, and uses remaining slots for READY_REGULAR.
 daily-job-summary never includes passwords, OTP codes, or cookies.
+production-learning-daily writes a sanitized report and does not change GitHub policy.
 
 ## K. Historical duplicate guard
 
@@ -523,3 +548,42 @@ Company|role|location:
 - virtru|graduate software developer intern|washington, dc, usa
 - waystar|application engineering intern|atlanta, ga, usa | duluth, ga, usa | lehi, ut, usa | louisville, ky, usa
 - westfield|wsp it intern, berkeley heights office (2026 summer)|berkeley heights, nj, united states
+
+## L. Schema-safe Sheet writes
+
+Read the actual header row before every Sheet write.
+Build a field-name to column mapping from those headers.
+Write by header name. Write explicit blanks. Do not shorten a positional row.
+apply_url_confidence must stay in its named column even when the value is none or blank.
+After an important queue write, read back job_key, status, and last_stage.
+If those fields do not match, repair the row before the next job.
+
+## M. Browser lease
+
+Lock tab: control.
+Lock key: polar_browser.
+TTL minutes: 180.
+discover-jobs-hourly and apply-ready-jobs must acquire this lock before driving Jobright or employer pages.
+If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.
+Refresh the lock when a long run has under 60 minutes remaining.
+Release on normal completion. Treat an expired lock as free.
+Heartbeat, daily summary, and production-learning-daily do not take this lock.
+
+## N. Run and incident telemetry
+
+One workflow invocation writes one run_log row and copies workflow_version from the instruction file.
+Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.
+If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.
+Do not count every click. Coarse stage timing is enough.
+production-learning-daily aggregates today's telemetry into a sanitized Markdown report.
+Do not put secrets in telemetry.
+
+## O. Employer requisition identity
+
+After Original Job Post or the employer application is resolved, capture employer_requisition_id,
+canonical employer apply_url, and ats_job_id.
+If multiple Jobright rows point at the same employer requisition, keep one canonical row.
+Mark siblings SKIP with the canonical job_key.
+Do not submit the same employer requisition twice.
+Jobright ids and company+role+location remain useful. They are not enough once the employer identity is known.
+Section K still applies.

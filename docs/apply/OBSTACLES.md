@@ -234,7 +234,7 @@ prompt, ardent / genuine / truthful, no project dump.
 
 **Lila is prioritized.** GTC 2026 Exhibitor (already in
 `knowledge/market_signals/gtc2026_sponsors_exhibitors.md`) plus Junyi
-emphasis. Prioritized rows stop for a review packet before Submit
+emphasis. Polar Local may Submit prioritized rows after writing_log
 (`docs/policy/SUBMIT_ROLLOUT.md`). The referral hold was retired
 2026-08-24. See `knowledge/application_priority.yaml` and
 `docs/apply/PRIORITY.md`.

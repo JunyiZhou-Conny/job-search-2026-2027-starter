@@ -31,7 +31,7 @@ reconciliation                                  Jobright source_url
 
 The product goal is no longer one Cursor discovery pass, one pasted job, and one Polar experiment.
 
-The production loop is hourly authenticated local discovery, a durable queue, local Polar execution, resumable state, automatic Submit on regular jobs, review-first work on prioritized jobs, and a daily digest.
+The production loop is hourly authenticated local discovery, a durable queue, local Polar execution, resumable state, automatic Submit on regular and prioritized jobs, a daily digest, and a sanitized production-learning report. Polar conversation windows are disposable. Learning lives in Sheet telemetry and the compiled GitHub artifacts.
 
 ATS family is diagnostic metadata only. It is not the root abstraction.
 
@@ -78,7 +78,7 @@ Polar must not become a second job-search truth system.
 - Copy the whole repository into the Workflow prompt.
 - Store passwords, cookies, OTP codes, or 2FA secrets in git, the Sheet, or mail.
 - Invent metrics, projects, employers, referrals, clearance, or technologies outside the evidence bank.
-- Auto-submit a prioritized row while `prioritized_auto_submit` is false.
+- Auto-submit a prioritized row when `writing_log` is incomplete.
 - Disable Cloud discovery on day one.
 - Organize execution as ATS-family worker classes.
 - Build a database, Redis, a web service, parallel browser workers, or a custom scheduler.
@@ -87,13 +87,15 @@ Polar must not become a second job-search truth system.
 
 Polar should not reread ten YAML files every hour.
 
-`scripts/build_polar_runtime.py` compiles canonical repo state into `generated/polar/runtime/POLAR_RUNTIME.md`. That file is COMPILED, not canonical. After `main` has it, Polar opens:
+`scripts/build_polar_runtime.py` compiles canonical repo state into `generated/polar/runtime/POLAR_RUNTIME.md` and `generated/polar/workflows/`. Those files are COMPILED, not canonical. After `main` has them, a saved Polar Workflow opens one stable raw URL:
 
-`https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md`
+`https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/workflows/<workflow>.md`
 
-Until `main` has the file, use the same path on the production branch.
+That file then opens `POLAR_RUNTIME.md` from the same `main` raw tree.
 
-The compiler must stay the only writer of that file. Tests refuse passwords, cookies, OTP assignments, leaked phone or email, missing policy sections, and contradictory identity facts.
+Until `main` has the files, use the same path on the production branch.
+
+The compiler must stay the only writer of those files. Tests refuse passwords, cookies, OTP assignments, leaked phone or email, missing policy sections, and contradictory identity facts.
 
 ## URL rules
 
@@ -124,6 +126,10 @@ Do not rely on a Polar tab.
 
 The Google Sheet is the operational store. GitHub is not the hourly checkpoint.
 
+Sheet writes use the live header row and named fields. Polar must not omit `apply_url_confidence` and shift later columns. After an important queue write, read back `job_key`, `status`, and `last_stage`.
+
+`discover-jobs-hourly` and `apply-ready-jobs` take a 180 minute `polar_browser` lease in the `control` tab so a long apply run does not overlap the next hourly Workflow.
+
 Recovery must survive Mac shutdown, Wi-Fi loss, browser restart, Workflow interruption, and the laptop leaving the desk.
 
 See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery order.
@@ -138,13 +144,13 @@ Regular work is fast and truthful. Use the cluster resume. Use Simplify once whe
 
 Prioritized work gets more care. Signals include startup or scale-up Junyi values, Fortune 500 or major companies, NVIDIA GTC, prestige, biotech or health AI, strong biostatistics or bio data-science fit, FDE, and unusually strong personal fit. Do not mark a generic analyst or data role prioritized only because the title contains "data".
 
-For prioritized rows, research the JD, write a better Why-us from the evidence bank only, tailor the resume only when justified, finish the form, save the exact questions and drafts, and stop at `REVIEW_READY`. Include those rows in the digest. Prioritized stays review-first while we watch Polar's writing.
+For prioritized rows, research the JD, write a better Why-us from the evidence bank only, tailor the resume only when justified, finish the form, log every meaningful custom question and the exact answer used, then Submit when final validation passes. The daily digest highlights those rows for post-submit oversight. `REVIEW_READY` is only for a missing owner fact or an explicit hold.
 
 ## Writing observation
 
 `writing_observation_mode` is true in `knowledge/polar_operator.yaml`.
 
-For every nontrivial free-response question, write a `writing_log` row with company, role, exact question, answer used, and a short evidence note. Regular answers may still submit when the facts support them. Prioritized answers stay in the review packet.
+For every nontrivial free-response question, write a `writing_log` row with company, role, exact question, answer used, and a short evidence note. Regular answers may still submit when the facts support them. Prioritized answers must be logged before Submit.
 
 The point is 10 to 20 real examples Junyi can use to improve the writing policy.
 
@@ -168,22 +174,23 @@ Polar Local uses capability and policy checks. A regular job may be submitted on
 
 Initial canary caps live in `knowledge/polar_operator.yaml` and `config/submit_gates.yaml` `polar_local`:
 
-- 3 regular jobs per `apply-ready-jobs` run
+- 3 new jobs per `apply-ready-jobs` run (shared pool; priority reservation is taken from it)
 - 10 regular submissions per local calendar day in America/New_York
 
 Junyi can raise those caps after production evidence is good.
 
-## Three workflows
+## Workflows
 
-Do not merge these into one giant Workflow.
+Do not merge these into one giant Workflow. Saved Polar Workflows store only the thin bootstrap in `docs/automation/POLAR_WORKFLOWS.md`.
 
 | Workflow | Eastern Time | Polar mode |
 |---|---|---|
-| `discover-jobs-hourly` | minute 00 every hour | Saved Workflow on the named local profile. Discovery and queue only. |
-| `apply-ready-jobs` | minute 20 every hour | Saved Workflow on the same profile. Execution with the run cap. |
-| `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. |
+| `discover-jobs-hourly` | minute 00 every hour | Saved Workflow on the named local profile. Discovery and queue only. Takes the browser lease. |
+| `apply-ready-jobs` | minute 20 every hour | Saved Workflow on the same profile. Execution with the run cap. Takes the browser lease. |
+| `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. No browser lease. |
+| `production-learning-daily` | 22:00 daily | Saved Workflow. Sanitized learning report. No application clicks. No browser lease. |
 
-Paste the prompts from `docs/automation/POLAR_WORKFLOWS.md`.
+`polar-github-write-canary`, `chatgpt-production-review`, and `cursor-production-maintenance` exist as compiled instructions. They stay manual until the write path is proven. Phase 3 stops before merge.
 
 ## Cloud discovery stays as shadow
 

@@ -1,0 +1,36 @@
+last_updated: "2026-09-08"
+source: "Repo inspection 2026-09-08. Paths only. No document contents."
+
+rule: >
+  Attach an approved document only when the application asks for that
+  document class. Do not copy transcript text into the Sheet, email,
+  run_log, incident_log, or a learning report.
+
+documents:
+  - id: emory_official_transcript
+    purpose: official undergraduate transcript
+    school: Emory University
+    approved_path: Emory_Official_Transcript.pdf
+    expected_filename: Emory_Official_Transcript.pdf
+    use_when:
+      - official transcript
+      - undergraduate transcript
+      - Emory transcript
+    do_not_use_when:
+      - the form asks only for a Harvard or current-program transcript
+      - the form asks for a degree certificate or diploma instead
+    privacy_note: Do not reproduce transcript contents in runtime, logs, or mail.
+
+  - id: harvard_unofficial_transcript
+    purpose: unofficial current-program transcript
+    school: Harvard T.H. Chan School of Public Health
+    approved_path: Harvard_unofficial_transcript.pdf
+    expected_filename: Harvard_unofficial_transcript.pdf
+    use_when:
+      - unofficial transcript
+      - Harvard transcript
+      - current graduate transcript
+    do_not_use_when:
+      - the form requires an official sealed registrar copy and rejects unofficial files
+      - the form asks only for an Emory undergraduate transcript
+    privacy_note: Do not reproduce transcript contents in runtime, logs, or mail.
