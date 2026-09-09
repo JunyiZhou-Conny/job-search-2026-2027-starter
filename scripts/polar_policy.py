@@ -35,6 +35,46 @@ INCIDENT_CATEGORIES = (
     "NO_ACTION",
 )
 
+INCIDENT_CATEGORY_ALIASES = {
+    "ONE_OFF_UI": "UI_ONE_OFF",
+    "LOCAL_PRIVATE": "LOCAL_PRIVATE_FACT",
+    "MISSING_ARTIFACT": "MISSING_DOCUMENT",
+    "DURABLE_POLICY": "FACT_POLICY",
+}
+
+MAINTENANCE_DISPOSITIONS = (
+    "FIX",
+    "OBSERVE",
+    "LOCAL_ONLY",
+    "NO_ACTION",
+    "FIXED_ALREADY",
+)
+
+PERFORMANCE_PRIORITY = (
+    "correctness_integrity",
+    "duplicate_submit_risk",
+    "repeated_blockers",
+    "repeated_time_sinks",
+    "cosmetic_one_off",
+)
+
+MAINTENANCE_PLAYBOOK_WHEN = {
+    "interrogate": (
+        "A report claim is ambiguous or may be misleading. "
+        "Challenge the premise before any code change."
+    ),
+    "arena": (
+        "At least two credible fixes have meaningful tradeoffs. "
+        "Do not run it for an obvious one-path fix."
+    ),
+    "architect": (
+        "The lesson needs a new durable data shape, state machine, "
+        "compiler contract, or GitHub/Sheet/local-private boundary."
+    ),
+}
+
+POLAR_PRODUCTION_TITLE_RE = re.compile(r"^\[Polar Production\] (\d{4}-\d{2}-\d{2})$")
+
 TIME_LOST_CATEGORIES = (
     "AUTH",
     "ACCOUNT_CREATION",
@@ -506,6 +546,132 @@ def apply_run_caps(root: Optional[Path] = None) -> ApplyRunCaps:
         operator.get("canary") or {},
         gates.get("polar_local") or {},
     )
+
+
+@dataclass(frozen=True)
+class MaintenancePolicy:
+    chatgpt_required: bool
+    chatgpt_role: str
+    cursor_reads_report_directly: bool
+    status: str
+    recommended_cron_et: str
+    report_title_pattern: str
+
+
+@dataclass(frozen=True)
+class MaintenanceDecision:
+    disposition: str
+    category: str
+    reason: str
+
+
+def resolve_maintenance_policy(raw: Mapping[str, Any]) -> MaintenancePolicy:
+    chatgpt_required = bool(raw.get("chatgpt_required"))
+    if chatgpt_required:
+        raise ValueError(
+            "maintenance.chatgpt_required must be false. "
+            "ChatGPT is optional and must not gate Cursor"
+        )
+    reads_direct = raw.get("cursor_reads_report_directly")
+    if reads_direct is False:
+        raise ValueError("maintenance.cursor_reads_report_directly must be true")
+    return MaintenancePolicy(
+        chatgpt_required=False,
+        chatgpt_role=str(raw.get("chatgpt_role") or "optional_independent_review"),
+        cursor_reads_report_directly=True,
+        status=str(raw.get("status") or "disabled_until_proven"),
+        recommended_cron_et=str(raw.get("recommended_cron_et") or "35 22 * * *"),
+        report_title_pattern=str(
+            raw.get("report_title_pattern") or "[Polar Production] YYYY-MM-DD"
+        ),
+    )
+
+
+def load_maintenance_policy(root: Optional[Path] = None) -> MaintenancePolicy:
+    operator = load_operator(root)
+    return resolve_maintenance_policy(operator.get("maintenance") or {})
+
+
+def maintenance_contract(root: Optional[Path] = None) -> Dict[str, str]:
+    policy = load_maintenance_policy(root)
+    return {
+        "chatgpt_required": "false",
+        "chatgpt_role": policy.chatgpt_role,
+        "cursor_reads_report_directly": "true",
+        "needs_browser_lock": "false",
+        "recommended_cron_et": policy.recommended_cron_et,
+        "report_title_pattern": policy.report_title_pattern,
+        "status": policy.status,
+        "classify_with": "polar_policy.classify_maintenance_item",
+    }
+
+
+def polar_production_issue_title(report_date: str) -> str:
+    return f"[Polar Production] {report_date}"
+
+
+def parse_polar_production_title(title: str) -> Optional[str]:
+    match = POLAR_PRODUCTION_TITLE_RE.match((title or "").strip())
+    if not match:
+        return None
+    return match.group(1)
+
+
+def maintenance_input_ready(
+    *,
+    github_issue_title: str = "",
+    report_body: str = "",
+) -> Tuple[bool, str]:
+    body = (report_body or "").strip()
+    report_date = parse_polar_production_title(github_issue_title)
+    if report_date and body:
+        return True, "github_issue"
+    if body and not (github_issue_title or "").strip():
+        return True, "supplied_report"
+    return False, "missing_report"
+
+
+def canonicalize_incident_category(raw: str) -> str:
+    text = normalize_text(raw).upper().replace(" ", "_")
+    return INCIDENT_CATEGORY_ALIASES.get(text, text)
+
+
+def classify_maintenance_item(
+    *,
+    category: str,
+    recurrence: int = 1,
+    high_risk_correctness: bool = False,
+    mechanistic_evidence: bool = False,
+    already_fixed_on_main: bool = False,
+    local_private: bool = False,
+) -> MaintenanceDecision:
+    canonical = canonicalize_incident_category(category)
+    if already_fixed_on_main:
+        return MaintenanceDecision("FIXED_ALREADY", canonical, "current_main_already_fixes_it")
+    if local_private or canonical == "LOCAL_PRIVATE_FACT":
+        return MaintenanceDecision("LOCAL_ONLY", canonical, "local_private_fact")
+    if canonical == "NO_ACTION":
+        return MaintenanceDecision("NO_ACTION", canonical, "marked_no_action")
+    if high_risk_correctness:
+        return MaintenanceDecision("FIX", canonical, "high_risk_correctness")
+    if canonical == "QUEUE_STATE":
+        return MaintenanceDecision("FIX", canonical, "queue_state_integrity")
+    repeated = recurrence >= 2 or mechanistic_evidence
+    if repeated and canonical in {
+        "PERFORMANCE",
+        "DEDUP",
+        "WRITING",
+        "TRIAGE",
+        "FACT_POLICY",
+        "AUTH",
+        "MISSING_DOCUMENT",
+        "DURABLE_BUG",
+        "DURABLE_POLICY",
+    }:
+        return MaintenanceDecision("FIX", canonical, "recurring_or_mechanistic")
+    if canonical == "UI_ONE_OFF":
+        return MaintenanceDecision("OBSERVE", canonical, "one_off_ui")
+    return MaintenanceDecision("OBSERVE", canonical, "insufficient_evidence")
 
 
 def writing_row_is_complete(row: Mapping[str, Any]) -> bool:

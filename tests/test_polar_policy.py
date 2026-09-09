@@ -16,16 +16,22 @@ from polar_policy import (  # noqa: E402
     REQUIRED_QUEUE_READBACK,
     TIME_LOST_CATEGORIES,
     apply_run_caps,
+    classify_maintenance_item,
     decide_lease,
     document_availability,
     header_map,
+    load_maintenance_policy,
+    maintenance_input_ready,
     named_row,
+    parse_polar_production_title,
     pick_canonical_requisition_row,
+    polar_production_issue_title,
     priority_submit_permitted,
     readback_fields,
     release_lease,
     requisition_identity,
     resolve_apply_run_caps,
+    resolve_maintenance_policy,
     sanitize_learning_text,
     select_apply_batch,
     sibling_job_keys,
@@ -394,6 +400,103 @@ class TestSanitizer(unittest.TestCase):
     def test_leaves_ordinary_incident_text(self):
         text = "Simplify onboarding wall. repeat_key=simplify_onboarding"
         self.assertEqual(sanitize_learning_text(text), text)
+
+
+class TestMaintenanceClassification(unittest.TestCase):
+    def test_one_off_ui_is_observe(self):
+        decision = classify_maintenance_item(category="ONE_OFF_UI", recurrence=1)
+        self.assertEqual(decision.disposition, "OBSERVE")
+        self.assertEqual(decision.category, "UI_ONE_OFF")
+
+    def test_recurring_simplify_wall_is_fix(self):
+        decision = classify_maintenance_item(
+            category="PERFORMANCE",
+            recurrence=3,
+        )
+        self.assertEqual(decision.disposition, "FIX")
+        self.assertEqual(decision.reason, "recurring_or_mechanistic")
+
+    def test_queue_column_shift_is_fix_even_once(self):
+        decision = classify_maintenance_item(category="QUEUE_STATE", recurrence=1)
+        self.assertEqual(decision.disposition, "FIX")
+        self.assertEqual(decision.reason, "queue_state_integrity")
+
+    def test_street_address_stays_local_only(self):
+        decision = classify_maintenance_item(category="LOCAL_PRIVATE")
+        self.assertEqual(decision.disposition, "LOCAL_ONLY")
+        self.assertEqual(decision.category, "LOCAL_PRIVATE_FACT")
+
+    def test_already_fixed_on_main_is_not_repatched(self):
+        decision = classify_maintenance_item(
+            category="DEDUP",
+            recurrence=4,
+            already_fixed_on_main=True,
+        )
+        self.assertEqual(decision.disposition, "FIXED_ALREADY")
+
+    def test_single_writing_prompt_is_observe(self):
+        decision = classify_maintenance_item(category="WRITING", recurrence=1)
+        self.assertEqual(decision.disposition, "OBSERVE")
+
+    def test_duplicate_submit_risk_is_fix(self):
+        decision = classify_maintenance_item(
+            category="DEDUP",
+            recurrence=1,
+            high_risk_correctness=True,
+        )
+        self.assertEqual(decision.disposition, "FIX")
+        self.assertEqual(decision.reason, "high_risk_correctness")
+
+    def test_chatgpt_required_true_is_rejected(self):
+        with self.assertRaises(ValueError):
+            resolve_maintenance_policy({"chatgpt_required": True})
+
+    def test_live_policy_keeps_chatgpt_optional(self):
+        import yaml
+
+        from polar_policy import MAINTENANCE_DISPOSITIONS
+
+        policy = load_maintenance_policy(ROOT)
+        self.assertFalse(policy.chatgpt_required)
+        self.assertTrue(policy.cursor_reads_report_directly)
+        self.assertEqual(policy.status, "disabled_until_proven")
+        operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            tuple(operator["maintenance"]["dispositions"]),
+            MAINTENANCE_DISPOSITIONS,
+        )
+
+
+class TestMaintenanceInput(unittest.TestCase):
+    def test_missing_report_is_not_invented(self):
+        ready, source = maintenance_input_ready()
+        self.assertFalse(ready)
+        self.assertEqual(source, "missing_report")
+
+    def test_github_issue_is_ready(self):
+        title = polar_production_issue_title("2026-09-09")
+        self.assertEqual(title, "[Polar Production] 2026-09-09")
+        self.assertEqual(parse_polar_production_title(title), "2026-09-09")
+        ready, source = maintenance_input_ready(
+            github_issue_title=title,
+            report_body="sanitized body",
+        )
+        self.assertTrue(ready)
+        self.assertEqual(source, "github_issue")
+
+    def test_supplied_sheet_body_is_ready(self):
+        ready, source = maintenance_input_ready(report_body="sheet_only body")
+        self.assertTrue(ready)
+        self.assertEqual(source, "supplied_report")
+
+    def test_title_without_body_is_not_ready(self):
+        ready, source = maintenance_input_ready(
+            github_issue_title="[Polar Production] 2026-09-09"
+        )
+        self.assertFalse(ready)
+        self.assertEqual(source, "missing_report")
 
 
 class TestWorkflowVersionAndDocuments(unittest.TestCase):

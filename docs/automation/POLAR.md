@@ -190,7 +190,7 @@ Do not merge these into one giant Workflow. Saved Polar Workflows store only the
 | `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. No browser lease. |
 | `production-learning-daily` | 22:00 daily | Saved Workflow. Sanitized learning report. No application clicks. No browser lease. |
 
-`polar-github-write-canary`, `chatgpt-production-review`, and `cursor-production-maintenance` exist as compiled instructions. They stay manual until the write path is proven. Phase 3 stops before merge.
+`polar-github-write-canary` and `cursor-production-maintenance` exist as compiled instructions. They stay manual until GitHub write is proven and a real Polar Production report exists. Cursor reads that report directly. `chatgpt-production-review` stays compiled and disabled as an optional second opinion. It is not a Cursor gate. Phase 3 stops before merge.
 
 ## Cloud discovery stays as shadow
 

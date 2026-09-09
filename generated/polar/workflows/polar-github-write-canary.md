@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-08.learning-loop+ddc670202ceb
+workflow_version: 2026-09-09.direct-maintenance+ddc670202ceb
 status: manual_canary
 enabled: false
 needs_browser_lock: false

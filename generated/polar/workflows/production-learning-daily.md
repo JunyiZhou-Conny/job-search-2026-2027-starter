@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-08.learning-loop+0d5f20e2867c
+workflow_version: 2026-09-09.direct-maintenance+90bba3a3438b
 status: production
 enabled: true
 needs_browser_lock: false
@@ -90,5 +90,6 @@ Replace those with redaction tokens if they appear in source rows.
 Write the report into the learning_reports tab with publish_status sheet_only.
 If control key github_write_canary is success, you may also publish the same sanitized body
 as a GitHub Issue titled [Polar Production] YYYY-MM-DD. Otherwise keep it in the Sheet.
+Cursor reads that report directly. Do not wait for ChatGPT.
 Do not invent a GitHub write path that has not been proven.
 Write the run_log row.
