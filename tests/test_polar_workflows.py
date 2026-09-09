@@ -76,10 +76,17 @@ class TestGeneratedWorkflows(unittest.TestCase):
         text = read_workflow("apply-ready-jobs")
         priority = parse_contract_block(text, "Priority contract")
         self.assertEqual(priority.get("reserved_priority_slots"), "1")
+        self.assertEqual(priority.get("max_new_jobs"), "3")
+        self.assertEqual(priority.get("shared_pool"), "true")
+        self.assertEqual(priority.get("reservation_is_from_pool"), "true")
         self.assertEqual(priority.get("prioritized_auto_submit"), "true")
         self.assertEqual(
             priority.get("writing_log_required_before_priority_submit"),
             "true",
+        )
+        self.assertEqual(
+            priority.get("priority_submit_gate"),
+            "polar_policy.priority_submit_permitted",
         )
         simplify = parse_contract_block(text, "Simplify contract")
         self.assertEqual(simplify.get("max_attempts_per_application"), "1")

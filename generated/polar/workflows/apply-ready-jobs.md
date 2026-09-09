@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-08.learning-loop+5e4c06ec7c83
+workflow_version: 2026-09-08.learning-loop+bc7456cae9c7
 status: production
 enabled: true
 needs_browser_lock: true
@@ -92,8 +92,11 @@ Never paste transcript contents into logs.
 
 max_new_jobs: 3
 reserved_priority_slots: 1
+shared_pool: true
+reservation_is_from_pool: true
 prioritized_auto_submit: true
 writing_log_required_before_priority_submit: true
+priority_submit_gate: polar_policy.priority_submit_permitted
 max_regular_submissions_per_local_day: 10
 
 Recovery first. Inspect every SUBMISSION_UNKNOWN row. Verify. Never blindly resubmit.
@@ -155,7 +158,9 @@ For each selected job:
 10. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
 11. Regular row. Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
 12. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.
+    Apply polar_policy.priority_submit_permitted before Submit.
     If any meaningful custom question is unanswered in writing_log, do not Submit. Mark BLOCKED.
+    A logged question with a blank answer or a blank evidence_note is a Submit blocker.
     If writing_log is complete and final validation passes, Submit once and verify.
     REVIEW_READY is only for a missing owner fact or an explicit hold. It is not the default for prioritized rows.
 13. If this environment cannot complete a required step after a normal attempt, status BLOCKED. Continue.

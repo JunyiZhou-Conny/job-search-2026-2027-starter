@@ -238,6 +238,14 @@ def load_operator(root: Optional[Path] = None) -> Dict[str, Any]:
     return data
 
 
+def load_submit_gates(root: Optional[Path] = None) -> Dict[str, Any]:
+    base = Path(root) if root else ROOT
+    data = load_yaml(base / "config" / "submit_gates.yaml")
+    if not isinstance(data, dict):
+        raise ValueError("submit_gates.yaml must be a mapping")
+    return data
+
+
 def lease_ttl_minutes(root: Optional[Path] = None) -> int:
     raw = (load_operator(root).get("lease") or {}).get("ttl_minutes")
     if raw is None:
@@ -408,6 +416,167 @@ class ApplyBatch:
         return self.recovery + self.priority + self.regular
 
 
+@dataclass(frozen=True)
+class ApplyRunCaps:
+    max_new_jobs: int
+    reserved_priority_slots: int
+    max_regular_submissions_per_local_day: int
+    prioritized_auto_submit: bool
+
+
+@dataclass(frozen=True)
+class PrioritySubmitDecision:
+    permitted: bool
+    reason: str
+
+
+def _positive_int(value: Any, label: str) -> int:
+    try:
+        number = int(value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"{label} must be a positive integer") from exc
+    if number <= 0:
+        raise ValueError(f"{label} must be a positive integer")
+    return number
+
+
+def resolve_apply_run_caps(
+    canary: Mapping[str, Any],
+    polar_local: Mapping[str, Any],
+) -> ApplyRunCaps:
+    max_jobs = _positive_int(canary.get("max_jobs_per_run"), "canary.max_jobs_per_run")
+    regular_alias = _positive_int(
+        canary.get("max_regular_jobs_per_run"),
+        "canary.max_regular_jobs_per_run",
+    )
+    gate_cap = _positive_int(
+        polar_local.get("regular_submit_cap_per_run"),
+        "polar_local.regular_submit_cap_per_run",
+    )
+    if not (max_jobs == regular_alias == gate_cap):
+        raise ValueError(
+            "apply run cap mismatch: canary.max_jobs_per_run, "
+            "canary.max_regular_jobs_per_run, and "
+            "polar_local.regular_submit_cap_per_run must be the same "
+            "shared new-execution pool, not additive numbers"
+        )
+    day_canary = _positive_int(
+        canary.get("max_regular_submissions_per_local_day"),
+        "canary.max_regular_submissions_per_local_day",
+    )
+    day_gate = _positive_int(
+        polar_local.get("regular_submit_cap_per_local_day"),
+        "polar_local.regular_submit_cap_per_local_day",
+    )
+    if day_canary != day_gate:
+        raise ValueError(
+            "regular day cap mismatch between polar_operator canary "
+            "and submit_gates polar_local"
+        )
+    reserved = canary.get("reserved_priority_slots_per_run")
+    try:
+        reserved_slots = int(reserved)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "canary.reserved_priority_slots_per_run must be an integer"
+        ) from exc
+    if reserved_slots < 0 or reserved_slots > max_jobs:
+        raise ValueError(
+            "reserved_priority_slots_per_run must be between 0 and max_jobs_per_run"
+        )
+    auto = canary.get("prioritized_auto_submit")
+    gate_auto = polar_local.get("prioritized_auto_submit")
+    if bool(auto) != bool(gate_auto):
+        raise ValueError(
+            "prioritized_auto_submit mismatch between polar_operator canary "
+            "and submit_gates polar_local"
+        )
+    return ApplyRunCaps(
+        max_new_jobs=max_jobs,
+        reserved_priority_slots=reserved_slots,
+        max_regular_submissions_per_local_day=day_canary,
+        prioritized_auto_submit=bool(auto),
+    )
+
+
+def apply_run_caps(root: Optional[Path] = None) -> ApplyRunCaps:
+    operator = load_operator(root)
+    gates = load_submit_gates(root)
+    return resolve_apply_run_caps(
+        operator.get("canary") or {},
+        gates.get("polar_local") or {},
+    )
+
+
+def writing_row_is_complete(row: Mapping[str, Any]) -> bool:
+    question = str(row.get("exact_question") or "").strip()
+    answer = str(row.get("answer_used") or "").strip()
+    evidence = str(row.get("evidence_note") or "").strip()
+    return bool(question and answer and evidence)
+
+
+def writing_log_rows_for_job(
+    rows: Sequence[Mapping[str, Any]],
+    job_key: str,
+) -> List[Mapping[str, Any]]:
+    key = normalize_text(job_key)
+    return [
+        row
+        for row in rows
+        if normalize_text(str(row.get("job_key") or "")) == key
+    ]
+
+
+def writing_log_status(
+    *,
+    job_key: str,
+    custom_questions: Sequence[str],
+    writing_rows: Sequence[Mapping[str, Any]],
+) -> PrioritySubmitDecision:
+    questions = [str(q).strip() for q in custom_questions if str(q or "").strip()]
+    if not questions:
+        return PrioritySubmitDecision(True, "no_custom_questions")
+    job_rows = writing_log_rows_for_job(writing_rows, job_key)
+    for question in questions:
+        matches = [
+            row
+            for row in job_rows
+            if normalize_text(str(row.get("exact_question") or ""))
+            == normalize_text(question)
+        ]
+        if not matches:
+            return PrioritySubmitDecision(False, "writing_log_missing_question")
+        if not any(str(row.get("answer_used") or "").strip() for row in matches):
+            return PrioritySubmitDecision(False, "writing_log_blank_answer")
+        if not any(str(row.get("evidence_note") or "").strip() for row in matches):
+            return PrioritySubmitDecision(False, "writing_log_missing_evidence")
+        if not any(writing_row_is_complete(row) for row in matches):
+            return PrioritySubmitDecision(False, "writing_log_incomplete")
+    return PrioritySubmitDecision(True, "writing_log_complete")
+
+
+def priority_submit_permitted(
+    *,
+    weight: str,
+    plane: str,
+    prioritized_auto_submit: bool,
+    job_key: str,
+    custom_questions: Sequence[str],
+    writing_rows: Sequence[Mapping[str, Any]],
+) -> PrioritySubmitDecision:
+    if normalize_text(weight) != "prioritized":
+        return PrioritySubmitDecision(True, "regular_weight_does_not_use_this_gate")
+    if normalize_text(plane) != "polar_local":
+        return PrioritySubmitDecision(False, "cursor_cloud_prioritized_needs_review_packet")
+    if not prioritized_auto_submit:
+        return PrioritySubmitDecision(False, "prioritized_auto_submit_disabled")
+    return writing_log_status(
+        job_key=job_key,
+        custom_questions=custom_questions,
+        writing_rows=writing_rows,
+    )
+
+
 def _sort_key(row: Mapping[str, str]) -> Tuple[str, str]:
     return (
         str(row.get("updated_at") or row.get("discovered_at") or ""),
@@ -418,9 +587,16 @@ def _sort_key(row: Mapping[str, str]) -> Tuple[str, str]:
 def select_apply_batch(
     rows: Sequence[Mapping[str, str]],
     *,
-    max_new_jobs: int = 3,
-    reserved_priority_slots: int = 1,
+    max_new_jobs: Optional[int] = None,
+    reserved_priority_slots: Optional[int] = None,
+    root: Optional[Path] = None,
 ) -> ApplyBatch:
+    if max_new_jobs is None or reserved_priority_slots is None:
+        caps = apply_run_caps(root)
+        if max_new_jobs is None:
+            max_new_jobs = caps.max_new_jobs
+        if reserved_priority_slots is None:
+            reserved_priority_slots = caps.reserved_priority_slots
     unknown = [r for r in rows if r.get("status") == "SUBMISSION_UNKNOWN"]
     in_progress = sorted(
         [r for r in rows if r.get("status") == "IN_PROGRESS"],

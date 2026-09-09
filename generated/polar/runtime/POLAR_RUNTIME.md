@@ -305,9 +305,9 @@ Cloud G2 remains closed. Polar Local does not inherit those ATS gates.
 
 polar_local uses capability and policy checks, not ATS family.
 Gate model: capability_policy.
-Jobs per apply-ready-jobs run: 3.
-Regular jobs per apply-ready-jobs run: 3.
-Reserved READY_PRIORITY slots per run: 1.
+Shared new-execution pool per apply-ready-jobs run: 3.
+READY_PRIORITY reservation: 1 slot taken from that pool, not added to it.
+If no READY_PRIORITY exists, READY_REGULAR may use the whole pool.
 Regular submissions per local calendar day (America/New_York): 10.
 Prioritized auto-submit: True.
 
@@ -324,7 +324,8 @@ A regular job may be submitted once only when every item holds:
 - One final Submit is used.
 - Result is verified, or status becomes SUBMISSION_UNKNOWN.
 
-A prioritized job may be submitted once when every regular item holds and writing_log has every meaningful custom question with the exact answer used.
+A prioritized job may be submitted once when every regular item holds and polar_policy.priority_submit_permitted is true.
+That function is false when writing_log is missing a custom question, the answer is blank, or the evidence note is blank.
 Include prioritized SUBMITTED rows in the daily digest under PRIORITY APPLICATIONS SUBMITTED TODAY.
 REVIEW_READY is only for a missing owner fact or an explicit hold.
 

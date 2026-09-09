@@ -19,6 +19,7 @@ from polar_policy import (
     SCHEMA_TABS,
     TIME_LOST_CATEGORIES,
     WRITING_LOG_COLUMNS,
+    apply_run_caps,
     bootstrap_prompt,
     csv_header,
     document_availability,
@@ -263,11 +264,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
 
 @_register("apply-ready-jobs")
 def render_apply(operator: Dict[str, Any]) -> str:
-    canary = operator.get("canary") or {}
-    max_jobs = canary.get("max_jobs_per_run") or canary.get("max_regular_jobs_per_run") or 3
-    reserved = canary.get("reserved_priority_slots_per_run") or 1
-    day_cap = canary.get("max_regular_submissions_per_local_day") or 10
-    auto = canary.get("prioritized_auto_submit")
+    caps = apply_run_caps()
     return _lines(
         [
             _open_files(),
@@ -278,11 +275,14 @@ def render_apply(operator: Dict[str, Any]) -> str:
             _identity_block(),
             "## Priority contract",
             "",
-            f"max_new_jobs: {max_jobs}",
-            f"reserved_priority_slots: {reserved}",
-            f"prioritized_auto_submit: {str(auto).lower()}",
+            f"max_new_jobs: {caps.max_new_jobs}",
+            f"reserved_priority_slots: {caps.reserved_priority_slots}",
+            "shared_pool: true",
+            "reservation_is_from_pool: true",
+            f"prioritized_auto_submit: {str(caps.prioritized_auto_submit).lower()}",
             "writing_log_required_before_priority_submit: true",
-            f"max_regular_submissions_per_local_day: {day_cap}",
+            "priority_submit_gate: polar_policy.priority_submit_permitted",
+            f"max_regular_submissions_per_local_day: {caps.max_regular_submissions_per_local_day}",
             "",
             "Recovery first. Inspect every SUBMISSION_UNKNOWN row. Verify. Never blindly resubmit.",
             "Then resume the oldest IN_PROGRESS row from last_stage.",
@@ -343,7 +343,9 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "10. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.",
             "11. Regular row. Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.",
             "12. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.",
+            "    Apply polar_policy.priority_submit_permitted before Submit.",
             "    If any meaningful custom question is unanswered in writing_log, do not Submit. Mark BLOCKED.",
+            "    A logged question with a blank answer or a blank evidence_note is a Submit blocker.",
             "    If writing_log is complete and final validation passes, Submit once and verify.",
             "    REVIEW_READY is only for a missing owner fact or an explicit hold. It is not the default for prioritized rows.",
             "13. If this environment cannot complete a required step after a normal attempt, status BLOCKED. Continue.",

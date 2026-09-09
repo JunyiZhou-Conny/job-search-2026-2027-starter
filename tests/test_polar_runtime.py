@@ -108,10 +108,12 @@ class TestPolarRuntime(unittest.TestCase):
         text = compile_text()
         for status in STATUSES:
             self.assertIn(status, text, status)
-        self.assertIn("Regular jobs per apply-ready-jobs run: 3", text)
+        self.assertIn("Shared new-execution pool per apply-ready-jobs run: 3.", text)
+        self.assertIn("taken from that pool, not added to it", text)
+        self.assertNotIn("Regular jobs per apply-ready-jobs run:", text)
         self.assertIn("Regular submissions per local calendar day (America/New_York): 10", text)
         self.assertIn("Prioritized auto-submit: True", text)
-        self.assertIn("Reserved READY_PRIORITY slots per run: 1", text)
+        self.assertIn("polar_policy.priority_submit_permitted", text)
         self.assertIn("writing_observation_mode: True", text)
         self.assertIn("SUBMISSION_UNKNOWN first", text)
 

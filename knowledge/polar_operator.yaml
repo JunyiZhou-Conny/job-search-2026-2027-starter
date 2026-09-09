@@ -6,6 +6,8 @@ timezone: "America/New_York"
 writing_observation_mode: true
 
 canary:
+  # Shared new-execution pool. These two numbers must stay equal.
+  # READY_PRIORITY reservation is taken from this pool, not added to it.
   max_jobs_per_run: 3
   max_regular_jobs_per_run: 3
   reserved_priority_slots_per_run: 1

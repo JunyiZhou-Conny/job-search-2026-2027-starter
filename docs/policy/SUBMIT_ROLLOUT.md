@@ -50,7 +50,8 @@ Never blindly resubmit a `SUBMISSION_UNKNOWN` row.
 
 Initial canary caps, also in `knowledge/polar_operator.yaml`:
 
-- max 3 regular jobs per `apply-ready-jobs` run
+- max 3 new jobs per `apply-ready-jobs` run. That is one shared pool.
+  A READY_PRIORITY reservation is taken from the pool, not added to it.
 - max 10 regular submissions per local calendar day in America/New_York
 
 `writing_observation_mode` is true. Regular writing may still submit when

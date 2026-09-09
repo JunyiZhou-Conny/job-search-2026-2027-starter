@@ -25,6 +25,7 @@ from polar_policy import (
     QUEUE_COLUMNS,
     RUN_LOG_COLUMNS,
     WRITING_LOG_COLUMNS,
+    apply_run_caps,
     document_availability,
 )
 from polar_workflows import write_schema_csvs, write_workflows
@@ -319,7 +320,7 @@ def compile_sections() -> Dict[str, str]:
     cloud = gates.get("cursor_cloud") or {}
     cloud_ladder = cloud.get("gates") or gates.get("gates") or {}
     cloud_cap = cloud.get("regular_submit_cap_per_run", gates.get("regular_submit_cap_per_run"))
-    canary = operator.get("canary") or {}
+    caps = apply_run_caps()
 
     standing: List[str] = []
     for name, block in always.items():
@@ -512,7 +513,7 @@ def compile_sections() -> Dict[str, str]:
             "FDE / Forward Deployed titles stay and are marked prioritized.",
             "Do not claim customer on-site FDE work already done.",
             "READY_PRIORITY no longer waits behind a permanent READY_REGULAR backlog.",
-            f"Reserve up to {canary.get('reserved_priority_slots_per_run') or 1} new-execution slot per apply-ready-jobs run for READY_PRIORITY when one exists.",
+            f"Reserve up to {caps.reserved_priority_slots} new-execution slot per apply-ready-jobs run for READY_PRIORITY when one exists.",
         ]
     )
 
@@ -605,11 +606,11 @@ def compile_sections() -> Dict[str, str]:
             "",
             "polar_local uses capability and policy checks, not ATS family.",
             f"Gate model: {polar_local.get('gate_model')}.",
-            f"Jobs per apply-ready-jobs run: {canary.get('max_jobs_per_run') or canary.get('max_regular_jobs_per_run') or polar_local.get('regular_submit_cap_per_run')}.",
-            f"Regular jobs per apply-ready-jobs run: {canary.get('max_regular_jobs_per_run') or polar_local.get('regular_submit_cap_per_run')}.",
-            f"Reserved READY_PRIORITY slots per run: {canary.get('reserved_priority_slots_per_run') or 1}.",
-            f"Regular submissions per local calendar day ({operator.get('timezone')}): {canary.get('max_regular_submissions_per_local_day') or polar_local.get('regular_submit_cap_per_local_day')}.",
-            f"Prioritized auto-submit: {canary.get('prioritized_auto_submit')}.",
+            f"Shared new-execution pool per apply-ready-jobs run: {caps.max_new_jobs}.",
+            f"READY_PRIORITY reservation: {caps.reserved_priority_slots} slot taken from that pool, not added to it.",
+            "If no READY_PRIORITY exists, READY_REGULAR may use the whole pool.",
+            f"Regular submissions per local calendar day ({operator.get('timezone')}): {caps.max_regular_submissions_per_local_day}.",
+            f"Prioritized auto-submit: {caps.prioritized_auto_submit}.",
             "",
             "A regular job may be submitted once only when every item holds:",
             bullet(
@@ -628,7 +629,8 @@ def compile_sections() -> Dict[str, str]:
                 ]
             ),
             "",
-            "A prioritized job may be submitted once when every regular item holds and writing_log has every meaningful custom question with the exact answer used.",
+            "A prioritized job may be submitted once when every regular item holds and polar_policy.priority_submit_permitted is true.",
+            "That function is false when writing_log is missing a custom question, the answer is blank, or the evidence note is blank.",
             "Include prioritized SUBMITTED rows in the daily digest under PRIORITY APPLICATIONS SUBMITTED TODAY.",
             "REVIEW_READY is only for a missing owner fact or an explicit hold.",
         ]

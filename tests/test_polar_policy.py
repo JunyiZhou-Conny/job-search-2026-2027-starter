@@ -15,18 +15,22 @@ from polar_policy import (  # noqa: E402
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     TIME_LOST_CATEGORIES,
+    apply_run_caps,
     decide_lease,
     document_availability,
     header_map,
     named_row,
     pick_canonical_requisition_row,
+    priority_submit_permitted,
     readback_fields,
     release_lease,
     requisition_identity,
+    resolve_apply_run_caps,
     sanitize_learning_text,
     select_apply_batch,
     sibling_job_keys,
     workflow_version,
+    writing_log_status,
 )
 
 APPLY_URL_CONFIDENCE_INDEX = QUEUE_COLUMNS.index(APPLY_URL_CONFIDENCE)
@@ -152,6 +156,134 @@ class TestLease(unittest.TestCase):
         decision = release_lease("run-1", "apply-ready-jobs", self.now)
         self.assertEqual(decision.lock_result, "RELEASED")
         self.assertEqual(decision.owner_run_id, "")
+
+
+class TestApplyRunCaps(unittest.TestCase):
+    def test_live_repo_caps_are_one_shared_pool(self):
+        caps = apply_run_caps(ROOT)
+        self.assertEqual(caps.max_new_jobs, 3)
+        self.assertEqual(caps.reserved_priority_slots, 1)
+        self.assertEqual(caps.max_regular_submissions_per_local_day, 10)
+        self.assertTrue(caps.prioritized_auto_submit)
+        batch = select_apply_batch(
+            [
+                {"job_key": "p1", "status": "READY_PRIORITY"},
+                {"job_key": "r1", "status": "READY_REGULAR"},
+                {"job_key": "r2", "status": "READY_REGULAR"},
+                {"job_key": "r3", "status": "READY_REGULAR"},
+            ],
+            root=ROOT,
+        )
+        self.assertEqual(len(batch.priority) + len(batch.regular), caps.max_new_jobs)
+        self.assertEqual(batch.priority, ("p1",))
+        self.assertEqual(batch.regular, ("r1", "r2"))
+
+    def test_divergent_caps_are_rejected(self):
+        canary = {
+            "max_jobs_per_run": 3,
+            "max_regular_jobs_per_run": 3,
+            "reserved_priority_slots_per_run": 1,
+            "max_regular_submissions_per_local_day": 10,
+            "prioritized_auto_submit": True,
+        }
+        polar_local = {
+            "regular_submit_cap_per_run": 3,
+            "regular_submit_cap_per_local_day": 10,
+            "prioritized_auto_submit": True,
+        }
+        with self.assertRaises(ValueError):
+            resolve_apply_run_caps(
+                {**canary, "max_regular_jobs_per_run": 4},
+                polar_local,
+            )
+        with self.assertRaises(ValueError):
+            resolve_apply_run_caps(
+                canary,
+                {**polar_local, "regular_submit_cap_per_run": 4},
+            )
+
+
+class TestPrioritySubmitGate(unittest.TestCase):
+    def setUp(self):
+        self.question = "Why do you want to work here?"
+        self.complete_row = {
+            "job_key": "prio-1",
+            "exact_question": self.question,
+            "answer_used": "I want to ship the product with the field team.",
+            "evidence_note": "evidence_bank: field_team_project",
+        }
+
+    def _decide(self, **kwargs):
+        payload = {
+            "weight": "prioritized",
+            "plane": "polar_local",
+            "prioritized_auto_submit": True,
+            "job_key": "prio-1",
+            "custom_questions": [self.question],
+            "writing_rows": [self.complete_row],
+        }
+        payload.update(kwargs)
+        return priority_submit_permitted(**payload)
+
+    def test_empty_log_blocks_when_questions_exist(self):
+        decision = self._decide(writing_rows=[])
+        self.assertFalse(decision.permitted)
+        self.assertEqual(decision.reason, "writing_log_missing_question")
+
+    def test_logged_question_and_answer_permits(self):
+        decision = self._decide()
+        self.assertTrue(decision.permitted)
+        self.assertEqual(decision.reason, "writing_log_complete")
+
+    def test_blank_answer_blocks(self):
+        decision = self._decide(
+            writing_rows=[
+                {
+                    **self.complete_row,
+                    "answer_used": "   ",
+                }
+            ]
+        )
+        self.assertFalse(decision.permitted)
+        self.assertEqual(decision.reason, "writing_log_blank_answer")
+
+    def test_missing_evidence_note_blocks(self):
+        decision = self._decide(
+            writing_rows=[
+                {
+                    **self.complete_row,
+                    "evidence_note": "",
+                }
+            ]
+        )
+        self.assertFalse(decision.permitted)
+        self.assertEqual(decision.reason, "writing_log_missing_evidence")
+
+    def test_other_job_log_does_not_count(self):
+        decision = self._decide(
+            writing_rows=[{**self.complete_row, "job_key": "other"}]
+        )
+        self.assertFalse(decision.permitted)
+        self.assertEqual(decision.reason, "writing_log_missing_question")
+
+    def test_no_custom_questions_permits(self):
+        decision = writing_log_status(
+            job_key="prio-1",
+            custom_questions=[],
+            writing_rows=[],
+        )
+        self.assertTrue(decision.permitted)
+        self.assertEqual(decision.reason, "no_custom_questions")
+
+    def test_cloud_priority_stays_review_first(self):
+        decision = self._decide(plane="cursor_cloud")
+        self.assertFalse(decision.permitted)
+        self.assertEqual(decision.reason, "cursor_cloud_prioritized_needs_review_packet")
+
+    def test_regular_weight_skips_this_gate(self):
+        decision = self._decide(weight="regular", writing_rows=[])
+        self.assertTrue(decision.permitted)
+        self.assertEqual(decision.reason, "regular_weight_does_not_use_this_gate")
 
 
 class TestPriorityScheduling(unittest.TestCase):
