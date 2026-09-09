@@ -12,3 +12,4 @@ ts	phase	decision	why	evidence	result
 2026-09-09T00:10:00Z	review	Second-look audit: writing_log gate was prose-only; run-cap wording could be read as 3+1=4; policy evidence was circular; transcript verified overstated.	Sonnet trail review	.audit/polar-learning-loop.tsv	acted
 2026-09-09T00:12:00Z	harness	priority_submit_permitted is now code. Empty log, blank answer, and missing evidence block priority Submit.	Same failure mode as column-shift: Polar self-policing is not enough.	scripts/polar_policy.py tests/test_polar_policy.py	encoded
 2026-09-09T00:13:00Z	design	max_jobs_per_run and max_regular_jobs_per_run must stay equal. Compiler prints one shared pool.	Divergent numbers would look like 4 jobs.	scripts/polar_policy.py resolve_apply_run_caps	encoded
+2026-09-09T00:15:00Z	verify	Full unittest discover after the priority Submit gate and shared-pool encoding.	Need a real artifact check, not a self-report.	python3 -m unittest discover -s tests	215 OK
