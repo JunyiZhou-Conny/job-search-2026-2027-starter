@@ -709,7 +709,14 @@ def requisition_submit_blocked(
         ):
             continue
         peers.append(row)
-    canonical = pick_canonical_requisition_row(peers, identity)
+    canonical = pick_canonical_requisition_row(
+        peers,
+        identity,
+        now=now,
+        ttl_minutes=ttl_minutes,
+        run_logs=run_logs,
+        root=root,
+    )
     if canonical and canonical != job_key:
         return canonical
     return None
@@ -1499,6 +1506,11 @@ _CANONICAL_STATUSES = (
 def pick_canonical_requisition_row(
     rows: Sequence[Mapping[str, str]],
     identity: Tuple[str, str],
+    *,
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    run_logs: Sequence[Mapping[str, Any]] = (),
+    root: Optional[Path] = None,
 ) -> Optional[str]:
     matches: List[Mapping[str, str]] = []
     for row in rows:
@@ -1511,16 +1523,29 @@ def pick_canonical_requisition_row(
             matches.append(row)
     if not matches:
         return None
-    ranked = sorted(
-        matches,
-        key=lambda row: (
-            _CANONICAL_STATUSES.index(str(row.get("status") or "NEW"))
-            if str(row.get("status") or "NEW") in _CANONICAL_STATUSES
-            else 99,
+
+    def _rank(row: Mapping[str, str]) -> Tuple[int, int, str, str]:
+        status = str(row.get("status") or "NEW")
+        status_rank = (
+            _CANONICAL_STATUSES.index(status) if status in _CANONICAL_STATUSES else 99
+        )
+        abandoned = 0
+        if status == "IN_PROGRESS" and claim_is_abandoned(
+            row,
+            now=now,
+            ttl_minutes=ttl_minutes,
+            run_logs=run_logs,
+            root=root,
+        ):
+            abandoned = 1
+        return (
+            status_rank,
+            abandoned,
             str(row.get("discovered_at") or ""),
             str(row.get("job_key") or ""),
-        ),
-    )
+        )
+
+    ranked = sorted(matches, key=_rank)
     return str(ranked[0].get("job_key") or "") or None
 
 

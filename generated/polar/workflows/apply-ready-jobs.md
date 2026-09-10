@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.worker-pool+cb44991c4b4b
+workflow_version: 2026-09-10.worker-pool+0780c2839df0
 status: production
 enabled: true
 needs_browser_lock: false
@@ -97,6 +97,7 @@ If claim_run_id is not this run_id, the write lost. Note already_claimed. Incide
 Do not write SKIPPED_LOCKED. Do not consume the per-run budget. Select the next job.
 If you resume an abandoned IN_PROGRESS row, restamp claim_run_id and note recovered_claim. Incident repeat_key work_claim_recovered. Do not bump attempt_count again.
 Do not recover a live IN_PROGRESS row owned by another run_id.
+Do not claim a SUBMISSION_UNKNOWN row. Verify it. Never blindly resubmit.
 Empty claim_run_id on IN_PROGRESS is abandoned.
 A claim older than 180 minutes with no fresh queue write is abandoned.
 A claim whose owner run_log result is not PARTIAL is abandoned.
@@ -292,13 +293,16 @@ Write those named fields. Keep apply_url_confidence.
 Compare against the Sheet and section K.
 If another row already points at the same employer requisition, keep one canonical row.
 The winner is polar_policy.pick_canonical_requisition_row.
+Pass now, run_logs, and ttl so abandoned claims rank below a live IN_PROGRESS sibling.
 That helper ranks SUBMITTED, then SUBMISSION_UNKNOWN, then live IN_PROGRESS,
-then earlier discovered_at, then job_key.
+then abandoned IN_PROGRESS, then earlier discovered_at, then job_key.
+An abandoned IN_PROGRESS sibling does not beat a live claim.
 Only that canonical job_key may continue toward Submit.
 The other worker marks this row SKIP with blocker duplicate employer requisition and the canonical job_key.
 Do not have both workers back off.
 Do not submit the same employer requisition twice.
 If polar_policy.requisition_submit_blocked returns a sibling, skip this job.
+Pass now, run_logs, and ttl to requisition_submit_blocked as well.
 Note requisition_suppressed. Incident repeat_key requisition_suppressed.
 Do not create a second ledger.
 
@@ -311,13 +315,17 @@ A blocked job must not stall the worker.
 claimed_new starts at 0. priority_claimed starts at 0. seen starts empty.
 Loop until select_next_apply_job returns empty or Copilot stops the run.
 Read the live queue each time. Pass exclude_keys=seen, new_jobs_already_claimed=claimed_new,
-and priority_already_claimed=priority_claimed.
+priority_already_claimed=priority_claimed, now, run_id, and run_logs.
 If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.
 If it is duplicate, abort.
 Process only the next_key. After that job finishes, add it to seen and loop.
 
 For the current job:
-1. Claim the row with polar_policy.attempt_claim_job. Read back job_key, status, last_stage, and claim_run_id.
+If status is SUBMISSION_UNKNOWN, do not claim. Do not call attempt_claim_job.
+Do not fill. Do not Submit. Verify the prior submit from the employer portal, confirmation page, or mail.
+Never blindly resubmit. Write SUBMITTED if confirmed, otherwise leave SUBMISSION_UNKNOWN.
+Add the key to seen and continue. Do not increment claimed_new.
+1. Claim a READY or IN_PROGRESS row with polar_policy.attempt_claim_job. Read back job_key, status, last_stage, and claim_run_id.
    If confirm_claim_readback is not CLAIMED, add the key to seen and continue. Do not increment claimed_new.
    If prior_status was READY_REGULAR or READY_PRIORITY, increment claimed_new after a successful claim.
    If prior_status was READY_PRIORITY, also increment priority_claimed.

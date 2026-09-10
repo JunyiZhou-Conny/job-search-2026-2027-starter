@@ -17,6 +17,7 @@ from polar_policy import (  # noqa: E402
     claim_is_abandoned,
     confirm_claim_readback,
     discover_may_overwrite_execution_fields,
+    pick_canonical_requisition_row,
     plan_claim_header_migration,
     requisition_identity,
     requisition_submit_blocked,
@@ -212,6 +213,107 @@ class TestWorkClaim(unittest.TestCase):
         self.assertEqual(
             requisition_submit_blocked(rows, identity, "jr-b", now=NOW),
             "jr-a",
+        )
+
+    def test_submission_unknown_is_verified_not_claimed(self):
+        row = _ready("u1", status="SUBMISSION_UNKNOWN")
+        decision = attempt_claim_job(row, run_id="run-a", now=NOW)
+        self.assertEqual(decision.result, "INELIGIBLE")
+        self.assertEqual(decision.action, "skip")
+        self.assertEqual(
+            confirm_claim_readback(row, run_id="run-a", job_key="u1"),
+            "INELIGIBLE",
+        )
+
+    def test_canonical_pick_prefers_live_claim_over_abandoned(self):
+        rows = [
+            _ready(
+                "jr-dead",
+                status="IN_PROGRESS",
+                claim_run_id="run-dead",
+                employer_requisition_id="EPIC-1",
+                discovered_at="2026-09-08T10:00:00",
+                updated_at=STALE,
+            ),
+            _ready(
+                "jr-live",
+                status="IN_PROGRESS",
+                claim_run_id="run-a",
+                employer_requisition_id="EPIC-1",
+                discovered_at="2026-09-08T12:00:00",
+                updated_at=FRESH,
+            ),
+        ]
+        identity = requisition_identity(employer_requisition_id="EPIC-1")
+        self.assertEqual(
+            pick_canonical_requisition_row(rows, identity, now=NOW),
+            "jr-live",
+        )
+
+    def test_select_recovers_ttl_abandoned_owned_claim(self):
+        rows = [
+            _ready(
+                "stale",
+                status="IN_PROGRESS",
+                claim_run_id="run-dead",
+                updated_at=STALE,
+            ),
+            _ready("r1"),
+        ]
+        self.assertEqual(
+            select_next_apply_job(
+                rows,
+                max_new_jobs=3,
+                reserved_priority_slots=1,
+                run_id="run-b",
+            ),
+            "r1",
+        )
+        self.assertEqual(
+            select_next_apply_job(
+                rows,
+                max_new_jobs=3,
+                reserved_priority_slots=1,
+                run_id="run-b",
+                now=NOW,
+            ),
+            "stale",
+        )
+
+    def test_select_recovers_self_owned_and_terminal_run_log(self):
+        owned = _ready(
+            "mine",
+            status="IN_PROGRESS",
+            claim_run_id="run-b",
+            updated_at=FRESH,
+        )
+        terminal = _ready(
+            "dead",
+            status="IN_PROGRESS",
+            claim_run_id="run-dead",
+            updated_at=FRESH,
+        )
+        ready = _ready("r1")
+        self.assertEqual(
+            select_next_apply_job(
+                [owned, ready],
+                max_new_jobs=3,
+                reserved_priority_slots=1,
+                run_id="run-b",
+                now=NOW,
+            ),
+            "mine",
+        )
+        self.assertEqual(
+            select_next_apply_job(
+                [terminal, ready],
+                max_new_jobs=3,
+                reserved_priority_slots=1,
+                run_id="run-b",
+                now=NOW,
+                run_logs=[{"run_id": "run-dead", "result": "FAILED"}],
+            ),
+            "dead",
         )
 
     def test_abandoned_sibling_does_not_block_canonical_submit(self):
@@ -493,6 +595,9 @@ class TestCompiledConcurrencyContract(unittest.TestCase):
         self.assertIn("only schema mutator for claim_run_id", migration)
         self.assertIn("pick_canonical_requisition_row", apply)
         self.assertIn("Do not have both workers back off", apply)
+        self.assertIn("now, run_id, and run_logs", apply)
+        self.assertIn("If status is SUBMISSION_UNKNOWN, do not claim", apply)
+        self.assertIn("An abandoned IN_PROGRESS sibling does not beat a live claim", apply)
 
 
 if __name__ == "__main__":
