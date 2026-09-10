@@ -37,7 +37,7 @@ from polar_policy import (
     TRUSTED_REPO,
     WRITING_LOG_COLUMNS,
     CLAIM_REPEAT_MISSING_COLUMN,
-    apply_run_caps,
+    resolve_apply_run_caps,
     bootstrap_prompt,
     capability_preflight_block,
     csv_header,
@@ -386,7 +386,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
 
 @_register("apply-ready-jobs")
 def render_apply(operator: Dict[str, Any]) -> str:
-    caps = apply_run_caps()
+    caps = resolve_apply_run_caps(operator.get("apply_worker") or {})
     return _lines(
         [
             _open_files("apply-ready-jobs"),

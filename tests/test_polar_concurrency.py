@@ -393,8 +393,9 @@ class TestWorkClaim(unittest.TestCase):
         gates = yaml.safe_load(
             (ROOT / "config" / "submit_gates.yaml").read_text(encoding="utf-8")
         )
-        self.assertNotIn("max_regular_submissions_per_local_day", operator["canary"])
+        self.assertNotIn("max_regular_submissions_per_local_day", operator["apply_worker"])
         self.assertNotIn("regular_submit_cap_per_local_day", gates["polar_local"])
+        self.assertNotIn("regular_submit_cap_per_run", gates["polar_local"])
 
     def test_claim_header_migration_is_idempotent(self):
         headers = [name for name in QUEUE_COLUMNS if name != "claim_run_id"]

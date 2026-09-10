@@ -110,6 +110,7 @@ class TestPolarRuntime(unittest.TestCase):
         text = compile_text()
         for status in STATUSES:
             self.assertIn(status, text, status)
+        self.assertIn("Polar worker budget source: knowledge/polar_operator.yaml apply_worker.", text)
         self.assertIn("Per-run worker budget on apply-ready-jobs: 3 new jobs.", text)
         self.assertIn("taken from that pool, not added to it", text)
         self.assertNotIn("Regular jobs per apply-ready-jobs run:", text)
@@ -205,7 +206,10 @@ class TestPolarRuntime(unittest.TestCase):
         gates = load_gates()
         self.assertIn("ashby", gates["gates"])
         self.assertEqual(gates["regular_submit_cap_per_run"], 3)
+        self.assertEqual(raw["cursor_cloud"]["regular_submit_cap_per_run"], 3)
         self.assertNotIn("regular_submit_cap_per_local_day", gates["polar_local"])
+        self.assertNotIn("regular_submit_cap_per_run", gates["polar_local"])
+        self.assertNotIn("prioritized_auto_submit", gates["polar_local"])
 
     def test_historical_guard_includes_known_ledger_keys(self):
         text = compile_text()

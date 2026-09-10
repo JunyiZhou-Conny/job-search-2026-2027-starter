@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -32,6 +35,7 @@ from polar_policy import (  # noqa: E402
     priority_submit_permitted,
     readback_fields,
     requisition_identity,
+    reject_stale_polar_worker_budget,
     resolve_apply_run_caps,
     sanitize_learning_text,
     select_apply_batch,
@@ -100,6 +104,42 @@ class TestSheetNamedWrites(unittest.TestCase):
         )
 
 
+def _write_budget_root(
+    tmp: Path,
+    apply_worker: dict,
+    *,
+    polar_local: dict | None = None,
+    cursor_cloud_cap: int = 3,
+    extra_operator: dict | None = None,
+) -> Path:
+    knowledge = tmp / "knowledge"
+    config = tmp / "config"
+    knowledge.mkdir()
+    config.mkdir()
+    operator = {"apply_worker": apply_worker}
+    if extra_operator:
+        operator.update(extra_operator)
+    gates = {
+        "cursor_cloud": {
+            "gates": {"ashby": "G1"},
+            "regular_submit_cap_per_run": cursor_cloud_cap,
+        },
+        "polar_local": polar_local
+        if polar_local is not None
+        else {
+            "gate_model": "capability_policy",
+            "writing_observation_mode": True,
+        },
+    }
+    (knowledge / "polar_operator.yaml").write_text(
+        yaml.safe_dump(operator, sort_keys=False), encoding="utf-8"
+    )
+    (config / "submit_gates.yaml").write_text(
+        yaml.safe_dump(gates, sort_keys=False), encoding="utf-8"
+    )
+    return tmp
+
+
 class TestApplyRunCaps(unittest.TestCase):
     def test_live_repo_caps_are_one_shared_pool(self):
         caps = apply_run_caps(ROOT)
@@ -120,25 +160,92 @@ class TestApplyRunCaps(unittest.TestCase):
         self.assertEqual(batch.priority, ("p1",))
         self.assertEqual(batch.regular, ("r1", "r2"))
 
-    def test_divergent_caps_are_rejected(self):
-        canary = {
-            "max_jobs_per_run": 3,
-            "reserved_priority_slots_per_run": 1,
+    def test_live_budget_has_one_canonical_owner(self):
+        operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        gates = yaml.safe_load(
+            (ROOT / "config" / "submit_gates.yaml").read_text(encoding="utf-8")
+        )
+        worker = operator["apply_worker"]
+        self.assertEqual(worker["max_new_jobs_per_run"], 3)
+        self.assertEqual(worker["reserved_priority_slots"], 1)
+        self.assertNotIn("canary", operator)
+        self.assertNotIn("regular_submit_cap_per_run", gates["polar_local"])
+        self.assertNotIn("prioritized_auto_submit", gates["polar_local"])
+        self.assertEqual(gates["cursor_cloud"]["regular_submit_cap_per_run"], 3)
+        reject_stale_polar_worker_budget(operator, gates["polar_local"])
+
+    def test_fixture_budget_propagates_without_a_second_config(self):
+        worker = {
+            "max_new_jobs_per_run": 5,
+            "reserved_priority_slots": 1,
             "prioritized_auto_submit": True,
         }
-        polar_local = {
-            "regular_submit_cap_per_run": 3,
-            "prioritized_auto_submit": True,
-        }
-        with self.assertRaises(ValueError):
-            resolve_apply_run_caps(
-                {**canary, "max_jobs_per_run": 4},
-                polar_local,
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _write_budget_root(
+                Path(tmp),
+                worker,
+                cursor_cloud_cap=99,
             )
+            caps = apply_run_caps(root)
+            self.assertEqual(caps.max_new_jobs, 5)
+            self.assertEqual(caps.reserved_priority_slots, 1)
+            batch = select_apply_batch(
+                [
+                    {"job_key": "p1", "status": "READY_PRIORITY"},
+                    {"job_key": "r1", "status": "READY_REGULAR"},
+                    {"job_key": "r2", "status": "READY_REGULAR"},
+                    {"job_key": "r3", "status": "READY_REGULAR"},
+                    {"job_key": "r4", "status": "READY_REGULAR"},
+                    {"job_key": "r5", "status": "READY_REGULAR"},
+                ],
+                root=root,
+            )
+            self.assertEqual(batch.priority, ("p1",))
+            self.assertEqual(batch.regular, ("r1", "r2", "r3", "r4"))
+            self.assertEqual(len(batch.priority) + len(batch.regular), 5)
+            live_cloud = yaml.safe_load(
+                (ROOT / "config" / "submit_gates.yaml").read_text(encoding="utf-8")
+            )
+            self.assertEqual(live_cloud["cursor_cloud"]["regular_submit_cap_per_run"], 3)
+
+    def test_stale_polar_budget_keys_are_rejected(self):
+        worker = {
+            "max_new_jobs_per_run": 3,
+            "reserved_priority_slots": 1,
+            "prioritized_auto_submit": True,
+        }
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _write_budget_root(
+                Path(tmp),
+                worker,
+                extra_operator={
+                    "canary": {"max_jobs_per_run": 9},
+                },
+            )
+            with self.assertRaises(ValueError) as ctx:
+                apply_run_caps(root)
+            self.assertIn("canary.max_jobs_per_run", str(ctx.exception))
+        with tempfile.TemporaryDirectory() as tmp:
+            root = _write_budget_root(
+                Path(tmp),
+                worker,
+                polar_local={
+                    "gate_model": "capability_policy",
+                    "regular_submit_cap_per_run": 9,
+                },
+            )
+            with self.assertRaises(ValueError) as ctx:
+                apply_run_caps(root)
+            self.assertIn("polar_local.regular_submit_cap_per_run", str(ctx.exception))
         with self.assertRaises(ValueError):
             resolve_apply_run_caps(
-                canary,
-                {**polar_local, "regular_submit_cap_per_run": 4},
+                {
+                    "max_new_jobs_per_run": 3,
+                    "reserved_priority_slots": 4,
+                    "prioritized_auto_submit": True,
+                }
             )
 
 

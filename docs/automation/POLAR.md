@@ -181,10 +181,13 @@ Cloud Computer Use still uses ATS-family gates in `config/submit_gates.yaml`. Th
 
 Polar Local uses capability and policy checks. A regular job may be submitted once when the duplicate check passes, company and title match, the correct resume is attached, identity is correct, required facts are resolved, no unsupported claim was invented, writing is evidence-grounded, weight is regular, final review passes, one Submit is used, and the result is verified or marked `SUBMISSION_UNKNOWN`.
 
-Initial canary caps live in `knowledge/polar_operator.yaml` and `config/submit_gates.yaml` `polar_local`:
+Where do I change how many new jobs one Polar apply worker processes?
 
-- 3 new jobs per `apply-ready-jobs` run (one worker budget; priority reservation is taken from it)
-- No shared daily regular submission pool. Overlapping apply runs each get their own budget.
+Edit `knowledge/polar_operator.yaml` `apply_worker.max_new_jobs_per_run`.
+
+That field is per invocation. One `apply-ready-jobs` run is one worker. The current value is 3. `apply_worker.reserved_priority_slots` is 1 and comes from that same pool. There is no shared daily Polar submission pool. Another `apply-ready-jobs` run has its own budget.
+
+Do not set Polar worker budget in `config/submit_gates.yaml`. `cursor_cloud.regular_submit_cap_per_run` is a separate Cloud parameter.
 
 Junyi can raise the per-run budget after production evidence is good.
 

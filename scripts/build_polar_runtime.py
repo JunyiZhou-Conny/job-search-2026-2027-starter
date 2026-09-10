@@ -641,6 +641,7 @@ def compile_sections() -> Dict[str, str]:
             "",
             "polar_local uses capability and policy checks, not ATS family.",
             f"Gate model: {polar_local.get('gate_model')}.",
+            "Polar worker budget source: knowledge/polar_operator.yaml apply_worker.",
             f"Per-run worker budget on apply-ready-jobs: {caps.max_new_jobs} new jobs.",
             f"READY_PRIORITY reservation: {caps.reserved_priority_slots} slot taken from that pool, not added to it.",
             "If no READY_PRIORITY exists, READY_REGULAR may use the whole pool.",

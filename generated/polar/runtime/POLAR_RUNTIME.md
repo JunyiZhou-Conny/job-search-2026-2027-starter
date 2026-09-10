@@ -323,6 +323,7 @@ Cloud G2 remains closed. Polar Local does not inherit those ATS gates.
 
 polar_local uses capability and policy checks, not ATS family.
 Gate model: capability_policy.
+Polar worker budget source: knowledge/polar_operator.yaml apply_worker.
 Per-run worker budget on apply-ready-jobs: 3 new jobs.
 READY_PRIORITY reservation: 1 slot taken from that pool, not added to it.
 If no READY_PRIORITY exists, READY_REGULAR may use the whole pool.
