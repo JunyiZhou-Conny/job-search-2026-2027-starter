@@ -209,8 +209,9 @@ class TestGeneratedWorkflows(unittest.TestCase):
             self.assertIn(url, docs)
             self.assertTrue(url.startswith(GITHUB_RAW_BASE))
             prompt = bootstrap_prompt(name)
-            self.assertLess(len(prompt), 400)
-            self.assertIn("Read it fully.", prompt)
+            self.assertLess(len(prompt), 2500)
+            self.assertIn("TRUST DELEGATION", prompt)
+            self.assertIn(url, prompt)
 
     def test_apply_url_confidence_stays_in_queue_schema(self):
         header = (ROOT / "generated" / "polar" / "queue_schema.csv").read_text(
