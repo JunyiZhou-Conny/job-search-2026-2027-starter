@@ -218,19 +218,14 @@ class TestCliValidate(unittest.TestCase):
 
 
 class TestCliBuild(unittest.TestCase):
-    def test_build_swe_exits_2(self) -> None:
-        self.assertEqual(rqe_main(["build", "--family", "swe"]), 2)
-
-    def test_build_ai_infra(self) -> None:
-        tex = ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex"
-        rc = rqe_main(["build", "--family", "ai_infra"])
-        if not tex.is_file():
-            self.assertEqual(rc, 2)
-            return
-        self.assertIn(rc, (0, 1))
-        report = ROOT / "docs" / "resume" / "builds" / "ai_infra_v1" / "validation_report.md"
-        self.assertTrue(report.is_file())
-        self.assertIn("# Validation report", report.read_text())
+    def test_do_not_claim_is_loaded_as_forbidden(self) -> None:
+        bank = load_bank()
+        forbidden = [
+            claim.claim.lower()
+            for claim in bank.projects["autoresearch_cellot"].claims
+            if claim.verification_status == "forbidden"
+        ]
+        self.assertTrue(any("llm directed" in text for text in forbidden), forbidden)
 
     def test_validate_without_claim_ids_rejects_invented_metric(self) -> None:
         bank = load_bank()
@@ -248,26 +243,12 @@ class TestCliBuild(unittest.TestCase):
         codes = [i.code for i in report.issues if i.severity == "fail"]
         self.assertIn("unsupported_metric", codes, report.issues)
 
-
-class TestBuildFamily(unittest.TestCase):
-    def test_do_not_claim_is_loaded_as_forbidden(self) -> None:
-        bank = load_bank()
-        forbidden = [
-            claim.claim.lower()
-            for claim in bank.projects["autoresearch_cellot"].claims
-            if claim.verification_status == "forbidden"
-        ]
-        self.assertTrue(
-            any("llm directed" in text for text in forbidden),
-            forbidden,
-        )
-
-    def test_build_other_family_exits_2(self) -> None:
+    def test_build_other_families_exit_2(self) -> None:
         self.assertEqual(rqe_main(["build", "--family", "swe"]), 2)
         self.assertEqual(rqe_main(["build", "--family", "ml_ai"]), 2)
         self.assertEqual(rqe_main(["build", "--family", "health_ai"]), 2)
 
-    def test_build_ai_infra_validates_frozen_variant(self) -> None:
+    def test_build_ai_infra(self) -> None:
         tex = ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex"
         self.assertTrue(tex.is_file(), tex)
         rc = rqe_main(["build", "--family", "ai_infra"])
