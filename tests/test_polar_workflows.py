@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from polar_policy import (  # noqa: E402
     APPLY_URL_CONFIDENCE,
     GITHUB_RAW_BASE,
+    PROMOTION_OUTCOMES,
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     bootstrap_prompt,
@@ -21,7 +22,7 @@ from polar_policy import (  # noqa: E402
     raw_workflow_url,
     sanitize_learning_text,
 )
-from polar_workflows import WORKFLOW_RENDERERS  # noqa: E402
+from polar_workflows import WORKFLOW_RENDERERS, render_workflow  # noqa: E402
 
 WORKFLOW_DIR = ROOT / "generated" / "polar" / "workflows"
 SECRET_LINE = re.compile(
@@ -89,8 +90,16 @@ class TestGeneratedWorkflows(unittest.TestCase):
             "polar_policy.priority_submit_permitted",
         )
         simplify = parse_contract_block(text, "Simplify contract")
+        self.assertEqual(simplify.get("role"), "required_precondition")
         self.assertEqual(simplify.get("max_attempts_per_application"), "1")
-        self.assertEqual(simplify.get("fallback"), "polar_runtime_plus_local_profile")
+        self.assertEqual(simplify.get("silent_manual_fallback"), "false")
+        self.assertEqual(simplify.get("missing_action"), "owner_action_required")
+        self.assertEqual(simplify.get("consume_job"), "false")
+        self.assertEqual(simplify.get("control_key"), "env_simplify_copilot")
+        self.assertIn("do not fall back to traditional clicking", text.lower())
+        self.assertIn("OWNER_ACTION_REQUIRED", text)
+        self.assertIn("## Memory ownership", text)
+        self.assertIn("Polar Preferences Delta", read_workflow("production-learning-daily"))
         self.assertIn("## Employer requisition dedupe", text)
         self.assertIn("## Apply-time hard eligibility", text)
         self.assertIn("Sponsorship unknown, unavailable, or generally not offered is not a skip.", text)
@@ -104,13 +113,37 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("A blocked authorization field must not stop the rest of the batch.", text)
         self.assertIn("Barriers removed is not a closed page.", text)
         self.assertIn("Do not move Original Job Post resolution into hourly discovery.", text)
+        self.assertNotIn("optional_accelerator", text)
+        self.assertNotIn("preferences-learning-daily", text)
+        learning = read_workflow("production-learning-daily")
+        self.assertIn("Do not upload the raw file", learning)
+        self.assertIn("local_private", learning.lower())
+        self.assertIn("SECRET_OR_CREDENTIAL", learning)
+        self.assertNotIn("preferences-learning-daily", learning)
+        cursor = read_workflow("cursor-production-maintenance")
+        for outcome in PROMOTION_OUTCOMES:
+            self.assertIn(outcome, cursor, outcome)
+        self.assertIn("Do not treat PREFERENCES.md as the Cursor target list.", cursor)
+
+    def test_generated_workflows_match_compiler(self):
+        import yaml
+
+        operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        for name in WORKFLOW_RENDERERS:
+            self.assertEqual(
+                read_workflow(name),
+                render_workflow(name, operator),
+                name,
+            )
 
     def test_control_writes_are_key_upserts(self):
         apply_text = read_workflow("apply-ready-jobs")
         canary = read_workflow("polar-github-write-canary")
         for text in (apply_text, canary):
             self.assertIn("Locate the row by the key cell", text)
-            self.assertIn("github_write_canary must never overwrite polar_browser.", text)
+            self.assertIn("must never overwrite polar_browser.", text)
             self.assertIn("The reread is the proof.", text)
         self.assertIn("upsert a run_log row for this run_id", apply_text)
         self.assertIn("lease_checkpoint_notes", apply_text)

@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-09.prod-learn+56b0e68af85d
+workflow_version: 2026-09-10.copilot-memory+bcb93109c0c9
 status: production
 enabled: true
 needs_browser_lock: false
@@ -51,7 +51,7 @@ If the visible row has a different key, or no key, abort. Do not write that row.
 If two rows share the same key, abort.
 Commit the edit. Then reread key, owner_run_id, notes.
 A cell that looked correct is not proof the write persisted. The reread is the proof.
-github_write_canary must never overwrite polar_browser.
+github_write_canary and env_simplify_copilot must never overwrite polar_browser.
 After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
 Those four cells must still match the values from before the canary write. Notes on that lock may change.
 These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.
@@ -65,7 +65,7 @@ One workflow invocation writes one run_log row.
 Copy workflow_version from this file into that row.
 Record started_at when you acquire work. Record ended_at before you exit.
 duration_minutes is coarse. Use whole minutes.
-result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, or NO_WORK.
+result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED.
 
 ## Work order
 

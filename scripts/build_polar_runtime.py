@@ -18,15 +18,22 @@ from js_lib import (
     read_rows,
 )
 from polar_policy import (
+    COPILOT_REPEAT_KEY,
+    COPILOT_STATES,
     CONTROL_COLUMNS,
+    ENV_SIMPLIFY_KEY,
     HEARTBEAT_COLUMNS,
     INCIDENT_LOG_COLUMNS,
     LEARNING_REPORTS_COLUMNS,
+    LOCAL_PREFERENCES_PATH,
+    MEMORY_PRECEDENCE,
+    PREFERENCE_CLASSES,
     QUEUE_COLUMNS,
     RUN_LOG_COLUMNS,
     WRITING_LOG_COLUMNS,
     apply_run_caps,
     document_availability,
+    raw_runtime_url,
 )
 from polar_workflows import write_schema_csvs, write_workflows
 
@@ -78,6 +85,7 @@ SECTION_ORDER = [
     ("M. Browser lease", "section_m"),
     ("N. Run and incident telemetry", "section_n"),
     ("O. Employer requisition identity", "section_o"),
+    ("P. Memory ownership and Copilot preflight", "section_p"),
 ]
 
 
@@ -607,10 +615,9 @@ def compile_sections() -> Dict[str, str]:
             "Escalate to BLOCKED only after this local environment cannot complete a required step.",
             "A blocked job must not stall the queue. Persist the blocker and continue to the next READY job.",
             "ATS family is diagnostic metadata only. Do not organize work by ATS worker class.",
-            "Simplify is optional acceleration. Try it at most once per application when it is already useful.",
-            "If onboarding, missing injection, a broken session, or repeat navigation appears, fall back immediately",
-            "to POLAR_RUNTIME, the approved resume or document registry, and the local Polar profile.",
-            "Do not spend the run repairing Simplify. Record a PERFORMANCE incident if it materially slowed the run.",
+            "Simplify Copilot is a required apply precondition. See section P.",
+            "Missing Copilot is an ENVIRONMENT blocker. Do not mark the queue job BLOCKED.",
+            "Do not silently fall back to traditional clicking.",
         ]
     )
 
@@ -777,6 +784,33 @@ def compile_sections() -> Dict[str, str]:
         ]
     )
 
+    section_p = "\n".join(
+        [
+            "GitHub is the only canonical behavioral memory.",
+            f"Local inbox: {LOCAL_PREFERENCES_PATH}.",
+            "Canonical pointer: " + raw_runtime_url() + ".",
+            "PREFERENCES.md is not a second strategy database.",
+            "precedence: " + " > ".join(MEMORY_PRECEDENCE) + ".",
+            "preference_classes: " + ", ".join(PREFERENCE_CLASSES) + ".",
+            "An old PREFERENCES strategy line must not override newer GitHub behavior.",
+            "LOCAL_PRIVATE values stay local. SECRET_OR_CREDENTIAL is never exported.",
+            "production-learning-daily emits a sanitized Polar Preferences Delta and then compacts the local file.",
+            "Cursor promotes generalized candidates into the matching canonical GitHub source. STOP BEFORE MERGE.",
+            "",
+            "Simplify Copilot is a required apply precondition.",
+            "proof: Copilot UI on the employer ATS page.",
+            "not_proof: simplify.jobs login or API.",
+            "states: " + ", ".join(COPILOT_STATES) + ".",
+            f"control_key: {ENV_SIMPLIFY_KEY}. Locate by key. Never overwrite polar_browser.",
+            "If Copilot is PRESENT, Autofill once. Then read the visible widgets.",
+            "If Copilot is MISSING or UNKNOWN, do not fall back to traditional clicking.",
+            "Restore the probe job to READY. Do not consume it as BLOCKED.",
+            f"Incident category ENVIRONMENT. repeat_key {COPILOT_REPEAT_KEY}.",
+            "run_log result OWNER_ACTION_REQUIRED. Release polar_browser. Exit the apply run.",
+            "The next apply run rechecks the employer page. Last MISSING is not a cache that skips the check.",
+        ]
+    )
+
     probe = "\n".join(
         [
             section_a,
@@ -794,6 +828,7 @@ def compile_sections() -> Dict[str, str]:
             section_m,
             section_n,
             section_o,
+            section_p,
         ]
     )
     for value in forbidden_profile_values(profile if isinstance(profile, dict) else {}):
@@ -816,6 +851,7 @@ def compile_sections() -> Dict[str, str]:
         "section_m": section_m,
         "section_n": section_n,
         "section_o": section_o,
+        "section_p": section_p,
     }
 
 

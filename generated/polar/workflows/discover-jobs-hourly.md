@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-09.prod-learn+429c986e5c66
+workflow_version: 2026-09-10.copilot-memory+dee8966e3d77
 status: production
 enabled: true
 needs_browser_lock: true
@@ -63,7 +63,7 @@ If the visible row has a different key, or no key, abort. Do not write that row.
 If two rows share the same key, abort.
 Commit the edit. Then reread key, owner_run_id, notes.
 A cell that looked correct is not proof the write persisted. The reread is the proof.
-github_write_canary must never overwrite polar_browser.
+github_write_canary and env_simplify_copilot must never overwrite polar_browser.
 After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
 Those four cells must still match the values from before the canary write. Notes on that lock may change.
 These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.
@@ -77,11 +77,11 @@ One workflow invocation writes one run_log row.
 Copy workflow_version from this file into that row.
 Record started_at when you acquire work. Record ended_at before you exit.
 duration_minutes is coarse. Use whole minutes.
-result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, or NO_WORK.
+result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED.
 
 Write an incident_log row when something material happens.
 Use one category from this list:
-UI_ONE_OFF, LOCAL_PRIVATE_FACT, MISSING_DOCUMENT, MISSING_FACT, FACT_POLICY, TRIAGE, QUEUE_STATE, DEDUP, WRITING, AUTH, PERFORMANCE, NO_ACTION.
+UI_ONE_OFF, LOCAL_PRIVATE_FACT, MISSING_DOCUMENT, MISSING_FACT, FACT_POLICY, TRIAGE, QUEUE_STATE, DEDUP, WRITING, AUTH, PERFORMANCE, ENVIRONMENT, NO_ACTION.
 If minutes were lost, also set time_lost_category from:
 AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPDOWN_UI, DUPLICATE, SUBMIT_VERIFY, OTHER.
 repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, degree_level_gate_missed_at_discovery.

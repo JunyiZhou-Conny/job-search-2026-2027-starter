@@ -15,6 +15,8 @@ from js_lib import canonical_url, normalize_text
 ROOT = Path(__file__).resolve().parents[1]
 
 LEASE_KEY = "polar_browser"
+ENV_SIMPLIFY_KEY = "env_simplify_copilot"
+LOCAL_PREFERENCES_PATH = "/home/polar/PREFERENCES.md"
 
 GITHUB_RAW_BASE = (
     "https://raw.githubusercontent.com/JunyiZhou-Conny/"
@@ -33,6 +35,7 @@ INCIDENT_CATEGORIES = (
     "WRITING",
     "AUTH",
     "PERFORMANCE",
+    "ENVIRONMENT",
     "NO_ACTION",
 )
 
@@ -87,7 +90,45 @@ RUN_LOG_RESULTS = (
     "FAILED",
     "SKIPPED_LOCKED",
     "NO_WORK",
+    "OWNER_ACTION_REQUIRED",
 )
+
+COPILOT_STATES = (
+    "PRESENT",
+    "MISSING",
+    "UNKNOWN",
+)
+
+PREFERENCE_CLASSES = (
+    "CANONICAL_GITHUB",
+    "LOCAL_PRIVATE",
+    "LEARNING_CANDIDATE",
+    "REDUNDANT",
+    "EPHEMERAL",
+    "SECRET_OR_CREDENTIAL",
+    "STALE",
+    "ONE_OFF",
+)
+
+PROMOTION_OUTCOMES = (
+    "PROMOTE",
+    "KEEP_LOCAL",
+    "DROP_REDUNDANT",
+    "DROP_ONE_OFF",
+    "STALE",
+    "NEEDS_MORE_EVIDENCE",
+    "OWNER_DECISION",
+)
+
+MEMORY_PRECEDENCE = (
+    "owner_instruction",
+    "canonical_github",
+    "local_private",
+    "learning_candidate",
+)
+
+COPILOT_REPEAT_KEY = "simplify_copilot_missing"
+READY_STATUSES = ("READY_REGULAR", "READY_PRIORITY")
 
 LOCK_RESULTS = (
     "ACQUIRED",
@@ -1345,3 +1386,253 @@ def parse_contract_block(text: str, heading: str) -> Dict[str, str]:
         if key:
             fields[key] = value.strip()
     return fields
+
+
+@dataclass(frozen=True)
+class CopilotObservation:
+    employer_page_copilot_ui: bool
+    simplify_jobs_session: bool
+    evidence: str
+
+
+@dataclass(frozen=True)
+class CopilotMissRestore:
+    status: str
+    attempt_count: int
+    consume_job: bool
+
+
+@dataclass(frozen=True)
+class PreferenceDeltaRow:
+    title: str
+    cls: str
+    evidence: str
+    proposed_destination: str
+    already_in_github: bool
+    body: str = ""
+
+
+def copilot_state(obs: CopilotObservation) -> str:
+    if obs.employer_page_copilot_ui:
+        return "PRESENT"
+    if str(obs.evidence or "").strip():
+        return "MISSING"
+    return "UNKNOWN"
+
+
+def simplify_jobs_session_is_copilot_proof(_session_ok: bool) -> bool:
+    return False
+
+
+def copilot_allows_apply(state: str) -> bool:
+    return state == "PRESENT"
+
+
+def missing_copilot_run_result() -> str:
+    return "OWNER_ACTION_REQUIRED"
+
+
+def missing_copilot_should_release_lease() -> bool:
+    return True
+
+
+def restore_queue_after_copilot_miss(
+    *,
+    ready_status: str,
+    attempt_count_before_run: int,
+) -> CopilotMissRestore:
+    if ready_status not in READY_STATUSES:
+        raise ValueError(f"ready_status must be READY_REGULAR or READY_PRIORITY, got {ready_status}")
+    return CopilotMissRestore(
+        status=ready_status,
+        attempt_count=attempt_count_before_run,
+        consume_job=False,
+    )
+
+
+def format_env_simplify_notes(state: str, evidence: str) -> str:
+    if state not in COPILOT_STATES:
+        raise ValueError(f"unknown copilot state {state}")
+    clean = sanitize_learning_text(evidence or "").replace(";", ",")
+    return f"state={state}; evidence={clean}"
+
+
+def parse_env_simplify_notes(notes: str) -> Tuple[str, str]:
+    text = notes or ""
+    state = "UNKNOWN"
+    evidence = ""
+    for part in text.split(";"):
+        if ":" not in part and "=" not in part:
+            continue
+        key, value = re.split(r"[:=]", part, maxsplit=1)
+        key = key.strip().lower()
+        value = value.strip()
+        if key == "state" and value in COPILOT_STATES:
+            state = value
+        elif key == "evidence":
+            evidence = value
+    return state, evidence
+
+
+def env_simplify_control_fields(
+    *,
+    run_id: str,
+    workflow: str,
+    checked_at: str,
+    state: str,
+    evidence: str,
+) -> Dict[str, str]:
+    return {
+        "key": ENV_SIMPLIFY_KEY,
+        "owner_run_id": run_id,
+        "workflow": workflow,
+        "acquired_at": checked_at,
+        "expires_at": "",
+        "notes": format_env_simplify_notes(state, evidence),
+    }
+
+
+def _near_duplicate(body: str, github_corpus: str) -> bool:
+    blob = normalize_text(body)
+    corpus = normalize_text(github_corpus)
+    if not blob or not corpus:
+        return False
+    if blob in corpus:
+        return True
+    window = blob[:48]
+    return len(window) >= 24 and window in corpus
+
+
+def classify_preference_entry(
+    title: str,
+    body: str,
+    *,
+    github_corpus: str = "",
+) -> str:
+    blob = f"{title}\n{body}"
+    if PASSWORD_ASSIGN_RE.search(blob) or COOKIE_ASSIGN_RE.search(blob) or OTP_ASSIGN_RE.search(blob):
+        return "SECRET_OR_CREDENTIAL"
+    if STREET_RE.search(blob) or EMAIL_RE.search(blob) or PHONE_RE.search(blob):
+        return "LOCAL_PRIVATE"
+    if re.search(r"\b(this tab|this run|temporary|lost the tab)\b", blob, re.I):
+        return "EPHEMERAL"
+    if github_corpus and _near_duplicate(body, github_corpus):
+        return "REDUNDANT"
+    if re.search(r"\b(one[- ]off|single posting|this employer only)\b", blob, re.I):
+        return "ONE_OFF"
+    if re.search(r"\b(stale|superseded|no longer)\b", blob, re.I):
+        return "STALE"
+    if re.search(r"\b(follow GitHub|POLAR_RUNTIME|canonical)\b", blob, re.I) and len(body) < 240:
+        return "CANONICAL_GITHUB"
+    return "LEARNING_CANDIDATE"
+
+
+def preference_export_mode(cls: str) -> str:
+    if cls == "SECRET_OR_CREDENTIAL":
+        return "omit"
+    if cls == "LOCAL_PRIVATE":
+        return "count_only"
+    return "sanitized"
+
+
+def local_overrides_github(cls: str) -> bool:
+    return cls == "LOCAL_PRIVATE"
+
+
+def winning_memory_source(cls: str) -> str:
+    if local_overrides_github(cls):
+        return "local_private"
+    return "canonical_github"
+
+
+def proposed_github_destination(text: str) -> str:
+    blob = (text or "").lower()
+    if "form" in blob or "widget" in blob or "autofill" in blob:
+        return "knowledge/form_strategy.yaml"
+    if "copilot" in blob or "simplify" in blob or "lease" in blob:
+        return "knowledge/polar_operator.yaml"
+    return "knowledge/polar_operator.yaml"
+
+
+def render_preferences_delta(
+    rows: Sequence[PreferenceDeltaRow],
+) -> str:
+    lines = ["## Polar Preferences Delta", ""]
+    local_private = 0
+    secrets = 0
+    for row in rows:
+        mode = preference_export_mode(row.cls)
+        if mode == "omit":
+            secrets += 1
+            continue
+        if mode == "count_only":
+            local_private += 1
+            continue
+        title = sanitize_learning_text(row.title)
+        evidence = sanitize_learning_text(row.evidence)
+        already = "yes" if row.already_in_github else "no"
+        lines.append(
+            f"- {title} | class {row.cls} | already_in_github {already} | "
+            f"destination {row.proposed_destination} | evidence {evidence}"
+        )
+    lines.append("")
+    lines.append(f"local_private_count: {local_private}")
+    lines.append(f"secret_or_credential_count: {secrets}")
+    lines.append("Do not print LOCAL_PRIVATE values or SECRET_OR_CREDENTIAL contents.")
+    return "\n".join(lines) + "\n"
+
+
+def compact_preferences_markdown(
+    *,
+    local_private: Sequence[Tuple[str, str]],
+    candidates: Sequence[Tuple[str, str]],
+    reviewed_at: str,
+    github_runtime_url: str,
+) -> str:
+    private_lines = []
+    for title, value in local_private:
+        private_lines.append(f"- {title}: {value}")
+    candidate_lines = []
+    for title, body in candidates:
+        candidate_lines.append(f"- {title}: {sanitize_learning_text(body)}")
+    if not private_lines:
+        private_lines = ["- none"]
+    if not candidate_lines:
+        candidate_lines = ["- none"]
+    return "\n".join(
+        [
+            "# Polar Preferences",
+            "",
+            "## Canonical behavior",
+            "Follow current GitHub runtime and workflow.",
+            github_runtime_url,
+            "",
+            "## Local-only facts",
+            *private_lines,
+            "",
+            "## Pending learning candidates",
+            *candidate_lines,
+            "",
+            "## Sync state",
+            f"last_reviewed: {reviewed_at}",
+            "",
+        ]
+    )
+
+
+def _mentions_form_yes(text: str) -> bool:
+    return bool(re.search(r"\bform[ _]?answer(?: is|:)? yes\b|\banswer yes\b", text))
+
+
+def _mentions_form_no(text: str) -> bool:
+    return bool(re.search(r"\bform[ _]?answer(?: is|:)? no\b|\banswer no\b", text))
+
+
+def preference_conflicts_github(body: str, github_corpus: str) -> bool:
+    blob = normalize_text(body)
+    corpus = normalize_text(github_corpus)
+    if not blob or not corpus:
+        return False
+    return (_mentions_form_yes(blob) and _mentions_form_no(corpus)) or (
+        _mentions_form_no(blob) and _mentions_form_yes(corpus)
+    )

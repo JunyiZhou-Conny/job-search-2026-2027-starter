@@ -1,7 +1,7 @@
 # chatgpt-production-review
 
 workflow: chatgpt-production-review
-workflow_version: 2026-09-09.prod-learn+1689f8dc545a
+workflow_version: 2026-09-10.copilot-memory+1689f8dc545a
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false

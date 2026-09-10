@@ -1,6 +1,6 @@
 last_updated: "2026-09-10"
-policy_revision: "2026-09-09.prod-learn"
-source: "Polar Production 2026-09-10. Authorization questions stay narrow. Sponsorship is not a discovery skip."
+policy_revision: "2026-09-10.copilot-memory"
+source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin."
 timezone: "America/New_York"
 
 writing_observation_mode: true
@@ -21,13 +21,30 @@ lease:
   refresh_if_remaining_below_minutes: 60
 
 simplify:
-  role: optional_accelerator
+  role: required_precondition
+  proof: employer_page_copilot_ui
+  not_proof:
+    - simplify_jobs_website_login
+    - simplify_jobs_api
   max_attempts_per_application: 1
-  fallback_when:
-    - onboarding_wall
-    - extension_not_injected
-    - logged_out_or_broken_session
-    - obvious_repeat_navigation
+  silent_manual_fallback: false
+  missing_action: owner_action_required
+  consume_job: false
+  control_key: env_simplify_copilot
+  states:
+    - PRESENT
+    - MISSING
+    - UNKNOWN
+
+memory:
+  canonical: github
+  local_inbox: /home/polar/PREFERENCES.md
+  local_inbox_is_not_strategy: true
+  precedence:
+    - owner_instruction
+    - canonical_github
+    - local_private
+    - learning_candidate
 
 contact_email:
   default_source: local_application_mailbox
@@ -242,6 +259,7 @@ incident_categories:
   - WRITING
   - AUTH
   - PERFORMANCE
+  - ENVIRONMENT
   - NO_ACTION
 
 time_lost_categories:

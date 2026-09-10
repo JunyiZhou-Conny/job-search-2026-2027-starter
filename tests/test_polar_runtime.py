@@ -29,6 +29,7 @@ REQUIRED_HEADINGS = [
     "## M. Browser lease",
     "## N. Run and incident telemetry",
     "## O. Employer requisition identity",
+    "## P. Memory ownership and Copilot preflight",
 ]
 
 STATUSES = [
@@ -120,6 +121,10 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("degree_level_gate_missed_at_discovery", text)
         self.assertIn("github_write_canary must not overwrite polar_browser", text)
         self.assertIn("clearly says answer Yes or answer No", text)
+        self.assertIn("Simplify Copilot is a required apply precondition.", text)
+        self.assertIn("OWNER_ACTION_REQUIRED", text)
+        self.assertNotIn("optional_accelerator", text)
+        self.assertIn("PREFERENCES.md is not a second strategy database.", text)
 
     def test_committed_file_matches_compiler(self):
         generated = compile_text()

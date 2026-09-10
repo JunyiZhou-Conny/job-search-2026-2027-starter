@@ -1,7 +1,7 @@
 # polar-scheduler-heartbeat
 
 workflow: polar-scheduler-heartbeat
-workflow_version: 2026-09-09.prod-learn+d99af025ea26
+workflow_version: 2026-09-10.copilot-memory+d99af025ea26
 status: production
 enabled: true
 needs_browser_lock: false
