@@ -1,0 +1,6 @@
+ts	phase	decision	why	evidence	result
+2026-09-10T02:52:00Z	frame	Treat this as evidence-first master-resume rebuild, not a one-page ATS trim	False metrics on a resume are a one-way interview failure. High rigor on claims, medium on layout.	user_query + knowledge/evidence_bank.yaml	framed
+2026-09-10T03:10:00Z	audit	Keep four distinct projects. Do not fold mixhvg or AutoResearch into speciesOT.	They have different repos, claim classes, and future resume views. Stacked speciesOT PRs are not on main.	/tmp/evidence-audit + gh pr list	selected
+2026-09-10T03:11:00Z	audit	Do not claim DatasetHandle, FrozenAE, JobPlan, CellOTModel, or ReferenceBundle as shipped	Those live on stacked PRs. Current main has IdentityModel, DummyEvaluation, R2Evaluation only.	speciesOT HEAD 109bf12 src/speciesot/speciesot_core.py	excluded
+2026-09-10T03:12:00Z	audit	Keep 338/79.3h as USER_REPORTED. Drop 12 tiers and 7 gene spaces from the resume.	Public experiments.csv is a header only. search_space.yaml names 8 ladder tiers and 2 gene spaces.	scgen-cellot-autoresearch/results/experiments.csv + search_space.yaml	corrected
+2026-09-10T03:13:00Z	audit	Demote Transformer and the four SHBT/BST coursework projects from the master resume	2026 work now dominates those course stories. Keep them in the YAML for later views.	JZ_resume.tex + evidence_bank.yaml	planned
