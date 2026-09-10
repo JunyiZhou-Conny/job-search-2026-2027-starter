@@ -23,7 +23,7 @@ They open the raw main URL on each run.
 - `discover-jobs-hourly` workflow_version `2026-09-10.copilot-memory+dee8966e3d77`
 - `apply-ready-jobs` workflow_version `2026-09-10.copilot-memory+cb32f4de3f2f`
 - `daily-job-summary` workflow_version `2026-09-10.copilot-memory+bcb93109c0c9`
-- `production-learning-daily` workflow_version `2026-09-10.copilot-memory+6392f5c76cc3`
+- `production-learning-daily` workflow_version `2026-09-10.copilot-memory+804198ac3075`
 - `polar-scheduler-heartbeat` workflow_version `2026-09-10.copilot-memory+d99af025ea26`
 - `polar-github-write-canary` workflow_version `2026-09-10.copilot-memory+853be3086a51`
 - `chatgpt-production-review` workflow_version `2026-09-10.copilot-memory+1689f8dc545a`

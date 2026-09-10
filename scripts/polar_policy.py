@@ -281,6 +281,9 @@ PASSWORD_ASSIGN_RE = re.compile(r"(?i)\b(password|passwd|pwd)\s*[:=]\s*\S+")
 COOKIE_ASSIGN_RE = re.compile(
     r"(?i)\b(cookie|set-cookie|session[_ -]?token|storage_state)\s*[:=]\s*\S+"
 )
+TOKEN_ASSIGN_RE = re.compile(
+    r"(?i)\b(api[_-]?key|bearer|authorization)\s*[:=]\s*\S+"
+)
 STREET_RE = re.compile(
     r"\b\d{1,6}\s+[A-Za-z0-9.#']+\s+"
     r"(Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Way|"
@@ -294,6 +297,7 @@ TRANSCRIPT_LEAK_RE = re.compile(
 SANITIZE_REPLACEMENTS = (
     (PASSWORD_ASSIGN_RE, "[REDACTED_PASSWORD]"),
     (COOKIE_ASSIGN_RE, "[REDACTED_SECRET]"),
+    (TOKEN_ASSIGN_RE, "[REDACTED_SECRET]"),
     (OTP_ASSIGN_RE, "[REDACTED_OTP]"),
     (EMAIL_RE, "[REDACTED_EMAIL]"),
     (PHONE_RE, "[REDACTED_PHONE]"),
@@ -1497,10 +1501,7 @@ def _near_duplicate(body: str, github_corpus: str) -> bool:
     corpus = normalize_text(github_corpus)
     if not blob or not corpus:
         return False
-    if blob in corpus:
-        return True
-    window = blob[:48]
-    return len(window) >= 24 and window in corpus
+    return blob in corpus
 
 
 def classify_preference_entry(
@@ -1510,7 +1511,12 @@ def classify_preference_entry(
     github_corpus: str = "",
 ) -> str:
     blob = f"{title}\n{body}"
-    if PASSWORD_ASSIGN_RE.search(blob) or COOKIE_ASSIGN_RE.search(blob) or OTP_ASSIGN_RE.search(blob):
+    if (
+        PASSWORD_ASSIGN_RE.search(blob)
+        or COOKIE_ASSIGN_RE.search(blob)
+        or TOKEN_ASSIGN_RE.search(blob)
+        or OTP_ASSIGN_RE.search(blob)
+    ):
         return "SECRET_OR_CREDENTIAL"
     if STREET_RE.search(blob) or EMAIL_RE.search(blob) or PHONE_RE.search(blob):
         return "LOCAL_PRIVATE"
@@ -1520,7 +1526,7 @@ def classify_preference_entry(
         return "REDUNDANT"
     if re.search(r"\b(one[- ]off|single posting|this employer only)\b", blob, re.I):
         return "ONE_OFF"
-    if re.search(r"\b(stale|superseded|no longer)\b", blob, re.I):
+    if re.search(r"\b(stale learning|superseded by github|^stale:)\b", blob, re.I):
         return "STALE"
     if re.search(r"\b(follow GitHub|POLAR_RUNTIME|canonical)\b", blob, re.I) and len(body) < 240:
         return "CANONICAL_GITHUB"
@@ -1535,12 +1541,12 @@ def preference_export_mode(cls: str) -> str:
     return "sanitized"
 
 
-def local_overrides_github(cls: str) -> bool:
-    return cls == "LOCAL_PRIVATE"
+def local_overrides_github(cls: str, *, kind: str = "behavior") -> bool:
+    return kind == "private_value" and cls == "LOCAL_PRIVATE"
 
 
-def winning_memory_source(cls: str) -> str:
-    if local_overrides_github(cls):
+def winning_memory_source(cls: str, *, kind: str = "behavior") -> str:
+    if local_overrides_github(cls, kind=kind):
         return "local_private"
     return "canonical_github"
 

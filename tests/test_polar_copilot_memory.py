@@ -198,7 +198,8 @@ class TestPreferencesMemory(unittest.TestCase):
         cls = classify_preference_entry("home", "123 Maple Street")
         self.assertEqual(cls, "LOCAL_PRIVATE")
         self.assertEqual(preference_export_mode(cls), "count_only")
-        self.assertTrue(local_overrides_github(cls))
+        self.assertFalse(local_overrides_github(cls))
+        self.assertTrue(local_overrides_github(cls, kind="private_value"))
         delta = render_preferences_delta(
             [
                 PreferenceDeltaRow(
@@ -259,7 +260,23 @@ class TestPreferencesMemory(unittest.TestCase):
         github = "form_answer: Yes"
         self.assertTrue(preference_conflicts_github(body, github))
         self.assertEqual(winning_memory_source("LEARNING_CANDIDATE"), "canonical_github")
-        self.assertEqual(winning_memory_source("LOCAL_PRIVATE"), "local_private")
+        self.assertEqual(winning_memory_source("LOCAL_PRIVATE"), "canonical_github")
+        self.assertEqual(
+            winning_memory_source("LOCAL_PRIVATE", kind="private_value"),
+            "local_private",
+        )
+
+    def test_no_longer_optional_is_not_auto_stale(self):
+        cls = classify_preference_entry(
+            "copilot",
+            "Copilot is no longer optional. Require it on the employer page.",
+        )
+        self.assertEqual(cls, "LEARNING_CANDIDATE")
+
+    def test_api_key_is_secret(self):
+        cls = classify_preference_entry("token", "api_key: sk-test-123")
+        self.assertEqual(cls, "SECRET_OR_CREDENTIAL")
+        self.assertEqual(preference_export_mode(cls), "omit")
 
     def test_compact_preferences_stays_thin(self):
         text = compact_preferences_markdown(

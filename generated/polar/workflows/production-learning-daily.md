@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-10.copilot-memory+6392f5c76cc3
+workflow_version: 2026-09-10.copilot-memory+804198ac3075
 status: production
 enabled: true
 needs_browser_lock: false
@@ -115,8 +115,10 @@ If a local strategy line conflicts with POLAR_RUNTIME or the workflow, say so.
 GitHub wins for behavior. LOCAL_PRIVATE values stay local.
 After the report is sanitized, compact PREFERENCES to four sections only:
 Canonical behavior (GitHub pointer), Local-only facts, Pending learning candidates, Sync state.
-Delete REDUNDANT, ONE_OFF, EPHEMERAL, STALE, and promoted duplicates.
 Keep LOCAL_PRIVATE values in the local file only.
+Keep LEARNING_CANDIDATE stubs until Cursor names PROMOTE, DROP_REDUNDANT, DROP_ONE_OFF, or STALE.
+Delete SECRET_OR_CREDENTIAL. Delete an exact GitHub duplicate marked REDUNDANT.
+Delete EPHEMERAL session notes. Do not delete a candidate only because the text says no longer.
 
 Sanitize before you persist. The report must never contain street address, private application email,
 phone, OTP, password, cookie, session token, transcript contents, or private auth material.

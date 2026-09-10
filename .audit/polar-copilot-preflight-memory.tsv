@@ -10,3 +10,4 @@ ts	phase	decision	why	evidence	result
 2026-09-10T02:58:00Z	policy	Do not change sponsorship form answers in this PR.	#116 already set required future-sponsorship to Yes. Polar chat Yes is GitHub's job now.	knowledge/work_authorization.yaml on main	left alone
 2026-09-10T03:00:00Z	verify	Focused Polar suites then full unittest discover.	Need a real run, not a self-report.	python3 -m unittest discover -s tests	271 OK
 2026-09-10T03:02:00Z	review	Keep classify heuristics in polar_policy. Do not add a preferences-learning-daily file.	Laziness and Subtract. Polar can read and rewrite /home/polar/PREFERENCES.md. GitHub cannot.	LOCAL_PREFERENCES_PATH	local rewrite only
+2026-09-10T03:20:00Z	review	Stop treating no longer as STALE. Keep LEARNING_CANDIDATE until Cursor names a drop. GitHub still wins for behavior.	Trail review caught auto-delete and mixed-entry override risk.	classify_preference_entry winning_memory_source	tightened
