@@ -79,6 +79,7 @@ python3 scripts/jobsearch.py dashboard
 
 - Master source: `resumes/base/JZ_resume.tex`. Evidence lives in `knowledge/evidence_bank.yaml`.
 - Polar prefers the Simplify-attached resume. If that widget is empty, do not upload the two-page master. Mark REVIEW_READY.
+- `role_cluster` values (`cloud_swe`, `data_ml`, `health_ai`) are job taxonomy, not resume folders.
 - Default resume line is **December 2026 program completion**; use the dual-date line
   (March 2027 commencement + December 2026 completion) only when a posting demands
   Spring 2027 wording. See `docs/eligibility.md`.

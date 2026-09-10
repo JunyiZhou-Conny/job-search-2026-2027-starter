@@ -1,107 +1,62 @@
-# Master evidence bank
+# Master evidence bank (companion)
 
-Source of truth for the base resume. Do not invent beyond what is listed here.
-Last reviewed: 2026-08-24 from `resumes/base/JZ_resume.tex`.
+Canonical structured record: `knowledge/evidence_bank.yaml`.
+Last reviewed: 2026-09-10.
 
-## Target ambition (user-stated)
+This file is a human-readable index of what `resumes/base/JZ_resume.tex` may claim.
+It is not a generator. Future SWE / ML / AI-infra / Health-AI one-pagers should
+select from the YAML and rewrite bullets. Do not mint a second source of truth.
 
-- Prefer big tech or fast-iterating startups
-- Want depth in AI agents, context management, applied ML systems — not “pure biotech company” as the only path
-- Domain of past projects may be clinical/biology; transferable systems work should lead
-
-## Positioning principle
+## Architecture
 
 ```text
-Domain (clinical / biology) = context of the problem
-Systems work (agents, RAG, full-stack, cloud, transformers, HPC) = what you sell
+GitHub + artifacts
+  -> knowledge/evidence_bank.yaml
+  -> master resume (this folder)
+  -> later role-specific one-page views
 ```
 
-You do **not** need to erase Health Data Science. You need to stop leading with biology as the identity.
+`resumes/base/` is the master resume. Polar still prefers the Simplify-attached
+resume. The compiled `JZ_resume.pdf` is the empty-widget fallback, not proof that
+every application uses this file.
 
-## Open fact checks (resolve before heavy applying)
+## Projects on the master resume
 
-| Item | Conflict | Action needed |
+| YAML key | Master role | Notes |
 |---|---|---|
-| Graduation | Dual real dates: I-20 program end **2026-12-18**; commencement **2027-03** | RESOLVED 2026-07-29 — resume now carries both: date column reads Aug 2025 – Mar 2027, with a bullet stating completion December 2026 and availability January 2027. Single-field ATS forms still answer December 2026. |
-| Demo credentials | Resume footnote includes a live test password | Remove from all public resumes; share privately if needed |
-| Internship auth | CPT availability still `unknown` in profile | Confirm before pursuing pre-grad internships |
+| `cellot_wyss` | speciesOT research | scGen and CellOT are components, not standalone resume projects |
+| `autoresearch_cellot` | experiment system | Distinct from speciesOT. LLM path implemented, never exercised |
+| `mixhvg_py` | scientific software | GPL-3 port. Do not vendor into speciesOT |
+| `job_search_os` | systems / agents | Human-supervised. Not fully autonomous |
+| `sseg_rlvr` | current capstone | Method + repo only. No training metrics |
+| `alphafold_pipeline` | older HPC tooling | Kept, shortened |
+| `compleg_uk_nz` | older SWE / ETL | Kept, shortened |
+| `airway_chatbot` | product / RAG | Kept |
 
-## Evidence inventory (interview-defensible)
+## Demoted from the master (still in YAML)
 
-### A. Agentic / LLM systems (strongest bridge to ambition)
+Transformer reimplementation and the four SHBT/BST coursework projects
+(`cv_caltech101`, `cv_segmentation_voc`, `vlm_textvqa_lora`, `cv_pneumonia`).
+They remain available for later ML one-pagers.
 
-**Airway Management Simulation Chatbot** — Full-Stack Engineer, Scrum Master | Emory Pediatric Hospital | Jan 2024 -- Present
+## Claim classes
 
-| Capability signal | Evidence on resume |
-|---|---|
-| Agentic LLM pipeline | Architected clinical agentic LLM pipeline |
-| RAG | RAG system + OpenAI models; reduce hallucinations |
-| Context management | Prompt engineering + context window management for dynamic scenario generation |
-| Full-stack product | Python/Flask, React, MongoDB, AWS; real-time analytics |
-| Privacy / production constraints | HIPAA-compliant platform framing |
-| Leadership | Agile team of 6; code reviews; clinician feedback loop |
-| Deployed artifact | CloudFront demo URL (do not publish passwords) |
+Use `VERIFIED_MEASURED`, `VERIFIED_IMPLEMENTED`, `USER_REPORTED`, or `PLANNED`.
+PLANNED items are not accomplishments.
 
-**Use in:** `cloud_swe` (lead), `data_ml` (lead), `health_ai` (lead with clinical framing OK)
+Do not claim DatasetHandle, FrozenAE, JobPlan, CellOTModel, or ReferenceBundle
+as shipped on speciesOT `main`. GitHub lists PRs 1-7 as MERGED. Those merge
+commits are not on live `origin/main` `109bf12`. PRs 8-10 stay open.
 
-### B. Core ML / foundations (big-tech interview credibility)
+A-D $R^2$ 0.85-0.90 / 0.65-0.67 is the AutoResearch LPS / rat-in-train prior.
+It is not a Tabula atlas result.
 
-**Transformer reimplementation** — Emory CS | Oct 2024 -- Jan 2025
+Do not claim that an LLM directed AutoResearch runs.
 
-- Built Transformer in PyTorch from scratch (MHA, positional encodings, LayerNorm)
-- Hyperparameter tuning; 9.38 BLEU on EN→DE
-- Validated against `nn.Transformer`
-- Public GitHub
+Do not quote new speciesOT scorecard decimals until Junyi clears them.
 
-**Use in:** all clusters; especially `data_ml` and SWE/ML roles
+## Polar attach
 
-### C2. Pathology RL capstone (bootstrap — no training results yet)
-
-**S-Seg-RLVR** — Graduate Researcher | Harvard Health Data Science capstone (mentor Alexander Chowdhury) | Aug 2026 -- Present
-
-- Method: instance count, separation, and topology as GRPO rewards instead of only Dice/IoU
-- Real today: proposal, 30-paper library, roadmap, typed reward interfaces
-- Not real yet: GRPO training, datasets, metrics, MICCAI acceptance
-- Public GitHub. LinkedIn paste: `knowledge/linkedin_sseg_rlvr_draft.md`
-- Use in: `health_ai` lead. Do not put fake numbers on any cluster.
-
-### C. ML systems / research scale (secondary for non-bio roles)
-
-**Wyss / Mooney & Alvarez-Melis** — Optimal Transport, VAEs, diffusion, CellOT, scRNA-seq | Feb 2026 -- Present
-
-- Custom PyTorch CellOT; generative models; large dataset pipelines
-- For non-bio roles: emphasize model implementation, latent-space modeling, evaluation — not “drug translation” as the headline
-
-**AlphaFold pipeline** — Bou-Nader Lab | Feb 2025 -- Aug 2025
-
-- HPC parallel scheduling, GPU inference, CLI tools, documentation for non-ML users
-- For non-bio roles: emphasize pipeline engineering / tooling / HPC
-
-### D. Education & skills
-
-- Emory: Applied Math & Stats + Computer Informatics minor; DS, ML, NLP, DB coursework; GPA 3.925
-- Harvard: SM Health Data Science; Deep Learning, Healthcare ML coursework
-- Languages: Python, C++, Java, SQL, R, JavaScript
-- ML: PyTorch, TensorFlow, Keras, sklearn, XGBoost/LightGBM, HF Transformers
-- Data/infra: MySQL, PostgreSQL, MongoDB, MongoDB Atlas Vector Search, Hadoop, Spark
-- Tools: Git, Docker, Jupyter, SLURM/HPC
-- **Removed 2026-07-27:** Pinecone (never used — the RAG store is MongoDB Atlas Vector Search) and
-  Kubernetes (never used — the chatbot runs on Elastic Beanstalk with Docker). See
-  `knowledge/evidence_bank.yaml` for the full claim guidance.
-- Cloud: AWS (SageMaker, Lambda, EC2, S3, Redshift), Snowflake, BigQuery
-- Certs: AWS Cloud Practitioner, AWS AI Practitioner, AWS ML Associate
-
-## Cluster narrative map
-
-| Cluster | Lead with | Demote / shorten | Best for |
-|---|---|---|---|
-| `cloud_swe` | Chatbot (agent/RAG/full-stack/AWS), Transformer, cloud/certs, AlphaFold-as-HPC | Long biology framing on Wyss | SWE, backend, platform, infra, general new-grad |
-| `data_ml` | Chatbot + Transformer + Wyss (models) + vector DB/Spark | Pure wet-lab adjacent wording | MLE, applied AI, data eng/analytics |
-| `health_ai` | Same projects, clinical/bio problem statements OK | None required | Healthcare AI, clinical data, life-science tech |
-
-## What not to do
-
-- Do not invent FAANG internships, production traffic metrics, or agent frameworks you did not use
-- Do not claim “big tech” experience you do not have — claim **transferable systems depth**
-- Do not hide the degree; put systems bullets and skills above domain storytelling
-- Do not answer sponsorship/auth questions inaccurately to “fit” a JD
+Prefer the Simplify resume already attached.
+If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.
+Mark REVIEW_READY with blocker `missing_production_resume`.

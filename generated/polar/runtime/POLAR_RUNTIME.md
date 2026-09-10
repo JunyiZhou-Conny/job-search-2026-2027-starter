@@ -279,10 +279,12 @@ Verified resume-eligible skills:
 Projects you may name at the evidence-bank ceiling:
 - Airway Management Simulation Chatbot / Emory Pediatric Hospital / Full-Stack Engineer, Scrum Master / 2024-01 — 2025-08
 - Reimplementation of Transformer Architecture / Emory Dept. of Computer Science / Machine Learning Researcher / 2024-10 — 2025-01
-- Cross-Species Drug Translation using Optimal Transport & Generative AI / Wyss Institute (Mooney Lab & Alvarez-Melis Lab) / Graduate Researcher / 2026-02 — present
+- speciesOT. Cross-species single-cell translation with optimal transport / Wyss Institute (Mooney Lab & Alvarez-Melis Lab) / Graduate Researcher / 2026-02 — present
 - AlphaFold Protein–Nucleic Acid Interaction Prediction / Bou-Nader Lab, Emory Biochemistry / Data Analyst / 2025-02 — 2025-08
 - Structure-Verified RLVR for Label-Efficient Pathology Instance Segmentation / Harvard T.H. Chan School of Public Health (Health Data Science capstone) / Graduate Researcher / 2026-08 — present
-- Autonomous Ablation-Search Agent for scGen vs CellOT / Personal / Wyss-adjacent (FASRC Cannon cluster) / Sole author / 2026-06 — present
+- Closed-Loop Cluster Autoresearch for scGen vs CellOT / Personal / Wyss-adjacent (FASRC Cannon cluster) / Sole author / 2026-06 — present
+- mixhvg-py. Validated Python port of an R bioinformatics method / Personal (used by speciesOT; kept separate because of GPL-3) / Sole author / 2026-07
+- Job Search OS. Human-supervised agentic browser automation / Personal / Sole author / 2026-07 — present
 - Image Classification on Caltech-101: Classical ML vs CNNs vs Vision Transformers / Harvard SHBT-261 (course project) / Sole author / 2026-03
 - Semantic Segmentation on Pascal VOC 2007: U-Net vs ViT-Tiny vs DeepLabV3+ / Harvard (course project, repo `mini2`) / Sole author / 2026-04
 - TextVQA with BLIP-2: Zero-shot, Prompt Engineering, and LoRA Fine-tuning / Harvard AI in Medicine, Spring 2026 (final project, repo `mini3`) / Sole author / 2026-05
