@@ -198,6 +198,7 @@ This PR must not overwrite `knowledge/evidence_bank.yaml` or `resumes/base/JZ_re
 - Gate. `python3 scripts/resume_quality.py build --family ai_infra --compile`
 - Artifacts. `docs/resume/builds/ai_infra_v1/`
 - Page. Three projects after the cleanup pass. mixhvg-py was tested and dropped. See `docs/resume/builds/ai_infra_v1/selection.md`.
+- Contact. Source TeX keeps a sanitized email. Application PDF is `python3 scripts/export_resume.py --family ai_infra`.
 
 `swe`, `ml_ai`, and `health_ai` are not built. `route` is not implemented. Polar is unchanged.
 

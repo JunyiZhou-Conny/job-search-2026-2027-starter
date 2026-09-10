@@ -11,10 +11,12 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from stitch_family_resume import (  # noqa: E402
     BEGIN,
     EDUCATION,
+    HYPERREF_HIDELINKS,
     MASTER,
     SKILLS,
     assemble,
     require_sentinel,
+    with_hidelinks,
 )
 
 
@@ -35,6 +37,12 @@ class TestStitchSentinels(unittest.TestCase):
         self.assertIn("% Education", tex)
         self.assertEqual(tex.count("\\begin{document}"), 1)
         self.assertTrue(tex.rstrip().endswith("\\end{document}"))
+        self.assertIn(HYPERREF_HIDELINKS, tex)
+
+    def test_with_hidelinks_fails_when_hyperref_is_missing(self) -> None:
+        with self.assertRaises(SystemExit) as ctx:
+            with_hidelinks("no hyperref here")
+        self.assertIn("hyperref", str(ctx.exception))
 
     def test_missing_education_sentinel_exits(self) -> None:
         with self.assertRaises(SystemExit) as ctx:

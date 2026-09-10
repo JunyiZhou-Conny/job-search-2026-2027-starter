@@ -22,11 +22,19 @@ Do not invent a new resume for every job.
 
 ## Compile
 
+Source-controlled family TeX keeps a sanitized email placeholder. That is
+intentional. Do not commit the application mailbox.
+
 ```bash
 ./scripts/compile_resume.sh
 ./scripts/compile_resume.sh resumes/base/JZ_resume.tex
 ./scripts/compile_resume.sh resumes/families/ai_infra/ai_infra_v1.tex
+python3 scripts/export_resume.py --family ai_infra
 ```
+
+`export_resume.py` writes the application PDF under `generated/resumes/export/`
+using `RESUME_EMAIL` or `SIMPLIFY_EMAIL`. Do not use `HARVARD_EMAIL`. Upload
+that export PDF, not the sanitized compile next to the `.tex`.
 
 The page limit for `resumes/base/` is 2. That gate is for the master resume.
 It is not a claim that Polar must upload this PDF. The script fails if the PDF

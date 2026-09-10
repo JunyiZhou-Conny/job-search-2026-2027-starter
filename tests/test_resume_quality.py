@@ -255,9 +255,13 @@ class TestCliBuild(unittest.TestCase):
         self.assertTrue(tex.is_file(), tex)
         source = tex.read_text()
         self.assertIn("Human-Supervised Browser Automation System", source)
+        self.assertIn("speciesOT: Cross-Species Single-Cell Translation", source)
+        self.assertIn("hidelinks", source)
+        self.assertNotIn("[GitHub]", source)
         self.assertNotIn("mixhvg-py", source)
         self.assertNotIn("policy.validate", source)
         self.assertNotIn("has not been used on recorded runs", source)
+        self.assertIn(r"\href{mailto:[REDACTED]}{[REDACTED]}", source)
         rc = rqe_main(["build", "--family", "ai_infra"])
         self.assertEqual(rc, 0)
         report = ROOT / "docs" / "resume" / "builds" / "ai_infra_v1" / "validation_report.md"
