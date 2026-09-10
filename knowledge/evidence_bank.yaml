@@ -48,8 +48,8 @@ projects:
     measurable_results:
       - "Custom CellOT; OOD subpopulation matching (e.g., T-cell subsets)"
       - "Porting a 2018 CPU-only TensorFlow reference implementation to modern PyTorch with Input Convex Neural Networks, GPU-enabled, to reproduce the published benchmark"
-      # Real measured results from the frozen A–D ablation (Stage 1), per
-      # scgen-cellot-autoresearch/results/insights.md. Currently on no resume.
+      # Frozen Mac Stage 1 A–D priors (public in scgen-cellot-autoresearch/baselines.yaml
+      # and the committed insights.md stub). Not from the unpublished 338-run cluster ledger.
       - "scGen split (rat in train): 0.85-0.90 R^2 across all genes"
       - "Bunne out-of-distribution split: 0.65-0.67 R^2 — quantifying the OOD generalization gap"
       - "Found the gene-space effect sign-flips with split: 6,619 orthologs wins R^2-all on the scGen split, while 1k HVG wins on all metrics under OOD — so no split-independent recommendation holds"
@@ -130,11 +130,12 @@ projects:
   # ---------------------------------------------------------------------------
 
   autoresearch_cellot:
-    title: "Autonomous Ablation-Search Agent for scGen vs CellOT"
+    title: "Closed-Loop Cluster Autoresearch for scGen vs CellOT"
     org: "Personal / Wyss-adjacent (FASRC Cannon cluster)"
     role: "Sole author"
     dates: "2026-06 — present"
     source_url: "https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch"
+    latest_public_commit: "5d1a7d9 2026-07-29"
     control_logic: >-
       2026-07-26: user confirmed the reflect/decide steps are RULE-BASED (deterministic stop rules and
       thresholds in YAML), NOT LLM-driven. Do not describe this project as "agentic" or as an LLM agent —
@@ -149,61 +150,82 @@ projects:
       PLUGGABLE reasoner). `llm_client.py` implements a real LLM policy (Anthropic/OpenAI, env-var
       credentials only) with per-call token accounting, estimated cost logging, and a hard cumulative
       spend ceiling that raises and falls back to the free rule reasoner.
-      CRITICAL BOUNDARY, verified 2026-07-29: the LLM path has NEVER been exercised on real runs.
-      insights.md contains exactly one director episode and it is tagged `(rule)`; research_agenda.json
-      records `"reasoner": "rule"`; no LLM usage ledger file exists, so `complete()` has never logged a
-      call. CLAIM: "built an optional LLM planner with cost controls and automatic fallback; the
+      CRITICAL BOUNDARY, verified 2026-07-29 on Cannon: the LLM path has NEVER been exercised on real runs.
+      CLAIM: "built an optional LLM planner with cost controls and automatic fallback; the
       deterministic planner drove every run to date." DO NOT claim an LLM directed the experiments.
-      The honest headline is graceful degradation and cost awareness as DESIGN, which is what applied-AI
-      and agent-infra JDs screen for — not an LLM-in-the-loop result.
-    technologies: ["Python", "SLURM", "FASRC Cannon", "closed-loop automation", "YAML-driven config", "job arrays", "checkpoint/resume", "Anthropic API", "OpenAI API", "token/cost accounting", "cost ceiling + graceful fallback", "agenda checkpointing", "schema migration"]
+
+      2026-09-10 PUBLIC-CLONE RE-AUDIT (HEAD 5d1a7d9). Independently re-verified from
+      github.com/JunyiZhou-Conny/scgen-cellot-autoresearch only:
+      - Default reasoner is RuleReasoner; CLI/sbatch default AR_REASONER=rule.
+      - No results/logs/llm_usage.jsonl, no results/research_agenda.json, no director
+        episode in the committed insights.md (live journal is the empty placeholder).
+      - llm_client.complete() logs usage only after a successful API call; absence of the
+        ledger in the public tree is consistent with never-invoked, but is not a Cannon
+        filesystem proof.
+      - The committed LLM success path in director._wire_llm() references os.environ
+        without importing os (NameError if a provider is actually wired). Combined with
+        the missing ledger, do not imply a live LLM episode against this exact file.
+      The 2026-07-29 Cannon notes (one rule episode; research_agenda reasoner=rule;
+      21 proposals.jsonl rows) remain USER_REPORTED from the lab working tree. They are
+      NOT in the public clone and cannot be re-counted here.
+    technologies: ["Python", "SLURM", "FASRC Cannon", "closed-loop automation", "YAML-driven config", "job arrays", "checkpoint/resume", "optional Anthropic/OpenAI client (implemented, never exercised)", "token/cost accounting", "cost ceiling + graceful fallback", "agenda checkpointing", "schema migration"]
     software_engineering_evidence:
-      - "Self-pacing autonomous loop: submit → watch → reflect → decide → continue → synthesize"
-      - "Fairshare-aware cluster budgeting; single cluster.yaml policy drives all SLURM resourcing"
-      - "Deliberately schedules CPU over GPU because GPU costs 200–500x fairshare for small MLPs"
-      - "Checkpoint/resume on serial_requeue so preemption is near-free; capped concurrency via job-array %K"
-      - "sshare floor makes the loop back off when the lab over-uses its share"
-      - "Paired single-factor ablations: each run changes exactly one field from a frozen baseline"
-      - "Modular pipeline: orchestrator, run_one_experiment (idempotent), reflect, synthesize, triage_errors"
+      - "Self-pacing L1 loop: submit → watch → triage → reflect → decide → continue → synthesize (autoresearch.py)"
+      - "L2 proposer: adaptive one-delta frontier over space.yaml, every proposal gated by policy.validate()"
+      - "L3 director scaffold: episodic snapshot → triggers → checkpointed research_agenda.json; default RuleReasoner, optional LLMReasoner"
+      - "Single cluster.yaml / clusterlib.py policy for partitions, cpus/mem/time, and job-array %K"
+      - "CPU default is DESIGN (cluster.yaml comments: GPU fairshare 200–500x for tiny MLPs), not a measured savings"
+      - "serial_requeue + --requeue + resume from cache/last.pt (no --restart unless FORCE_RESTART=1)"
+      - "sshare fairshare_floor is a STOP reason in autoresearch.stop_reasons(), not a concurrency throttle"
+      - "Paired single-factor ablations on the L1 ladder; gene-count sweep and ae_study bypass that ladder and policy.validate gene_space guard"
+      - "Idempotent run_one_experiment (skip if exp_id already ok) + schema.ensure_csv 26→33 column migrate"
     measurable_results:
-      # Measured 2026-07-29 directly from results/experiments.csv in the Cannon working tree
-      # (/n/holylabs/mooney_lab/Lab/junyizhou/speciesOT/scgen-cellot-autoresearch). Counted, not estimated.
-      - "338 experiments executed; 318 status=ok, 20 status=error:CalledProcessError (94.1% completion)"
-      - "79.3 hours cumulative wall-clock compute; mean run 844 s, longest run 43,254 s (12.0 h)"
-      - "12 experiment tiers, 2 data splits (scgen 202 / bunne_ood 136), 7 gene-space settings (250-6,619)"
-      - "experiments.csv schema migrated mid-flight from 26 to 33 columns (7 new metric fields) with safe append"
-      - "L3 director: 1 logged episode, reasoner=rule. LLM reasoner implemented but never invoked (no usage ledger)."
-      - "21 proposal records in results/proposals.jsonl, each carrying an explicit hypothesis and rationale"
+      # USER_REPORTED (2026-07-29 Cannon working-tree count). NOT independently
+      # re-countable from public git: committed results/experiments.csv is header-only
+      # (26 columns, 0 data rows). README still states the totals without findings.
+      - "USER_REPORTED (Cannon 2026-07-29, not in public CSV): 338 experiments; 318 ok; 20 error:CalledProcessError; 79.3 h wall-clock"
+      - "USER_REPORTED (same count): 12 unique tier labels, 2 splits (scgen 202 / bunne_ood 136), 7 gene_space strings"
+      - "VERIFIED_IMPLEMENTED: search_space.yaml ladder is 8 named tiers (16 planned paired/grid runs), not 12"
+      - "VERIFIED_IMPLEMENTED: gene-count generator uses 6 HVG sizes {250,500,1000,2000,4000,6619} × 2 splits × 8 variants = 96 planned; '1k' alias can make 7 distinct CSV strings"
+      - "VERIFIED_IMPLEMENTED: schema.CSV_FIELDS has 33 columns (7 honest-metric fields). Public header is still the 26-col pre-honest schema; ensure_csv() migrates in place"
+      - "USER_REPORTED (Cannon, files withheld): 1 director episode tagged reasoner=rule; 21 proposals.jsonl rows"
+      - "VERIFIED_IMPLEMENTED + offline selftest PASS (2026-09-10): policy, proposer, director, explore, llm_client (unconfigured→None), honest_metrics"
     execution_status: >-
-      2026-07-29 RESOLVED. The gap was not that the loop had not run — it was that five weeks of work
-      (338 experiments plus an entire L2/L3 architecture) sat uncommitted in the Cannon working tree while
-      the public repo showed a June 22 snapshot with a header-only experiments.csv.
-      Infrastructure was committed and pushed as 5d1a7d9 on 2026-07-29: director.py, proposer.py,
-      policy.py, llm_client.py, honest_metrics.py, explore.py, space.yaml, AUTONOMOUS_DESIGN.md (440
-      lines), ae_study/ (15 files), and 12 new SLURM scripts — 45 files, ~7,500 insertions.
-      DELIBERATELY WITHHELD from the public repo per user decision: results/experiments.csv,
-      results/insights.md, results/proposals.jsonl, results/research_agenda.json, and adaptations.yaml.
-      All five quote unpublished Mooney/Alvarez-Melis findings. The README now states execution totals
-      (338 runs / 79.3 h) WITHOUT the findings, which fixes the "abandoned repo" problem while keeping
-      pre-publication science private. Also excluded: results/runs/ (196 GB), results/icnn_ot/ (205 MB),
-      ae_study/results/ (366 MB), .gpu_libs/, meeting_david/ (lab decks).
-      OPEN: adaptations.yaml is infra-only by design but quotes two convergence figures from insights.md.
-      Held back for consistency; add it if the user clears publication.
+      2026-09-10 PUBLIC-CLONE RE-AUDIT of 5d1a7d9.
+      Public results/: experiments.csv (header only, 26 cols, 0 rows) and insights.md
+      (Mac Stage 1 A–D notes + empty 'Live experiment log' stub). NOT present:
+      findings.json, intuitions.md, proposals.jsonl, research_agenda.json,
+      llm_usage.jsonl, adaptations.yaml, results/runs/, ae_study/results/.
+      Gitignore excludes runs/, logs/, icnn_ot/, ae_study/results/, configs/generated/
+      — it does NOT exclude experiments.csv / insights.md / proposals.jsonl / agenda.
+      Those live files were simply never committed. README Status still states
+      338 / 318 ok / 20 error / 12 tiers / 2 splits / 7 gene-space / 79.3 h without
+      publishing the ledger. 0 GitHub PRs. History: scaffold 2026-06-22 (096518f)
+      through SLURM cwd fix (170e916), then 5d1a7d9 added L2/L3 + ae_study
+      (45 files, +7459/−71 vs 170e916; 15 ae_study files; 12 new slurm scripts).
+      AUTONOMOUS_DESIGN.md §10 still says 'cluster run pending' in places; README
+      contradicts that. space.yaml budget.max_experiments_total is 200, so a 338-row
+      ledger if real must include paths that bypass the L1 cap (auto_genecount, ae_study).
+      OPEN: live ledger remains off-git. Do not treat README totals as public-repo-verified.
     claim_guidance: >-
-      The 200-500x fairshare figure is FASRC cluster cost policy motivating a design decision, NOT a measured
-      optimization the user achieved. Claim it as design rationale ("routed to CPU partitions where GPU carries
-      200-500x fairshare cost"), never as "reduced cost 200-500x".
-      2026-07-29 UPDATE: experiment counts and compute hours ARE now defensible — counted from
-      experiments.csv (338 runs, 318 ok, 79.3 h). Savings and throughput remain NOT defensible; no
-      before/after baseline was ever measured.
-      Still NOT defensible: that an LLM planned or directed any experiment (see control_logic).
-      Interview risk to rehearse: the public repo no longer contains experiments.csv, so an interviewer
-      cannot verify the 338 figure from GitHub. Be ready to explain that results are withheld
-      pre-publication and to walk through the architecture, which IS public.
+      The 200-500x fairshare figure is FASRC cost policy / design rationale, NEVER
+      'reduced cost 200-500x'.
+      338 / 79.3 h / 12 tiers / 7 gene spaces / 1 rule episode / 21 proposals: keep as
+      USER_REPORTED from the 2026-07-29 Cannon count. An interviewer opening GitHub
+      sees a header-only experiments.csv, not a missing file. Walk the public
+      architecture (autoresearch / proposer / director / policy / cluster.yaml).
+      Do not claim an LLM planned or directed any experiment.
+      Do not paste live cluster findings, Finding 1/3 numbers, decoded-floor figures,
+      or ae_study recon MSE/R² from comments/PLAN files into resume bullets
+      (do_not_claim / unpublished). Mac Stage 1 A–D point estimates in baselines.yaml
+      (0.897 / 0.654 etc.) belong under cellot_wyss as frozen prior, not as 338-run results.
+      Prefer architecture bullets over unverifiable row counts when the audience can
+      click the public repo.
     interview_depth: strong
     notes: >-
       Strongest match to the ml_systems_ai_infrastructure emerging cluster in knowledge/target_roles.yaml.
-      Hits agentic pipelines, distributed scheduling, and resource-efficiency design simultaneously.
+      Hits closed-loop scheduling and resource-efficiency design. Do not sell as an LLM-agent result.
+      Suggested resume title: Closed-Loop Cluster Autoresearch for scGen vs CellOT (avoid 'Agent').
 
   cv_caltech101:
     title: "Image Classification on Caltech-101: Classical ML vs CNNs vs Vision Transformers"
