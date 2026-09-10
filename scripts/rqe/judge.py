@@ -1,5 +1,3 @@
-"""Deterministic validation and pairwise arena."""
-
 from __future__ import annotations
 
 import re
@@ -136,7 +134,6 @@ def validate_pdf_pages(pdf: Path, limit: int = 1) -> ValidationReport:
     if data[:5] != b"%PDF-":
         report.issues.append(ValidationIssue("fail", "pdf_magic", f"{pdf} is not a PDF"))
         return report
-    # Count page objects. Not a substitute for the compile script gate.
     pages = len(re.findall(rb"/Type\s*/Page\b", data))
     if pages == 0:
         report.issues.append(ValidationIssue("warn", "pdf_pages_unknown", "could not count PDF pages"))
@@ -148,7 +145,6 @@ def validate_pdf_pages(pdf: Path, limit: int = 1) -> ValidationReport:
 
 
 def infer_used_claims(bank: Bank, tex: str) -> tuple[str, ...]:
-    """Map a historical one-pager back onto claim ids by title and distinctive text."""
     plain = strip_tex(tex).lower()
     used: list[str] = []
     for project in bank.projects.values():
@@ -164,7 +160,6 @@ def infer_used_claims(bank: Bank, tex: str) -> tuple[str, ...]:
             if any(n and n in plain for n in needles):
                 used.append(claim.id)
                 continue
-            # Project is on the page and the claim is a measured result from that project.
             if claim.metrics:
                 used.append(claim.id)
     return tuple(used)
@@ -225,7 +220,6 @@ def arena(
 ) -> list[ArenaVote]:
     votes: list[ArenaVote] = []
     names = list(contestants)
-    # Auditor veto first.
     for name in names:
         report = validations[name]
         if not report.ok:
@@ -291,7 +285,6 @@ def arena(
         pick(met_a, met_b, req_a or req_b, cl_a, cl_b, "measured figures on selected claims", "impact_reader")
         pick(def_a, def_b, req_a or req_b, cl_a, cl_b, "survives five minutes of questioning", "skeptical_interviewer")
 
-    # Engine strategies first, then each versus baseline if present.
     engine = [n for n in alive if n != "baseline"]
     if "baseline" in alive:
         for n in engine:

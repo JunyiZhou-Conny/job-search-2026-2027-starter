@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Behavior tests for the Resume Quality Engine."""
-
 from __future__ import annotations
 
 import hashlib

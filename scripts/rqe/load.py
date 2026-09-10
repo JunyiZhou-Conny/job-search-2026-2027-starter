@@ -1,5 +1,3 @@
-"""Load evidence_bank.yaml and synthesize claims when a project has none."""
-
 from __future__ import annotations
 
 import re
@@ -131,10 +129,10 @@ def _parse_authored(project_id: str, raw: dict[str, Any]) -> Claim:
         project_id=project_id,
         claim=str(raw.get("claim") or "").strip(),
         evidence=tuple(str(x) for x in (raw.get("evidence") or [])),
-        verification_status=status,  # type: ignore[arg-type]
-        confidence=conf,  # type: ignore[arg-type]
+        verification_status=status,
+        confidence=conf,
         resume_eligible=bool(raw.get("resume_eligible", True)),
-        interview_defensibility=defense,  # type: ignore[arg-type]
+        interview_defensibility=defense,
         signals=tuple(str(x) for x in (raw.get("signals") or [])),
         relevant_role_families=tuple(str(x) for x in (raw.get("relevant_role_families") or [])),
         allowed_wording={str(k): str(v) for k, v in wording.items()},
@@ -245,7 +243,7 @@ def _project_claims(project_id: str, body: dict[str, Any], philosophy: dict[str,
         defense: Defensibility = "moderate"
         depth = str(body.get("interview_depth") or "moderate")
         if depth in ("strong", "moderate", "weak"):
-            defense = depth  # type: ignore[assignment]
+            defense = depth
         for field in ("software_engineering_evidence", "measurable_results", "verified_now"):
             for item in body.get(field) or []:
                 n += 1

@@ -90,7 +90,7 @@ def _family(title: str, body: str) -> RoleFamily:
     blob = f"{title}\n{body}".lower()
     for family, needles in FAMILY_TITLE:
         if any(n in blob for n in needles):
-            return family  # type: ignore[return-value]
+            return family,
     return "swe"
 
 

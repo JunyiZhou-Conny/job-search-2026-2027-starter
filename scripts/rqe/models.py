@@ -1,9 +1,3 @@
-"""Domain types for the Resume Quality Engine.
-
-Illegal combinations are split into variants instead of optional flags
-that can disagree. External YAML is parsed into these types at the boundary.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass, field

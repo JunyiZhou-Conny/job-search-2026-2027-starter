@@ -1,5 +1,3 @@
-"""Match requirements to claims, then pick a resume strategy."""
-
 from __future__ import annotations
 
 from collections import defaultdict
@@ -195,7 +193,6 @@ def match_job(bank: Bank, job: JobBrief) -> list[Match]:
             project = bank.projects[claim.project_id]
             hit = classify(req, claim, project.technologies)
             if hit is None:
-                # weak family adjacency
                 if job.family in claim.relevant_role_families and req.kind in {
                     "required",
                     "preferred",
@@ -256,7 +253,6 @@ def _rank_claims_for_project(
         if not claim.usable_on_resume:
             continue
         if family not in claim.relevant_role_families and claim.relevant_role_families:
-            # still allow if it matched
             if claim.id not in claim_score:
                 continue
         score = claim_score.get(claim.id, 0)
@@ -289,7 +285,6 @@ def build_strategy(
     max_bullets = int(philosophy.get("max_bullets_per_project") or 3)
     scores = project_scores(matches)
 
-    # sseg_rlvr stays off swe/data one-pagers unless the JD is health/RL.
     hidden = set()
     jd_blob = f"{job.title}\n{job.raw_text}".lower()
     if job.family in {"swe", "data"} and "reinforcement" not in jd_blob and "pathology" not in jd_blob:
@@ -338,7 +333,6 @@ def build_strategy(
     )
 
     if name == "narrative":
-        # Prefer one coherent pair (systems+data or ml+eval) over a grab bag.
         prefer = fallback_order.get(job.family, [])
         ranked_projects = [p for p in prefer if p in ranked_projects] + [
             p for p in ranked_projects if p not in prefer
@@ -354,7 +348,6 @@ def build_strategy(
     for pid in include:
         claim_ids = _rank_claims_for_project(bank, pid, matches, job.family, name)[:max_bullets]
         if not claim_ids:
-            # last resort: first usable claims
             claim_ids = [c.id for c in bank.projects[pid].claims if c.usable_on_resume][:max_bullets]
         bullets[pid] = tuple(claim_ids)
         dims: list[str] = []

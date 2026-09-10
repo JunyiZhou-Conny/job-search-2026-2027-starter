@@ -1,5 +1,3 @@
-"""CLI for the Resume Quality Engine."""
-
 from __future__ import annotations
 
 import argparse
@@ -66,7 +64,7 @@ def _baseline_candidate(family: str) -> Candidate | None:
     tex = tex_path.read_text()
     empty = Strategy(
         name="narrative",
-        family=family,  # type: ignore[arg-type]
+        family=family,
         narrative="historical one-page cluster used only as a benchmark artifact",
         include_projects=(),
         exclude_projects=(),
@@ -102,7 +100,6 @@ def run_job(jd_path: Path, out_dir: Path, *, compile_pdf: bool, strategy_name: s
 
     votes = arena(job, matches, bank, contestants, validations)
 
-    # Pick the engine winner among non-vetoed engine strategies.
     tallies: dict[str, int] = {}
     vetoed_names = {name for name, report in validations.items() if not report.ok}
     for v in votes:

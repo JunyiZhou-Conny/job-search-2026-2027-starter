@@ -1,5 +1,3 @@
-"""Render a candidate resume and audit files from a strategy."""
-
 from __future__ import annotations
 
 import re
@@ -47,7 +45,6 @@ def latex_escape(text: str) -> str:
 
 
 def bold_known_tech(text: str, techs: tuple[str, ...]) -> str:
-    # Longest first so "MongoDB Atlas Vector Search" wins over "MongoDB".
     ordered = sorted({t for t in techs if t}, key=len, reverse=True)
     result = text
     for tech in ordered:
