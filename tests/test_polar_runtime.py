@@ -192,7 +192,7 @@ class TestPolarRuntime(unittest.TestCase):
                 f"generated/polar/workflows/{name}.md",
                 text,
             )
-        self.assertIn("thin bootstrap", text)
+        self.assertIn("thin trust-delegation bootstrap", text)
 
     def test_apply_ledger_still_loads_gates(self):
         import yaml

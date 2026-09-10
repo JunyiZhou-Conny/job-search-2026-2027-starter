@@ -1,6 +1,6 @@
 last_updated: "2026-09-10"
-policy_revision: "2026-09-10.pref-reconcile"
-source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Export does not compact unresolved candidates."
+policy_revision: "2026-09-10.trust-bootstrap"
+source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths."
 timezone: "America/New_York"
 
 writing_observation_mode: true

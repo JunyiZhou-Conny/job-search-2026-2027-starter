@@ -2,7 +2,7 @@
 
 COMPILED ARTIFACT. Not canonical.
 
-policy_revision: 2026-09-10.pref-reconcile
+policy_revision: 2026-09-10.trust-bootstrap
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 | Workflow | Status | Lock | Raw URL |
@@ -17,15 +17,15 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 | `cursor-production-maintenance` | see file | no | https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/workflows/cursor-production-maintenance.md |
 | `polar-sheet-migration` | see file | no | https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/workflows/polar-sheet-migration.md |
 
-Saved Polar Workflows store only the bootstrap prompt from docs/automation/POLAR_WORKFLOWS.md.
-They open the raw main URL on each run.
+Saved Polar Workflows store only the trust-delegation bootstrap from docs/automation/POLAR_WORKFLOWS.md.
+They load the two owner-designated raw main files on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-10.pref-reconcile+dc16d067a14e`
-- `apply-ready-jobs` workflow_version `2026-09-10.pref-reconcile+7a0fedb370c6`
-- `daily-job-summary` workflow_version `2026-09-10.pref-reconcile+bcb93109c0c9`
-- `production-learning-daily` workflow_version `2026-09-10.pref-reconcile+b16ca3614159`
-- `polar-scheduler-heartbeat` workflow_version `2026-09-10.pref-reconcile+d99af025ea26`
-- `polar-github-write-canary` workflow_version `2026-09-10.pref-reconcile+853be3086a51`
-- `chatgpt-production-review` workflow_version `2026-09-10.pref-reconcile+1689f8dc545a`
-- `cursor-production-maintenance` workflow_version `2026-09-10.pref-reconcile+0cb6b6e8669b`
-- `polar-sheet-migration` workflow_version `2026-09-10.pref-reconcile+44ede66d90fc`
+- `discover-jobs-hourly` workflow_version `2026-09-10.trust-bootstrap+1b66b95f4633`
+- `apply-ready-jobs` workflow_version `2026-09-10.trust-bootstrap+c223e54f78fa`
+- `daily-job-summary` workflow_version `2026-09-10.trust-bootstrap+82068ad5ae11`
+- `production-learning-daily` workflow_version `2026-09-10.trust-bootstrap+0f61e6630d6a`
+- `polar-scheduler-heartbeat` workflow_version `2026-09-10.trust-bootstrap+20e9e0491e52`
+- `polar-github-write-canary` workflow_version `2026-09-10.trust-bootstrap+4c6e15c787f3`
+- `chatgpt-production-review` workflow_version `2026-09-10.trust-bootstrap+6fb66a366189`
+- `cursor-production-maintenance` workflow_version `2026-09-10.trust-bootstrap+624390a4dad7`
+- `polar-sheet-migration` workflow_version `2026-09-10.trust-bootstrap+5a65c1560f81`
