@@ -74,8 +74,7 @@ def canon(url: str) -> str:
     return canonical_url(url)
 
 
-def default_resume_for_cluster(cluster: str) -> str:
-    """Active base resume for every role family. cluster is taxonomy only."""
+def active_base_resume() -> str:
     candidates = [
         r
         for r in read_rows(RESUME_VERSIONS)
@@ -279,7 +278,7 @@ def record_applied(rows: list[dict], follow_up_days: int = 7) -> dict:
         resume = (
             (row.get("resume_version") or "").strip()
             or (app.get("resume_version") or "").strip()
-            or default_resume_for_cluster(cluster)
+            or active_base_resume()
         )
 
         _journal_push(

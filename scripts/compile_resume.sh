@@ -25,8 +25,6 @@ Override with RESUME_BASE_MAX_PAGES.
 EOF
 }
 
-# A base resume that spills past two pages still compiles locally, so it can be
-# uploaded as if it fit. That is the failure this gate exists to catch.
 page_limit_for() {
   case "$1" in
     resumes/base/*) echo "${RESUME_BASE_MAX_PAGES:-2}" ;;

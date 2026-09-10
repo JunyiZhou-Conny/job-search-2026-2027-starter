@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from js_lib import (  # noqa: E402
     APPLICATIONS, TERMINAL, log, parse_iso, read_rows, sync_app_aliases, today_iso,
 )
-from queue_writeback import default_resume_for_cluster  # noqa: E402
+from queue_writeback import active_base_resume  # noqa: E402
 
 OUT_DIR = ROOT / "generated" / "daily"
 
@@ -66,7 +66,7 @@ def main() -> int:
     if not apply_q:
         lines.append("- No queued discoveries. Find 3 roles (Jobright/LinkedIn) and ingest.\n")
     for a in apply_q:
-        rv = a.get("resume_version") or default_resume_for_cluster(a.get("role_cluster", ""))
+        rv = a.get("resume_version") or active_base_resume()
         lane = a.get("pursuit_lane") or "broad"
         tailor = "light" if lane == "core" else "none"
         minutes = {"none": 15, "light": 35, "deep": 75}.get(tailor, 20)
