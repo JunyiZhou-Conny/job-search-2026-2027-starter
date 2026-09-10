@@ -7,4 +7,7 @@ ts	phase	decision	why	evidence	result
 2026-09-10T03:53:11Z	harness	validator rejects planted 40% Kubernetes and completed GRPO	truth gate must fail a lie before we trust ranking	tests/test_resume_quality.py TestValidator	tests green
 2026-09-10T03:53:11Z	loop	stopped treating and/for as match evidence	CUDA kernels were scoring as strong_direct against AlphaFold	scripts/rqe/plan.py STOPWORDS SPECIFIC_TECH	tests green
 2026-09-10T03:57:40Z	loop	arena baseline is a copied historical one-pager	live cluster paths will disappear	tests/fixtures/resume_quality/baselines	open
+2026-09-10T04:02:00Z	verify	catalog number check uses extracted cores not substring	40 hid inside 2024 and the planted-metric test passed	scripts/rqe/load.py _number_cores	tests green
+2026-09-10T04:02:00Z	verify	three fixtures compiled to 1 page	compile_resume.sh on generated tex	generated/resume_quality/*/compile.log	1 page each
+2026-09-10T04:02:00Z	verify	Citadel leads Compleg 22606 and Twitch keeps Compleg plus Airway	selection changed versus historical one-pagers	generated/resume_quality/*/strategy.md	done
 

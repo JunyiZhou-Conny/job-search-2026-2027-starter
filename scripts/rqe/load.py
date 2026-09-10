@@ -202,23 +202,29 @@ def fact_blob(body: dict[str, Any]) -> str:
     return _norm_fact(" ".join(parts))
 
 
+def _number_cores(text: str) -> set[str]:
+    cores: set[str] = set()
+    for m in _NUM.finditer(text):
+        core = re.sub(r"[^0-9.]", "", m.group(0).replace(",", ""))
+        if core:
+            cores.add(core)
+    return cores
+
+
 def assert_catalog_grounded(raw: dict[str, Any], body: dict[str, Any]) -> None:
-    blob = fact_blob(body)
-    compact_blob = blob.replace(" ", "")
+    allowed = _number_cores(fact_blob(body))
     wording = raw.get("allowed_wording") or {}
     if not isinstance(wording, dict):
         wording = {}
     text = " ".join([str(raw.get("claim") or ""), *wording.values()])
     cid = raw.get("id")
-    for m in _NUM.finditer(text):
-        core = re.sub(r"[^0-9.]", "", m.group(0).replace(",", ""))
-        if not core:
+    for core in _number_cores(text):
+        if core in allowed:
             continue
-        if core in compact_blob:
+        whole = fact_blob(body).replace(" ", "")
+        if core.isdigit() and f"{core}k" in whole:
             continue
-        if core.isdigit() and f"{core}k" in compact_blob:
-            continue
-        raise ValueError(f"catalog {cid} invents number {m.group(0)!r}")
+        raise ValueError(f"catalog {cid} invents number {core!r}")
 
 
 def load_catalog() -> dict[str, list[dict[str, Any]]]:
