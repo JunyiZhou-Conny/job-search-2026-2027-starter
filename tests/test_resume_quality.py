@@ -50,6 +50,12 @@ class TestValidator(unittest.TestCase):
         codes = [i.code for i in report.issues if i.severity == "fail"]
         self.assertIn("unsupported_metric", codes, report.issues)
 
+    def test_empty_used_ids_rejects_planted_metric(self) -> None:
+        tex = self.shell.replace("PLACEHOLDER", "Cut inference latency 40% on a made-up serving stack.")
+        report = validate_tex(self.bank, tex, ())
+        codes = [i.code for i in report.issues if i.severity == "fail"]
+        self.assertIn("unsupported_metric", codes, report.issues)
+
     def test_forbidden_kubernetes_fails(self) -> None:
         tex = self.shell.replace("PLACEHOLDER", "Deployed the chatbot on Kubernetes.")
         report = validate_tex(self.bank, tex, (_usable_claim(self.bank, "airway_chatbot"),))
@@ -95,6 +101,20 @@ class TestMatcher(unittest.TestCase):
         matches = match_job(bank, job)
         strong = [m for m in matches if m.strength == "strong_direct"]
         self.assertFalse(strong, strong)
+
+
+class TestForbiddenClaims(unittest.TestCase):
+    def test_autoresearch_do_not_claim_is_forbidden(self) -> None:
+        bank = load_bank()
+        forbidden = [
+            claim
+            for claim in bank.projects["autoresearch_cellot"].claims
+            if claim.verification_status == "forbidden"
+        ]
+        self.assertTrue(
+            any("LLM directed" in claim.claim for claim in forbidden),
+            [claim.claim for claim in forbidden],
+        )
 
 
 class TestCatalog(unittest.TestCase):
@@ -195,6 +215,66 @@ class TestCliValidate(unittest.TestCase):
         )
         rc = rqe_main(["validate", str(tex)])
         self.assertIn(rc, (0, 1))
+
+
+class TestCliBuild(unittest.TestCase):
+    def test_build_swe_exits_2(self) -> None:
+        self.assertEqual(rqe_main(["build", "--family", "swe"]), 2)
+
+    def test_build_ai_infra(self) -> None:
+        tex = ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex"
+        rc = rqe_main(["build", "--family", "ai_infra"])
+        if not tex.is_file():
+            self.assertEqual(rc, 2)
+            return
+        self.assertIn(rc, (0, 1))
+        report = ROOT / "docs" / "resume" / "builds" / "ai_infra_v1" / "validation_report.md"
+        self.assertTrue(report.is_file())
+        self.assertIn("# Validation report", report.read_text())
+
+    def test_validate_without_claim_ids_rejects_invented_metric(self) -> None:
+        bank = load_bank()
+        tex = (ROOT / "resumes" / "base" / "JZ_resume.tex").read_text()
+        shell = tex.split("\\begin{document}")[0] + (
+            "\\begin{document}\n"
+            "Junyi (Conny) Zhou\n"
+            "\\section{Projects}\n"
+            "\\resumeItemListStart\n"
+            "      \\item Cut inference latency 40% on a made-up serving stack.\n"
+            "\\resumeItemListEnd\n"
+            "\\end{document}\n"
+        )
+        report = validate_tex(bank, shell)
+        codes = [i.code for i in report.issues if i.severity == "fail"]
+        self.assertIn("unsupported_metric", codes, report.issues)
+
+
+class TestBuildFamily(unittest.TestCase):
+    def test_do_not_claim_is_loaded_as_forbidden(self) -> None:
+        bank = load_bank()
+        forbidden = [
+            claim.claim.lower()
+            for claim in bank.projects["autoresearch_cellot"].claims
+            if claim.verification_status == "forbidden"
+        ]
+        self.assertTrue(
+            any("llm directed" in text for text in forbidden),
+            forbidden,
+        )
+
+    def test_build_other_family_exits_2(self) -> None:
+        self.assertEqual(rqe_main(["build", "--family", "swe"]), 2)
+        self.assertEqual(rqe_main(["build", "--family", "ml_ai"]), 2)
+        self.assertEqual(rqe_main(["build", "--family", "health_ai"]), 2)
+
+    def test_build_ai_infra_validates_frozen_variant(self) -> None:
+        tex = ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex"
+        self.assertTrue(tex.is_file(), tex)
+        rc = rqe_main(["build", "--family", "ai_infra"])
+        self.assertEqual(rc, 0)
+        report = ROOT / "docs" / "resume" / "builds" / "ai_infra_v1" / "validation_report.md"
+        self.assertTrue(report.is_file())
+        self.assertIn("No hard failures", report.read_text())
 
 
 if __name__ == "__main__":
