@@ -24,10 +24,8 @@ from polar_policy import (  # noqa: E402
     header_map,
     incident_ids_are_unique,
     inspect_visible_control_row,
-    lease_checkpoint_notes,
     named_row,
     next_incident_id,
-    parse_lease_checkpoint,
     pick_canonical_requisition_row,
     plan_control_write,
     plan_run_log_write,
@@ -125,7 +123,6 @@ class TestApplyRunCaps(unittest.TestCase):
     def test_divergent_caps_are_rejected(self):
         canary = {
             "max_jobs_per_run": 3,
-            "max_regular_jobs_per_run": 3,
             "reserved_priority_slots_per_run": 1,
             "prioritized_auto_submit": True,
         }
@@ -135,7 +132,7 @@ class TestApplyRunCaps(unittest.TestCase):
         }
         with self.assertRaises(ValueError):
             resolve_apply_run_caps(
-                {**canary, "max_regular_jobs_per_run": 4},
+                {**canary, "max_jobs_per_run": 4},
                 polar_local,
             )
         with self.assertRaises(ValueError):
@@ -467,10 +464,6 @@ class TestControlKeyUpsert(unittest.TestCase):
 
 
 class TestCrashCheckpoint(unittest.TestCase):
-    def test_checkpoint_round_trip(self):
-        notes = lease_checkpoint_notes("uber-301056", "application_open")
-        self.assertEqual(parse_lease_checkpoint(notes), ("uber-301056", "application_open"))
-
     def test_run_log_upserts_same_run_id(self):
         rows = [{"run_id": "R-20260909-0420", "result": "PARTIAL"}]
         plan = plan_run_log_write(rows, "R-20260909-0420")

@@ -112,7 +112,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("clearly says answer Yes or answer No", text)
         self.assertIn("polar_policy.auth_form_action", text)
         self.assertIn("Required future-sponsorship widget: Yes.", text)
-        self.assertIn("A blocked authorization field must not stop the rest of the batch.", text)
+        self.assertIn("A blocked authorization field must not stop the rest of the worker.", text)
         self.assertIn("Barriers removed is not a closed page.", text)
         self.assertIn("Do not move Original Job Post resolution into hourly discovery.", text)
         self.assertNotIn("optional_accelerator", text)

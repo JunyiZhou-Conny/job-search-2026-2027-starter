@@ -17,7 +17,6 @@ from polar_policy import (  # noqa: E402
     claim_is_abandoned,
     confirm_claim_readback,
     discover_may_overwrite_execution_fields,
-    ensure_claim_column,
     plan_claim_header_migration,
     requisition_identity,
     requisition_submit_blocked,
@@ -359,13 +358,13 @@ class TestWorkClaim(unittest.TestCase):
         headers = [name for name in QUEUE_COLUMNS if name != "claim_run_id"]
         self.assertEqual(claim_header_state(headers), "missing")
         action, once = plan_claim_header_migration(headers)
-        self.assertEqual(action, "append")
+        self.assertEqual(action, "missing")
         self.assertEqual(once[-1], "claim_run_id")
         self.assertEqual(once.count("claim_run_id"), 1)
         action, twice = plan_claim_header_migration(once)
-        self.assertEqual(action, "unchanged")
+        self.assertEqual(action, "ready")
         self.assertEqual(twice, once)
-        self.assertEqual(ensure_claim_column(QUEUE_COLUMNS), tuple(QUEUE_COLUMNS))
+        self.assertEqual(plan_claim_header_migration(QUEUE_COLUMNS), ("ready", tuple(QUEUE_COLUMNS)))
 
     def test_duplicate_claim_header_is_not_appended(self):
         headers = list(QUEUE_COLUMNS) + ["claim_run_id"]
@@ -373,7 +372,6 @@ class TestWorkClaim(unittest.TestCase):
         action, same = plan_claim_header_migration(headers)
         self.assertEqual(action, "duplicate")
         self.assertEqual(same, tuple(headers))
-        self.assertEqual(ensure_claim_column(headers), tuple(headers))
 
     def test_discover_does_not_clobber_live_execution_rows(self):
         for status in (

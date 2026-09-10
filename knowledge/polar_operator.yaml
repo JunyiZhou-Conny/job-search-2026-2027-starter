@@ -6,18 +6,13 @@ timezone: "America/New_York"
 writing_observation_mode: true
 
 canary:
-  # Per-run worker budget. These two numbers must stay equal.
-  # READY_PRIORITY reservation is taken from this pool, not added to it.
   max_jobs_per_run: 3
-  max_regular_jobs_per_run: 3
   reserved_priority_slots_per_run: 1
   prioritized_auto_submit: true
 
 lease:
   tab: control
   key: polar_browser
-  ttl_minutes: 180
-  refresh_if_remaining_below_minutes: 60
 
 work_claim:
   tab: queue

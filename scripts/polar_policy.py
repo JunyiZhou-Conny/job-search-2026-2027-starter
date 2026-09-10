@@ -178,12 +178,9 @@ CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
 DEGREE_LEVEL_REPEAT_KEY = "degree_level_gate_missed_at_discovery"
 INCIDENT_ID_RE = re.compile(r"^INC-(\d{8})-(\d{1,3})$")
 
-BROWSER_LOCK_WORKFLOWS = (
+TRUSTED_WORKFLOW_NAMES = (
     "discover-jobs-hourly",
     "apply-ready-jobs",
-)
-
-NO_BROWSER_LOCK_WORKFLOWS = (
     "daily-job-summary",
     "polar-scheduler-heartbeat",
     "production-learning-daily",
@@ -192,8 +189,6 @@ NO_BROWSER_LOCK_WORKFLOWS = (
     "cursor-production-maintenance",
     "polar-sheet-migration",
 )
-
-TRUSTED_WORKFLOW_NAMES = BROWSER_LOCK_WORKFLOWS + NO_BROWSER_LOCK_WORKFLOWS
 
 _SHEET_BROWSER_CAPS = (
     CAPABILITY_GOOGLE_SHEETS,
@@ -445,22 +440,14 @@ def claim_header_state(headers: Sequence[str]) -> str:
     return CLAIM_HEADER_DUPLICATE
 
 
-def ensure_claim_column(headers: Sequence[str]) -> Tuple[str, ...]:
-    if claim_header_state(headers) != CLAIM_HEADER_MISSING:
-        return tuple(str(header) for header in headers)
-    return tuple(str(header) for header in headers) + (CLAIM_RUN_ID,)
-
-
 def plan_claim_header_migration(
     headers: Sequence[str],
 ) -> Tuple[str, Tuple[str, ...]]:
     state = claim_header_state(headers)
     current = tuple(str(header) for header in headers)
-    if state == CLAIM_HEADER_READY:
-        return "unchanged", current
     if state == CLAIM_HEADER_MISSING:
-        return "append", ensure_claim_column(headers)
-    return "duplicate", current
+        return state, current + (CLAIM_RUN_ID,)
+    return state, current
 
 
 DISCOVER_PROTECTED_STATUSES = frozenset(
@@ -828,19 +815,6 @@ def control_write_persisted(
             if str(later.get(field) or "") != str(prior.get(field) or ""):
                 return False
     return True
-
-
-def lease_checkpoint_notes(job_key: str, last_stage: str) -> str:
-    return f"checkpoint job_key={job_key} last_stage={last_stage}"
-
-
-def parse_lease_checkpoint(notes: str) -> Optional[Tuple[str, str]]:
-    text = notes or ""
-    job_match = re.search(r"job_key=([A-Za-z0-9._:-]+)", text)
-    stage_match = re.search(r"last_stage=([A-Za-z0-9._:-]+)", text)
-    if not job_match or not stage_match:
-        return None
-    return job_match.group(1), stage_match.group(1)
 
 
 def plan_run_log_write(
@@ -1299,20 +1273,15 @@ def resolve_apply_run_caps(
     polar_local: Mapping[str, Any],
 ) -> ApplyRunCaps:
     max_jobs = _positive_int(canary.get("max_jobs_per_run"), "canary.max_jobs_per_run")
-    regular_alias = _positive_int(
-        canary.get("max_regular_jobs_per_run"),
-        "canary.max_regular_jobs_per_run",
-    )
     gate_cap = _positive_int(
         polar_local.get("regular_submit_cap_per_run"),
         "polar_local.regular_submit_cap_per_run",
     )
-    if not (max_jobs == regular_alias == gate_cap):
+    if max_jobs != gate_cap:
         raise ValueError(
-            "apply run cap mismatch: canary.max_jobs_per_run, "
-            "canary.max_regular_jobs_per_run, and "
+            "apply run cap mismatch: canary.max_jobs_per_run and "
             "polar_local.regular_submit_cap_per_run must be the same "
-            "per-run worker budget, not additive numbers"
+            "per-run worker budget"
         )
     reserved = canary.get("reserved_priority_slots_per_run")
     try:

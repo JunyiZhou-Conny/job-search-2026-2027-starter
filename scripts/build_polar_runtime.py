@@ -22,6 +22,7 @@ from polar_policy import (
     COPILOT_STATES,
     CONTROL_COLUMNS,
     ENV_SIMPLIFY_KEY,
+    LEASE_KEY,
     HEARTBEAT_COLUMNS,
     INCIDENT_LOG_COLUMNS,
     LEARNING_REPORTS_COLUMNS,
@@ -562,7 +563,7 @@ def compile_sections() -> Dict[str, str]:
             "One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach.",
             "Prefer the Simplify resume already attached.",
             "If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.",
-            "Mark REVIEW_READY with blocker missing_production_resume and continue the batch.",
+            "Mark REVIEW_READY with blocker missing_production_resume and continue the worker.",
             "Do not invent a new resume for every job.",
             "",
             "Title families are job taxonomy only. resume_cluster is not a file.",
@@ -757,7 +758,7 @@ def compile_sections() -> Dict[str, str]:
     )
     section_m = "\n".join(
         [
-            f"Historical control key: {lease.get('key') or 'polar_browser'} on tab {lease.get('tab') or 'control'}.",
+            f"Historical control key: {lease.get('key') or LEASE_KEY} on tab {lease.get('tab') or 'control'}.",
             "polar_browser is not a production mutex. Do not acquire it.",
             "Do not write run_log result SKIPPED_LOCKED because that row looks held.",
             "Independent Polar workflows may use their own browser surfaces at the same time.",
@@ -791,7 +792,8 @@ def compile_sections() -> Dict[str, str]:
             "After Original Job Post or the employer application is resolved, capture employer_requisition_id,",
             "canonical employer apply_url, and ats_job_id.",
             "If multiple Jobright rows point at the same employer requisition, keep one canonical row.",
-            "pick_canonical_requisition_row ranks SUBMITTED, SUBMISSION_UNKNOWN, live IN_PROGRESS, earlier discovered_at, then job_key.",
+            "requisition_submit_blocked ignores SKIP and abandoned IN_PROGRESS, then pick_canonical_requisition_row ranks the rest.",
+            "That rank is SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, earlier discovered_at, then job_key.",
             "Mark siblings SKIP with the canonical job_key.",
             "Do not submit the same employer requisition twice.",
             "Jobright ids and company+role+location remain useful. They are not enough once the employer identity is known.",

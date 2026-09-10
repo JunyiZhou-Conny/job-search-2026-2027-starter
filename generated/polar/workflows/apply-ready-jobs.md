@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.worker-pool+49e2117cb550
+workflow_version: 2026-09-10.worker-pool+bcc68454160e
 status: production
 enabled: true
 needs_browser_lock: false
@@ -330,7 +330,7 @@ For the current job:
 8. Authenticate with ordinary browser flows when asked. Account creation is normal work.
 9. Prefer the Simplify resume already attached. If Copilot is PRESENT, Autofill once. Use Simplify at most once.
    Do not upload `resumes/base/JZ_resume.pdf`. That file is the two-page master, not a production attach.
-   If the widget is empty, mark REVIEW_READY with blocker missing_production_resume and continue the batch.
+   If the widget is empty, mark REVIEW_READY with blocker missing_production_resume and continue the worker.
 10. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.
    Authorization and identity widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.
@@ -344,7 +344,7 @@ For the current job:
    Country-only lists and work-authorization-without-sponsorship wording: blank if optional, BLOCKED if required.
    After autofill, correct invented citizenship, copied sponsorship answers, unasked F-1, or extra explanation.
    Do not mention immigration in Why-us, motivation, cover letters, or other free response unless the prompt asked.
-   A blocked authorization field must not stop the rest of the batch.
+   A blocked authorization field must not stop the rest of the worker.
 11. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
 12. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
 13. Regular row. Before Submit, reread this queue row.

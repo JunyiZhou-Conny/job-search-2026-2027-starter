@@ -170,8 +170,7 @@ def _secrets_ban() -> str:
     )
 
 
-def _lease_block(name: str, operator: Dict[str, Any]) -> str:
-    del operator
+def _lease_block(name: str) -> str:
     ttl = work_claim_ttl_minutes()
     lines = [
         "## Browser lease",
@@ -345,7 +344,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
             _open_files("discover-jobs-hourly"),
             _preferences_reconcile_block(filesystem_optional=True),
             _secrets_ban(),
-            _lease_block("discover-jobs-hourly", operator),
+            _lease_block("discover-jobs-hourly"),
             _sheet_write_contract(),
             _telemetry_block(),
             "## Work order",
@@ -359,7 +358,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
             "3. Inspect Matches at https://jobright.ai/jobs/recommend.",
             "4. Inspect the intern and newgrad minisite boards listed in POLAR_RUNTIME section B.",
             "5. For each unseen card, write or update one queue row using named header mapping.",
-            "   If the live header has no claim_run_id, do not append it. Note missing_claim_column.",
+            f"   If the live header has no claim_run_id, do not append it. Note {CLAIM_REPEAT_MISSING_COLUMN}.",
             "   Continue discovery writes on the existing headers. polar-sheet-migration is the schema mutator.",
             "   If the existing row is IN_PROGRESS, SUBMITTED, SUBMISSION_UNKNOWN, REVIEW_READY, or BLOCKED,",
             "   do not overwrite status, claim_run_id, last_stage, attempt_count, submitted_at, confirmation,",
@@ -392,7 +391,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             _open_files("apply-ready-jobs"),
             _preferences_reconcile_block(),
             _secrets_ban(),
-            _lease_block("apply-ready-jobs", operator),
+            _lease_block("apply-ready-jobs"),
             _sheet_write_contract(),
             _telemetry_block(),
             _identity_block(),
@@ -550,7 +549,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "8. Authenticate with ordinary browser flows when asked. Account creation is normal work.",
             "9. Prefer the Simplify resume already attached. If Copilot is PRESENT, Autofill once. Use Simplify at most once.",
             "   Do not upload `resumes/base/JZ_resume.pdf`. That file is the two-page master, not a production attach.",
-            "   If the widget is empty, mark REVIEW_READY with blocker missing_production_resume and continue the batch.",
+            "   If the widget is empty, mark REVIEW_READY with blocker missing_production_resume and continue the worker.",
             "10. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.",
             "   Authorization and identity widgets use polar_policy.auth_form_action.",
             "   Classify the exact question. Answer only that semantic. Do not copy one fact into another field.",
@@ -564,7 +563,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "   Country-only lists and work-authorization-without-sponsorship wording: blank if optional, BLOCKED if required.",
             "   After autofill, correct invented citizenship, copied sponsorship answers, unasked F-1, or extra explanation.",
             "   Do not mention immigration in Why-us, motivation, cover letters, or other free response unless the prompt asked.",
-            "   A blocked authorization field must not stop the rest of the batch.",
+            "   A blocked authorization field must not stop the rest of the worker.",
             "11. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.",
             "12. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.",
             "13. Regular row. Before Submit, reread this queue row.",
@@ -597,7 +596,7 @@ def render_summary(operator: Dict[str, Any]) -> str:
         [
             _open_files("daily-job-summary"),
             _secrets_ban(),
-            _lease_block("daily-job-summary", operator),
+            _lease_block("daily-job-summary"),
             _sheet_write_contract(),
             _telemetry_block(include_incidents=False),
             "## Work order",
@@ -642,7 +641,7 @@ def render_learning(operator: Dict[str, Any]) -> str:
             _open_files("production-learning-daily"),
             _preferences_reconcile_block(),
             _secrets_ban(),
-            _lease_block("production-learning-daily", operator),
+            _lease_block("production-learning-daily"),
             _sheet_write_contract(),
             _telemetry_block(),
             "## Work order",
@@ -734,7 +733,7 @@ def render_github_canary(operator: Dict[str, Any]) -> str:
         [
             _open_files("polar-github-write-canary"),
             _secrets_ban(),
-            _lease_block("polar-github-write-canary", operator),
+            _lease_block("polar-github-write-canary"),
             _sheet_write_contract(),
             "## Work order",
             "",

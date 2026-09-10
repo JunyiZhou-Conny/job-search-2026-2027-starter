@@ -212,7 +212,7 @@ Reserve up to 1 new-execution slot per apply-ready-jobs run for READY_PRIORITY w
 One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach.
 Prefer the Simplify resume already attached.
 If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.
-Mark REVIEW_READY with blocker missing_production_resume and continue the batch.
+Mark REVIEW_READY with blocker missing_production_resume and continue the worker.
 Do not invent a new resume for every job.
 
 Title families are job taxonomy only. resume_cluster is not a file.
@@ -617,7 +617,8 @@ Do not put secrets in telemetry.
 After Original Job Post or the employer application is resolved, capture employer_requisition_id,
 canonical employer apply_url, and ats_job_id.
 If multiple Jobright rows point at the same employer requisition, keep one canonical row.
-pick_canonical_requisition_row ranks SUBMITTED, SUBMISSION_UNKNOWN, live IN_PROGRESS, earlier discovered_at, then job_key.
+requisition_submit_blocked ignores SKIP and abandoned IN_PROGRESS, then pick_canonical_requisition_row ranks the rest.
+That rank is SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, earlier discovered_at, then job_key.
 Mark siblings SKIP with the canonical job_key.
 Do not submit the same employer requisition twice.
 Jobright ids and company+role+location remain useful. They are not enough once the employer identity is known.

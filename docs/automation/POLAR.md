@@ -149,7 +149,7 @@ See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery ord
 
 `application_weight` stays. It is production policy, not a pilot leftover.
 
-Regular work is fast and truthful. Prefer the Simplify resume already attached. Require Simplify Copilot on the employer page, Autofill once, then correct visible fields. If the widget is empty, do not upload the two-page master `JZ_resume` PDF. Mark REVIEW_READY with blocker missing_production_resume and continue the batch. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. If Copilot is missing, stop the apply run for owner action. Do not consume the queue job.
+Regular work is fast and truthful. Prefer the Simplify resume already attached. Require Simplify Copilot on the employer page, Autofill once, then correct visible fields. If the widget is empty, do not upload the two-page master `JZ_resume` PDF. Mark REVIEW_READY with blocker missing_production_resume and continue the worker. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. If Copilot is missing, stop the apply run for owner action. Do not consume the queue job.
 
 Prioritized work gets more care. Signals include startup or scale-up Junyi values, Fortune 500 or major companies, NVIDIA GTC, prestige, biotech or health AI, strong biostatistics or bio data-science fit, FDE, and unusually strong personal fit. Do not mark a generic analyst or data role prioritized only because the title contains "data".
 
