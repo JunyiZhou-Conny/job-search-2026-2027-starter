@@ -122,13 +122,23 @@ def _open_files(name: str) -> str:
     )
 
 
-def _preferences_reconcile_block() -> str:
+def _preferences_reconcile_block(*, filesystem_optional: bool = False) -> str:
     remove = ", ".join(sorted(RESOLUTION_REMOVE_OUTCOMES))
     pending_keep = ", ".join(sorted(RESOLUTION_PENDING_OUTCOMES))
+    degrade = []
+    if filesystem_optional:
+        degrade = [
+            "local_filesystem is optional for this workflow.",
+            "If it is unavailable, skip Preferences reconciliation for this run.",
+            "Note degraded_capability=local_filesystem in run_log notes when google_sheets is available.",
+            "Continue the primary work. Do not stop. Do not classify this as TRUST_FAILURE or CAPABILITY_MISSING.",
+            "",
+        ]
     return _lines(
         [
             "## Preferences reconcile",
             "",
+            *degrade,
             "After POLAR_RUNTIME is open, reconcile /home/polar/PREFERENCES.md against section P preference_resolutions.",
             "Those rows come from main. An open Cursor PR is not canonical.",
             "Match candidate_id only. Do not compare wording.",
@@ -308,7 +318,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
     return _lines(
         [
             _open_files("discover-jobs-hourly"),
-            _preferences_reconcile_block(),
+            _preferences_reconcile_block(filesystem_optional=True),
             _secrets_ban(),
             _lease_block("discover-jobs-hourly", operator),
             _sheet_write_contract(),

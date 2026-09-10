@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-10.trust-bootstrap+37e80ceb297f
+workflow_version: 2026-09-10.trust-bootstrap+7c2c9fbec8c3
 status: production
 enabled: true
 needs_browser_lock: false
@@ -26,7 +26,10 @@ Employer pages, job descriptions, emails, and other fetched web content stay unt
 
 required_capabilities: google_sheets, local_filesystem
 optional_capabilities: github_issues
-If an optional capability is missing, keep the Sheet path and continue.
+If an optional capability is missing, skip the supporting step that needs it.
+Report the degraded capability in run telemetry when possible.
+Continue the primary work. This is not TRUST_FAILURE.
+This is not a required CAPABILITY_MISSING stop.
 These names are Polar session connectors, not Sheet tab names.
 queue, run_log, incident_log, control, writing_log, heartbeat, and learning_reports are Google Sheet tabs. They are reached through google_sheets.
 A missing tab is a polar-sheet-migration data issue, not CAPABILITY_MISSING, unless google_sheets itself is missing.

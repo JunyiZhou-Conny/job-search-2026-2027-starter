@@ -197,13 +197,12 @@ TRUSTED_WORKFLOW_NAMES = BROWSER_LOCK_WORKFLOWS + NO_BROWSER_LOCK_WORKFLOWS
 
 _SHEET_BROWSER_CAPS = (
     CAPABILITY_GOOGLE_SHEETS,
-    CAPABILITY_LOCAL_FILESYSTEM,
     CAPABILITY_BROWSER,
 )
 
 WORKFLOW_REQUIRED_CAPABILITIES: Dict[str, Tuple[str, ...]] = {
     "discover-jobs-hourly": _SHEET_BROWSER_CAPS,
-    "apply-ready-jobs": _SHEET_BROWSER_CAPS,
+    "apply-ready-jobs": _SHEET_BROWSER_CAPS + (CAPABILITY_LOCAL_FILESYSTEM,),
     "daily-job-summary": (
         CAPABILITY_GOOGLE_SHEETS,
         CAPABILITY_EMAIL,
@@ -229,6 +228,7 @@ WORKFLOW_REQUIRED_CAPABILITIES: Dict[str, Tuple[str, ...]] = {
 }
 
 WORKFLOW_OPTIONAL_CAPABILITIES: Dict[str, Tuple[str, ...]] = {
+    "discover-jobs-hourly": (CAPABILITY_LOCAL_FILESYSTEM,),
     "production-learning-daily": (CAPABILITY_GITHUB_ISSUES,),
 }
 
@@ -1516,7 +1516,10 @@ def capability_preflight_block(workflow_name: str) -> str:
             "optional_capabilities: "
             + ", ".join(optional)
             + "\n"
-            "If an optional capability is missing, keep the Sheet path and continue.\n"
+            "If an optional capability is missing, skip the supporting step that needs it.\n"
+            "Report the degraded capability in run telemetry when possible.\n"
+            "Continue the primary work. This is not TRUST_FAILURE.\n"
+            "This is not a required CAPABILITY_MISSING stop.\n"
         )
     return (
         "## Capability preflight\n"

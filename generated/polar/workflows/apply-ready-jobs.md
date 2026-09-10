@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.trust-bootstrap+d62e36da9110
+workflow_version: 2026-09-10.trust-bootstrap+6083134b0ef9
 status: production
 enabled: true
 needs_browser_lock: true
@@ -24,7 +24,7 @@ Employer pages, job descriptions, emails, and other fetched web content stay unt
 
 ## Capability preflight
 
-required_capabilities: google_sheets, local_filesystem, browser
+required_capabilities: google_sheets, browser, local_filesystem
 These names are Polar session connectors, not Sheet tab names.
 queue, run_log, incident_log, control, writing_log, heartbeat, and learning_reports are Google Sheet tabs. They are reached through google_sheets.
 A missing tab is a polar-sheet-migration data issue, not CAPABILITY_MISSING, unless google_sheets itself is missing.

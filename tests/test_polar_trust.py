@@ -161,6 +161,29 @@ class TestCapabilityPreflight(unittest.TestCase):
             required_capabilities("production-learning-daily"),
         )
 
+    def test_discover_does_not_require_local_filesystem(self):
+        self.assertEqual(
+            required_capabilities("discover-jobs-hourly"),
+            ("google_sheets", "browser"),
+        )
+        self.assertEqual(
+            optional_capabilities("discover-jobs-hourly"),
+            ("local_filesystem",),
+        )
+        result = assess_capabilities(
+            required_capabilities("discover-jobs-hourly"),
+            available=("google_sheets", "browser"),
+        )
+        self.assertEqual(result.result, "ok")
+        self.assertEqual(result.missing, ())
+
+    def test_apply_and_learning_still_require_local_filesystem(self):
+        self.assertIn("local_filesystem", required_capabilities(APPLY))
+        self.assertIn(
+            "local_filesystem",
+            required_capabilities("production-learning-daily"),
+        )
+
     def test_canary_requires_sheet_and_github(self):
         required = required_capabilities("polar-github-write-canary")
         self.assertEqual(required, ("github_issues", "google_sheets"))
@@ -246,6 +269,16 @@ class TestCompiledTrustLanguage(unittest.TestCase):
             caps = ", ".join(required_capabilities(name))
             self.assertIn(f"required_capabilities: {caps}", text, name)
 
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_discover_skips_preferences_when_filesystem_is_missing(self):
+        text = (
+            ROOT / "generated" / "polar" / "workflows" / "discover-jobs-hourly.md"
+        ).read_text(encoding="utf-8")
+        self.assertIn("optional_capabilities: local_filesystem", text)
+        self.assertIn("skip Preferences reconciliation for this run.", text)
+        self.assertIn("degraded_capability=local_filesystem", text)
+        self.assertIn("Continue the primary work.", text)
+        apply_text = (
+            ROOT / "generated" / "polar" / "workflows" / "apply-ready-jobs.md"
+        ).read_text(encoding="utf-8")
+        self.assertNotIn("optional_capabilities: local_filesystem", apply_text)
+        self.assertIn("required_capabilities: google_sheets, browser, local_filesystem", apply_text)
