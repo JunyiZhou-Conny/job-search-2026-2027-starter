@@ -279,9 +279,6 @@ projects:
       - "Paired single-factor ablations on the L1 ladder; gene-count sweep and ae_study bypass that ladder and policy.validate gene_space guard"
       - "Idempotent run_one_experiment (skip if exp_id already ok) + schema.ensure_csv 26→33 column migrate"
     measurable_results:
-      # USER_REPORTED (2026-07-29 Cannon working-tree count). NOT independently
-      # re-countable from public git: committed results/experiments.csv is header-only
-      # (26 columns, 0 data rows). README still states the totals without findings.
       - "USER_REPORTED (Cannon 2026-07-29, not in public CSV): 338 experiments; 318 ok; 20 error:CalledProcessError; 79.3 h wall-clock"
       - "USER_REPORTED (same count): 12 unique tier labels, 2 splits (scgen 202 / bunne_ood 136), 7 gene_space strings"
       - "VERIFIED_IMPLEMENTED: search_space.yaml ladder is 8 named tiers (16 planned paired/grid runs), not 12"
