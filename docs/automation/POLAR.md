@@ -133,9 +133,9 @@ Do not rely on a Polar tab.
 
 The Google Sheet is the operational store. GitHub is not the hourly checkpoint.
 
-Sheet writes use the live header row and named fields. Polar must not omit `apply_url_confidence` and shift later columns. After an important queue write, read back `job_key`, `status`, and `last_stage`.
+Sheet writes use the live header row and named fields. Polar must not omit `apply_url_confidence` and shift later columns. After an important queue write, read back `job_key`, `status`, `last_stage`, and `claim_run_id`.
 
-`discover-jobs-hourly` and `apply-ready-jobs` take a 180 minute `polar_browser` lease in the `control` tab so a long apply run does not overlap the next hourly Workflow.
+Independent Polar workflows may use their own browser surfaces at the same time. `polar_browser` stays on the `control` tab as historical state. It is not a mutex. Apply owns one `job_key` at a time through `queue.claim_run_id`. The same employer requisition still has one logical owner.
 
 Recovery must survive Mac shutdown, Wi-Fi loss, browser restart, Workflow interruption, and the laptop leaving the desk.
 
@@ -194,10 +194,10 @@ Do not merge these into one giant Workflow. Saved Polar Workflows store only the
 
 | Workflow | Eastern Time | Polar mode |
 |---|---|---|
-| `discover-jobs-hourly` | minute 00 every hour | Saved Workflow on the named local profile. Discovery and queue only. Takes the browser lease. |
-| `apply-ready-jobs` | minute 20 every hour | Saved Workflow on the same profile. Execution with the run cap. Takes the browser lease. |
-| `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. No browser lease. |
-| `production-learning-daily` | 22:00 daily | Saved Workflow. Sanitized learning report. No application clicks. No browser lease. |
+| `discover-jobs-hourly` | minute 00 every hour | Saved Workflow on the named local profile. Discovery and queue only. No global browser lock. |
+| `apply-ready-jobs` | minute 20 every hour | Saved Workflow on the same profile. Execution with the run cap. Claims one job at a time. |
+| `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. |
+| `production-learning-daily` | 22:00 daily | Saved Workflow. Sanitized learning report. No application clicks. |
 
 `polar-github-write-canary`, `chatgpt-production-review`, and `cursor-production-maintenance` exist as compiled instructions. They stay manual until the write path is proven. Phase 3 stops before merge.
 

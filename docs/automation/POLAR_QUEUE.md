@@ -25,7 +25,7 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `heartbeat` | Locked-screen scheduler proof. Not a job row. |
 | `run_log` | One row per workflow invocation. |
 | `incident_log` | One row per material event. No secrets. |
-| `control` | Browser lease, GitHub write canary, and `env_simplify_copilot`. |
+| `control` | Historical `polar_browser` row, GitHub write canary, and `env_simplify_copilot`. |
 | `learning_reports` | Sanitized daily production-learning Markdown. |
 
 ## `queue` columns
@@ -55,6 +55,7 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `updated_at` | Last Sheet write for this row. |
 | `employer_requisition_id` | Employer requisition id when known. Blank until apply-ready-jobs resolves it. |
 | `ats_job_id` | ATS job id when known. Blank until apply-ready-jobs resolves it. |
+| `claim_run_id` | The apply run that currently owns an `IN_PROGRESS` row. Blank when the row is not claimed. |
 
 ## Status values
 
@@ -63,7 +64,7 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `NEW` | Seen and written. Not yet READY. |
 | `READY_REGULAR` | Keep, regular weight, eligible to execute. |
 | `READY_PRIORITY` | Keep, prioritized weight, eligible to execute with deeper writing. |
-| `IN_PROGRESS` | This job is the active execution. Keep at most one live. |
+| `IN_PROGRESS` | This run owns the job via `claim_run_id`. Different jobs may be `IN_PROGRESS` at the same time. |
 | `REVIEW_READY` | Form is complete but Polar stopped for a missing owner fact or explicit hold. |
 | `SUBMITTED` | Submit clicked and verification succeeded. |
 | `SUBMISSION_UNKNOWN` | Submit may have happened. Verify before any retry. |
@@ -79,19 +80,23 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 Read the Sheet. Do not trust a leftover browser tab.
 
 1. Inspect every `SUBMISSION_UNKNOWN` row. Open the employer portal, confirmation page, or mail. Never blindly resubmit.
-2. Resume the oldest `IN_PROGRESS` row.
+2. Resume abandoned or self-owned `IN_PROGRESS` rows. Do not steal a live foreign claim.
 3. If `READY_PRIORITY` exists, reserve one new-execution slot for it.
 4. Use remaining new-execution slots for `READY_REGULAR`.
 
 ## Schema-safe writes
 
-Read the live header row. Map field names to columns. Write by name. Write explicit blanks. Never omit `apply_url_confidence`. After an important queue write, read back `job_key`, `status`, and `last_stage`.
+Read the live header row. Map field names to columns. Write by name. Write explicit blanks. Never omit `apply_url_confidence`. After an important queue write, read back `job_key`, `status`, `last_stage`, and `claim_run_id`.
 
-## Browser lease
+## Work claim
 
-`discover-jobs-hourly` and `apply-ready-jobs` take the `control` row `polar_browser` for 180 minutes. If another non-expired production workflow owns it, write `run_log` result `SKIPPED_LOCKED` and exit.
+`apply-ready-jobs` claims one `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`. Read those fields back. If another run owns the row, skip that job and continue. Do not write `SKIPPED_LOCKED`.
 
-If the Mac slept while Job 6 was `IN_PROGRESS`, resume Job 6. Do not start over from Job 1.
+Recover `IN_PROGRESS` only when `claim_run_id` is empty, the owner run_log is no longer `PARTIAL`, or `updated_at` is older than `work_claim.ttl_minutes`.
+
+`polar_browser` remains on the `control` tab as historical state. Do not acquire it. A stale owner there must not stop discovery or apply.
+
+If the Mac slept while Job 6 was `IN_PROGRESS` and the claim is abandoned or self-owned, resume Job 6. Do not start over from Job 1.
 
 ## Environment Copilot row
 
@@ -99,7 +104,7 @@ If the Mac slept while Job 6 was `IN_PROGRESS`, resume Job 6. Do not start over 
 
 This row is not a lease. Leave `expires_at` empty. Locate the row by key. Never write these fields into the `polar_browser` row.
 
-States are `PRESENT`, `MISSING`, and `UNKNOWN`. `MISSING` or `UNKNOWN` stops the apply run. It does not mark the queue job `BLOCKED`. Restore the job to its prior `READY_REGULAR` or `READY_PRIORITY` status. Write `run_log` result `OWNER_ACTION_REQUIRED`. Release `polar_browser`. The next apply run checks the employer page again.
+States are `PRESENT`, `MISSING`, and `UNKNOWN`. `MISSING` or `UNKNOWN` stops the apply run. It does not mark the queue job `BLOCKED`. Restore the job to its prior `READY_REGULAR` or `READY_PRIORITY` status. Clear `claim_run_id`. Write `run_log` result `OWNER_ACTION_REQUIRED`. The next apply run checks the employer page again.
 
 ## Dedup
 

@@ -64,6 +64,7 @@ class TestSheetNamedWrites(unittest.TestCase):
         fields["status"] = "READY_REGULAR"
         fields["last_stage"] = "discovered"
         fields["job_key"] = "abc123"
+        fields["claim_run_id"] = ""
         row = named_row(QUEUE_COLUMNS, fields)
         self.assertEqual(row[APPLY_URL_CONFIDENCE_INDEX], "")
         self.assertEqual(row[QUEUE_COLUMNS.index("status")], "READY_REGULAR")
@@ -74,6 +75,7 @@ class TestSheetNamedWrites(unittest.TestCase):
                 "job_key": "abc123",
                 "status": "READY_REGULAR",
                 "last_stage": "discovered",
+                "claim_run_id": "",
             },
         )
 
@@ -97,26 +99,17 @@ class TestSheetNamedWrites(unittest.TestCase):
         self.assertEqual(row[mapping["apply_url_confidence"]], "")
 
     def test_required_readback_fields_are_job_status_stage(self):
-        self.assertEqual(REQUIRED_QUEUE_READBACK, ("job_key", "status", "last_stage"))
+        self.assertEqual(
+            REQUIRED_QUEUE_READBACK,
+            ("job_key", "status", "last_stage", "claim_run_id"),
+        )
 
 
 class TestLease(unittest.TestCase):
     def setUp(self):
         self.now = datetime.fromisoformat("2026-09-08T20:00:00")
 
-    def test_missing_lock_is_acquired(self):
-        decision = decide_lease(
-            None,
-            now=self.now,
-            run_id="run-1",
-            workflow="apply-ready-jobs",
-            needs_lock=True,
-        )
-        self.assertEqual(decision.lock_result, "ACQUIRED")
-        self.assertEqual(decision.action, "acquire")
-        self.assertEqual(decision.owner_run_id, "run-1")
-
-    def test_foreign_unexpired_lock_skips(self):
+    def test_polar_browser_is_never_a_production_mutex(self):
         decision = decide_lease(
             {
                 "owner_run_id": "run-other",
@@ -128,23 +121,9 @@ class TestLease(unittest.TestCase):
             workflow="apply-ready-jobs",
             needs_lock=True,
         )
-        self.assertEqual(decision.lock_result, "SKIPPED_LOCKED")
-        self.assertEqual(decision.action, "abort")
-        self.assertEqual(decision.owner_run_id, "run-other")
-
-    def test_expired_lock_is_stolen(self):
-        decision = decide_lease(
-            {
-                "owner_run_id": "run-dead",
-                "expires_at": (self.now - timedelta(minutes=1)).isoformat(),
-            },
-            now=self.now,
-            run_id="run-3",
-            workflow="discover-jobs-hourly",
-            needs_lock=True,
-        )
-        self.assertEqual(decision.lock_result, "ACQUIRED")
-        self.assertEqual(decision.owner_run_id, "run-3")
+        self.assertEqual(decision.lock_result, "NOT_REQUIRED")
+        self.assertEqual(decision.action, "skip")
+        self.assertEqual(decision.owner_run_id, "")
 
     def test_summary_does_not_need_lock(self):
         decision = decide_lease(
@@ -158,20 +137,6 @@ class TestLease(unittest.TestCase):
             needs_lock=False,
         )
         self.assertEqual(decision.lock_result, "NOT_REQUIRED")
-
-    def test_same_run_refreshes_near_expiry(self):
-        decision = decide_lease(
-            {
-                "owner_run_id": "run-1",
-                "expires_at": (self.now + timedelta(minutes=30)).isoformat(),
-            },
-            now=self.now,
-            run_id="run-1",
-            workflow="apply-ready-jobs",
-            needs_lock=True,
-        )
-        self.assertEqual(decision.lock_result, "REFRESHED")
-        self.assertEqual(decision.action, "refresh")
 
     def test_release_clears_owner(self):
         decision = release_lease("run-1", "apply-ready-jobs", self.now)

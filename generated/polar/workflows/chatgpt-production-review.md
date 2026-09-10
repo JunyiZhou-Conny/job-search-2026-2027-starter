@@ -1,7 +1,7 @@
 # chatgpt-production-review
 
 workflow: chatgpt-production-review
-workflow_version: 2026-09-10.trust-bootstrap+66960ba532f6
+workflow_version: 2026-09-10.work-level-concurrency+66960ba532f6
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false

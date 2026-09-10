@@ -1,6 +1,6 @@
 last_updated: "2026-09-10"
-policy_revision: "2026-09-10.trust-bootstrap"
-source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths."
+policy_revision: "2026-09-10.work-level-concurrency"
+source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Ownership is per job and requisition, not a global browser lease."
 timezone: "America/New_York"
 
 writing_observation_mode: true
@@ -19,6 +19,12 @@ lease:
   key: polar_browser
   ttl_minutes: 180
   refresh_if_remaining_below_minutes: 60
+  production_mutex: false
+
+work_claim:
+  tab: queue
+  owner_field: claim_run_id
+  ttl_minutes: 180
 
 simplify:
   role: required_precondition
@@ -71,14 +77,14 @@ schedules:
     cron_et: "0 * * * *"
     meaning: "Every hour at minute 00 Eastern Time"
     enabled: true
-    needs_browser_lock: true
+    needs_browser_lock: false
     polar_mode: "Saved Polar Workflow on the named local browser profile. Discovery and queue only."
   apply_ready_jobs:
     workflow: apply-ready-jobs
     cron_et: "20 * * * *"
     meaning: "Every hour at minute 20 Eastern Time"
     enabled: true
-    needs_browser_lock: true
+    needs_browser_lock: false
     polar_mode: "Saved Polar Workflow on the same named local browser profile. Application execution."
   daily_job_summary:
     workflow: daily-job-summary
@@ -181,6 +187,7 @@ queue_columns:
   - updated_at
   - employer_requisition_id
   - ats_job_id
+  - claim_run_id
 
 writing_log_columns:
   - job_key

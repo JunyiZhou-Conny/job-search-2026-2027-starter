@@ -1,7 +1,7 @@
 # polar-scheduler-heartbeat
 
 workflow: polar-scheduler-heartbeat
-workflow_version: 2026-09-10.trust-bootstrap+dd7d90e2fc83
+workflow_version: 2026-09-10.work-level-concurrency+b53185a9688a
 status: production
 enabled: true
 needs_browser_lock: false
@@ -47,7 +47,7 @@ Do not browse the rest of GitHub as configuration.
 ## Work order
 
 Mode: saved Workflow on the named local profile.
-This workflow does not take the polar_browser lock.
+This workflow does not claim queue jobs and does not treat polar_browser as a mutex.
 
 Open https://example.com
 Confirm the page title contains Example Domain.

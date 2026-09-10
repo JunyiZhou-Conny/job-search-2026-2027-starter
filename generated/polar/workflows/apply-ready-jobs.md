@@ -1,10 +1,10 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.trust-bootstrap+6083134b0ef9
+workflow_version: 2026-09-10.work-level-concurrency+5c3ff6b61344
 status: production
 enabled: true
-needs_browser_lock: true
+needs_browser_lock: false
 schedule: 20 * * * * America/New_York
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 COMPILED ARTIFACT. Not canonical.
@@ -66,26 +66,41 @@ Phone and email values stay in the local Polar profile.
 
 ## Browser lease
 
-needs_browser_lock: true
-lock_key: polar_browser
-ttl_minutes: 180
-tab: control
+needs_browser_lock: false
+polar_browser is historical control state. It is not a production mutex.
+Do not acquire it. Do not write run_log result SKIPPED_LOCKED because that row is held.
+A stale polar_browser owner_run_id must not stop this workflow.
+Unrelated Polar workflows may already be using their own browser surfaces.
 
-At start, locate the control row by the key cell polar_browser. Do not pick a visually empty row.
-If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.
-If the lock is free or expired, acquire it with this run_id, this workflow, acquired_at now, and expires_at now plus 180 minutes.
-Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL. Notes may say acquired.
+Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.
 A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.
-If this long run is still active and remaining time is under 60 minutes, refresh expires_at to now plus 180 minutes.
-After each job stage, refresh control notes with polar_policy.lease_checkpoint_notes(job_key, last_stage).
-Release the lock on normal completion by clearing owner_run_id. Keep the checkpoint until then.
-A crashed run must not lock the browser forever. Treat an expired expires_at as free.
-Do not weaken the lease to recover a crashed run.
+
+## Work claim
+
+ownership: queue.claim_run_id
+unit: one job_key
+same_requisition: one logical owner
+ttl_minutes: 180
+
+Before substantial apply work, claim the queue row.
+Remember the current READY_REGULAR or READY_PRIORITY status and attempt_count.
+Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, and updated_at now.
+Read back job_key, status, last_stage, and claim_run_id.
+If claim_run_id is not this run_id, the write lost. Note already_claimed. Incident repeat_key work_already_claimed.
+Do not write SKIPPED_LOCKED. Continue the batch with the next selected job.
+If you resume an abandoned IN_PROGRESS row, restamp claim_run_id and note recovered_claim. Incident repeat_key work_claim_recovered. Do not bump attempt_count again.
+Do not recover a live IN_PROGRESS row owned by another run_id.
+Empty claim_run_id on IN_PROGRESS is abandoned.
+A claim older than 180 minutes with no fresh queue write is abandoned.
+A claim whose owner run_log result is not PARTIAL is abandoned.
+Different job_keys may be IN_PROGRESS at the same time.
+After each job stage, write last_stage and updated_at on this queue row.
+Do not write job checkpoints into the polar_browser control row.
 
 ## Sheet write contract
 
 mode: named_header_mapping
-required_readback: job_key, status, last_stage
+required_readback: job_key, status, last_stage, claim_run_id
 blank_policy: write_explicit_blank
 never_omit: apply_url_confidence
 
@@ -94,8 +109,8 @@ never_omit: apply_url_confidence
 3. Write fields by header name, not by remembered position.
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
-6. After an important queue write, read back job_key, status, and last_stage.
-7. If those three fields do not match what you meant, repair the row before the next job.
+6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
+7. If those four fields do not match what you meant, repair the row before the next job.
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
@@ -119,6 +134,7 @@ Copy workflow_version from this file into that row.
 Record started_at when you acquire work. Record ended_at before you exit.
 duration_minutes is coarse. Use whole minutes.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED.
+SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.
 
 Write an incident_log row when something material happens.
 Use one category from this list:
@@ -164,7 +180,8 @@ priority_submit_gate: polar_policy.priority_submit_permitted
 max_regular_submissions_per_local_day: 10
 
 Recovery first. Inspect every SUBMISSION_UNKNOWN row. Verify. Never blindly resubmit.
-Then resume the oldest IN_PROGRESS row from last_stage.
+Then resume abandoned or self-owned IN_PROGRESS rows from last_stage.
+Do not steal a live claim owned by another run_id.
 If READY_PRIORITY exists, reserve 1 new-execution slot for one priority job.
 Use remaining new-execution slots for READY_REGULAR.
 If no READY_PRIORITY exists, regular may use every configured new-execution slot.
@@ -194,12 +211,12 @@ Do not bump attempt_count for the miss. Do not mark the job BLOCKED.
 Upsert control key env_simplify_copilot by key cell. Never write it into the polar_browser row.
 notes use state=PRESENT|MISSING|UNKNOWN; evidence=short page proof. No secrets.
 If a human is in this conversation, ask them once to install Simplify Copilot and recheck after they say it is installed.
-Do not hold polar_browser while waiting through later hours.
+Clear claim_run_id on the restored READY row. Do not wait on polar_browser.
 On a scheduled unattended run, do not wait.
 Write incident category ENVIRONMENT, time_lost_category SIMPLIFY, repeat_key simplify_copilot_missing.
 job_key on that incident may name the probe page. The queue row stays READY.
 Write run_log result OWNER_ACTION_REQUIRED. simplify_fallback_count stays 0.
-Release the polar_browser lease. Exit the apply run. Do not start the next READY job.
+Exit the apply run. Do not start the next READY job.
 The next apply-ready-jobs run rechecks Copilot on an employer page. Last MISSING is not a skip-check cache.
 When Copilot is PRESENT, overwrite env_simplify_copilot to state=PRESENT and continue.
 
@@ -252,6 +269,8 @@ Compare against the Sheet and section K.
 If another row already points at the same employer requisition, keep one canonical row.
 Mark siblings SKIP with blocker duplicate employer requisition and the canonical job_key.
 Do not submit the same employer requisition twice.
+If a sibling is SUBMITTED, SUBMISSION_UNKNOWN, or live IN_PROGRESS, skip this job.
+Note requisition_suppressed. Incident repeat_key requisition_suppressed.
 Do not create a second ledger.
 
 ## Work order
@@ -261,8 +280,8 @@ Never invent facts. If a required fact is missing, leave the widget and mark BLO
 A blocked job must not stall the batch.
 
 For each selected job:
-1. Remember the current READY_REGULAR or READY_PRIORITY status and attempt_count.
-   Set status IN_PROGRESS and bump attempt_count. Write updated_at now. Read back job_key, status, last_stage.
+1. Claim the row with polar_policy.attempt_claim_job. Read back job_key, status, last_stage, and claim_run_id.
+   If confirm_claim_readback is not CLAIMED, skip this job and continue.
 2. Open apply_url when confidence is exact or strong. Otherwise open source_url and use Original Job Post.
 3. Confirm company and title match the queue row. If they do not match, BLOCKED or SKIP.
 4. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
@@ -270,7 +289,7 @@ For each selected job:
 6. Capture employer identity and run requisition dedupe. Then continue only if the job is still eligible.
 7. Copilot preflight on this employer ATS page before substantial fill.
    If Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.
-   Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Release the lease. Exit the run.
+   Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.
 8. Authenticate with ordinary browser flows when asked. Account creation is normal work.
 9. Prefer the Simplify resume already attached. If Copilot is PRESENT, Autofill once. Use Simplify at most once.
    Do not upload `resumes/base/JZ_resume.pdf`. That file is the two-page master, not a production attach.
@@ -291,7 +310,9 @@ For each selected job:
    A blocked authorization field must not stop the rest of the batch.
 11. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
 12. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
-13. Regular row. Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
+13. Regular row. Before Submit, reread the queue and use polar_policy.regular_submit_remaining.
+    If remaining is 0, do not Submit. Leave the job IN_PROGRESS or REVIEW_READY and continue.
+    Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
 14. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.
     Apply polar_policy.priority_submit_permitted before Submit.
     If any meaningful custom question is unanswered in writing_log, do not Submit. Mark BLOCKED.
@@ -300,9 +321,9 @@ For each selected job:
     REVIEW_READY is only for a missing owner fact or an explicit hold. It is not the default for prioritized rows.
 15. If this environment cannot complete a required job-specific step after a normal attempt, status BLOCKED. Continue.
     Missing Copilot is not this case. Missing Copilot already stopped the run.
-16. Update the Sheet after every meaningful stage with named writes. Refresh the lease checkpoint notes.
+16. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at on this job row.
 
 ATS family is only a note.
 Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion.
 Update the same run_id run_log row, including submitted_regular, submitted_priority, simplify_attempted, and simplify_fallback_count.
-Release the lock.
+lock_result is NOT_REQUIRED.

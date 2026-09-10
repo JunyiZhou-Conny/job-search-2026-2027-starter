@@ -7,6 +7,9 @@ from typing import Any, Callable, Dict, List, Tuple
 
 from polar_policy import (
     APPLY_URL_CONFIDENCE,
+    CLAIM_REPEAT_ALREADY,
+    CLAIM_REPEAT_RECOVERED,
+    REQUISITION_REPEAT,
     CONTROL_COLUMNS,
     CONTROL_REQUIRED_READBACK,
     COPILOT_REPEAT_KEY,
@@ -17,7 +20,6 @@ from polar_policy import (
     INCIDENT_CATEGORIES,
     INCIDENT_LOG_COLUMNS,
     LEARNING_REPORTS_COLUMNS,
-    LEASE_KEY,
     LOCAL_PREFERENCES_PATH,
     MEMORY_PRECEDENCE,
     RESOLUTION_KEEP_LOCAL_OUTCOME,
@@ -169,42 +171,56 @@ def _secrets_ban() -> str:
 
 
 def _lease_block(name: str, operator: Dict[str, Any]) -> str:
-    lease = operator.get("lease") or {}
-    ttl = int(lease["ttl_minutes"])
-    refresh = int(lease["refresh_if_remaining_below_minutes"])
-    if not needs_browser_lock(name):
-        return _lines(
+    claim = operator.get("work_claim") or {}
+    ttl = int(claim.get("ttl_minutes") or 180)
+    lines = [
+        "## Browser lease",
+        "",
+        "needs_browser_lock: false",
+        "polar_browser is historical control state. It is not a production mutex.",
+        "Do not acquire it. Do not write run_log result SKIPPED_LOCKED because that row is held.",
+        "A stale polar_browser owner_run_id must not stop this workflow.",
+        "Unrelated Polar workflows may already be using their own browser surfaces.",
+        "",
+    ]
+    if name in ("discover-jobs-hourly", "apply-ready-jobs"):
+        lines.extend(
             [
-                "## Browser lease",
-                "",
-                "needs_browser_lock: false",
-                f"This workflow does not take the {LEASE_KEY} lock.",
-                "If apply-ready-jobs or discover-jobs-hourly holds the lock, continue anyway.",
+                "Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.",
+                "A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.",
                 "",
             ]
         )
-    return _lines(
-        [
-            "## Browser lease",
-            "",
-            "needs_browser_lock: true",
-            f"lock_key: {LEASE_KEY}",
-            f"ttl_minutes: {ttl}",
-            "tab: control",
-            "",
-            "At start, locate the control row by the key cell polar_browser. Do not pick a visually empty row.",
-            "If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.",
-            f"If the lock is free or expired, acquire it with this run_id, this workflow, acquired_at now, and expires_at now plus {ttl} minutes.",
-            "Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL. Notes may say acquired.",
-            "A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.",
-            f"If this long run is still active and remaining time is under {refresh} minutes, refresh expires_at to now plus {ttl} minutes.",
-            "After each job stage, refresh control notes with polar_policy.lease_checkpoint_notes(job_key, last_stage).",
-            "Release the lock on normal completion by clearing owner_run_id. Keep the checkpoint until then.",
-            "A crashed run must not lock the browser forever. Treat an expired expires_at as free.",
-            "Do not weaken the lease to recover a crashed run.",
-            "",
-        ]
-    )
+    if name == "apply-ready-jobs":
+        lines.extend(
+            [
+                "## Work claim",
+                "",
+                "ownership: queue.claim_run_id",
+                "unit: one job_key",
+                "same_requisition: one logical owner",
+                f"ttl_minutes: {ttl}",
+                "",
+                "Before substantial apply work, claim the queue row.",
+                "Remember the current READY_REGULAR or READY_PRIORITY status and attempt_count.",
+                "Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, and updated_at now.",
+                "Read back job_key, status, last_stage, and claim_run_id.",
+                "If claim_run_id is not this run_id, the write lost. Note already_claimed. "
+                f"Incident repeat_key {CLAIM_REPEAT_ALREADY}.",
+                "Do not write SKIPPED_LOCKED. Continue the batch with the next selected job.",
+                "If you resume an abandoned IN_PROGRESS row, restamp claim_run_id and note recovered_claim. "
+                f"Incident repeat_key {CLAIM_REPEAT_RECOVERED}. Do not bump attempt_count again.",
+                "Do not recover a live IN_PROGRESS row owned by another run_id.",
+                "Empty claim_run_id on IN_PROGRESS is abandoned.",
+                f"A claim older than {ttl} minutes with no fresh queue write is abandoned.",
+                "A claim whose owner run_log result is not PARTIAL is abandoned.",
+                "Different job_keys may be IN_PROGRESS at the same time.",
+                "After each job stage, write last_stage and updated_at on this queue row.",
+                "Do not write job checkpoints into the polar_browser control row.",
+                "",
+            ]
+        )
+    return _lines(lines)
 
 
 def _sheet_write_contract() -> str:
@@ -222,8 +238,8 @@ def _sheet_write_contract() -> str:
             "3. Write fields by header name, not by remembered position.",
             "4. If a value is empty, still write an explicit blank in that named column.",
             "5. Do not shorten a row and shift later fields left.",
-            "6. After an important queue write, read back job_key, status, and last_stage.",
-            "7. If those three fields do not match what you meant, repair the row before the next job.",
+            "6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.",
+            "7. If those four fields do not match what you meant, repair the row before the next job.",
             "",
             "Control tab writes are key upserts.",
             "Locate the row by the key cell. Never choose a row because it looks empty on screen.",
@@ -255,6 +271,7 @@ def _telemetry_block(include_incidents: bool = True) -> str:
         "Record started_at when you acquire work. Record ended_at before you exit.",
         "duration_minutes is coarse. Use whole minutes.",
         "result is " + ", ".join(RUN_LOG_RESULTS) + ".",
+        "SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.",
         "",
     ]
     if include_incidents:
@@ -329,7 +346,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
             "Never invent metrics, projects, employers, referrals, citizenship, or clearance.",
             "This run must finish quickly. Checkpoint the Sheet after every new or updated job.",
             "",
-            "1. Create run_id. Read the control lock. Exit SKIPPED_LOCKED if blocked.",
+            "1. Create run_id. Do not read polar_browser as a mutex. Continue even if that row looks held.",
             "2. Open Jobright while already logged in.",
             "3. Inspect Matches at https://jobright.ai/jobs/recommend.",
             "4. Inspect the intern and newgrad minisite boards listed in POLAR_RUNTIME section B.",
@@ -348,7 +365,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
             "",
             "Stop when the first loaded pages of the configured boards are covered.",
             "Do not infinite-scroll the whole internet.",
-            "Write the run_log row. Release the lock.",
+            "Write the run_log row. lock_result is NOT_REQUIRED.",
             "",
         ]
     )
@@ -378,7 +395,8 @@ def render_apply(operator: Dict[str, Any]) -> str:
             f"max_regular_submissions_per_local_day: {caps.max_regular_submissions_per_local_day}",
             "",
             "Recovery first. Inspect every SUBMISSION_UNKNOWN row. Verify. Never blindly resubmit.",
-            "Then resume the oldest IN_PROGRESS row from last_stage.",
+            "Then resume abandoned or self-owned IN_PROGRESS rows from last_stage.",
+            "Do not steal a live claim owned by another run_id.",
             "If READY_PRIORITY exists, reserve 1 new-execution slot for one priority job.",
             "Use remaining new-execution slots for READY_REGULAR.",
             "If no READY_PRIORITY exists, regular may use every configured new-execution slot.",
@@ -408,12 +426,12 @@ def render_apply(operator: Dict[str, Any]) -> str:
             f"Upsert control key {ENV_SIMPLIFY_KEY} by key cell. Never write it into the polar_browser row.",
             "notes use state=PRESENT|MISSING|UNKNOWN; evidence=short page proof. No secrets.",
             "If a human is in this conversation, ask them once to install Simplify Copilot and recheck after they say it is installed.",
-            "Do not hold polar_browser while waiting through later hours.",
+            "Clear claim_run_id on the restored READY row. Do not wait on polar_browser.",
             "On a scheduled unattended run, do not wait.",
             f"Write incident category ENVIRONMENT, time_lost_category SIMPLIFY, repeat_key {COPILOT_REPEAT_KEY}.",
             "job_key on that incident may name the probe page. The queue row stays READY.",
             "Write run_log result OWNER_ACTION_REQUIRED. simplify_fallback_count stays 0.",
-            "Release the polar_browser lease. Exit the apply run. Do not start the next READY job.",
+            "Exit the apply run. Do not start the next READY job.",
             "The next apply-ready-jobs run rechecks Copilot on an employer page. Last MISSING is not a skip-check cache.",
             "When Copilot is PRESENT, overwrite env_simplify_copilot to state=PRESENT and continue.",
             "",
@@ -466,6 +484,8 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "If another row already points at the same employer requisition, keep one canonical row.",
             "Mark siblings SKIP with blocker duplicate employer requisition and the canonical job_key.",
             "Do not submit the same employer requisition twice.",
+            "If a sibling is SUBMITTED, SUBMISSION_UNKNOWN, or live IN_PROGRESS, skip this job.",
+            f"Note requisition_suppressed. Incident repeat_key {REQUISITION_REPEAT}.",
             "Do not create a second ledger.",
             "",
             "## Work order",
@@ -475,8 +495,8 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "A blocked job must not stall the batch.",
             "",
             "For each selected job:",
-            "1. Remember the current READY_REGULAR or READY_PRIORITY status and attempt_count.",
-            "   Set status IN_PROGRESS and bump attempt_count. Write updated_at now. Read back job_key, status, last_stage.",
+            "1. Claim the row with polar_policy.attempt_claim_job. Read back job_key, status, last_stage, and claim_run_id.",
+            "   If confirm_claim_readback is not CLAIMED, skip this job and continue.",
             "2. Open apply_url when confidence is exact or strong. Otherwise open source_url and use Original Job Post.",
             "3. Confirm company and title match the queue row. If they do not match, BLOCKED or SKIP.",
             "4. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.",
@@ -484,7 +504,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "6. Capture employer identity and run requisition dedupe. Then continue only if the job is still eligible.",
             "7. Copilot preflight on this employer ATS page before substantial fill.",
             "   If Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.",
-            "   Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Release the lease. Exit the run.",
+            "   Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.",
             "8. Authenticate with ordinary browser flows when asked. Account creation is normal work.",
             "9. Prefer the Simplify resume already attached. If Copilot is PRESENT, Autofill once. Use Simplify at most once.",
             "   Do not upload `resumes/base/JZ_resume.pdf`. That file is the two-page master, not a production attach.",
@@ -505,7 +525,9 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "   A blocked authorization field must not stop the rest of the batch.",
             "11. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.",
             "12. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.",
-            "13. Regular row. Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.",
+            "13. Regular row. Before Submit, reread the queue and use polar_policy.regular_submit_remaining.",
+            "    If remaining is 0, do not Submit. Leave the job IN_PROGRESS or REVIEW_READY and continue.",
+            "    Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.",
             "14. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.",
             "    Apply polar_policy.priority_submit_permitted before Submit.",
             "    If any meaningful custom question is unanswered in writing_log, do not Submit. Mark BLOCKED.",
@@ -514,12 +536,12 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "    REVIEW_READY is only for a missing owner fact or an explicit hold. It is not the default for prioritized rows.",
             "15. If this environment cannot complete a required job-specific step after a normal attempt, status BLOCKED. Continue.",
             "    Missing Copilot is not this case. Missing Copilot already stopped the run.",
-            "16. Update the Sheet after every meaningful stage with named writes. Refresh the lease checkpoint notes.",
+            "16. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at on this job row.",
             "",
             "ATS family is only a note.",
             "Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion.",
             "Update the same run_id run_log row, including submitted_regular, submitted_priority, simplify_attempted, and simplify_fallback_count.",
-            "Release the lock.",
+            "lock_result is NOT_REQUIRED.",
             "",
         ]
     )
@@ -642,7 +664,7 @@ def render_heartbeat(operator: Dict[str, Any]) -> str:
             "## Work order",
             "",
             "Mode: saved Workflow on the named local profile.",
-            "This workflow does not take the polar_browser lock.",
+            "This workflow does not claim queue jobs and does not treat polar_browser as a mutex.",
             "",
             "Open https://example.com",
             "Confirm the page title contains Example Domain.",
@@ -784,11 +806,13 @@ def render_migration(operator: Dict[str, Any]) -> str:
             *tab_lines,
             "",
             "If queue already has rows, keep them.",
-            "If queue is missing employer_requisition_id or ats_job_id, append those headers at the far right.",
+            "If queue is missing employer_requisition_id, ats_job_id, or claim_run_id, append those headers at the far right.",
             "Do not insert a column in the middle of existing queue data.",
+            "Existing rows keep their cells. New claim_run_id cells stay blank until apply-ready-jobs writes them.",
             "If apply_url_confidence is missing from the live header, stop and tell Junyi. Do not guess positions.",
             "",
-            "Seed one control row with key polar_browser and empty owner_run_id.",
+            "Seed one control row with key polar_browser and empty owner_run_id if that key is missing.",
+            "Do not treat polar_browser as a mutex. Leave historical owner_run_id cells readable.",
             "Do not invent old run_log or incident_log history.",
             "",
             "Verify by reading each header row and comparing it to the lists above.",

@@ -98,7 +98,8 @@ class TestCopilotPreflight(unittest.TestCase):
         self.assertFalse(restore.consume_job)
         self.assertEqual(missing_copilot_run_result(), "OWNER_ACTION_REQUIRED")
         self.assertIn("OWNER_ACTION_REQUIRED", RUN_LOG_RESULTS)
-        self.assertTrue(missing_copilot_should_release_lease())
+        self.assertFalse(missing_copilot_should_release_lease())
+        self.assertEqual(restore.claim_run_id, "")
         self.assertEqual(COPILOT_REPEAT_KEY, "simplify_copilot_missing")
 
     def test_restore_rejects_blocked_status(self):

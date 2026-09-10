@@ -17,7 +17,6 @@ from polar_policy import (  # noqa: E402
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     bootstrap_prompt,
-    lease_ttl_minutes,
     parse_contract_block,
     raw_workflow_url,
     sanitize_learning_text,
@@ -66,12 +65,13 @@ class TestGeneratedWorkflows(unittest.TestCase):
             )
             self.assertEqual(sheet.get("never_omit"), APPLY_URL_CONFIDENCE)
             lease = parse_contract_block(text, "Browser lease")
-            if name in ("discover-jobs-hourly", "apply-ready-jobs"):
-                self.assertEqual(lease.get("needs_browser_lock"), "true")
-                self.assertEqual(lease.get("ttl_minutes"), str(lease_ttl_minutes(ROOT)))
-                self.assertIn("SKIPPED_LOCKED", text)
-            else:
-                self.assertEqual(lease.get("needs_browser_lock"), "false")
+            self.assertEqual(lease.get("needs_browser_lock"), "false")
+            self.assertIn("historical control state", text)
+            if name == "apply-ready-jobs":
+                claim = parse_contract_block(text, "Work claim")
+                self.assertEqual(claim.get("ownership"), "queue.claim_run_id")
+                self.assertIn("already_claimed", text)
+                self.assertIn("Do not write SKIPPED_LOCKED", text)
 
     def test_apply_priority_and_simplify_contracts(self):
         text = read_workflow("apply-ready-jobs")
@@ -156,7 +156,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
             self.assertIn("must never overwrite polar_browser.", text)
             self.assertIn("The reread is the proof.", text)
         self.assertIn("upsert a run_log row for this run_id", apply_text)
-        self.assertIn("lease_checkpoint_notes", apply_text)
+        self.assertIn("claim_run_id", apply_text)
         self.assertIn("INC-YYYYMMDD-NNN", apply_text)
         self.assertIn("01 and 001 count as the same number", apply_text)
         self.assertIn("If 001 and 003 exist, write 004.", apply_text)

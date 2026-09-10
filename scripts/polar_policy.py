@@ -172,7 +172,17 @@ LOCK_RESULTS = (
     "NOT_REQUIRED",
 )
 
-REQUIRED_QUEUE_READBACK = ("job_key", "status", "last_stage")
+REQUIRED_QUEUE_READBACK = ("job_key", "status", "last_stage", "claim_run_id")
+CLAIM_RUN_ID = "claim_run_id"
+WORK_CLAIM_RESULTS = (
+    "CLAIMED",
+    "ALREADY_CLAIMED",
+    "RECOVERED",
+    "INELIGIBLE",
+)
+CLAIM_REPEAT_ALREADY = "work_already_claimed"
+CLAIM_REPEAT_RECOVERED = "work_claim_recovered"
+REQUISITION_REPEAT = "requisition_suppressed"
 CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
 CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
 DEGREE_LEVEL_REPEAT_KEY = "degree_level_gate_missed_at_discovery"
@@ -258,6 +268,7 @@ QUEUE_COLUMNS = [
     "updated_at",
     "employer_requisition_id",
     "ats_job_id",
+    CLAIM_RUN_ID,
 ]
 
 WRITING_LOG_COLUMNS = [
@@ -408,6 +419,16 @@ def lease_ttl_minutes(root: Optional[Path] = None) -> int:
     return int(raw)
 
 
+def work_claim_ttl_minutes(root: Optional[Path] = None) -> int:
+    operator = load_operator(root)
+    raw = (operator.get("work_claim") or {}).get("ttl_minutes")
+    if raw is None:
+        raw = (operator.get("lease") or {}).get("ttl_minutes")
+    if raw is None:
+        raise ValueError("work_claim.ttl_minutes is missing from polar_operator.yaml")
+    return int(raw)
+
+
 def lease_refresh_minutes(root: Optional[Path] = None) -> int:
     raw = (load_operator(root).get("lease") or {}).get(
         "refresh_if_remaining_below_minutes"
@@ -491,61 +512,14 @@ def decide_lease(
     refresh_below_minutes: Optional[int] = None,
     key: str = LEASE_KEY,
 ) -> LeaseDecision:
-    ttl = lease_ttl_minutes() if ttl_minutes is None else ttl_minutes
-    refresh_after = (
-        lease_refresh_minutes()
-        if refresh_below_minutes is None
-        else refresh_below_minutes
-    )
-    if not needs_lock:
-        return LeaseDecision(
-            action="skip",
-            lock_result="NOT_REQUIRED",
-            owner_run_id="",
-            workflow=workflow,
-            expires_at="",
-            notes=f"{key} lock not required for {workflow}",
-        )
-    row = current or {}
-    owner = str(row.get("owner_run_id") or "").strip()
-    expires = parse_timestamp(str(row.get("expires_at") or ""))
-    expired = expires is None or expires <= now
-    expiry = (now + timedelta(minutes=ttl)).isoformat()
-    if owner and owner != run_id and not expired:
-        return LeaseDecision(
-            action="abort",
-            lock_result="SKIPPED_LOCKED",
-            owner_run_id=owner,
-            workflow=str(row.get("workflow") or ""),
-            expires_at=str(row.get("expires_at") or ""),
-            notes=f"{key} held by {owner}",
-        )
-    if owner == run_id and not expired:
-        remaining = expires - now if expires else timedelta(0)
-        if remaining <= timedelta(minutes=refresh_after):
-            return LeaseDecision(
-                action="refresh",
-                lock_result="REFRESHED",
-                owner_run_id=run_id,
-                workflow=workflow,
-                expires_at=expiry,
-                notes=f"refreshed {key}",
-            )
-        return LeaseDecision(
-            action="hold",
-            lock_result="ACQUIRED",
-            owner_run_id=run_id,
-            workflow=workflow,
-            expires_at=str(row.get("expires_at") or expiry),
-            notes=f"already holds {key}",
-        )
+    del current, now, run_id, needs_lock, ttl_minutes, refresh_below_minutes
     return LeaseDecision(
-        action="acquire",
-        lock_result="ACQUIRED",
-        owner_run_id=run_id,
+        action="skip",
+        lock_result="NOT_REQUIRED",
+        owner_run_id="",
         workflow=workflow,
-        expires_at=expiry,
-        notes=f"acquired {key}",
+        expires_at="",
+        notes=f"{key} is historical control state, not a production mutex",
     )
 
 
@@ -558,6 +532,259 @@ def release_lease(run_id: str, workflow: str, now: datetime) -> LeaseDecision:
         expires_at=now.isoformat(),
         notes=f"released by {run_id}",
     )
+
+
+def _attempt_count(row: Mapping[str, Any]) -> int:
+    raw = str(row.get("attempt_count") or "0").strip() or "0"
+    try:
+        return int(raw)
+    except ValueError:
+        return 0
+
+
+def _run_log_for(run_logs: Sequence[Mapping[str, Any]], run_id: str) -> Optional[Mapping[str, Any]]:
+    target = normalize_text(run_id)
+    if not target:
+        return None
+    for row in run_logs:
+        if normalize_text(str(row.get("run_id") or "")) == target:
+            return row
+    return None
+
+
+def claim_is_abandoned(
+    row: Mapping[str, Any],
+    *,
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    run_logs: Sequence[Mapping[str, Any]] = (),
+    root: Optional[Path] = None,
+) -> bool:
+    if str(row.get("status") or "") != "IN_PROGRESS":
+        return False
+    owner = str(row.get(CLAIM_RUN_ID) or "").strip()
+    if not owner:
+        return True
+    log = _run_log_for(run_logs, owner)
+    if log is not None:
+        result = str(log.get("result") or "").strip()
+        if result and result != "PARTIAL":
+            return True
+    if now is None:
+        return False
+    ttl = work_claim_ttl_minutes(root) if ttl_minutes is None else ttl_minutes
+    stamped = parse_timestamp(str(row.get("updated_at") or ""))
+    if stamped is None:
+        return True
+    return stamped + timedelta(minutes=ttl) <= now
+
+
+@dataclass(frozen=True)
+class WorkClaimDecision:
+    result: str
+    action: str
+    job_key: str
+    owner_run_id: str
+    status: str
+    prior_status: str
+    attempt_count: int
+    fields: Dict[str, str]
+    notes: str
+
+
+def attempt_claim_job(
+    row: Mapping[str, Any],
+    *,
+    run_id: str,
+    now: datetime,
+    ttl_minutes: Optional[int] = None,
+    run_logs: Sequence[Mapping[str, Any]] = (),
+    root: Optional[Path] = None,
+) -> WorkClaimDecision:
+    job_key = str(row.get("job_key") or "")
+    status = str(row.get("status") or "")
+    attempt = _attempt_count(row)
+    owner = str(row.get(CLAIM_RUN_ID) or "").strip()
+    if status in READY_STATUSES:
+        next_attempt = attempt + 1
+        fields = {
+            "status": "IN_PROGRESS",
+            CLAIM_RUN_ID: run_id,
+            "updated_at": now.isoformat(),
+            "attempt_count": str(next_attempt),
+        }
+        return WorkClaimDecision(
+            "CLAIMED",
+            "write",
+            job_key,
+            run_id,
+            "IN_PROGRESS",
+            status,
+            next_attempt,
+            fields,
+            "claimed ready work",
+        )
+    if status == "IN_PROGRESS":
+        if owner == run_id:
+            return WorkClaimDecision(
+                "CLAIMED",
+                "hold",
+                job_key,
+                run_id,
+                status,
+                status,
+                attempt,
+                {},
+                "already owned by this run",
+            )
+        if claim_is_abandoned(
+            row,
+            now=now,
+            ttl_minutes=ttl_minutes,
+            run_logs=run_logs,
+            root=root,
+        ):
+            fields = {
+                "status": "IN_PROGRESS",
+                CLAIM_RUN_ID: run_id,
+                "updated_at": now.isoformat(),
+            }
+            return WorkClaimDecision(
+                "RECOVERED",
+                "write",
+                job_key,
+                run_id,
+                "IN_PROGRESS",
+                status,
+                attempt,
+                fields,
+                "recovered abandoned claim",
+            )
+        return WorkClaimDecision(
+            "ALREADY_CLAIMED",
+            "skip",
+            job_key,
+            owner,
+            status,
+            status,
+            attempt,
+            {},
+            "foreign live claim",
+        )
+    return WorkClaimDecision(
+        "INELIGIBLE",
+        "skip",
+        job_key,
+        owner,
+        status,
+        status,
+        attempt,
+        {},
+        f"status {status} is not claimable",
+    )
+
+
+def confirm_claim_readback(
+    after: Mapping[str, Any],
+    *,
+    run_id: str,
+    job_key: str,
+) -> str:
+    if str(after.get("job_key") or "") != job_key:
+        return "ALREADY_CLAIMED"
+    if str(after.get("status") or "") != "IN_PROGRESS":
+        return "INELIGIBLE"
+    owner = str(after.get(CLAIM_RUN_ID) or "").strip()
+    if owner == run_id:
+        return "CLAIMED"
+    return "ALREADY_CLAIMED"
+
+
+def apply_last_write_claim(
+    base: Mapping[str, Any],
+    first: WorkClaimDecision,
+    second: WorkClaimDecision,
+) -> Dict[str, str]:
+    row = {str(k): str(v) for k, v in base.items()}
+    row.update(first.fields)
+    row.update(second.fields)
+    return row
+
+
+def requisition_submit_blocked(
+    rows: Sequence[Mapping[str, Any]],
+    identity: Optional[Tuple[str, str]],
+    job_key: str,
+    *,
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    run_logs: Sequence[Mapping[str, Any]] = (),
+    root: Optional[Path] = None,
+) -> Optional[str]:
+    if identity is None:
+        return None
+    for row in rows:
+        other = str(row.get("job_key") or "")
+        if not other or other == job_key:
+            continue
+        other_id = requisition_identity(
+            employer_requisition_id=str(row.get("employer_requisition_id") or ""),
+            ats_job_id=str(row.get("ats_job_id") or ""),
+            apply_url=str(row.get("apply_url") or ""),
+        )
+        if other_id != identity:
+            continue
+        status = str(row.get("status") or "")
+        if status in {"SUBMITTED", "SUBMISSION_UNKNOWN"}:
+            return other
+        if status == "IN_PROGRESS" and not claim_is_abandoned(
+            row,
+            now=now,
+            ttl_minutes=ttl_minutes,
+            run_logs=run_logs,
+            root=root,
+        ):
+            return other
+    return None
+
+
+def _local_day(value: str) -> str:
+    stamped = parse_timestamp(value)
+    if stamped is not None:
+        return stamped.date().isoformat()
+    text = (value or "").strip()
+    return text[:10] if len(text) >= 10 else ""
+
+
+def regular_submissions_on_local_day(
+    rows: Sequence[Mapping[str, Any]],
+    day: str,
+) -> int:
+    count = 0
+    for row in rows:
+        if normalize_text(str(row.get("weight") or "regular")) == "prioritized":
+            continue
+        status = str(row.get("status") or "")
+        stage = str(row.get("last_stage") or "")
+        submitted_day = _local_day(str(row.get("submitted_at") or ""))
+        if submitted_day != day:
+            continue
+        if status in {"SUBMITTED", "SUBMISSION_UNKNOWN"}:
+            count += 1
+        elif status == "IN_PROGRESS" and stage == "submit_clicked":
+            count += 1
+    return count
+
+
+def regular_submit_remaining(
+    rows: Sequence[Mapping[str, Any]],
+    day: str,
+    *,
+    cap: Optional[int] = None,
+    root: Optional[Path] = None,
+) -> int:
+    limit = apply_run_caps(root).max_regular_submissions_per_local_day if cap is None else cap
+    return max(0, limit - regular_submissions_on_local_day(rows, day))
 
 
 @dataclass(frozen=True)
@@ -1277,6 +1504,10 @@ def select_apply_batch(
     max_new_jobs: Optional[int] = None,
     reserved_priority_slots: Optional[int] = None,
     root: Optional[Path] = None,
+    run_id: str = "",
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    run_logs: Sequence[Mapping[str, Any]] = (),
 ) -> ApplyBatch:
     if max_new_jobs is None or reserved_priority_slots is None:
         caps = apply_run_caps(root)
@@ -1285,10 +1516,23 @@ def select_apply_batch(
         if reserved_priority_slots is None:
             reserved_priority_slots = caps.reserved_priority_slots
     unknown = [r for r in rows if r.get("status") == "SUBMISSION_UNKNOWN"]
-    in_progress = sorted(
-        [r for r in rows if r.get("status") == "IN_PROGRESS"],
-        key=_sort_key,
-    )
+    recoverable: List[Mapping[str, str]] = []
+    for row in rows:
+        if row.get("status") != "IN_PROGRESS":
+            continue
+        owner = str(row.get(CLAIM_RUN_ID) or "").strip()
+        if run_id and owner == run_id:
+            recoverable.append(row)
+            continue
+        if claim_is_abandoned(
+            row,
+            now=now,
+            ttl_minutes=ttl_minutes,
+            run_logs=run_logs,
+            root=root,
+        ):
+            recoverable.append(row)
+    in_progress = sorted(recoverable, key=_sort_key)
     priority = [r for r in rows if r.get("status") == "READY_PRIORITY"]
     regular = [r for r in rows if r.get("status") == "READY_REGULAR"]
     recovery = [str(r.get("job_key") or "") for r in unknown + in_progress]
@@ -1598,7 +1842,8 @@ def document_availability(root: Optional[Path] = None) -> List[Dict[str, Any]]:
 
 
 def needs_browser_lock(workflow: str) -> bool:
-    return workflow in BROWSER_LOCK_WORKFLOWS
+    del workflow
+    return False
 
 
 def parse_contract_block(text: str, heading: str) -> Dict[str, str]:
@@ -1630,6 +1875,7 @@ class CopilotMissRestore:
     status: str
     attempt_count: int
     consume_job: bool
+    claim_run_id: str = ""
 
 
 @dataclass(frozen=True)
@@ -1678,7 +1924,7 @@ def missing_copilot_run_result() -> str:
 
 
 def missing_copilot_should_release_lease() -> bool:
-    return True
+    return False
 
 
 def restore_queue_after_copilot_miss(
@@ -1692,6 +1938,7 @@ def restore_queue_after_copilot_miss(
         status=ready_status,
         attempt_count=attempt_count_before_run,
         consume_job=False,
+        claim_run_id="",
     )
 
 

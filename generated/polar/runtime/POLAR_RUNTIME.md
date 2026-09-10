@@ -375,7 +375,7 @@ Statuses:
 - NEW: seen and written. Not yet READY.
 - READY_REGULAR: triaged keep, regular weight, eligible to execute.
 - READY_PRIORITY: triaged keep, prioritized weight, eligible to execute with deeper writing.
-- IN_PROGRESS: this job is the active execution. At most one should be live.
+- IN_PROGRESS: this run owns the job via claim_run_id. Different jobs may be IN_PROGRESS at the same time.
 - REVIEW_READY: form is complete but Polar stopped for a missing owner fact or explicit hold.
 - SUBMITTED: Submit clicked and verification succeeded.
 - SUBMISSION_UNKNOWN: Submit may have happened. Verify before any retry. Never blindly resubmit.
@@ -385,13 +385,13 @@ Statuses:
 Allowed status values: NEW, READY_REGULAR, READY_PRIORITY, IN_PROGRESS, REVIEW_READY, SUBMITTED, SUBMISSION_UNKNOWN, BLOCKED, SKIP
 Allowed last_stage values: discovered, source_resolved, application_open, authenticated, form_filled, reviewed, submit_clicked, confirmation_seen
 Recovery order: SUBMISSION_UNKNOWN then IN_PROGRESS then READY_PRIORITY then READY_REGULAR.
-If the Mac slept during Job 6 IN_PROGRESS, resume Job 6. Do not restart Job 1.
+If the Mac slept during Job 6 IN_PROGRESS and the claim is abandoned or self-owned, resume Job 6. Do not restart Job 1.
 
-Queue columns: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id
+Queue columns: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id, claim_run_id
 Prefer the Jobright job id when the source is Jobright (the last path segment of https://jobright.ai/jobs/info/<id>). Discovery stores the Jobright source_url. Do not require an employer URL during discovery. apply-ready-jobs fills apply_url later. Deduplicate again by normalized company + role + location when a Jobright id is missing. After Original Job Post is resolved, also deduplicate by employer requisition id, ATS job id, or canonical employer apply URL.
 
 Workflows never apply during discover-jobs-hourly.
-apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then IN_PROGRESS.
+apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then abandoned or self-owned IN_PROGRESS.
 It then reserves one new-execution slot for READY_PRIORITY when one exists, and uses remaining slots for READY_REGULAR.
 daily-job-summary never includes passwords, OTP codes, or cookies.
 production-learning-daily writes a sanitized report and does not change GitHub policy.
@@ -573,7 +573,7 @@ Read the actual header row before every Sheet write.
 Build a field-name to column mapping from those headers.
 Write by header name. Write explicit blanks. Do not shorten a positional row.
 apply_url_confidence must stay in its named column even when the value is none or blank.
-After an important queue write, read back job_key, status, and last_stage.
+After an important queue write, read back job_key, status, last_stage, and claim_run_id.
 If those fields do not match, repair the row before the next job.
 Control writes locate the row by key. Never pick a visually empty row.
 If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.
@@ -582,16 +582,17 @@ Commit the edit, then reread key, owner_run_id, and notes. Looking correct is no
 
 ## M. Browser lease
 
-Lock tab: control.
-Lock key: polar_browser.
-TTL minutes: 180.
-discover-jobs-hourly and apply-ready-jobs must acquire this lock before driving Jobright or employer pages.
-If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.
-On acquire, upsert a run_log row for this run_id with result PARTIAL so a crash still leaves a row.
-After each job stage, store checkpoint job_key and last_stage in control notes.
-Refresh the lock when a long run has under 60 minutes remaining.
-Release on normal completion. Treat an expired lock as free. Do not weaken the lease to recover a crash.
-Heartbeat, daily summary, and production-learning-daily do not take this lock.
+Historical control key: polar_browser on tab control.
+polar_browser is not a production mutex. Do not acquire it.
+Do not write run_log result SKIPPED_LOCKED because that row looks held.
+Independent Polar workflows may use their own browser surfaces at the same time.
+Apply ownership is queue.claim_run_id on one job_key.
+The same employer requisition has one logical owner.
+Abandoned IN_PROGRESS claims older than 180 minutes may be recovered.
+Empty claim_run_id on IN_PROGRESS is abandoned.
+On start, upsert a run_log row for this run_id with result PARTIAL so a crash still leaves a row.
+After each job stage, write last_stage and updated_at on that queue row.
+Heartbeat, daily summary, and production-learning-daily do not claim queue jobs.
 
 ## N. Run and incident telemetry
 
@@ -643,5 +644,5 @@ If Copilot is PRESENT, Autofill once. Then read the visible widgets.
 If Copilot is MISSING or UNKNOWN, do not fall back to traditional clicking.
 Restore the probe job to READY. Do not consume it as BLOCKED.
 Incident category ENVIRONMENT. repeat_key simplify_copilot_missing.
-run_log result OWNER_ACTION_REQUIRED. Release polar_browser. Exit the apply run.
+run_log result OWNER_ACTION_REQUIRED. Clear claim_run_id. Exit the apply run.
 The next apply run rechecks the employer page. Last MISSING is not a cache that skips the check.
