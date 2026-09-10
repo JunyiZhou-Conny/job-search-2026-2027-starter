@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import sys
 import unittest
-from datetime import datetime, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,22 +19,18 @@ from polar_policy import (  # noqa: E402
     closed_posting_action,
     control_row_is_writable,
     control_write_persisted,
-    decide_lease,
     degree_level_hard_skip,
     document_availability,
     header_map,
     incident_ids_are_unique,
     inspect_visible_control_row,
-    lease_checkpoint_notes,
     named_row,
     next_incident_id,
-    parse_lease_checkpoint,
     pick_canonical_requisition_row,
     plan_control_write,
     plan_run_log_write,
     priority_submit_permitted,
     readback_fields,
-    release_lease,
     requisition_identity,
     resolve_apply_run_caps,
     sanitize_learning_text,
@@ -64,6 +59,7 @@ class TestSheetNamedWrites(unittest.TestCase):
         fields["status"] = "READY_REGULAR"
         fields["last_stage"] = "discovered"
         fields["job_key"] = "abc123"
+        fields["claim_run_id"] = ""
         row = named_row(QUEUE_COLUMNS, fields)
         self.assertEqual(row[APPLY_URL_CONFIDENCE_INDEX], "")
         self.assertEqual(row[QUEUE_COLUMNS.index("status")], "READY_REGULAR")
@@ -74,6 +70,7 @@ class TestSheetNamedWrites(unittest.TestCase):
                 "job_key": "abc123",
                 "status": "READY_REGULAR",
                 "last_stage": "discovered",
+                "claim_run_id": "",
             },
         )
 
@@ -97,86 +94,10 @@ class TestSheetNamedWrites(unittest.TestCase):
         self.assertEqual(row[mapping["apply_url_confidence"]], "")
 
     def test_required_readback_fields_are_job_status_stage(self):
-        self.assertEqual(REQUIRED_QUEUE_READBACK, ("job_key", "status", "last_stage"))
-
-
-class TestLease(unittest.TestCase):
-    def setUp(self):
-        self.now = datetime.fromisoformat("2026-09-08T20:00:00")
-
-    def test_missing_lock_is_acquired(self):
-        decision = decide_lease(
-            None,
-            now=self.now,
-            run_id="run-1",
-            workflow="apply-ready-jobs",
-            needs_lock=True,
+        self.assertEqual(
+            REQUIRED_QUEUE_READBACK,
+            ("job_key", "status", "last_stage", "claim_run_id"),
         )
-        self.assertEqual(decision.lock_result, "ACQUIRED")
-        self.assertEqual(decision.action, "acquire")
-        self.assertEqual(decision.owner_run_id, "run-1")
-
-    def test_foreign_unexpired_lock_skips(self):
-        decision = decide_lease(
-            {
-                "owner_run_id": "run-other",
-                "workflow": "discover-jobs-hourly",
-                "expires_at": (self.now + timedelta(hours=2)).isoformat(),
-            },
-            now=self.now,
-            run_id="run-2",
-            workflow="apply-ready-jobs",
-            needs_lock=True,
-        )
-        self.assertEqual(decision.lock_result, "SKIPPED_LOCKED")
-        self.assertEqual(decision.action, "abort")
-        self.assertEqual(decision.owner_run_id, "run-other")
-
-    def test_expired_lock_is_stolen(self):
-        decision = decide_lease(
-            {
-                "owner_run_id": "run-dead",
-                "expires_at": (self.now - timedelta(minutes=1)).isoformat(),
-            },
-            now=self.now,
-            run_id="run-3",
-            workflow="discover-jobs-hourly",
-            needs_lock=True,
-        )
-        self.assertEqual(decision.lock_result, "ACQUIRED")
-        self.assertEqual(decision.owner_run_id, "run-3")
-
-    def test_summary_does_not_need_lock(self):
-        decision = decide_lease(
-            {
-                "owner_run_id": "run-apply",
-                "expires_at": (self.now + timedelta(hours=2)).isoformat(),
-            },
-            now=self.now,
-            run_id="run-summary",
-            workflow="daily-job-summary",
-            needs_lock=False,
-        )
-        self.assertEqual(decision.lock_result, "NOT_REQUIRED")
-
-    def test_same_run_refreshes_near_expiry(self):
-        decision = decide_lease(
-            {
-                "owner_run_id": "run-1",
-                "expires_at": (self.now + timedelta(minutes=30)).isoformat(),
-            },
-            now=self.now,
-            run_id="run-1",
-            workflow="apply-ready-jobs",
-            needs_lock=True,
-        )
-        self.assertEqual(decision.lock_result, "REFRESHED")
-        self.assertEqual(decision.action, "refresh")
-
-    def test_release_clears_owner(self):
-        decision = release_lease("run-1", "apply-ready-jobs", self.now)
-        self.assertEqual(decision.lock_result, "RELEASED")
-        self.assertEqual(decision.owner_run_id, "")
 
 
 class TestApplyRunCaps(unittest.TestCase):
@@ -184,7 +105,7 @@ class TestApplyRunCaps(unittest.TestCase):
         caps = apply_run_caps(ROOT)
         self.assertEqual(caps.max_new_jobs, 3)
         self.assertEqual(caps.reserved_priority_slots, 1)
-        self.assertEqual(caps.max_regular_submissions_per_local_day, 10)
+        self.assertFalse(hasattr(caps, "max_regular_submissions_per_local_day"))
         self.assertTrue(caps.prioritized_auto_submit)
         batch = select_apply_batch(
             [
@@ -202,19 +123,16 @@ class TestApplyRunCaps(unittest.TestCase):
     def test_divergent_caps_are_rejected(self):
         canary = {
             "max_jobs_per_run": 3,
-            "max_regular_jobs_per_run": 3,
             "reserved_priority_slots_per_run": 1,
-            "max_regular_submissions_per_local_day": 10,
             "prioritized_auto_submit": True,
         }
         polar_local = {
             "regular_submit_cap_per_run": 3,
-            "regular_submit_cap_per_local_day": 10,
             "prioritized_auto_submit": True,
         }
         with self.assertRaises(ValueError):
             resolve_apply_run_caps(
-                {**canary, "max_regular_jobs_per_run": 4},
+                {**canary, "max_jobs_per_run": 4},
                 polar_local,
             )
         with self.assertRaises(ValueError):
@@ -546,10 +464,6 @@ class TestControlKeyUpsert(unittest.TestCase):
 
 
 class TestCrashCheckpoint(unittest.TestCase):
-    def test_checkpoint_round_trip(self):
-        notes = lease_checkpoint_notes("uber-301056", "application_open")
-        self.assertEqual(parse_lease_checkpoint(notes), ("uber-301056", "application_open"))
-
     def test_run_log_upserts_same_run_id(self):
         rows = [{"run_id": "R-20260909-0420", "result": "PARTIAL"}]
         plan = plan_run_log_write(rows, "R-20260909-0420")

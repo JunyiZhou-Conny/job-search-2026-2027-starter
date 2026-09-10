@@ -1,10 +1,10 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-10.trust-bootstrap+e2197f70f1b3
+workflow_version: 2026-09-10.worker-pool+b480b4cc8d73
 status: production
 enabled: true
-needs_browser_lock: true
+needs_browser_lock: false
 schedule: 0 * * * * America/New_York
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 COMPILED ARTIFACT. Not canonical.
@@ -76,26 +76,19 @@ Phone and email values stay in the local Polar profile.
 
 ## Browser lease
 
-needs_browser_lock: true
-lock_key: polar_browser
-ttl_minutes: 180
-tab: control
+needs_browser_lock: false
+polar_browser is historical control state. It is not a production mutex.
+Do not acquire it. Do not write run_log result SKIPPED_LOCKED because that row is held.
+A stale polar_browser owner_run_id must not stop this workflow.
+Unrelated Polar workflows may already be using their own browser surfaces.
 
-At start, locate the control row by the key cell polar_browser. Do not pick a visually empty row.
-If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.
-If the lock is free or expired, acquire it with this run_id, this workflow, acquired_at now, and expires_at now plus 180 minutes.
-Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL. Notes may say acquired.
+Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.
 A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.
-If this long run is still active and remaining time is under 60 minutes, refresh expires_at to now plus 180 minutes.
-After each job stage, refresh control notes with polar_policy.lease_checkpoint_notes(job_key, last_stage).
-Release the lock on normal completion by clearing owner_run_id. Keep the checkpoint until then.
-A crashed run must not lock the browser forever. Treat an expired expires_at as free.
-Do not weaken the lease to recover a crashed run.
 
 ## Sheet write contract
 
 mode: named_header_mapping
-required_readback: job_key, status, last_stage
+required_readback: job_key, status, last_stage, claim_run_id
 blank_policy: write_explicit_blank
 never_omit: apply_url_confidence
 
@@ -104,8 +97,9 @@ never_omit: apply_url_confidence
 3. Write fields by header name, not by remembered position.
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
-6. After an important queue write, read back job_key, status, and last_stage.
-7. If those three fields do not match what you meant, repair the row before the next job.
+6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
+7. If job_key, status, or last_stage do not match what you meant, repair those fields.
+8. If claim_run_id is another run_id, do not overwrite it. Skip that job.
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
@@ -129,6 +123,7 @@ Copy workflow_version from this file into that row.
 Record started_at when you acquire work. Record ended_at before you exit.
 duration_minutes is coarse. Use whole minutes.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED.
+SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.
 
 Write an incident_log row when something material happens.
 Use one category from this list:
@@ -152,11 +147,16 @@ Never apply. Never click Submit. Never click Jobright APPLY WITH AUTOFILL.
 Never invent metrics, projects, employers, referrals, citizenship, or clearance.
 This run must finish quickly. Checkpoint the Sheet after every new or updated job.
 
-1. Create run_id. Read the control lock. Exit SKIPPED_LOCKED if blocked.
+1. Create run_id. Do not read polar_browser as a mutex. Continue even if that row looks held.
 2. Open Jobright while already logged in.
 3. Inspect Matches at https://jobright.ai/jobs/recommend.
 4. Inspect the intern and newgrad minisite boards listed in POLAR_RUNTIME section B.
 5. For each unseen card, write or update one queue row using named header mapping.
+   If the live header has no claim_run_id, do not append it. Note missing_claim_column.
+   Continue discovery writes on the existing headers. polar-sheet-migration is the schema mutator.
+   If the existing row is IN_PROGRESS, SUBMITTED, SUBMISSION_UNKNOWN, REVIEW_READY, or BLOCKED,
+   do not overwrite status, claim_run_id, last_stage, attempt_count, submitted_at, confirmation,
+   blocker, or writing_summary. polar_policy.discover_may_overwrite_execution_fields is the check.
 6. job_key is the Jobright job id when the URL is https://jobright.ai/jobs/info/<id>.
 7. Deduplicate by job_key first, then company + role + location, then section K.
 8. Triage with section C. Hard skips become status SKIP.
@@ -171,4 +171,4 @@ This run must finish quickly. Checkpoint the Sheet after every new or updated jo
 
 Stop when the first loaded pages of the configured boards are covered.
 Do not infinite-scroll the whole internet.
-Write the run_log row. Release the lock.
+Write the run_log row. lock_result is NOT_REQUIRED.

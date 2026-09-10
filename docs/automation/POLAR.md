@@ -133,9 +133,9 @@ Do not rely on a Polar tab.
 
 The Google Sheet is the operational store. GitHub is not the hourly checkpoint.
 
-Sheet writes use the live header row and named fields. Polar must not omit `apply_url_confidence` and shift later columns. After an important queue write, read back `job_key`, `status`, and `last_stage`.
+Sheet writes use the live header row and named fields. Polar must not omit `apply_url_confidence` and shift later columns. After an important queue write, read back `job_key`, `status`, `last_stage`, and `claim_run_id`.
 
-`discover-jobs-hourly` and `apply-ready-jobs` take a 180 minute `polar_browser` lease in the `control` tab so a long apply run does not overlap the next hourly Workflow.
+Independent Polar workflows may use their own browser surfaces at the same time. `polar_browser` stays on the `control` tab as historical state. It is not a mutex. Apply owns one `job_key` at a time through `queue.claim_run_id`. The same employer requisition still has one logical owner.
 
 Recovery must survive Mac shutdown, Wi-Fi loss, browser restart, Workflow interruption, and the laptop leaving the desk.
 
@@ -149,7 +149,7 @@ See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery ord
 
 `application_weight` stays. It is production policy, not a pilot leftover.
 
-Regular work is fast and truthful. Prefer the Simplify resume already attached. Require Simplify Copilot on the employer page, Autofill once, then correct visible fields. If the widget is empty, do not upload the two-page master `JZ_resume` PDF. Mark REVIEW_READY with blocker missing_production_resume and continue the batch. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. If Copilot is missing, stop the apply run for owner action. Do not consume the queue job.
+Regular work is fast and truthful. Prefer the Simplify resume already attached. Require Simplify Copilot on the employer page, Autofill once, then correct visible fields. If the widget is empty, do not upload the two-page master `JZ_resume` PDF. Mark REVIEW_READY with blocker missing_production_resume and continue the worker. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. If Copilot is missing, stop the apply run for owner action. Do not consume the queue job.
 
 Prioritized work gets more care. Signals include startup or scale-up Junyi values, Fortune 500 or major companies, NVIDIA GTC, prestige, biotech or health AI, strong biostatistics or bio data-science fit, FDE, and unusually strong personal fit. Do not mark a generic analyst or data role prioritized only because the title contains "data".
 
@@ -183,10 +183,10 @@ Polar Local uses capability and policy checks. A regular job may be submitted on
 
 Initial canary caps live in `knowledge/polar_operator.yaml` and `config/submit_gates.yaml` `polar_local`:
 
-- 3 new jobs per `apply-ready-jobs` run (shared pool; priority reservation is taken from it)
-- 10 regular submissions per local calendar day in America/New_York
+- 3 new jobs per `apply-ready-jobs` run (one worker budget; priority reservation is taken from it)
+- No shared daily regular submission pool. Overlapping apply runs each get their own budget.
 
-Junyi can raise those caps after production evidence is good.
+Junyi can raise the per-run budget after production evidence is good.
 
 ## Workflows
 
@@ -194,10 +194,10 @@ Do not merge these into one giant Workflow. Saved Polar Workflows store only the
 
 | Workflow | Eastern Time | Polar mode |
 |---|---|---|
-| `discover-jobs-hourly` | minute 00 every hour | Saved Workflow on the named local profile. Discovery and queue only. Takes the browser lease. |
-| `apply-ready-jobs` | minute 20 every hour | Saved Workflow on the same profile. Execution with the run cap. Takes the browser lease. |
-| `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. No browser lease. |
-| `production-learning-daily` | 22:00 daily | Saved Workflow. Sanitized learning report. No application clicks. No browser lease. |
+| `discover-jobs-hourly` | minute 00 every hour | Saved Workflow on the named local profile. Discovery and queue only. No global browser lock. |
+| `apply-ready-jobs` | minute 20 every hour | Saved Workflow on the same profile. Execution with the run cap. Claims one job at a time. |
+| `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. |
+| `production-learning-daily` | 22:00 daily | Saved Workflow. Sanitized learning report. No application clicks. |
 
 `polar-github-write-canary`, `chatgpt-production-review`, and `cursor-production-maintenance` exist as compiled instructions. They stay manual until the write path is proven. Phase 3 stops before merge.
 
