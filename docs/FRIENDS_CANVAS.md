@@ -171,7 +171,7 @@ Do this on **your own private fork** (recommended), not by overwriting Junyi’s
 | `config/profile.yaml` | Your name, links, graduation / work-window dates, tracks |
 | `knowledge/work_authorization.yaml` | Your non-sensitive auth answers only |
 | `knowledge/evidence_bank.yaml` | *Your* skills/projects — don’t invent; mark verified honestly |
-| `resumes/` | Your base + cluster resumes |
+| `resumes/` | Your base resume in `resumes/base/` |
 | `data/resume_versions.csv` | Registry of *your* resume versions |
 
 ### Must *not* commit

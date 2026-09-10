@@ -288,13 +288,13 @@ job_specific_plus_build
 
 ### cluster_default
 
-Use an existing cluster resume with no meaningful change.
+Use the approved base resume with no meaningful change.
 
 Appropriate when the role is routine and the existing resume already presents the right evidence.
 
 ### cluster_light
 
-Use an existing cluster resume but:
+Use the approved base resume but:
 
 * reorder a few bullets
 * adjust the summary of one or two projects

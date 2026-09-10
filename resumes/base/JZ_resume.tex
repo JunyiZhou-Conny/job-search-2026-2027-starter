@@ -56,6 +56,7 @@
 
 \newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=*]}
 \newcommand{\resumeSubHeadingListEnd}{\end{itemize}\vspace{-2pt}}
+
 \newcommand{\resumeItemListStart}{\begin{itemize}}
 \newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-6pt}}
 
@@ -64,7 +65,7 @@
 % Heading
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
   \textbf{\Large Junyi (Conny) Zhou} & Tel: (404) 663-5601 \\
-  Boston, MA 02215 & Email: \href{mailto:junyizhou@hsph.harvard.edu}{junyizhou@hsph.harvard.edu} \\
+  Boston, MA 02215 & Email: \href{mailto:[REDACTED]}{[REDACTED]} \\
   \href{https://github.com/JunyiZhou-Conny}{github.com/JunyiZhou-Conny} & \href{https://www.linkedin.com/in/junyi-zhou-270208247}{linkedin.com/in/junyi-zhou-270208247} \\
 \end{tabular*}
 
@@ -90,10 +91,10 @@
 \section{Technical Skills}
 \resumeSubHeadingListStart
   \resumeItem{Languages}{Python, C++, Java, SQL, R, JavaScript}
-  \resumeItem{ML \& Deep Learning}{PyTorch, TensorFlow, Keras, scikit-learn, XGBoost, LightGBM, Hugging Face Transformers}
+  \resumeItem{ML \& Deep Learning}{PyTorch, TensorFlow, Keras, scikit-learn, XGBoost, LightGBM, Hugging Face Transformers, scanpy, AnnData}
   \resumeItem{LLM \& Applied AI}{RAG, agentic pipelines, prompt engineering, embeddings \& vector search, OpenAI API, MongoDB Atlas Vector Search}
-  \resumeItem{Backend \& DevOps}{Flask, REST APIs, React, Docker, Auth0, Git}
-  \resumeItem{Data \& Compute}{PostgreSQL, MySQL, MongoDB, Spark, Hadoop, SLURM/HPC, multi-GPU job scheduling}
+  \resumeItem{Backend \& DevOps}{Flask, REST APIs, React, Docker, Auth0, Git, YAML policy compilers}
+  \resumeItem{Data \& Compute}{PostgreSQL, MySQL, MongoDB, Spark, Hadoop, SLURM/HPC, FASRC Cannon, job arrays}
   \resumeItem{Cloud}{AWS (SageMaker, Lambda, EC2, S3, Redshift, Elastic Beanstalk, CloudFront), Snowflake, BigQuery}
   \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
 \resumeSubHeadingListEnd
@@ -103,40 +104,37 @@
 \resumeSubHeadingListStart
 
   \resumeSubheading
-    {Structure-Verified RLVR for Label-Efficient Pathology Instance Segmentation \href{https://github.com/JunyiZhou-Conny/Structure-Verified-RLVR-for-Label-Efficient-Pathology-Instance-Segmentation}{\normalfont\small [GitHub]}}{Boston, MA}
-    {Graduate Researcher | Harvard Health Data Science capstone (mentor Alexander Chowdhury)}{August 2026 -- Present}
+    {speciesOT: Cross-Species Single-Cell Translation \href{https://github.com/JunyiZhou-Conny/speciesOT}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
     \resumeItemListStart
-      \item Building \textbf{S-Seg-RLVR}, a capstone that uses \textbf{reinforcement learning with verifiable rewards} so pathology instance segmentation can optimize instance count, separation, and topology instead of only Dice/IoU.
-      \item Specified a \textbf{SAM / SAM2} mask-decoder policy and a composite \textbf{GRPO} reward (count, separation, topology, panoptic match) against overlap-only medical RL and differentiable topology surrogates; targeting a methods paper at \textbf{MICCAI 2027}.
-      \item Stood up the public research repo: proposal, a 30-paper literature library, a 16-week roadmap, and typed reward interfaces. Training on public nuclei/gland sets and live GRPO runs are next.
+      \item Implemented a mouse-to-human single-cell transport that compares an \textbf{ICNN optimal-transport} map (IMPACT\_CellOT) with an \textbf{scGen} latent mean-shift inside one shared autoencoder. Species translation is shipped; treatment composition is specified for later work.
+      \item Built a \textbf{hub CLI} that catalogs trained runs, ranks them on decoded-space gap-closed rather than raw $R^2$, and prints \textbf{SLURM} chains without submitting jobs.
+      \item Engineered atlas-scale handling: backed AnnData prep so the documented \textbf{43 GB} Tabula files are not full-loaded on a login node, and baked gene-axis plus scGen-shift sidecars so new mouse prediction does not reopen the training atlas.
+      \item On a paired held-out-species split, scGen $R^2$ was \textbf{0.85--0.90} with the source species in training versus \textbf{0.65--0.67} when that species was held out. Gene-space ranking reversed with split (6{,}619 orthologs vs 1{,}000 HVGs).
     \resumeItemListEnd
 
   \resumeSubheading
-    {Cross-Species Drug Translation using Optimal Transport \& Generative AI}{Boston, MA}
-    {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
+    {Structure-Verified RLVR for Label-Efficient Pathology Instance Segmentation \href{https://github.com/JunyiZhou-Conny/Structure-Verified-RLVR-for-Label-Efficient-Pathology-Instance-Segmentation}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Graduate Researcher | Harvard Health Data Science capstone (mentor Alexander Chowdhury)}{August 2026 -- Present}
     \resumeItemListStart
-      \item Built \textbf{Optimal Transport} models (\textbf{VAEs}, \textbf{unbalanced OT}) predicting animal-to-human trial translation from \textbf{scRNA-seq} atlases, with \textbf{scanpy} pipelines automating cell-type labeling and dataset integration.
-      \item Ported a 2018 CPU-only \textbf{TensorFlow} reference implementation to \textbf{PyTorch}, reimplementing the \textbf{Input Convex Neural Networks} behind the optimal-transport dual and enabling GPU training on Harvard's \textbf{FASRC Cannon} cluster.
-      \item Benchmarked \textbf{CellOT} against \textbf{scGen} on cross-species perturbation prediction, measuring 0.85--0.90 $R^2$ with the source species in training versus 0.65--0.67 on the held-out-species split.
-      \item Established through \textbf{paired single-factor ablations} that gene-space choice reverses with split --- 6,619 orthologs wins in-distribution while 1,000 HVGs wins on every out-of-distribution metric --- ruling out a split-independent default.
+      \item Specified \textbf{S-Seg-RLVR}, a capstone that uses verifiable rewards (instance count, separation, topology) instead of only Dice/IoU, with a planned SAM/SAM2 policy and composite GRPO reward.
+      \item Stood up the public repo: proposal, a 30-paper literature library, a 16-week roadmap, and typed reward interfaces. Training and datasets are next.
     \resumeItemListEnd
 
   \resumeSubheading
     {AlphaFold Protein--Nucleic Acid Interaction Prediction \href{https://github.com/JunyiZhou-Conny/AlphaFold-Bou-Nader-Lab}{\normalfont\small [GitHub]}}{Atlanta, GA}
     {Data Analyst | Bou-Nader Lab, Emory Dept. of Biochemistry}{February 2025 -- August 2025}
     \resumeItemListStart
-      \item Engineered a pipeline integrating \textbf{AlphaFold-Multimer} and \textbf{AlphaFold3} to predict protein--nucleic acid interactions from \textbf{MSA} data.
-      \item Automated high-throughput inference across GPU nodes with \textbf{SLURM} parallel scheduling, tuning batch size to raise GPU utilization on shared \textbf{HPC} clusters.
-      \item Built \textbf{Python} tooling (PyMOL, ChimeraX) ranking structures by \textbf{pLDDT} and \textbf{PAE} score, shipped as a documented CLI so non-technical researchers could run inference and triage results independently.
+      \item Built a pipeline that runs \textbf{AlphaFold-Multimer} and \textbf{AlphaFold3} on \textbf{MSA} inputs and ranks structures by \textbf{pLDDT} and \textbf{PAE}.
+      \item Scheduled GPU inference on shared \textbf{HPC} with \textbf{SLURM} and shipped a documented CLI so non-ML researchers could run and triage jobs.
     \resumeItemListEnd
 
   \resumeSubheading
     {Computational Legislative Studies: UK \& New Zealand Parliamentary Data \href{https://github.com/JunyiZhou-Conny/Comput-Leg-UK-NZ}{\normalfont\small [GitHub]}}{Atlanta, GA}
     {Research Assistant | Emory University (Carrubba \& Estrada)}{December 2023 -- May 2024}
     \resumeItemListStart
-      \item Built \textbf{Python} scrapers and \textbf{ETL} pipelines over UK Parliament open data, normalizing bills, members, divisions, and Hansard proceedings into a relational schema covering 22,606 member-level division votes, 4,791 MPs, 4,108 bills, and 3,875 constituencies.
-      \item Diagnosed \textbf{Cloudflare} bot mitigation (403 challenge responses) and restored collection using TLS-impersonating requests (\texttt{curl\_cffi}) and \textbf{Selenium} against an otherwise blocked source.
-      \item Ran long scrapes as batch jobs on Emory's \textbf{QTM cluster} with isolated conda environments, staging data through \textbf{AWS S3/EC2} and documenting the pipeline for a UK-to-New-Zealand handoff.
+      \item Built scrapers and \textbf{ETL} over UK Parliament open data, normalizing 22{,}606 member-level division votes, 4{,}791 MPs, 4{,}108 bills, and 3{,}875 constituencies.
+      \item Diagnosed \textbf{Cloudflare} 403 challenges and restored collection with TLS-impersonating requests and \textbf{Selenium}, then handed the pipeline off for a UK-to-New-Zealand continuation.
     \resumeItemListEnd
 
 \resumeSubHeadingListEnd
@@ -146,73 +144,43 @@
 \resumeSubHeadingListStart
 
   \resumeSubheading
-    {Autonomous Ablation-Search Agent for Cluster-Scale ML Experimentation \href{https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Closed-Loop Cluster Autoresearch for scGen vs CellOT \href{https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch}{\normalfont\small [GitHub]}}{Boston, MA}
     {Independent Project | Harvard FASRC Cannon Cluster}{June 2026 -- Present}
     \resumeItemListStart
-      \item Built a \textbf{self-directed experiment harness} (submit $\rightarrow$ watch $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ synthesize) that plans, launches, and triages \textbf{SLURM} ablation studies unattended --- \textbf{338 runs}, 318 clean and 20 with handled errors, over \textbf{79 hours} of compute.
-      \item Split the planner from the execution substrate and \textbf{checkpointed each agenda to disk}, so the cluster keeps running the last plan while the planner is offline; an adaptive one-delta proposer clears a \textbf{validation gate} before every submit.
-      \item Designed a \textbf{fairshare-aware scheduler} routing small-MLP training to CPU partitions, where GPU carries 200--500$\times$ the fairshare cost, and made runs \textbf{preemption-tolerant} on \texttt{serial\_requeue} via checkpoint/resume and capped job arrays.
-      \item Wired an optional \textbf{LLM planner} behind that interface with per-call \textbf{token and cost accounting} and a spend ceiling that degrades to the deterministic planner on breach or API failure.
+      \item Built a self-directed experiment loop (submit $\rightarrow$ watch $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ synthesize) that ran \textbf{338} SLURM jobs (318 clean, 20 handled errors) over \textbf{79.3 hours} on FASRC Cannon.
+      \item Split a deterministic one-delta proposer from the cluster substrate and \textbf{checkpointed each agenda to disk}, so the queue keeps the last plan if the planner is offline.
+      \item Routed tiny-MLP training to CPU partitions because GPU carries 200--500$\times$ fairshare cost, and made runs preemption-tolerant on \texttt{serial\_requeue} via checkpoint/resume and a capped job array.
+      \item Implemented an optional \textbf{LLM director} with token and cost accounting and a spend ceiling that falls back to the rule reasoner. Recorded runs used the rule reasoner.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {mixhvg-py: Validated Python Port of an R HVG Ensemble \href{https://github.com/JunyiZhou-Conny/mixhvg-py}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Independent Project | Scientific software}{July 2026}
+    \resumeItemListStart
+      \item Ported \textbf{mixhvg} to an \textbf{AnnData}-native API (cells $\times$ genes), combining methods by \textbf{maximum rank} rather than averaging.
+      \item Validated against R 4.3.3 / scran 1.30.0 / Seurat 5.3.0: Seurat vst and dispersion match at Spearman \textbf{1.0000}; the paper-recommended mixture agrees at Jaccard \textbf{0.980} (495 of 500 genes).
+      \item Found that a weighted-mean log-space correction overshot scran's trend by about 3.4\% and raised discarded genes from 0.499 to 0.719. A weighted median restored 0.503 vs R 0.499.
+      \item Reproduced two degenerate upstream methods and a \textbf{Seurat 5} silent-NULL vst bug in tests rather than silently ``fixing'' them. 68 pytest tests pass.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Job Search OS: Human-Supervised Browser Automation \href{https://github.com/JunyiZhou-Conny/job-search-2026-2027-starter}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Independent Project}{July 2026 -- Present}
+    \resumeItemListStart
+      \item Built a job-search operating system that keeps \textbf{GitHub} as durable policy and evidence, a \textbf{Google Sheet} as Polar runtime state, and \textbf{Simplify} as the application ledger.
+      \item Compiled Polar hourly workflows from repo YAML so the browser agent reads one runtime file. Polar may Submit only after duplicate, identity, and writing gates. Cloud Submit at G2/G3 stays closed.
+      \item Encoded the policy in 16 knowledge YAML files and 10 Polar workflow specs, guarded by a unittest suite that covers runtime compile, queue writeback, and Computer Use action sheets.
     \resumeItemListEnd
 
   \resumeSubheading
     {Airway Management Simulation Chatbot \href{https://d3g1qw60hz7yw7.cloudfront.net}{\normalfont\small [Live Demo]}}{Atlanta, GA}
     {Full-Stack Engineer, Scrum Master | Emory Pediatric Hospital}{January 2024 -- August 2025}
     \resumeItemListStart
-      \item Architected a clinical \textbf{agentic LLM pipeline} pairing \textbf{RAG} retrieval over \textbf{MongoDB Atlas Vector Search} with \textbf{prompt engineering} and context-window management to generate multi-turn training scenarios from \textbf{OpenAI} models.
-      \item Built a \textbf{HIPAA-conscious} full-stack platform (\textbf{Python/Flask} REST API, React, MongoDB, \textbf{Auth0}) deployed on \textbf{AWS} Elastic Beanstalk and CloudFront, tracking resident performance metrics.
+      \item Architected a clinical \textbf{agentic LLM} pipeline pairing \textbf{RAG} over \textbf{MongoDB Atlas Vector Search} with prompt and context-window management to generate multi-turn training scenarios from \textbf{OpenAI} models.
+      \item Built a HIPAA-conscious full-stack platform (\textbf{Python/Flask} REST API, React, MongoDB, \textbf{Auth0}) on \textbf{AWS} Elastic Beanstalk and CloudFront.
       \item Led an Agile team of 6, running code reviews and folding clinician feedback into successive releases.
     \resumeItemListEnd
 
-  \resumeSubheading
-    {Reimplementation of Transformer Architecture \href{https://github.com/JunyiZhou-Conny/Reimplementation-of-Transformer}{\normalfont\small [GitHub]}}{Atlanta, GA}
-    {Machine Learning Researcher | Emory Dept. of Computer Science}{October 2024 -- January 2025}
-    \resumeItemListStart
-      \item Implemented a Transformer in \textbf{PyTorch} from scratch --- \textbf{Multi-Head Self-Attention}, \textbf{Positional Encodings}, \textbf{Layer Normalization} --- validating architectural correctness against \texttt{nn.Transformer}.
-      \item Tuned hyperparameters and the \textbf{Cross-Entropy} objective to reach a 9.38 BLEU score on English-to-German translation.
-    \resumeItemListEnd
-
 \resumeSubHeadingListEnd
 
-% Machine Learning Coursework Projects
-\section{Machine Learning Coursework Projects}
-\resumeSubHeadingListStart
-
-  \resumeSubheading
-    {Parameter-Efficient Fine-Tuning of BLIP-2 for Visual Question Answering \href{https://github.com/JunyiZhou-Conny/mini3}{\normalfont\small [GitHub]}}{Boston, MA}
-    {Harvard SHBT-261}{Spring 2026}
-    \resumeItemListStart
-      \item Fine-tuned \textbf{BLIP-2} (OPT-2.7B) on \textbf{TextVQA} using \textbf{LoRA}, lifting accuracy from 0.078 zero-shot to 0.213 --- nearly 3$\times$ --- while training 2.62M parameters (0.07\% of the model) in 8 minutes on a single \textbf{A100}.
-      \item Isolated the contribution of \textbf{prompt engineering} across four templates, showing OCR-augmented prompting alone raised zero-shot accuracy to 0.106 before any weight updates.
-      \item Ablated \textbf{LoRA} rank over $r \in \{4, 8, 16\}$ and automated the pipeline end to end, generating every reported figure and \LaTeX{} table directly from result JSONs for reproducibility.
-    \resumeItemListEnd
-
-  \resumeSubheading
-    {Image Classification Benchmark: Classical ML, CNNs, and Vision Transformers \href{https://github.com/JunyiZhou-Conny/SHBT-261_Image-Classification-on-Caltech-101-Classical-ML-CNNs-and-Vision-Transformers}{\normalfont\small [GitHub]}}{Boston, MA}
-    {Harvard SHBT-261}{Spring 2026}
-    \resumeItemListStart
-      \item Benchmarked \textbf{ViT-B/16}, \textbf{ResNet-18}, and a HOG + Random Forest baseline on \textbf{Caltech-101} (8,677 images, 101 classes), reaching 0.972 top-1 and 0.998 top-5 with ViT against 0.507 for the classical pipeline.
-      \item Quantified the cost of that gain: ViT beat fine-tuned ResNet-18 by 1.8 points at roughly 9$\times$ the training time, making the accuracy-per-GPU-hour tradeoff explicit.
-      \item Established through ablations that light augmentation and \textbf{SGD} outperform heavy regularization and adaptive optimizers when fine-tuning on small datasets.
-    \resumeItemListEnd
-
-  \resumeSubheading
-    {Semantic Segmentation Benchmark: U-Net, ViT, and DeepLabV3+ \href{https://github.com/JunyiZhou-Conny/mini2}{\normalfont\small [GitHub]}}{Boston, MA}
-    {Harvard SHBT-261}{Spring 2026}
-    \resumeItemListStart
-      \item Benchmarked \textbf{DeepLabV3+}, \textbf{U-Net}, and a frozen \textbf{ViT-Tiny} encoder for semantic segmentation on \textbf{Pascal VOC 2007} (21 classes), reaching 0.640 mIoU and 0.928 pixel accuracy with COCO-pretrained DeepLabV3+.
-      \item Diagnosed \textbf{mode collapse} in U-Net under data scarcity --- 209 training images yielded predictions for only 4 of 21 classes --- isolating pretraining rather than architecture as the dominant factor.
-      \item Reached 0.304 mIoU in 105 s by training only an 814K-parameter decoder head on a frozen encoder, establishing a compute-efficient middle ground.
-    \resumeItemListEnd
-
-  \resumeSubheading
-    {Pneumonia Detection from Chest Radiographs \href{https://github.com/JunyiZhou-Conny/BST-261-2026-Pneumonia-Chest-X-Ray-Classification}{\normalfont\small [GitHub]}}{Boston, MA}
-    {Harvard BST-261 (Kaggle competition)}{Spring 2026}
-    \resumeItemListStart
-      \item Diagnosed a 14-point generalization gap on a \textbf{Kaggle} chest-radiograph benchmark --- 99\% validation against 85\% leaderboard --- and traced it to memorization of a 4,700-image training set.
-      \item Closed the gap to 96\% with domain-aware augmentation (\textbf{Mixup} $\alpha = 0.2$, RandomResizedCrop, RandomErasing, affine jitter), excluding vertical flips that would render chest radiographs anatomically implausible.
-      \item Found that freezing \textbf{DenseNet-121}'s early layers outweighed architecture choice, beating ResNet-50, ConvNeXt-Tiny, EfficientNet-B0, and a three-model ensemble to reach a 0.959 public score.
-    \resumeItemListEnd
-
-\resumeSubHeadingListEnd
 \end{document}

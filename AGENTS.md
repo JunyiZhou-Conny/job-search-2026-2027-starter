@@ -9,18 +9,26 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Distinguish verified facts from inference and unknowns.
 - Preserve existing IDs and append history rather than rewriting it.
 - Every active record should have one concrete `next_action` and, where useful, a `next_action_date`.
-- Prefer a few role-cluster resumes plus targeted bullet edits over creating a completely new resume for every job.
+- Prefer the approved base resume plus targeted bullet edits over creating a completely new resume for every job.
 - Submit is governed by `docs/policy/SUBMIT_ROLLOUT.md`. Regular rows may be submitted autonomously once that ATS gate is open. Polar Local may also Submit prioritized rows after mandatory writing_log. Cursor Cloud prioritized rows still stop for a review packet. Never send a message on Junyi's behalf or claim an action was completed without evidence.
 
 ## Eligibility and sponsorship
 
 - Hard eligibility ≠ sponsorship probability. See `docs/eligibility.md`.
 - Never mark a role `ineligible` only because sponsorship is `no` or `unclear`.
-- Visa-sponsorship **form** answer, confirmed by Junyi in writing on
-  2026-09-03: **No** on any broad "now or in the future" widget.
-  Citizenship widgets: **China**. If they ask for visa **type**, put
-  **F-1**. Re-read these widgets after every autofill (Copilot set United
-  States once). The fact `future_sponsorship_required: true` is unchanged.
+- Do not self-reject on sponsorship, F-1, OPT, or a company that
+  generally does not sponsor. Those are not discovery skips.
+  Answer only the asked semantic from `knowledge/work_authorization.yaml`.
+  Required future-sponsorship widget: **Yes** (`future_sponsorship_required`).
+  Required H-1B-named widget: **No**. Required citizenship: **China**.
+  Required visa type: **F-1**. Required any-employer authorization:
+  **Yes**. Required currently-authorized: unknown, so BLOCK that job
+  only. Optional identity/status fields: leave blank. Unasked
+  immigration facts: do not disclose. Ambiguous required widgets:
+  BLOCK that job only and continue the batch.
+  Re-read these widgets after every autofill (Copilot set United
+  States once). The fact `future_sponsorship_required: true` is
+  unchanged.
 - Graduation **date** widgets: **2026-12-18**. Year-only widgets: **2027**.
 - Non-US work location (Belgrade, etc.) → skip. Do not Submit.
 - Use `pursuit_lane`: `core` | `broad` | `practice`.
@@ -54,7 +62,7 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Base ledger: Simplify. Polar runtime state lives in the Google Sheet,
   not a second `applications.csv`.
 - Local repo: resume version, lane, sponsorship signal, auth Q&A, networking, interview learning, next actions.
-- Browser execution has two environments. Cursor cloud Computer Use, and Polar on Junyi's machine. Polar reads `generated/polar/runtime/POLAR_RUNTIME.md`. Prefer a trusted `apply_url`. If the source is still Jobright, Polar uses **Original Job Post**, never **APPLY WITH AUTOFILL**.
+- Browser execution has two environments. Cursor cloud Computer Use, and Polar on Junyi's machine. Polar reads `generated/polar/runtime/POLAR_RUNTIME.md`. Prefer a trusted `apply_url`. If the source is still Jobright, Polar uses **Original Job Post**, never **APPLY WITH AUTOFILL**. Polar apply requires visible Simplify Copilot on the employer ATS page. A simplify.jobs login is not proof. If Copilot is missing, Polar stops the apply run for owner action, keeps the queue job READY, and releases the browser lease. Polar must not fall back to manual clicking. Pending PREFERENCES candidates keep a `pref_YYYYMMDD_NNN` id until a resolution row is on `main`.
 - Prefer one-way `import-simplify` over retyping every application. See `docs/platforms.md`.
 
 ## Boundaries (see `docs/BOUNDARIES.md`)

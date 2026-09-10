@@ -18,15 +18,24 @@ from js_lib import (
     read_rows,
 )
 from polar_policy import (
+    COPILOT_REPEAT_KEY,
+    COPILOT_STATES,
     CONTROL_COLUMNS,
+    ENV_SIMPLIFY_KEY,
     HEARTBEAT_COLUMNS,
     INCIDENT_LOG_COLUMNS,
     LEARNING_REPORTS_COLUMNS,
+    LOCAL_PREFERENCES_PATH,
+    MEMORY_PRECEDENCE,
+    PREFERENCE_CLASSES,
     QUEUE_COLUMNS,
     RUN_LOG_COLUMNS,
     WRITING_LOG_COLUMNS,
     apply_run_caps,
     document_availability,
+    format_runtime_resolutions,
+    load_preference_resolutions,
+    raw_runtime_url,
 )
 from polar_workflows import write_schema_csvs, write_workflows
 
@@ -78,6 +87,7 @@ SECTION_ORDER = [
     ("M. Browser lease", "section_m"),
     ("N. Run and incident telemetry", "section_n"),
     ("O. Employer requisition identity", "section_o"),
+    ("P. Memory ownership and Copilot preflight", "section_p"),
 ]
 
 
@@ -232,6 +242,13 @@ def auto_map_ban(block: Dict[str, Any]) -> str:
 def form_answer_line(name: str, block: Any) -> str:
     if not isinstance(block, dict):
         return ""
+    if block.get("execution") == "leave_unresolved":
+        when = md_escape(block.get("when", name))
+        return (
+            f"{name}: leave unresolved. Do not apply a historical Yes or No "
+            f"while it conflicts with a stored fact. When: {when}"
+            + auto_map_ban(block)
+        )
     if block.get("status") == "needs_human" or block.get("form_answer") == "unknown":
         when = md_escape(block.get("when", name))
         return (
@@ -312,6 +329,9 @@ def compile_sections() -> Dict[str, str]:
     roles = load_yaml(ROOT / "knowledge" / "role_families.yaml")
     operator = load_yaml(ROOT / "knowledge" / "polar_operator.yaml")
     gates = load_yaml(ROOT / "config" / "submit_gates.yaml")
+    preference_resolutions = load_preference_resolutions(
+        load_yaml(ROOT / "knowledge" / "preference_resolutions.yaml")
+    )
     assert_operator_columns(operator)
 
     always = form.get("always") or {}
@@ -334,7 +354,9 @@ def compile_sections() -> Dict[str, str]:
     program_end = md_escape(auth.get("program_end_date") or anchors.get("program_end_date"))
     commencement = md_escape(auth.get("commencement_date") or anchors.get("commencement_date"))
     earliest_ft = md_escape(auth.get("earliest_full_time_start") or profile.get("earliest_start_date"))
-    sponsorship_form = md_escape((auth_form.get("visa_sponsorship") or {}).get("form_answer") or "No")
+    visa_block = auth_form.get("visa_sponsorship") or {}
+    sponsorship_form = md_escape(visa_block.get("form_answer") or "unknown")
+    sponsorship_execution = md_escape(visa_block.get("execution") or "")
 
     docs = document_availability()
     doc_lines = []
@@ -372,8 +394,15 @@ def compile_sections() -> Dict[str, str]:
                     "Permanent resident elsewhere since citizenship: No",
                     f"Current visa type when asked: {visa}",
                     f"Future sponsorship required (standing fact): {auth.get('future_sponsorship_required')}",
-                    f"Broad visa-sponsorship widget: {sponsorship_form}",
+                    f"Required future-sponsorship widget: {sponsorship_form}. Execution: {sponsorship_execution or 'answer the asked fact only'}.",
+                    "Answer only the asked semantic. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship on a field that did not ask.",
+                    "Optional identity or status fields stay blank. Required and clear fields get the one matching fact. Required and unclear fields BLOCK that job only.",
+                    "If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.",
+                    "Country-only sponsorship lists and work-authorization-without-sponsorship wording stay unresolved when required, and blank when optional.",
                     "H-1B-named widget: No",
+                    "Authorized-for-any-employer widget: Yes",
+                    "Required currently-authorized widget: leave unresolved. The current-authorization fact is unknown.",
+                    "Required EAD widget: No. Required OPT-approval widget: No. Required OPT-eligibility widget: Yes.",
                     f"Program end / I-20 date: {program_end}",
                     f"Commencement: {commencement}",
                     f"Graduation date widget: {program_end}",
@@ -450,11 +479,14 @@ def compile_sections() -> Dict[str, str]:
             "",
             "An exclusive graduation or enrollment window is an eligibility note, not a skip.",
             "Do not invent a graduation date.",
-            "Sponsorship unknown or no is not a skip.",
+            "Sponsorship unknown, unavailable, or generally not offered is not a skip.",
+            "F-1 or OPT mentioned on a board is not a skip.",
             "Do not invent work_model, location, graduation windows, or H1B facts.",
             "Blank location is not an automatic skip.",
-            "apply-ready-jobs re-reads the full employer posting before major fill and applies these same hard rules.",
-            "A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, or TS-SCI/polygraph skip that discovery missed.",
+            "apply-ready-jobs reads the full employer posting immediately after it is open, before login or form fill.",
+            "A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip that discovery missed.",
+            "Those degree-level misses share repeat_key degree_level_gate_missed_at_discovery.",
+            "Do not reopen Original Job Post during hourly discovery to catch them.",
         ]
     )
 
@@ -523,14 +555,16 @@ def compile_sections() -> Dict[str, str]:
         if not isinstance(body, dict):
             continue
         titles = ", ".join(str(x) for x in body.get("titles") or [])
-        cluster_lines.append(
-            f"{name}: resume `{body.get('default_resume')}`. Titles: {titles}"
-        )
+        cluster_lines.append(f"{name}: {titles}")
     section_e = "\n".join(
         [
-            "Pick one existing cluster resume. Do not invent a new resume for every job.",
-            "Prefer the Simplify resume that matches the cluster file below.",
+            "One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach.",
+            "Prefer the Simplify resume already attached.",
+            "If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.",
+            "Mark REVIEW_READY with blocker missing_production_resume and continue the batch.",
+            "Do not invent a new resume for every job.",
             "",
+            "Title families are job taxonomy only. resume_cluster is not a file.",
             bullet(cluster_lines),
             "",
             "Prioritized rows may tailor from the evidence bank only when the JD justifies it.",
@@ -588,10 +622,9 @@ def compile_sections() -> Dict[str, str]:
             "Escalate to BLOCKED only after this local environment cannot complete a required step.",
             "A blocked job must not stall the queue. Persist the blocker and continue to the next READY job.",
             "ATS family is diagnostic metadata only. Do not organize work by ATS worker class.",
-            "Simplify is optional acceleration. Try it at most once per application when it is already useful.",
-            "If onboarding, missing injection, a broken session, or repeat navigation appears, fall back immediately",
-            "to POLAR_RUNTIME, the approved resume or document registry, and the local Polar profile.",
-            "Do not spend the run repairing Simplify. Record a PERFORMANCE incident if it materially slowed the run.",
+            "Simplify Copilot is a required apply precondition. See section P.",
+            "Missing Copilot is an ENVIRONMENT blocker. Do not mark the queue job BLOCKED.",
+            "Do not silently fall back to traditional clicking.",
         ]
     )
 
@@ -617,7 +650,7 @@ def compile_sections() -> Dict[str, str]:
                 [
                     "Duplicate check passes against the Sheet and section K.",
                     "Company and title on the page match the queue row.",
-                    "Correct cluster resume is attached.",
+                    "Approved production resume is attached (Simplify). Do not upload the two-page master.",
                     "Identity fields are correct after a visible read-back.",
                     "Required factual fields are resolved from this runtime or left for Junyi.",
                     "No unsupported claim was invented.",
@@ -712,6 +745,10 @@ def compile_sections() -> Dict[str, str]:
             "apply_url_confidence must stay in its named column even when the value is none or blank.",
             "After an important queue write, read back job_key, status, and last_stage.",
             "If those fields do not match, repair the row before the next job.",
+            "Control writes locate the row by key. Never pick a visually empty row.",
+            "If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.",
+            "After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.",
+            "Commit the edit, then reread key, owner_run_id, and notes. Looking correct is not persistence.",
         ]
     )
     section_m = "\n".join(
@@ -721,15 +758,21 @@ def compile_sections() -> Dict[str, str]:
             f"TTL minutes: {lease['ttl_minutes']}.",
             "discover-jobs-hourly and apply-ready-jobs must acquire this lock before driving Jobright or employer pages.",
             "If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.",
+            "On acquire, upsert a run_log row for this run_id with result PARTIAL so a crash still leaves a row.",
+            "After each job stage, store checkpoint job_key and last_stage in control notes.",
             "Refresh the lock when a long run has under 60 minutes remaining.",
-            "Release on normal completion. Treat an expired lock as free.",
+            "Release on normal completion. Treat an expired lock as free. Do not weaken the lease to recover a crash.",
             "Heartbeat, daily summary, and production-learning-daily do not take this lock.",
         ]
     )
     section_n = "\n".join(
         [
-            "One workflow invocation writes one run_log row and copies workflow_version from the instruction file.",
+            "One workflow invocation upserts one run_log row by run_id and copies workflow_version from the instruction file.",
             "Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.",
+            "incident_id is INC-YYYYMMDD-NNN with three digits. The sequence is monotonic. The next id is one more than the highest number for that date. If 001 and 003 exist, write 004. 01 and 001 count as the same number.",
+            "Degree-level apply-time skips share repeat_key degree_level_gate_missed_at_discovery.",
+            "A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.",
+            "Authorization telemetry uses auth_outcome answered, optional_left_blank, ambiguous_required_blocked, hard_eligibility_skip, or disclosure_prevented.",
             "If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.",
             "Do not count every click. Coarse stage timing is enough.",
             "production-learning-daily aggregates today's telemetry into a sanitized Markdown report.",
@@ -745,6 +788,38 @@ def compile_sections() -> Dict[str, str]:
             "Do not submit the same employer requisition twice.",
             "Jobright ids and company+role+location remain useful. They are not enough once the employer identity is known.",
             "Section K still applies.",
+        ]
+    )
+
+    section_p = "\n".join(
+        [
+            "GitHub is the only canonical behavioral memory.",
+            f"Local inbox: {LOCAL_PREFERENCES_PATH}.",
+            "Canonical pointer: " + raw_runtime_url() + ".",
+            "PREFERENCES.md is not a second strategy database.",
+            "precedence: " + " > ".join(MEMORY_PRECEDENCE) + ".",
+            "preference_classes: " + ", ".join(PREFERENCE_CLASSES) + ".",
+            "An old PREFERENCES strategy line must not override newer GitHub behavior.",
+            "LOCAL_PRIVATE values stay local. SECRET_OR_CREDENTIAL is never exported.",
+            "Export assigns pref_YYYYMMDD_NNN and emits Polar Preferences Delta. Unresolved ids stay pending.",
+            "Mint the next id from pending ids, keep_local ids, and main preference_resolutions. Never reuse. Never fill gaps.",
+            "An open Cursor PR is not canonical. Polar reconciles only after a resolution row is on main.",
+            "KEEP_LOCAL leaves pending and stays in Local-only facts. Do not re-export it.",
+            "Match candidate_id only. Do not compare wording.",
+            format_runtime_resolutions(preference_resolutions),
+            "Cursor writes generalized lessons and knowledge/preference_resolutions.yaml. STOP BEFORE MERGE.",
+            "",
+            "Simplify Copilot is a required apply precondition.",
+            "proof: Copilot UI on the employer ATS page.",
+            "not_proof: simplify.jobs login or API.",
+            "states: " + ", ".join(COPILOT_STATES) + ".",
+            f"control_key: {ENV_SIMPLIFY_KEY}. Locate by key. Never overwrite polar_browser.",
+            "If Copilot is PRESENT, Autofill once. Then read the visible widgets.",
+            "If Copilot is MISSING or UNKNOWN, do not fall back to traditional clicking.",
+            "Restore the probe job to READY. Do not consume it as BLOCKED.",
+            f"Incident category ENVIRONMENT. repeat_key {COPILOT_REPEAT_KEY}.",
+            "run_log result OWNER_ACTION_REQUIRED. Release polar_browser. Exit the apply run.",
+            "The next apply run rechecks the employer page. Last MISSING is not a cache that skips the check.",
         ]
     )
 
@@ -765,6 +840,7 @@ def compile_sections() -> Dict[str, str]:
             section_m,
             section_n,
             section_o,
+            section_p,
         ]
     )
     for value in forbidden_profile_values(profile if isinstance(profile, dict) else {}):
@@ -787,6 +863,7 @@ def compile_sections() -> Dict[str, str]:
         "section_m": section_m,
         "section_n": section_n,
         "section_o": section_o,
+        "section_p": section_p,
     }
 
 
@@ -804,6 +881,7 @@ def render(parts: Dict[str, str]) -> str:
         "- `config/profile.yaml`",
         "- `config/submit_gates.yaml`",
         "- `knowledge/polar_operator.yaml`",
+        "- `knowledge/preference_resolutions.yaml`",
         "- `knowledge/polar_documents.yaml`",
         "- `knowledge/work_authorization.yaml`",
         "- `knowledge/form_strategy.yaml`",

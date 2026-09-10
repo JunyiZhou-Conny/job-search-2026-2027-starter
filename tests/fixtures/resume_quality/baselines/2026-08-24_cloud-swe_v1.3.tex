@@ -63,8 +63,8 @@
 
 % Heading
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-  \textbf{\Large Junyi (Conny) Zhou} & Tel: (404) 663-5601 \\
-  Boston, MA 02215 & Email: \href{mailto:junyizhou@hsph.harvard.edu}{junyizhou@hsph.harvard.edu} \\
+  \textbf{\Large Junyi (Conny) Zhou} & Tel: (000) 000-0000\\
+  Boston, MA 02215 & Email: \href{mailto:candidate@example.test}{candidate@example.test} \\
   \href{https://github.com/JunyiZhou-Conny}{github.com/JunyiZhou-Conny} & \href{https://www.linkedin.com/in/junyi-zhou-270208247}{linkedin.com/in/junyi-zhou-270208247} \\
 \end{tabular*}
 
@@ -89,25 +89,26 @@
 \section{Technical Skills}
 \resumeSubHeadingListStart
   \resumeItem{Languages}{Python, C++, Java, SQL, R, JavaScript}
-  \resumeItem{ML \& Deep Learning}{PyTorch, TensorFlow, Keras, scikit-learn, XGBoost, LightGBM, Hugging Face Transformers}
-  \resumeItem{LLM \& Applied AI}{RAG, agentic pipelines, prompt engineering, embeddings \& vector search, OpenAI API, MongoDB Atlas Vector Search}
-  \resumeItem{Data \& Compute}{PostgreSQL, MySQL, MongoDB, Spark, Hadoop, SLURM/HPC, multi-GPU job scheduling}
-  \resumeItem{Cloud}{AWS (SageMaker, Lambda, EC2, S3, Redshift, Elastic Beanstalk, CloudFront), Snowflake, BigQuery}
   \resumeItem{Backend \& DevOps}{Flask, REST APIs, React, Docker, Auth0, Git}
+  \resumeItem{Cloud}{AWS (SageMaker, Lambda, EC2, S3, Redshift, Elastic Beanstalk, CloudFront), Snowflake, BigQuery}
+  \resumeItem{Data \& Compute}{PostgreSQL, MySQL, MongoDB, Spark, Hadoop, SLURM/HPC, multi-GPU job scheduling}
+  \resumeItem{LLM \& Applied AI}{RAG, agentic pipelines, prompt engineering, embeddings \& vector search, OpenAI API, MongoDB Atlas Vector Search}
+  \resumeItem{ML \& Deep Learning}{PyTorch, TensorFlow, Keras, scikit-learn, XGBoost, LightGBM, Hugging Face Transformers}
   \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
 \resumeSubHeadingListEnd
 
-% Clinical AI Experience
-\section{Clinical AI Experience}
+% Engineering Projects
+\section{Engineering Projects}
 \resumeSubHeadingListStart
 
   \resumeSubheading
-    {Structure-Verified RLVR for Label-Efficient Pathology Instance Segmentation \href{https://github.com/JunyiZhou-Conny/Structure-Verified-RLVR-for-Label-Efficient-Pathology-Instance-Segmentation}{\normalfont\small [GitHub]}}{Boston, MA}
-    {Graduate Researcher | Harvard Health Data Science capstone (mentor Alexander Chowdhury)}{August 2026 -- Present}
+    {Autonomous Ablation-Search Agent for Cluster-Scale ML Experimentation \href{https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Independent Project | Harvard FASRC Cannon Cluster}{June 2026 -- Present}
     \resumeItemListStart
-      \item Building \textbf{S-Seg-RLVR}, a capstone that uses \textbf{reinforcement learning with verifiable rewards} so pathology instance segmentation can optimize instance count, separation, and topology instead of only Dice/IoU.
-      \item Specified a \textbf{SAM / SAM2} mask-decoder policy and a composite \textbf{GRPO} reward (count, separation, topology, panoptic match) against overlap-only medical RL and differentiable topology surrogates; targeting a methods paper at \textbf{MICCAI 2027}.
-      \item Stood up the public research repo: proposal, a 30-paper literature library, a 16-week roadmap, and typed reward interfaces. Training on public nuclei/gland sets and live GRPO runs are next.
+      \item Built a \textbf{self-directed experiment harness} (submit $\rightarrow$ watch $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ synthesize) that plans, launches, and triages \textbf{SLURM} ablation studies unattended --- \textbf{338 runs}, 318 clean and 20 with handled errors, over \textbf{79 hours} of compute.
+      \item Split the planner from the execution substrate and \textbf{checkpointed each agenda to disk}, so the cluster keeps running the last plan while the planner is offline; an adaptive one-delta proposer clears a \textbf{validation gate} before every submit.
+      \item Designed a \textbf{fairshare-aware scheduler} routing small-MLP training to CPU partitions, where GPU carries 200--500$\times$ the fairshare cost, and made runs \textbf{preemption-tolerant} on \texttt{serial\_requeue} via checkpoint/resume and capped job arrays.
+      \item Wired an optional \textbf{LLM planner} behind that interface with per-call \textbf{token and cost accounting} and a spend ceiling that degrades to the deterministic planner on breach or API failure.
     \resumeItemListEnd
 
   \resumeSubheading
@@ -121,17 +122,17 @@
 
 \resumeSubHeadingListEnd
 
-% Machine Learning Projects
-\section{Machine Learning Projects}
+% Research Experience
+\section{Research Experience}
 \resumeSubHeadingListStart
 
   \resumeSubheading
-    {Pneumonia Detection from Chest Radiographs \href{https://github.com/JunyiZhou-Conny/BST-261-2026-Pneumonia-Chest-X-Ray-Classification}{\normalfont\small [GitHub]}}{Boston, MA}
-    {Harvard BST-261 (Kaggle competition)}{Spring 2026}
+    {AlphaFold Protein--Nucleic Acid Interaction Prediction \href{https://github.com/JunyiZhou-Conny/AlphaFold-Bou-Nader-Lab}{\normalfont\small [GitHub]}}{Atlanta, GA}
+    {Data Analyst | Bou-Nader Lab, Emory Dept. of Biochemistry}{February 2025 -- August 2025}
     \resumeItemListStart
-      \item Diagnosed a 14-point generalization gap on a \textbf{Kaggle} chest-radiograph benchmark --- 99\% validation against 85\% leaderboard --- and traced it to memorization of a 4,700-image training set.
-      \item Closed the gap to 96\% with domain-aware augmentation (\textbf{Mixup} $\alpha = 0.2$, RandomResizedCrop, RandomErasing, affine jitter), excluding vertical flips that would render chest radiographs anatomically implausible.
-      \item Found that freezing \textbf{DenseNet-121}'s early layers outweighed architecture choice, beating ResNet-50, ConvNeXt-Tiny, EfficientNet-B0, and a three-model ensemble to reach a 0.959 public score.
+      \item Engineered a pipeline integrating \textbf{AlphaFold-Multimer} and \textbf{AlphaFold3} to predict protein--nucleic acid interactions from \textbf{MSA} data.
+      \item Automated high-throughput inference across GPU nodes with \textbf{SLURM} parallel scheduling, tuning batch size to raise GPU utilization on shared \textbf{HPC} clusters.
+      \item Built \textbf{Python} tooling (PyMOL, ChimeraX) ranking structures by \textbf{pLDDT} and \textbf{PAE} score, shipped as a documented CLI so non-technical researchers could run inference and triage results independently.
     \resumeItemListEnd
 
   \resumeSubheading

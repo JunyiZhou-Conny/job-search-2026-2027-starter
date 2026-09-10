@@ -33,7 +33,7 @@ Values: `verified` | `likely` | `unclear` | `no`
 | Lane | When | Effort |
 |---|---|---|
 | `core` | Strong fit; sponsor verified/likely/unclear but company plausibly sponsors | Tailor, network, dossier if A |
-| `broad` | Strong tech fit; sponsor `no` or weak; still may yield OA/interview | Nearest cluster resume; 1–2 bullets max |
+| `broad` | Strong tech fit; sponsor `no` or weak; still may yield OA/interview | Approved base resume. 1–2 bullets max |
 | `practice` | Low conversion expected; used for interview reps | Cap at ~15–25% of applied volume |
 
 ## `application_weight` (separate filter)
@@ -59,12 +59,27 @@ Graduation-window policy is unchanged.
 
 Default resume: December 2026 program completion. Dual-date resume line when the posting needs March/Spring wording — still mention December program completion. Do not present only March as if program end were March.
 
-## Work-authorization answers (typical for post-grad OPT)
+## Work-authorization answers
 
-Do not invent answers. After OPT EAD is in hand for full-time work:
+Exact question → one matching fact. Do not copy one answer onto a
+neighboring field. Do not volunteer F-1, OPT, EAD, citizenship, or
+sponsorship on a field that did not ask.
 
-- "Are you authorized to work in the United States?" → usually **Yes** (with valid EAD)
-- "Will you now or in the future require visa sponsorship?" → **No** (Junyi, written, 2026-09-03). Widget answer only; the standing fact `future_sponsorship_required` is still true. Citizenship and export-control widgets → **China**.
-- "Will you require **H-1B** sponsorship?" (H-1B named) → **No** as of 2026-08-23. Same fact file.
+| Exact question | Fact | Required | Optional |
+|---|---|---|---|
+| Will you now or in the future require visa sponsorship? | `future_sponsorship_required` | **Yes** | leave blank |
+| Do you require sponsorship to begin employment? | `sponsorship_required_to_begin` | unknown → BLOCK that job | leave blank |
+| Will you require H-1B sponsorship? | `h1b_sponsorship_required` | **No** | leave blank |
+| Are you a U.S. citizen? / country of citizenship | `citizenship_country` | **China** | leave blank |
+| What is your visa / status? | `current_status` | **F-1** | leave blank |
+| Are you currently authorized to work in the U.S.? | `current_us_work_authorization` | unknown → BLOCK that job | leave blank |
+| Are you authorized to work in the U.S.? (no currently/now) | `legally_eligible_to_begin_immediately` | **Yes** | leave blank |
+| Authorized to work for any employer? | `authorized_for_any_employer` | **Yes** | leave blank |
+| Do you have an EAD? | `opt_ead_in_possession` | **No** | leave blank |
+| Has OPT been approved? | `opt_approved` | **No** | leave blank |
+| Will you be eligible for OPT? | `opt_eligible_expected` | **Yes** | leave blank |
+| Will you require work authorization (no sponsorship words)? | none | BLOCK that job | leave blank |
 
-If the form conflates OPT/EAD/H-1B under one “sponsorship” line, save the **verbatim question and submitted answer** in `auth_qa_notes`.
+If one required widget conflates two of those semantics, leave that
+field, mark only that job BLOCKED, and continue the batch. Save the
+verbatim question in `auth_qa_notes`.

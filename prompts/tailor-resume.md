@@ -1,10 +1,11 @@
-# Tailor a cluster resume
+# VIP-tailor a resume
 
-Compare the target job dossier with the nearest cluster resume.
+Use this only for an exceptional high-priority JD. Ordinary applications route to a frozen family variant.
 
-- Preserve factual accuracy and interview defensibility.
-- Propose the smallest set of high-impact edits.
-- For every edit, show: target requirement, current evidence, proposed wording, and factual source.
-- Do not add skills or metrics that are not documented.
-- Keep the resume concise and ATS-readable.
-- Output a patch plan before editing files.
+- Compare the JD to `knowledge/evidence_bank.yaml`.
+- Run `python3 scripts/resume_quality.py run --jd <file> --out generated/resume_quality/<slug>`.
+- Keep the requirement id and claim id visible in `claim_map.yaml`.
+- Do not add skills, metrics, ownership, or technologies that are not in the bank.
+- A failed `validation_report.md` blocks upload.
+- Keep the one-page compile gate.
+- Do not edit `resumes/base/JZ_resume.tex` and do not restore cluster generation.

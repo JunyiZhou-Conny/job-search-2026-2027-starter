@@ -395,19 +395,19 @@ gaps:
     status: observed_ok
     already_in: "knowledge/form_strategy.yaml always.visa_sponsorship"
     form_effect: >
-      Copilot often answers No on visa-sponsorship widgets. As of
-      2026-08-24 that is the intended form answer (Hayden). The 2026-08-23
-      pass had flipped Hayden/Lila/Relativity/Scale to Yes under the old
-      rule. Hayden form still shows Yes. Do not flip No → Yes.
-    ask_later: "None. Later agents set visa sponsorship to No and re-read before Submit."
+      Copilot often answers No on visa-sponsorship widgets. Owner
+      policy 2026-09-10 answers the stored future-sponsorship fact
+      (Yes) on that exact widget. Autofill No is a correction, not
+      the standing answer.
+    ask_later: "None. Re-read the exact widget. Do not copy this Yes onto a different authorization question."
 
   - id: authorized_for_any_employer
-    status: needs_human
+    status: observed_ok
     already_in: "knowledge/form_strategy.yaml authorized_for_any_employer"
     form_effect: >
-      Hayden AI Copilot answered Yes to "authorized to work in the
-      United States for any employer." F-1 is not that. Left as leftover.
-    ask_later: "Exact yes/no/wording for any-employer work-auth widgets."
+      Owner 2026-08-25 confirmed Yes on the exact any-employer widget.
+      That fact is independent of current_us_work_authorization.
+    ask_later: "None. Do not copy this Yes onto a currently-authorized widget."
 
   - id: country_specific_sponsorship
     status: observed_ok

@@ -1,13 +1,23 @@
 ---
-description: Cluster resumes and experiment tracking
+description: Master inventory, frozen family variants, and experiment tracking
 globs: "{resumes/**,data/resume_versions.csv}"
 alwaysApply: false
 ---
 
 # Resume versioning
 
-- Quality baseline is `resumes/base/JZ_resume.tex` — do not dilute specificity.
-- Active clusters are `*_v1.1` under `cloud_swe` / `data_ml` / `health_ai` (also linked from `resumes/clusters/`).
+- The master inventory is `resumes/base/JZ_resume.tex`. It is not Polar's
+  required attach.
+- One active master on disk. `JZ_resume` at `resumes/base/JZ_resume.tex`
+  and `resumes/base/JZ_resume.pdf`.
+- `role_cluster` / `resume_cluster` are job taxonomy only (`cloud_swe` | `data_ml` | `health_ai`).
+- Prefer the Simplify resume already attached. Do not upload the two-page
+  master. Empty widget → REVIEW_READY / `missing_production_resume`.
+- After BUILD exists, production disk attach is a frozen family one-pager
+  or a human-accepted VIP file.
+- Register a `data/resume_versions.csv` row only after a human accepts the
+  file. The engine does not append that row.
+- Historical `resume_version` strings on applied rows stay. Inactive
+  registry rows stay. Do not regenerate the cluster tree.
 - Record exact `resume_version` after every apply.
-- Broad: cluster resume; Core: light tailor; deep tailor rare.
-- Every version change needs a hypothesis in `data/resume_versions.csv`.
+- Every new version needs a hypothesis in `data/resume_versions.csv`.

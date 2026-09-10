@@ -12,15 +12,27 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from polar_policy import (  # noqa: E402
     APPLY_URL_CONFIDENCE,
+    INCIDENT_CATEGORIES,
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     TIME_LOST_CATEGORIES,
     apply_run_caps,
+    closed_posting_action,
+    control_row_is_writable,
+    control_write_persisted,
     decide_lease,
+    degree_level_hard_skip,
     document_availability,
     header_map,
+    incident_ids_are_unique,
+    inspect_visible_control_row,
+    lease_checkpoint_notes,
     named_row,
+    next_incident_id,
+    parse_lease_checkpoint,
     pick_canonical_requisition_row,
+    plan_control_write,
+    plan_run_log_write,
     priority_submit_permitted,
     readback_fields,
     release_lease,
@@ -29,6 +41,15 @@ from polar_policy import (  # noqa: E402
     sanitize_learning_text,
     select_apply_batch,
     sibling_job_keys,
+    AUTH_TELEMETRY_OUTCOMES,
+    auth_form_action,
+    auth_telemetry_outcome,
+    classify_auth_question,
+    discovery_guide_rule_ids,
+    discovery_skips_on_unknown_sponsorship,
+    load_auth_facts,
+    SponsorshipFacts,
+    sponsorship_form_action,
     workflow_version,
     writing_log_status,
 )
@@ -431,6 +452,406 @@ class TestWorkflowVersionAndDocuments(unittest.TestCase):
                 "SUBMIT_VERIFY",
                 "OTHER",
             ),
+        )
+
+    def test_incident_categories_include_missing_fact(self):
+        import yaml
+
+        operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(tuple(operator["incident_categories"]), INCIDENT_CATEGORIES)
+        self.assertIn("MISSING_FACT", INCIDENT_CATEGORIES)
+        self.assertGreater(
+            INCIDENT_CATEGORIES.index("MISSING_FACT"),
+            INCIDENT_CATEGORIES.index("MISSING_DOCUMENT"),
+        )
+
+
+class TestControlKeyUpsert(unittest.TestCase):
+    def test_canary_must_not_overwrite_browser_lock(self):
+        rows = [
+            {
+                "key": "polar_browser",
+                "owner_run_id": "R-20260909-0420",
+                "notes": "",
+            }
+        ]
+        self.assertFalse(control_row_is_writable(rows[0], "github_write_canary"))
+        plan = plan_control_write(rows, "github_write_canary")
+        self.assertEqual(plan.action, "append")
+        self.assertIsNone(plan.row_index)
+
+    def test_empty_looking_lock_row_is_still_protected(self):
+        row = {"key": "polar_browser", "owner_run_id": "", "notes": ""}
+        self.assertFalse(control_row_is_writable(row, "github_write_canary"))
+        self.assertEqual(inspect_visible_control_row(row, "github_write_canary").action, "abort")
+
+    def test_visually_empty_row_is_not_writable(self):
+        row = {"key": "", "owner_run_id": "", "notes": ""}
+        self.assertFalse(control_row_is_writable(row, "github_write_canary"))
+        self.assertEqual(inspect_visible_control_row(row, "github_write_canary").action, "abort")
+
+    def test_persisted_canary_keeps_lease_times(self):
+        before = [
+            {
+                "key": "polar_browser",
+                "owner_run_id": "R-1",
+                "acquired_at": "2026-09-09T04:20:00-04:00",
+                "expires_at": "2026-09-09T07:20:00-04:00",
+                "notes": "checkpoint job_key=abc last_stage=form_filled",
+            }
+        ]
+        after_stolen = [
+            {
+                "key": "polar_browser",
+                "owner_run_id": "R-1",
+                "acquired_at": "",
+                "expires_at": "",
+                "notes": "checkpoint job_key=abc last_stage=form_filled",
+            },
+            {"key": "github_write_canary", "owner_run_id": "", "notes": "success"},
+        ]
+        self.assertFalse(
+            control_write_persisted(
+                after_stolen,
+                key="github_write_canary",
+                intended={"key": "github_write_canary", "notes": "success"},
+                protected_keys=("polar_browser",),
+                before_rows=before,
+            )
+        )
+        after_checkpoint = [
+            {
+                "key": "polar_browser",
+                "owner_run_id": "R-1",
+                "acquired_at": "2026-09-09T04:20:00-04:00",
+                "expires_at": "2026-09-09T07:20:00-04:00",
+                "notes": "checkpoint job_key=uber last_stage=application_open",
+            },
+            {"key": "github_write_canary", "owner_run_id": "", "notes": "success; https://example.com/114"},
+        ]
+        self.assertTrue(
+            control_write_persisted(
+                after_checkpoint,
+                key="github_write_canary",
+                intended={
+                    "key": "github_write_canary",
+                    "notes": "success; https://example.com/114",
+                },
+                protected_keys=("polar_browser",),
+                before_rows=before,
+            )
+        )
+
+
+class TestCrashCheckpoint(unittest.TestCase):
+    def test_checkpoint_round_trip(self):
+        notes = lease_checkpoint_notes("uber-301056", "application_open")
+        self.assertEqual(parse_lease_checkpoint(notes), ("uber-301056", "application_open"))
+
+    def test_run_log_upserts_same_run_id(self):
+        rows = [{"run_id": "R-20260909-0420", "result": "PARTIAL"}]
+        plan = plan_run_log_write(rows, "R-20260909-0420")
+        self.assertEqual(plan.action, "update")
+        self.assertEqual(plan.row_index, 0)
+        self.assertEqual(plan_run_log_write([], "R-20260909-0420").action, "append")
+
+
+class TestIncidentIds(unittest.TestCase):
+    def test_mixed_widths_and_duplicate_do_not_reuse(self):
+        existing = ["INC-20260909-001", "INC-20260909-01", "INC-20260909-003", "INC-20260909-003"]
+        self.assertFalse(incident_ids_are_unique(existing))
+        self.assertFalse(incident_ids_are_unique(["INC-20260909-001", "INC-20260909-01"]))
+        self.assertEqual(next_incident_id(existing, "2026-09-09"), "INC-20260909-004")
+
+    def test_next_id_after_three_is_four(self):
+        existing = ["INC-20260909-001", "INC-20260909-002", "INC-20260909-003"]
+        self.assertEqual(next_incident_id(existing, "20260909"), "INC-20260909-004")
+        self.assertTrue(incident_ids_are_unique(existing))
+
+
+class TestDegreeLevelGate(unittest.TestCase):
+    def test_phd_only_full_jd_is_skip(self):
+        self.assertEqual(
+            degree_level_hard_skip("This internship is PhD students only."),
+            "phd_only",
+        )
+
+    def test_undergrad_only_full_jd_is_skip(self):
+        self.assertEqual(
+            degree_level_hard_skip("Current undergraduate students only may apply."),
+            "undergrad_only",
+        )
+
+    def test_pursuing_a_degree_is_not_a_skip(self):
+        self.assertIsNone(degree_level_hard_skip("Must be currently pursuing a degree."))
+
+    def test_phd_preferred_is_not_a_skip(self):
+        self.assertIsNone(degree_level_hard_skip("PhD preferred. Master's students are welcome."))
+
+    def test_phd_and_masters_is_not_a_skip(self):
+        self.assertIsNone(
+            degree_level_hard_skip("This position is for PhD and Master's students.")
+        )
+
+    def test_negated_phd_only_is_not_a_skip(self):
+        self.assertIsNone(
+            degree_level_hard_skip(
+                "This role is not PhD only; Master's students are encouraged to apply."
+            )
+        )
+
+    def test_enrolled_in_phd_and_candidates_only_are_skips(self):
+        self.assertEqual(
+            degree_level_hard_skip("Applicants must be enrolled in a PhD program."),
+            "phd_only",
+        )
+        self.assertEqual(
+            degree_level_hard_skip("Open to PhD candidates only."),
+            "phd_only",
+        )
+
+    def test_enrolled_in_a_degree_is_not_a_skip(self):
+        self.assertIsNone(
+            degree_level_hard_skip("Currently enrolled in an undergraduate program.")
+        )
+
+
+class TestClosedPostingAndSponsorship(unittest.TestCase):
+    def test_removed_posting_does_not_open_a_sibling(self):
+        self.assertEqual(closed_posting_action("This requisition has been removed"), "skip_no_sibling")
+        self.assertEqual(closed_posting_action("404"), "skip_no_sibling")
+        self.assertEqual(closed_posting_action("Apply now"), "continue")
+        self.assertEqual(closed_posting_action("Job ID: R404123 Software Engineer Intern"), "continue")
+        self.assertEqual(closed_posting_action("Barriers removed for candidates"), "continue")
+
+    def test_explicit_f1_instruction_overrides_standing_no(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you require visa sponsorship now or in the future?",
+            explicit_status_instruction="F-1, J-1, or M-1 holders must answer Yes",
+        )
+        self.assertEqual(action, "answer_yes")
+        self.assertEqual(reason, "explicit_status_instruction")
+
+    def test_repo_facts_answer_yes_on_required_future_widget(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?"
+        )
+        self.assertEqual(action, "answer_yes")
+        self.assertEqual(reason, "future_sponsorship")
+
+    def test_future_fact_false_answers_no(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            facts=SponsorshipFacts(future_sponsorship_required=False),
+        )
+        self.assertEqual(action, "answer_no")
+        self.assertEqual(reason, "future_sponsorship")
+
+    def test_fact_only_true_answers_yes(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            facts=SponsorshipFacts(future_sponsorship_required=True),
+        )
+        self.assertEqual(action, "answer_yes")
+        self.assertEqual(reason, "future_sponsorship")
+
+    def test_work_authorization_wording_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require work authorization to work in the U.S.?"
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "work_authorization_wording")
+
+    def test_country_list_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Does HPE sponsor in the United Kingdom or Germany?",
+            names_non_us_countries_only=True,
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "country_specific_sponsorship")
+
+    def test_f1_welcome_without_yes_no_uses_facts(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            explicit_status_instruction="F-1 students are welcome to apply.",
+        )
+        self.assertEqual(action, "answer_yes")
+        self.assertEqual(reason, "future_sponsorship")
+
+    def test_unclear_f1_select_instruction_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            explicit_status_instruction="F-1 holders must select the first option.",
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "explicit_status_instruction_unclear")
+
+    def test_yes_or_no_menu_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            explicit_status_instruction="If you are on F-1, select Yes or No below",
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "explicit_status_instruction_unclear")
+
+    def test_negated_answer_yes_stays_unresolved(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require visa sponsorship?",
+            explicit_status_instruction="F-1 holders should NOT answer Yes",
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "explicit_status_instruction_unclear")
+
+    def test_optional_work_authorization_wording_left_blank(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require work authorization to work in the U.S.?",
+            required=False,
+        )
+        self.assertEqual(action, "leave_blank")
+        self.assertEqual(reason, "optional_identity_field")
+
+
+class TestAuthSemanticSeparation(unittest.TestCase):
+    def setUp(self) -> None:
+        self.facts = load_auth_facts()
+
+    def test_classifier_keeps_independent_semantics(self):
+        cases = (
+            ("Will you require H-1B sponsorship?", "h1b_sponsorship"),
+            ("Are you a U.S. citizen?", "citizenship"),
+            ("What is your visa / status?", "visa_status"),
+            ("Are you an F-1 student?", "status_yes_no"),
+            ("Do you have an EAD?", "ead_possession"),
+            ("Has your OPT been approved?", "opt_approval"),
+            ("Will you be eligible for OPT?", "opt_eligibility"),
+            ("Do you require sponsorship to begin employment?", "sponsorship_to_begin"),
+            ("Will you now or in the future require visa sponsorship?", "future_sponsorship"),
+            ("Are you authorized to work without sponsorship?", "authorization_without_sponsorship"),
+            ("Are you authorized to work in the United States for any employer?", "authorized_for_any_employer"),
+            ("Will you now or in the future require work authorization?", "work_authorization_wording"),
+            ("Are you currently authorized to work in the U.S.?", "current_work_authorization"),
+            ("Are you authorized to work in the United States?", "authorization_at_start"),
+            ("Are you legally eligible to begin employment immediately?", "authorization_at_start"),
+        )
+        for prompt, kind in cases:
+            self.assertEqual(classify_auth_question(prompt), kind, prompt)
+
+    def test_optional_identity_fields_stay_blank(self):
+        prompts = (
+            "Country of citizenship (optional)",
+            "Visa / status (optional)",
+            "Are you currently authorized to work in the U.S.?",
+            "Do you have an EAD?",
+            "Will you now or in the future require visa sponsorship?",
+        )
+        for prompt in prompts:
+            action, reason = auth_form_action(
+                widget_text=prompt,
+                required=False,
+                facts=self.facts,
+            )
+            self.assertEqual(action, "leave_blank", prompt)
+            self.assertEqual(reason, "optional_identity_field", prompt)
+            self.assertEqual(auth_telemetry_outcome(action, reason), "optional_left_blank")
+
+    def test_required_clear_questions_use_one_fact(self):
+        expected = (
+            ("Will you now or in the future require visa sponsorship?", "answer_yes", "future_sponsorship"),
+            ("Will you require H-1B visa sponsorship?", "answer_no", "h1b_sponsorship"),
+            ("Country of citizenship", "answer_china", "citizenship"),
+            ("What is your current visa type?", "answer_f1", "visa_status"),
+            ("Are you an F-1 student?", "answer_yes", "status_yes_no"),
+            ("Are you authorized to work in the United States?", "answer_yes", "authorization_at_start"),
+            ("Are you authorized to work in the United States for any employer?", "answer_yes", "authorized_for_any_employer"),
+            ("Are you legally eligible to begin employment immediately?", "answer_yes", "authorization_at_start"),
+            ("Do you currently possess an Employment Authorization Document (EAD)?", "answer_no", "ead_possession"),
+            ("Has your OPT been approved?", "answer_no", "opt_approval"),
+            ("Will you be eligible for OPT?", "answer_yes", "opt_eligibility"),
+        )
+        for prompt, action, reason in expected:
+            got_action, got_reason = auth_form_action(
+                widget_text=prompt,
+                required=True,
+                facts=self.facts,
+            )
+            self.assertEqual((got_action, got_reason), (action, reason), prompt)
+            self.assertEqual(auth_telemetry_outcome(got_action, got_reason), "answered")
+
+    def test_required_unknown_facts_block_only_that_question(self):
+        cases = (
+            ("Are you currently authorized to work in the U.S.?", "current_work_authorization_unknown"),
+            ("Do you require sponsorship to begin employment?", "sponsorship_to_begin_unknown"),
+            ("Will you now or in the future require work authorization to work in the U.S.?", "work_authorization_wording"),
+            ("Are you authorized to work without sponsorship?", "authorization_without_sponsorship"),
+        )
+        for prompt, reason in cases:
+            action, got_reason = auth_form_action(
+                widget_text=prompt,
+                required=True,
+                facts=self.facts,
+            )
+            self.assertEqual(action, "leave_unresolved", prompt)
+            self.assertEqual(got_reason, reason, prompt)
+            self.assertEqual(
+                auth_telemetry_outcome(action, got_reason),
+                "ambiguous_required_blocked",
+            )
+
+    def test_future_yes_does_not_answer_currently_authorized(self):
+        action, reason = auth_form_action(
+            widget_text="Are you currently authorized to work in the U.S.?",
+            required=True,
+            facts=self.facts,
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "current_work_authorization_unknown")
+        self.assertTrue(self.facts.future_sponsorship_required)
+
+    def test_select_your_visa_is_not_an_unclear_instruction(self):
+        action, reason = auth_form_action(
+            widget_text="Select your visa type: F-1, H-1B, or Other",
+            required=True,
+            facts=self.facts,
+        )
+        self.assertEqual(action, "answer_f1")
+        self.assertEqual(reason, "visa_status")
+
+    def test_loaded_facts_stay_independent(self):
+        self.assertEqual(self.facts.citizenship_country, "China")
+        self.assertEqual(self.facts.current_status, "F-1")
+        self.assertIsNone(self.facts.current_us_work_authorization)
+        self.assertTrue(self.facts.legally_eligible_to_begin_immediately)
+        self.assertTrue(self.facts.authorized_for_any_employer)
+        self.assertIsNone(self.facts.sponsorship_required_to_begin)
+        self.assertTrue(self.facts.future_sponsorship_required)
+        self.assertFalse(self.facts.h1b_sponsorship_required)
+        self.assertFalse(self.facts.opt_ead_in_possession)
+        self.assertFalse(self.facts.opt_approved)
+        self.assertTrue(self.facts.opt_eligible_expected)
+
+    def test_discovery_does_not_skip_on_sponsorship(self):
+        self.assertFalse(discovery_skips_on_unknown_sponsorship())
+        self.assertIn("sponsorship_not_skip", discovery_guide_rule_ids())
+        self.assertTrue(self.facts.future_sponsorship_required)
+
+    def test_telemetry_outcomes_are_named(self):
+        self.assertEqual(
+            AUTH_TELEMETRY_OUTCOMES,
+            (
+                "answered",
+                "optional_left_blank",
+                "ambiguous_required_blocked",
+                "hard_eligibility_skip",
+                "disclosure_prevented",
+            ),
+        )
+        self.assertEqual(auth_telemetry_outcome("answer_yes", "future_sponsorship"), "answered")
+        self.assertEqual(auth_telemetry_outcome("leave_blank", "optional_identity_field"), "optional_left_blank")
+        self.assertEqual(
+            auth_telemetry_outcome("leave_unresolved", "auth_question_unknown"),
+            "ambiguous_required_blocked",
         )
 
 

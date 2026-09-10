@@ -1,0 +1,20 @@
+ts	phase	decision	why	evidence	result
+2026-09-09T14:10:00Z	frame	Read Issue 115 and inspect origin/main. One maintenance PR. Stop before merge.	First real Polar Production report. ChatGPT not required.	https://github.com/JunyiZhou-Conny/job-search-2026-2027-starter/issues/115	framed
+2026-09-09T14:12:00Z	classify	Control overwrite and blank notes are QUEUE_STATE FIX.	One incident, high integrity. Visual empty-row write is the mechanism.	issue 115 control-tab overwrite	FIX
+2026-09-09T14:13:00Z	classify	Crashed R-20260909-0420 is QUEUE_STATE FIX for diagnostics only.	Lease held correctly. Missing run_log and checkpoint. Do not weaken the lease.	issue 115 stuck browser lock	FIX
+2026-09-09T14:14:00Z	classify	Duplicate incident_id is QUEUE_STATE FIX.	INC-20260909-003 reused. Mixed 001 and 01 widths.	issue 115 duplicate incident_id	FIX
+2026-09-09T14:15:00Z	classify	Degree-level JD misses are TRIAGE FIX.	Three jobs, one mechanism, 23 minutes. Do not move OJP into discovery.	issue 115 phd/undergrad gates	FIX
+2026-09-09T14:16:00Z	classify	Intel-style F-1 instruction is FACT_POLICY FIX as a general rule. Standing No stays.	Owner confirmed No on 2026-09-03. Form instructions govern the exact widget.	issue 115 Intel / HPE / Merck	FIX
+2026-09-09T14:17:00Z	classify	Gilead CC-305 and Eightfold parser are OBSERVE.	One employer UI each. No generalization.	issue 115 one-off UI	OBSERVE
+2026-09-09T14:18:00Z	classify	IBM DOB and Intel OPT months are LOCAL_ONLY / NO_ACTION for values. Taxonomy is FIX as MISSING_FACT.	Do not put birth date or OPT months in git.	issue 115 missing facts	LOCAL_ONLY
+2026-09-09T14:19:00Z	classify	Tesla enrollment is OBSERVE.	Judgment under existing dual-date policy. Do not change graduation-window rules.	issue 115 Tesla	OBSERVE
+2026-09-09T14:20:00Z	classify	Uber sibling substitution is DEDUP FIX.	Repo already forbids picking a sibling of a closed posting. Polar did it anyway.	issue 115 stale requisition	FIX
+2026-09-09T14:21:00Z	classify	Dedupe of 2678 queue rows and writing quality are NO_ACTION.	No failure mode.	issue 115 dedupe / writing	NO_ACTION
+2026-09-09T14:22:00Z	design	Skip Arena and Architect. Encode helpers in polar_policy.	Owner already named structural control writes and apply-time degree check.	scripts/polar_policy.py	encoded
+2026-09-09T14:23:00Z	verify	Tightened degree skip and sponsorship parse after a second look.	"this position is for phd" and any F-1 mention would over-block.	tests/test_polar_policy.py	tests green
+2026-09-09T14:24:00Z	verify	Focused Polar tests 79 OK. Full suite 236 OK.	Need proof on the helpers, not a compile-only check.	/opt/cursor/artifacts/polar-prod-learn-0909-unittest.log	236 OK
+2026-09-09T14:25:00Z	handback	One maintenance PR. Stop before merge. ChatGPT not required.	Issue 115 asked for tomorrow to behave better, not more code.	cursor/polar-prod-learn-0909-9a03	open
+2026-09-09T14:28:00Z	verify	Second-look found parser and lock-readback bugs. Tightened helpers and restored the owner No quote.	Negated F-1 Yes, yes-or-no menus, not-PhD-only, R404 job ids, and blanked expires_at would have made tomorrow worse.	tests/test_polar_policy.py	242 OK
+2026-09-09T14:56:00Z	verify	Broad sponsorship no longer defaults to No. Incident ids are monotonic.	Fact true and mapping No now leave_unresolved. 001 and 003 yield 004.	scripts/polar_policy.py	244 OK
+2026-09-10T01:40:00Z	policy	Owner retired self-reject and volunteer-status behavior.	Exact question to one fact. Sponsorship is not a discovery skip. Optional identity fields stay blank.	knowledge/work_authorization.yaml	encoded
+2026-09-10T01:41:00Z	design	Keep independent AuthFacts. Skip Architect and Arena.	Citizenship, status, current auth, start-date auth, OPT, EAD, future sponsorship, and H-1B stay separate.	scripts/polar_policy.py	encoded

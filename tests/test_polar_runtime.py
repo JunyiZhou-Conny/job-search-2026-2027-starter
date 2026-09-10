@@ -29,6 +29,7 @@ REQUIRED_HEADINGS = [
     "## M. Browser lease",
     "## N. Run and incident telemetry",
     "## O. Employer requisition identity",
+    "## P. Memory ownership and Copilot preflight",
 ]
 
 STATUSES = [
@@ -76,15 +77,16 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Junyi Zhou", text)
         self.assertIn("Citizenship country (form and fact): China", text)
         self.assertIn("Current visa type when asked: F-1", text)
-        self.assertIn("Broad visa-sponsorship widget: No", text)
+        self.assertIn("Required future-sponsorship widget: Yes.", text)
         self.assertIn("Future sponsorship required (standing fact): True", text)
+        self.assertIn("Answer only the asked semantic.", text)
+        self.assertIn("Optional identity or status fields stay blank.", text)
         self.assertIn("Program end / I-20 date: 2026-12-18", text)
         self.assertIn("Year-only graduation widget: 2027", text)
         self.assertIn("Earliest full-time start: 2027-01-18", text)
         self.assertIn("Remote ok: False", text)
         self.assertNotIn("Citizenship country (form and fact): United States", text)
-        self.assertNotIn("Broad visa-sponsorship widget: Yes", text)
-        self.assertIn("visa_sponsorship: No.", text)
+        self.assertIn("visa_sponsorship: Yes.", text)
         self.assertIn("DO NOT AUTO-MAP", text)
         self.assertIn("require work authorization", text)
         self.assertIn("Do not treat that wording as this answer", text)
@@ -116,6 +118,18 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("polar_policy.priority_submit_permitted", text)
         self.assertIn("writing_observation_mode: True", text)
         self.assertIn("SUBMISSION_UNKNOWN first", text)
+        self.assertIn("degree_level_gate_missed_at_discovery", text)
+        self.assertIn("github_write_canary must not overwrite polar_browser", text)
+        self.assertIn("clearly says answer Yes or answer No", text)
+        self.assertIn("Simplify Copilot is a required apply precondition.", text)
+        self.assertIn("OWNER_ACTION_REQUIRED", text)
+        self.assertNotIn("optional_accelerator", text)
+        self.assertIn("PREFERENCES.md is not a second strategy database.", text)
+        self.assertIn("preference_resolutions: none", text)
+        self.assertIn("An open Cursor PR is not canonical.", text)
+        self.assertIn("Match candidate_id only.", text)
+        self.assertIn("Never reuse. Never fill gaps.", text)
+        self.assertIn("KEEP_LOCAL leaves pending", text)
 
     def test_committed_file_matches_compiler(self):
         generated = compile_text()
@@ -178,7 +192,7 @@ class TestPolarRuntime(unittest.TestCase):
                 f"generated/polar/workflows/{name}.md",
                 text,
             )
-        self.assertIn("thin bootstrap", text)
+        self.assertIn("thin trust-delegation bootstrap", text)
 
     def test_apply_ledger_still_loads_gates(self):
         import yaml

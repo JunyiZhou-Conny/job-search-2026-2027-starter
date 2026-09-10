@@ -63,8 +63,8 @@
 
 % Heading
 \begin{tabular*}{\textwidth}{l@{\extracolsep{\fill}}r}
-  \textbf{\Large Junyi (Conny) Zhou} & Tel: (404) 663-5601 \\
-  Boston, MA 02215 & Email: \href{mailto:junyizhou@hsph.harvard.edu}{junyizhou@hsph.harvard.edu} \\
+  \textbf{\Large Junyi (Conny) Zhou} & Tel: (000) 000-0000\\
+  Boston, MA 02215 & Email: \href{mailto:candidate@example.test}{candidate@example.test} \\
   \href{https://github.com/JunyiZhou-Conny}{github.com/JunyiZhou-Conny} & \href{https://www.linkedin.com/in/junyi-zhou-270208247}{linkedin.com/in/junyi-zhou-270208247} \\
 \end{tabular*}
 
@@ -92,22 +92,22 @@
   \resumeItem{ML \& Deep Learning}{PyTorch, TensorFlow, Keras, scikit-learn, XGBoost, LightGBM, Hugging Face Transformers}
   \resumeItem{LLM \& Applied AI}{RAG, agentic pipelines, prompt engineering, embeddings \& vector search, OpenAI API, MongoDB Atlas Vector Search}
   \resumeItem{Data \& Compute}{PostgreSQL, MySQL, MongoDB, Spark, Hadoop, SLURM/HPC, multi-GPU job scheduling}
-  \resumeItem{Backend \& DevOps}{Flask, REST APIs, React, Docker, Auth0, Git}
   \resumeItem{Cloud}{AWS (SageMaker, Lambda, EC2, S3, Redshift, Elastic Beanstalk, CloudFront), Snowflake, BigQuery}
+  \resumeItem{Backend \& DevOps}{Flask, REST APIs, React, Docker, Auth0, Git}
   \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
 \resumeSubHeadingListEnd
 
-% Machine Learning Projects
-\section{Machine Learning Projects}
+% Clinical AI Experience
+\section{Clinical AI Experience}
 \resumeSubHeadingListStart
 
   \resumeSubheading
-    {Parameter-Efficient Fine-Tuning of BLIP-2 for Visual Question Answering \href{https://github.com/JunyiZhou-Conny/mini3}{\normalfont\small [GitHub]}}{Boston, MA}
-    {Harvard SHBT-261}{Spring 2026}
+    {Structure-Verified RLVR for Label-Efficient Pathology Instance Segmentation \href{https://github.com/JunyiZhou-Conny/Structure-Verified-RLVR-for-Label-Efficient-Pathology-Instance-Segmentation}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Graduate Researcher | Harvard Health Data Science capstone (mentor Alexander Chowdhury)}{August 2026 -- Present}
     \resumeItemListStart
-      \item Fine-tuned \textbf{BLIP-2} (OPT-2.7B) on \textbf{TextVQA} using \textbf{LoRA}, lifting accuracy from 0.078 zero-shot to 0.213 --- nearly 3$\times$ --- while training 2.62M parameters (0.07\% of the model) in 8 minutes on a single \textbf{A100}.
-      \item Isolated the contribution of \textbf{prompt engineering} across four templates, showing OCR-augmented prompting alone raised zero-shot accuracy to 0.106 before any weight updates.
-      \item Ablated \textbf{LoRA} rank over $r \in \{4, 8, 16\}$ and automated the pipeline end to end, generating every reported figure and \LaTeX{} table directly from result JSONs for reproducibility.
+      \item Building \textbf{S-Seg-RLVR}, a capstone that uses \textbf{reinforcement learning with verifiable rewards} so pathology instance segmentation can optimize instance count, separation, and topology instead of only Dice/IoU.
+      \item Specified a \textbf{SAM / SAM2} mask-decoder policy and a composite \textbf{GRPO} reward (count, separation, topology, panoptic match) against overlap-only medical RL and differentiable topology surrogates; targeting a methods paper at \textbf{MICCAI 2027}.
+      \item Stood up the public research repo: proposal, a 30-paper literature library, a 16-week roadmap, and typed reward interfaces. Training on public nuclei/gland sets and live GRPO runs are next.
     \resumeItemListEnd
 
   \resumeSubheading
@@ -121,9 +121,18 @@
 
 \resumeSubHeadingListEnd
 
-% Research Experience
-\section{Research Experience}
+% Machine Learning Projects
+\section{Machine Learning Projects}
 \resumeSubHeadingListStart
+
+  \resumeSubheading
+    {Pneumonia Detection from Chest Radiographs \href{https://github.com/JunyiZhou-Conny/BST-261-2026-Pneumonia-Chest-X-Ray-Classification}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Harvard BST-261 (Kaggle competition)}{Spring 2026}
+    \resumeItemListStart
+      \item Diagnosed a 14-point generalization gap on a \textbf{Kaggle} chest-radiograph benchmark --- 99\% validation against 85\% leaderboard --- and traced it to memorization of a 4,700-image training set.
+      \item Closed the gap to 96\% with domain-aware augmentation (\textbf{Mixup} $\alpha = 0.2$, RandomResizedCrop, RandomErasing, affine jitter), excluding vertical flips that would render chest radiographs anatomically implausible.
+      \item Found that freezing \textbf{DenseNet-121}'s early layers outweighed architecture choice, beating ResNet-50, ConvNeXt-Tiny, EfficientNet-B0, and a three-model ensemble to reach a 0.959 public score.
+    \resumeItemListEnd
 
   \resumeSubheading
     {Cross-Species Drug Translation using Optimal Transport \& Generative AI}{Boston, MA}
@@ -133,16 +142,6 @@
       \item Ported a 2018 CPU-only \textbf{TensorFlow} reference implementation to \textbf{PyTorch}, reimplementing the \textbf{Input Convex Neural Networks} behind the optimal-transport dual and enabling GPU training on Harvard's \textbf{FASRC Cannon} cluster.
       \item Benchmarked \textbf{CellOT} against \textbf{scGen} on cross-species perturbation prediction, measuring 0.85--0.90 $R^2$ with the source species in training versus 0.65--0.67 on the held-out-species split.
       \item Established through \textbf{paired single-factor ablations} that gene-space choice reverses with split --- 6,619 orthologs wins in-distribution while 1,000 HVGs wins on every out-of-distribution metric --- ruling out a split-independent default.
-    \resumeItemListEnd
-
-  \resumeSubheading
-    {Autonomous Ablation-Search Agent for Cluster-Scale ML Experimentation \href{https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch}{\normalfont\small [GitHub]}}{Boston, MA}
-    {Independent Project | Harvard FASRC Cannon Cluster}{June 2026 -- Present}
-    \resumeItemListStart
-      \item Built a \textbf{self-directed experiment harness} (submit $\rightarrow$ watch $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ synthesize) that plans, launches, and triages \textbf{SLURM} ablation studies unattended --- \textbf{338 runs}, 318 clean and 20 with handled errors, over \textbf{79 hours} of compute.
-      \item Split the planner from the execution substrate and \textbf{checkpointed each agenda to disk}, so the cluster keeps running the last plan while the planner is offline; an adaptive one-delta proposer clears a \textbf{validation gate} before every submit.
-      \item Designed a \textbf{fairshare-aware scheduler} routing small-MLP training to CPU partitions, where GPU carries 200--500$\times$ the fairshare cost, and made runs \textbf{preemption-tolerant} on \texttt{serial\_requeue} via checkpoint/resume and capped job arrays.
-      \item Wired an optional \textbf{LLM planner} behind that interface with per-call \textbf{token and cost accounting} and a spend ceiling that degrades to the deterministic planner on breach or API failure.
     \resumeItemListEnd
 
 \resumeSubHeadingListEnd
