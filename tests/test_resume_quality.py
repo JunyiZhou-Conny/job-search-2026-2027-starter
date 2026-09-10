@@ -253,6 +253,11 @@ class TestCliBuild(unittest.TestCase):
     def test_build_ai_infra(self) -> None:
         tex = ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex"
         self.assertTrue(tex.is_file(), tex)
+        source = tex.read_text()
+        self.assertIn("Human-Supervised Browser Automation System", source)
+        self.assertNotIn("mixhvg-py", source)
+        self.assertNotIn("policy.validate", source)
+        self.assertNotIn("has not been used on recorded runs", source)
         rc = rqe_main(["build", "--family", "ai_infra"])
         self.assertEqual(rc, 0)
         report = ROOT / "docs" / "resume" / "builds" / "ai_infra_v1" / "validation_report.md"
