@@ -45,13 +45,10 @@ board_categories:
 role_clusters:
   cloud_swe:
     titles: ["Software Engineer", "Backend Engineer", "Platform Engineer", "Cloud Engineer", "Infrastructure Engineer", "New Grad SWE"]
-    default_resume: "JZ_resume"
   data_ml:
     titles: ["Machine Learning Engineer", "Applied AI", "AI Engineer", "Data Scientist", "Data Engineer", "ML Intern/New Grad"]
-    default_resume: "JZ_resume"
   health_ai:
     titles: ["Healthcare AI", "Clinical Data", "Digital Health", "Health Informatics", "Life Science ML"]
-    default_resume: "JZ_resume"
 
 preferences:
   industries_preferred: ["big tech", "fast-iterating startups", "applied AI / agents", "cloud platforms"]

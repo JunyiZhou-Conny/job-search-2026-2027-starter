@@ -11,8 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "tests"))
 
-from ingest_discovery_triage import cluster_resume_version  # noqa: E402
-from queue_writeback import default_resume_for_cluster  # noqa: E402
+from queue_writeback import active_base_resume  # noqa: E402
 from test_polar_runtime import compile_text  # noqa: E402
 
 GONE_DIRS = ("cloud_swe", "data_ml", "health_ai", "clusters")
@@ -52,18 +51,11 @@ class TestResumeFolder(unittest.TestCase):
     def test_build_clusters_is_gone(self):
         self.assertFalse((ROOT / "scripts" / "build_clusters.py").exists())
 
-    def test_default_resume_matches_active_base_registry(self):
+    def test_active_base_resume_matches_registry(self):
         expected = active_base_from_registry()
-        self.assertEqual(default_resume_for_cluster("cloud_swe"), expected)
-        self.assertEqual(default_resume_for_cluster("data_ml"), expected)
-        self.assertEqual(default_resume_for_cluster(""), expected)
-
-    def test_ingest_cluster_resume_is_active_base(self):
-        expected = active_base_from_registry()
-        for cluster in ("cloud_swe", "data_ml", "health_ai"):
-            version = cluster_resume_version(cluster)
-            self.assertEqual(version, expected, cluster)
-            self.assertFalse(version.startswith("2026-07-20_"), version)
+        version = active_base_resume()
+        self.assertEqual(version, expected)
+        self.assertFalse(version.startswith("2026-07-20_"), version)
 
     def test_polar_runtime_names_base_not_cluster_files(self):
         text = compile_text()

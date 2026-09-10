@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import generate_apply_queue as gaq  # noqa: E402
-from queue_writeback import default_resume_for_cluster  # noqa: E402
+from queue_writeback import active_base_resume  # noqa: E402
 from js_lib import (
     DATA,  # noqa: E402
     ACTIVITY,
@@ -67,11 +67,6 @@ def log_event(job_id: str, event_type: str, to_status: str = "", note: str = "")
     write_rows(ACTIVITY, LOG_FIELDS, rows)
 
 GEN = ROOT / "generated"
-
-
-def cluster_resume_version(cluster: str) -> str:
-    return default_resume_for_cluster(cluster)
-
 
 LANE_PRIORITY = {"core": "A", "broad": "B", "practice": "C"}
 
@@ -199,7 +194,7 @@ def main() -> int:
                 "date_found": discovered,
                 "status": "discovered",
                 "application_status": "discovered",
-                "resume_version": cluster_resume_version(cluster),
+                "resume_version": active_base_resume(),
                 "pursuit_lane": lane,
                 "priority": priority,
                 "eligibility": "unclear",
@@ -211,7 +206,7 @@ def main() -> int:
                 "label_reason": (r.get("reason") or "")[:500],
                 "needs_review": "false",
                 "next_action": (
-                    f"Open posting → Prefer Simplify or compiled base {cluster_resume_version(cluster)} → submit if still open"
+                    f"Open posting → Prefer Simplify or compiled base {active_base_resume()} → submit if still open"
                 ),
                 "next_action_date": today,
                 "notes": f"[triage:{day} decision=keep] {r.get('reason', '')}".strip(),

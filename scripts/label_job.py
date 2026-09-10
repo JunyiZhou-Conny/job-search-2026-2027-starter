@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from js_lib import (  # noqa: E402
     APPLICATIONS, APP_FIELDS, log, read_rows, sync_app_aliases, today_iso, write_rows,
 )
-from queue_writeback import default_resume_for_cluster  # noqa: E402
+from queue_writeback import active_base_resume  # noqa: E402
 
 CITIZEN_RE = re.compile(r"us citizen|u\.s\. citizen|united states citizen|must be a citizen", re.I)
 CLEARANCE_RE = re.compile(r"security clearance|active clearance|ts/sci", re.I)
@@ -147,7 +147,7 @@ def suggest_from_text(text: str, role: str = "", company: str = "") -> Dict[str,
         "role_cluster": {"value": cluster, "confidence": cluster_conf, "reason": f"Title/JD keyword match → {cluster}"},
         "pursuit_lane": {"value": lane, "confidence": lane_conf, "reason": lane_reason},
         "priority": {"value": band, "confidence": 0.55, "score": total, "reason": f"Score {total} → {band}"},
-        "resume_version": {"value": default_resume_for_cluster(cluster), "confidence": 0.60},
+        "resume_version": {"value": active_base_resume(), "confidence": 0.60},
         "needs_review": hard_conf < 0.7 or sponsor_conf < 0.7 or cluster_conf < 0.55,
         "source": "auto",
         "note": "Sponsorship never alone sets hard_eligibility=ineligible",
