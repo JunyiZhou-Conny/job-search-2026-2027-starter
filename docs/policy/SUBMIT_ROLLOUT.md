@@ -20,7 +20,7 @@ Chrome. They are not the Polar Local root abstraction.
 
 | Weight | Who submits | What the agent does |
 |---|---|---|
-| `regular` | the agent, once that plane's regular gate is open | cluster resume, truthful concise answers, fill, validate, Submit once, verify, record |
+| `regular` | the agent, once that plane's regular gate is open | approved base or Simplify resume, truthful concise answers, fill, validate, Submit once, verify, record |
 | `prioritized` | Polar Local may Submit. Cursor Cloud still stops for a review packet. | deeper research, tailored resume from the evidence bank, real Why-us, full form prep, mandatory writing_log, then Submit on Polar Local |
 
 `prioritized` is decided by `knowledge/application_priority.yaml`. The
@@ -36,7 +36,7 @@ Polar Local may click Submit on a regular or prioritized job only when every ite
 
 - Duplicate check passes against the Sheet and known ledger memory.
 - Company and title on the page match the queue row.
-- Correct cluster resume is attached.
+- Approved production resume is attached (Simplify). Do not upload the two-page master.
 - Identity is correct after a visible read-back.
 - Required factual fields are resolved from `POLAR_RUNTIME` or left for Junyi.
 - No unsupported claim was invented.

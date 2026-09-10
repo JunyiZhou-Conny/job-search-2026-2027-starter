@@ -306,14 +306,10 @@ Preferred layout (same as the template):
 
 ```text
 resumes/base/<your>_resume.tex     ← source of truth
-resumes/cloud_swe/                 ← generated cluster
-resumes/data_ml/
-resumes/health_ai/
-data/resume_versions.csv           ← registry of versions that actually exist
+data/resume_versions.csv           ← registry of versions
 ```
 
 ```bash
-python3 scripts/build_clusters.py           # after base exists and clusters are configured
 ./scripts/compile_resume.sh                 # needs latexmk / TeX Live
 ```
 
@@ -323,8 +319,8 @@ filename in `data/resume_versions.csv`. Do not register Junyi’s `JZ_resume` as
 Quality rules (also in `.cursor/rules/20-resume-tailoring.mdc`):
 
 - No invented tools, ownership, scale, or metrics
-- Cluster = same facts, different order / emphasis
-- Edit base, then regenerate clusters — do not hand-edit generated cluster `.tex`
+- One active resume in `resumes/base/`
+- Edit and compile the base resume. Polar prefers the Simplify resume already attached.
 
 ### Phase 4 — local secrets (optional until you automate a browser)
 
