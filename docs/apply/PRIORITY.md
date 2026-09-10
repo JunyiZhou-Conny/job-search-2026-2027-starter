@@ -49,7 +49,8 @@ READY_PRIORITY no longer waits behind a permanent READY_REGULAR backlog. Polar L
 
 - **Lila Sciences — Software Engineer I, Instrument Software** —
   prioritized (`gtc_2026` + Junyi emphasis). Referral hold retired
-  2026-08-24; review packet before Submit since 2026-09-03.
+  2026-08-24. The 2026-09-03 review-packet line is Cursor Cloud history.
+  Polar Local may Submit after `writing_log` (`docs/policy/SUBMIT_ROLLOUT.md`).
 - **Charta Health — Forward Deployed AI Engineer** — prioritized
   (`fde` + startup + biomedical AI). Why-us v2 accepted. Junyi
   submitted from his own computer 2026-08-24. Cloud Chrome Submit

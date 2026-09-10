@@ -1,0 +1,87 @@
+%% Apply-worker deep dive for apply-ready-jobs.
+%% One invocation = one worker. Claim one job close to execution.
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"WenQuanYi Micro Hei, WenQuanYi Zen Hei, Droid Sans Fallback, sans-serif","fontSize":"16px"}}}%%
+
+flowchart TB
+  classDef state fill:#E8F4FC,stroke:#1B4F72,color:#0B1F33
+  classDef process fill:#F7F7F2,stroke:#2C3E50,color:#1B2631
+  classDef decision fill:#FFF4D6,stroke:#8A6D1B,color:#5D4A12
+  classDef human fill:#FDECEC,stroke:#8B1E1E,color:#5B1111
+
+  subgraph P1["A. START / 启动与预检"]
+    direction LR
+    Start["apply-ready-jobs starts<br/>scheduled :20 ET / 也可重叠再开一个"]
+    Trust["Trust bootstrap<br/>Owner 授权的 GitHub config?<br/>只打开 runtime + 本 workflow"]
+    PrefRec["Preferences reconcile<br/>只按 candidate_id 对齐 main"]
+    Cap{"Capability preflight / 能力检查<br/>google_sheets + browser + local_filesystem"}
+    CapFail["ENVIRONMENT / CAPABILITY_MISSING<br/>停。不是 TRUST_FAILURE"]
+    NoLock["needs_browser_lock = false<br/>polar_browser 是 historical only<br/>禁止 acquire / 禁止 SKIPPED_LOCKED"]
+    RunLog["upsert run_log PARTIAL<br/>崩溃也要留下这一行"]
+    Schema{"claim_run_id 是否存在且唯一?"}
+    SchemaMiss["OWNER_ACTION_REQUIRED<br/>missing_claim_column<br/>只有 polar-sheet-migration 能加列"]
+    SchemaDup["abort<br/>重复列 / 不猜哪一列"]
+  end
+
+  subgraph P2["B. SELECT + CLAIM / 恢复优先，一次领一岗"]
+    direction LR
+    Loop["loop until budget or Copilot stop<br/>claimed_new 上限 3"]
+    Recov["recovery-first<br/>1 SUBMISSION_UNKNOWN 先验证<br/>2 abandoned 或 self-owned IN_PROGRESS<br/>3 READY_PRIORITY 预留 1 槽<br/>4 READY_REGULAR 用剩余槽"]
+    Select["select_next_apply_job<br/>exclude 本轮已见 keys<br/>不预领取名单"]
+    Empty["NO_WORK / 正常结束"]
+    Claim["attempt_claim_job<br/>READY → IN_PROGRESS + claim_run_id<br/>abandoned IN_PROGRESS → restamp 不 bump attempt"]
+    Readback{"confirm_claim_readback<br/>claim_run_id == this run_id?"}
+    Lost["already_claimed<br/>不消耗 max_new_jobs"]
+  end
+
+  subgraph P3["C. PAGE / 打开雇主页并做硬门"]
+    direction LR
+    Open{"apply_url_confidence exact/strong?<br/>否则 Jobright Original Job Post"}
+    Match{"company + title 对得上?"}
+    Closed{"404 / no longer open?"}
+    Elig{"apply-time hard eligibility<br/>登录前读完整 JD"}
+    ReqCap["capture employer_requisition_id<br/>ats_job_id / canonical apply_url"]
+    Req{"requisition_submit_blocked?<br/>同一招聘需求一个 survivor"}
+    Copilot{"Simplify preflight<br/>Copilot UI actually injected?"}
+    CopilotBad["MISSING / UNKNOWN<br/>岗位仍有效 / 环境不健康"]
+    Restore["restore prior READY_*<br/>clear claim_run_id<br/>env_simplify_copilot telemetry<br/>incident ENVIRONMENT<br/>exit OWNER_ACTION_REQUIRED"]
+  end
+
+  subgraph P4["D. FILL + SUBMIT / 填表、重点岗、只投一次"]
+    direction LR
+    CopilotOk["PRESENT<br/>Autofill once / 不用 Generate with AI"]
+    Auth["ordinary auth / 开户是正常工作"]
+    Fill["standing answers + 可见控件回读<br/>auth 只答该语义"]
+    WriteQ["nontrivial free-response<br/>append writing_log"]
+    Prio{"weight == prioritized?"}
+    PrioWork["更深 JD / evidence_bank 天花板<br/>每道有意义题必须 writing_log 完整"]
+    PrioGate{"priority_submit_permitted?<br/>缺题或缺证据 → BLOCKED 不投"}
+    Recheck{"submit_claim_still_held<br/>and 再跑 requisition_submit_blocked"}
+    LostLate["skip / 不修别人的 claim"]
+    Submit["Submit once<br/>验证 → SUBMITTED 或 SUBMISSION_UNKNOWN"]
+    Next["add key to seen / 再 select"]
+  end
+
+  class Start,Trust,PrefRec,NoLock,RunLog,Loop,Recov,Select,Claim,ReqCap,CopilotOk,Auth,Fill,WriteQ,PrioWork,Submit,Next process
+  class Cap,Schema,Readback,Open,Match,Closed,Elig,Req,Copilot,Prio,PrioGate,Recheck decision
+  class CapFail,Empty,Lost,CopilotBad,LostLate,SchemaDup state
+  class SchemaMiss,Restore human
+
+  Start --> Trust --> PrefRec --> Cap
+  Cap --> CapFail
+  Cap --> NoLock --> RunLog --> Schema
+  Schema --> SchemaMiss
+  Schema --> SchemaDup
+  Schema --> Loop --> Recov --> Select
+  Select --> Empty
+  Select --> Claim --> Readback
+  Readback --> Lost --> Next
+  Readback --> Open --> Match --> Closed --> Elig --> ReqCap --> Req --> Copilot
+  Copilot --> CopilotBad --> Restore
+  Copilot --> CopilotOk --> Auth --> Fill --> WriteQ --> Prio
+  Prio --> Recheck
+  Prio --> PrioWork --> PrioGate
+  PrioGate --> Next
+  PrioGate --> Recheck
+  Recheck --> LostLate --> Next
+  Recheck --> Submit --> Next
+  Next --> Loop

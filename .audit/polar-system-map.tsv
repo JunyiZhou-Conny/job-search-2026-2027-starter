@@ -1,0 +1,9 @@
+ts	phase	decision	why	evidence	result
+2026-09-10T20:45:52Z	frame	treat generated Polar files as compiled, not canonical	the files themselves say COMPILED ARTIFACT	generated/polar/workflows/WORKFLOW_MANIFEST.md:3	canonical is YAML + polar_policy + compilers
+2026-09-10T20:48:00Z	ground	confirm worker-pool facts on main 8c54413	user asked to verify, not copy the prompt	knowledge/polar_operator.yaml canary and work_claim	max_jobs_per_run 3, claim_run_id, needs_browser_lock false
+2026-09-10T20:50:00Z	design	one master plus three zoom-ins	a single mermaid of every edge became a spine	docs/architecture/*.mmd	six-column master, apply/state/learning zooms
+2026-09-10T20:51:00Z	harness	write validate_polar_system_map.py against live YAML	a reviewer must rerun the check, not trust a skim	scripts/validate_polar_system_map.py	validator passed
+2026-09-10T20:53:00Z	render	first mermaid-cli PNG was unreadable	CJK font missing and TB layout collapsed	docs/architecture/rendered/	switched to Chrome plus WenQuanYi
+2026-09-10T21:00:00Z	layout	outer flowchart LR with six columns	TB bands ignored direction LR once edges left a subgraph	docs/architecture/polar-system-map.mmd	landscape poster 8048x1190
+2026-09-10T21:07:00Z	docs	banner REALITY_MAP and fix PRIORITY Lila line	stale packet language would fight the map	docs/state/REALITY_MAP.md, docs/apply/PRIORITY.md	recorded, not a behavior change
+2026-09-10T21:11:00Z	verify	validator plus unittest plus four SVG/PNG renders	prove the maps against main, then prove they draw	scripts/validate_polar_system_map.py, tests/test_polar_system_map.py	checks passed, renders written

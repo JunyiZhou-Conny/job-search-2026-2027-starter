@@ -27,6 +27,7 @@ resumes/**/*.fdb_latexmk
 resumes/**/*.synctex.gz
 generated/logs/
 generated/apply_queue/*.html
+docs/architecture/rendered/*.html
 .venv/
 data/queue_undo_journal.json
 

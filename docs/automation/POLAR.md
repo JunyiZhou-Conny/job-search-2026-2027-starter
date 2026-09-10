@@ -4,6 +4,7 @@ This file is the only full Polar essay. Other docs may point here. They must not
 
 Operator config is `knowledge/polar_operator.yaml`.
 The file Polar opens every hour is `generated/polar/runtime/POLAR_RUNTIME.md`.
+The current whole-system map is `docs/architecture/POLAR_SYSTEM.md`.
 Queue columns and statuses are `docs/automation/POLAR_QUEUE.md`.
 Paste-ready Workflow text is `docs/automation/POLAR_WORKFLOWS.md`.
 The 48-hour Cloud comparison is `docs/automation/POLAR_SHADOW.md`.
