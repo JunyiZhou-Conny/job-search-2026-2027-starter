@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.worker-pool+bcc68454160e
+workflow_version: 2026-09-10.worker-pool+cb44991c4b4b
 status: production
 enabled: true
 needs_browser_lock: false
@@ -102,6 +102,7 @@ A claim older than 180 minutes with no fresh queue write is abandoned.
 A claim whose owner run_log result is not PARTIAL is abandoned.
 Different job_keys may be IN_PROGRESS at the same time.
 After each job stage, write last_stage and updated_at on this queue row.
+Write updated_at with datetime.isoformat. Do not leave that cell in a Sheets display format.
 Do not write job checkpoints into the polar_browser control row.
 
 ## Sheet write contract
@@ -182,6 +183,7 @@ max_new_jobs: 3
 reserved_priority_slots: 1
 shared_pool: true
 reservation_is_from_pool: true
+shared_pool means READY_PRIORITY and READY_REGULAR share max_new_jobs. It is not a daily cap.
 worker_budget: per_run
 daily_regular_cap: none
 prioritized_auto_submit: true
@@ -347,12 +349,15 @@ For the current job:
    A blocked authorization field must not stop the rest of the worker.
 11. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
 12. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
-13. Regular row. Before Submit, reread this queue row.
+13. Regular row. Before Submit, reread this queue row and the live sibling rows.
     If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.
+    If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.
     Do not consult a shared daily remaining count. This worker's budget is max_new_jobs.
     Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
 14. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.
-    Before Submit, reread this row. If polar_policy.submit_claim_still_held is false, skip.
+    Before Submit, reread this row and the live sibling rows.
+    If polar_policy.submit_claim_still_held is false, skip.
+    If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.
     Apply polar_policy.priority_submit_permitted before Submit.
     If any meaningful custom question is unanswered in writing_log, do not Submit. Mark BLOCKED.
     A logged question with a blank answer or a blank evidence_note is a Submit blocker.

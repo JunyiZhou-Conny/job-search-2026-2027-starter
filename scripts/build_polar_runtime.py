@@ -766,6 +766,7 @@ def compile_sections() -> Dict[str, str]:
             "Each apply-ready-jobs run claims one job at a time until its per-run budget is used.",
             "The same employer requisition has one canonical owner via pick_canonical_requisition_row.",
             "Two live sibling claims do not both back off.",
+            "Before Submit, reread claim_run_id and rerun requisition_submit_blocked.",
             f"Abandoned IN_PROGRESS claims older than {work_claim_ttl_minutes()} minutes may be recovered.",
             "Empty claim_run_id on IN_PROGRESS is abandoned.",
             "On start, upsert a run_log row for this run_id with result PARTIAL so a crash still leaves a row.",

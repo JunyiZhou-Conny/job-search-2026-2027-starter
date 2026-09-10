@@ -92,13 +92,15 @@ Read the live header row. Map field names to columns. Write by name. Write expli
 
 If the live queue header has no `claim_run_id`, do not append it from apply or discover. Run `polar-sheet-migration` once. That workflow appends the header at the far right when it is missing and leaves it unchanged when it already exists exactly once.
 
-`apply-ready-jobs` is one worker. It selects the next job, claims that `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`, then processes it. A lost claim does not consume the per-run budget. The worker then selects another READY job. Do not write `SKIPPED_LOCKED`. Before Submit, reread `claim_run_id`. If it is not this run, do not Submit.
+`apply-ready-jobs` is one worker. It selects the next job, claims that `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`, then processes it. A lost claim does not consume the per-run budget. The worker then selects another READY job. Do not write `SKIPPED_LOCKED`. Before Submit, reread `claim_run_id` and rerun `requisition_submit_blocked` on the live sibling rows. If this run lost the claim or is no longer the canonical survivor, do not Submit.
 
 Same employer requisition uses `pick_canonical_requisition_row`. Only that survivor continues toward Submit. The other sibling is `SKIP`.
 
+Write `updated_at` with `datetime.isoformat()`. An unreadable `updated_at` on a live `claim_run_id` is not abandoned.
+
 `discover-jobs-hourly` must not overwrite `status`, `claim_run_id`, or other execution fields on `IN_PROGRESS`, `SUBMITTED`, `SUBMISSION_UNKNOWN`, `REVIEW_READY`, or `BLOCKED` rows.
 
-Recover `IN_PROGRESS` only when `claim_run_id` is empty, the owner run_log is no longer `PARTIAL`, or `updated_at` is older than `work_claim.ttl_minutes`.
+Recover `IN_PROGRESS` only when `claim_run_id` is empty, the owner run_log is no longer `PARTIAL`, or a parseable `updated_at` is older than `work_claim.ttl_minutes`.
 
 `polar_browser` remains on the `control` tab as historical state. Do not acquire it. A stale owner there must not stop discovery or apply.
 

@@ -236,6 +236,48 @@ class TestWorkClaim(unittest.TestCase):
         identity = requisition_identity(employer_requisition_id="EPIC-1")
         self.assertIsNone(requisition_submit_blocked(rows, identity, "jr-live", now=NOW))
 
+    def test_later_sibling_claim_flips_canonical_winner_before_submit(self):
+        late = _ready(
+            "jr-late",
+            status="IN_PROGRESS",
+            claim_run_id="run-a",
+            employer_requisition_id="EPIC-1",
+            discovered_at="2026-09-08T11:00:00",
+            updated_at=FRESH,
+        )
+        early_ready = _ready(
+            "jr-early",
+            employer_requisition_id="EPIC-1",
+            discovered_at="2026-09-08T10:00:00",
+        )
+        identity = requisition_identity(employer_requisition_id="EPIC-1")
+        self.assertIsNone(
+            requisition_submit_blocked([late, early_ready], identity, "jr-late", now=NOW)
+        )
+        early_claimed = _ready(
+            "jr-early",
+            status="IN_PROGRESS",
+            claim_run_id="run-b",
+            employer_requisition_id="EPIC-1",
+            discovered_at="2026-09-08T10:00:00",
+            updated_at=FRESH,
+        )
+        self.assertEqual(
+            requisition_submit_blocked([late, early_claimed], identity, "jr-late", now=NOW),
+            "jr-early",
+        )
+        self.assertTrue(submit_claim_still_held(late, "run-a"))
+
+    def test_unreadable_updated_at_does_not_make_a_live_claim_abandoned(self):
+        row = _ready(
+            "job-x",
+            status="IN_PROGRESS",
+            claim_run_id="run-a",
+            updated_at="9/10/2026 16:00:00",
+        )
+        self.assertFalse(claim_is_abandoned(row, now=NOW))
+        self.assertEqual(attempt_claim_job(row, run_id="run-b", now=NOW).result, "ALREADY_CLAIMED")
+
     def test_select_skips_live_foreign_claims_and_keeps_caps(self):
         rows = [
             _ready(
@@ -436,6 +478,10 @@ class TestCompiledConcurrencyContract(unittest.TestCase):
         self.assertNotIn("regular_submit_remaining", apply)
         self.assertNotIn("max_regular_submissions_per_local_day", apply)
         self.assertIn("submit_claim_still_held", apply)
+        self.assertIn(
+            "If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.",
+            apply,
+        )
         self.assertIn("do not append it from this workflow", apply)
         self.assertIn("discover_may_overwrite_execution_fields", discover)
         self.assertIn("do not append it", discover)

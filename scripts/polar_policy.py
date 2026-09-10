@@ -548,7 +548,7 @@ def claim_is_abandoned(
     ttl = work_claim_ttl_minutes(root) if ttl_minutes is None else ttl_minutes
     stamped = parse_timestamp(str(row.get("updated_at") or ""))
     if stamped is None:
-        return True
+        return False
     return stamped + timedelta(minutes=ttl) <= now
 
 
