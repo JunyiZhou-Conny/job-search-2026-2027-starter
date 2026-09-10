@@ -10,4 +10,7 @@ ts	phase	decision	why	evidence	result
 2026-09-10T04:02:00Z	verify	catalog number check uses extracted cores not substring	40 hid inside 2024 and the planted-metric test passed	scripts/rqe/load.py _number_cores	tests green
 2026-09-10T04:02:00Z	verify	three fixtures compiled to 1 page	compile_resume.sh on generated tex	generated/resume_quality/*/compile.log	1 page each
 2026-09-10T04:02:00Z	verify	Citadel leads Compleg 22606 and Twitch keeps Compleg plus Airway	selection changed versus historical one-pagers	generated/resume_quality/*/strategy.md	done
+2026-09-10T04:25:00Z	design	per-JD engine is VIP only. Apply path is BUILD then ROUTE	Polar cannot afford a JD compile on every row	docs/resume/QUALITY_ENGINE.md	accepted
+2026-09-10T04:25:00Z	design	four production families. data routes to swe or ml_ai	no evidence a fifth frozen one-pager is needed	knowledge/resume_philosophy.yaml	accepted
+2026-09-10T04:25:00Z	design	stack #121 onto #120 instead of main	avoid a second evidence author and a stale cluster checkout	PR 120 branch cursor/evidence-master-resume-98c7	open
 

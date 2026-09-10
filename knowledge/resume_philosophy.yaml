@@ -3,24 +3,36 @@ updated: "2026-09-10"
 
 role_families:
   swe:
+    production: true
     historical_baseline: cloud_swe
     narrative: "Software engineer who has shipped full-stack systems and cluster automation"
     lead_signals: [architecture, apis, deployment, reliability, automation, distributed, ownership, migration]
     de_emphasize: [clinical, medical_ai]
     section_titles: ["Engineering Projects", "Research Experience"]
   ml_ai:
+    production: true
     historical_baseline: data_ml
     narrative: "ML engineer with strong experimentation and research engineering"
     lead_signals: [model, training, evaluation, ablations, generalization, inference, llm, agents]
     de_emphasize: []
     section_titles: ["Machine Learning Projects", "Research Experience"]
+  ai_infra:
+    production: true
+    historical_baseline: cloud_swe
+    narrative: "Engineer who builds cluster automation, agent loops, and evaluation harnesses"
+    lead_signals: [automation, distributed, agents, reliability, architecture, llm]
+    de_emphasize: [clinical]
+    section_titles: ["Engineering Projects", "Research Experience"]
   data:
+    production: false
+    routes_to: [swe, ml_ai]
     historical_baseline: data_ml
     narrative: "Data scientist who turns messy sources into measured, reproducible tables"
     lead_signals: [etl, analysis, experimentation, statistics, pipelines, reproducibility, data_scale]
     de_emphasize: [clinical]
     section_titles: ["Data Experience", "Engineering Projects"]
   health_ai:
+    production: true
     historical_baseline: health_ai
     narrative: "Health-data scientist applying ML to clinical and biological questions"
     lead_signals: [clinical, translational, medical_ai, evaluation, model]

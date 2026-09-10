@@ -1,8 +1,10 @@
 version: 1
 updated: '2026-09-10'
-note: Derived wording catalog. Facts stay in knowledge/evidence_bank.yaml. A loader
-  must reject any number here that is absent from the named bank fields. Do not treat
-  this file as a second evidence store.
+note: Display aliases only. Facts stay in knowledge/evidence_bank.yaml. Numeric
+  grounding is required and not sufficient. A row that adds ownership, architecture,
+  impact, responsibility, or a technology without those words in the cited bank
+  fields is an overclaim. BUILD and VIP should prefer the synthesized bank sentence
+  until a semantic gate exists. Do not treat this file as a second evidence store.
 claims:
 - id: airway.fullstack_deploy
   claim: HIPAA-conscious Flask/React/Auth0/MongoDB app deployed on AWS Elastic Beanstalk
