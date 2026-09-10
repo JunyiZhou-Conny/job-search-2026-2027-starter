@@ -1,7 +1,7 @@
 # polar-sheet-migration
 
 workflow: polar-sheet-migration
-workflow_version: 2026-09-10.trust-bootstrap+428b14a31073
+workflow_version: 2026-09-10.worker-pool+400cbb985cc0
 status: manual_once
 enabled: false
 needs_browser_lock: false
@@ -53,7 +53,7 @@ Phone and email values stay in the local Polar profile.
 ## Sheet write contract
 
 mode: named_header_mapping
-required_readback: job_key, status, last_stage
+required_readback: job_key, status, last_stage, claim_run_id
 blank_policy: write_explicit_blank
 never_omit: apply_url_confidence
 
@@ -62,8 +62,9 @@ never_omit: apply_url_confidence
 3. Write fields by header name, not by remembered position.
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
-6. After an important queue write, read back job_key, status, and last_stage.
-7. If those three fields do not match what you meant, repair the row before the next job.
+6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
+7. If job_key, status, or last_stage do not match what you meant, repair those fields.
+8. If claim_run_id is another run_id, do not overwrite it. Skip that job.
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
@@ -89,7 +90,7 @@ Do not rewrite existing cells except to add missing headers.
 
 Create a tab only when it is missing. The required tabs and exact headers are:
 
-- queue: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id
+- queue: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id, claim_run_id
 - writing_log: job_key, company, role, weight, exact_question, answer_used, evidence_note, recorded_at
 - heartbeat: recorded_at, workflow, result, page_opened, notes
 - run_log: run_id, workflow, workflow_version, started_at, ended_at, duration_minutes, result, lock_result, jobs_seen, jobs_attempted, submitted_regular, submitted_priority, blocked, skipped, submission_unknown, simplify_attempted, simplify_fallback_count, notes
@@ -98,11 +99,18 @@ Create a tab only when it is missing. The required tabs and exact headers are:
 - learning_reports: report_date, recorded_at, workflow_version, body_markdown, publish_status, github_url, notes
 
 If queue already has rows, keep them.
-If queue is missing employer_requisition_id or ats_job_id, append those headers at the far right.
+Read the live queue header first. polar_policy.plan_claim_header_migration is the decision.
+If claim_run_id is already present exactly once, leave the header unchanged.
+If it is missing, append it once at the far right. Also append employer_requisition_id or ats_job_id when missing.
+If claim_run_id appears more than once, stop and tell Junyi. Do not delete columns.
 Do not insert a column in the middle of existing queue data.
+Existing rows keep their cells. New claim_run_id cells stay blank until apply-ready-jobs writes them.
+This workflow is the only schema mutator for claim_run_id.
+apply-ready-jobs and discover-jobs-hourly must not append the column.
 If apply_url_confidence is missing from the live header, stop and tell Junyi. Do not guess positions.
 
-Seed one control row with key polar_browser and empty owner_run_id.
+Seed one control row with key polar_browser and empty owner_run_id if that key is missing.
+Do not treat polar_browser as a mutex. Leave historical owner_run_id cells readable.
 Do not invent old run_log or incident_log history.
 
 Verify by reading each header row and comparing it to the lists above.

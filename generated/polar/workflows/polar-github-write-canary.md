@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-10.trust-bootstrap+ef2ea915eb13
+workflow_version: 2026-09-10.worker-pool+8f2e742cf94e
 status: manual_canary
 enabled: false
 needs_browser_lock: false
@@ -53,13 +53,15 @@ Phone and email values stay in the local Polar profile.
 ## Browser lease
 
 needs_browser_lock: false
-This workflow does not take the polar_browser lock.
-If apply-ready-jobs or discover-jobs-hourly holds the lock, continue anyway.
+polar_browser is historical control state. It is not a production mutex.
+Do not acquire it. Do not write run_log result SKIPPED_LOCKED because that row is held.
+A stale polar_browser owner_run_id must not stop this workflow.
+Unrelated Polar workflows may already be using their own browser surfaces.
 
 ## Sheet write contract
 
 mode: named_header_mapping
-required_readback: job_key, status, last_stage
+required_readback: job_key, status, last_stage, claim_run_id
 blank_policy: write_explicit_blank
 never_omit: apply_url_confidence
 
@@ -68,8 +70,9 @@ never_omit: apply_url_confidence
 3. Write fields by header name, not by remembered position.
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
-6. After an important queue write, read back job_key, status, and last_stage.
-7. If those three fields do not match what you meant, repair the row before the next job.
+6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
+7. If job_key, status, or last_stage do not match what you meant, repair those fields.
+8. If claim_run_id is another run_id, do not overwrite it. Skip that job.
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.

@@ -164,26 +164,23 @@ KEEP_LOCAL_LINE_RE = re.compile(
     r"^keep_local (pref_\d{8}_\d{3})\s*:\s*(.*)$"
 )
 
-LOCK_RESULTS = (
-    "ACQUIRED",
-    "REFRESHED",
-    "RELEASED",
-    "SKIPPED_LOCKED",
-    "NOT_REQUIRED",
-)
-
-REQUIRED_QUEUE_READBACK = ("job_key", "status", "last_stage")
+REQUIRED_QUEUE_READBACK = ("job_key", "status", "last_stage", "claim_run_id")
+CLAIM_RUN_ID = "claim_run_id"
+CLAIM_REPEAT_ALREADY = "work_already_claimed"
+CLAIM_REPEAT_RECOVERED = "work_claim_recovered"
+CLAIM_REPEAT_MISSING_COLUMN = "missing_claim_column"
+CLAIM_HEADER_READY = "ready"
+CLAIM_HEADER_MISSING = "missing"
+CLAIM_HEADER_DUPLICATE = "duplicate"
+REQUISITION_REPEAT = "requisition_suppressed"
 CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
 CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
 DEGREE_LEVEL_REPEAT_KEY = "degree_level_gate_missed_at_discovery"
 INCIDENT_ID_RE = re.compile(r"^INC-(\d{8})-(\d{1,3})$")
 
-BROWSER_LOCK_WORKFLOWS = (
+TRUSTED_WORKFLOW_NAMES = (
     "discover-jobs-hourly",
     "apply-ready-jobs",
-)
-
-NO_BROWSER_LOCK_WORKFLOWS = (
     "daily-job-summary",
     "polar-scheduler-heartbeat",
     "production-learning-daily",
@@ -192,8 +189,6 @@ NO_BROWSER_LOCK_WORKFLOWS = (
     "cursor-production-maintenance",
     "polar-sheet-migration",
 )
-
-TRUSTED_WORKFLOW_NAMES = BROWSER_LOCK_WORKFLOWS + NO_BROWSER_LOCK_WORKFLOWS
 
 _SHEET_BROWSER_CAPS = (
     CAPABILITY_GOOGLE_SHEETS,
@@ -258,6 +253,7 @@ QUEUE_COLUMNS = [
     "updated_at",
     "employer_requisition_id",
     "ats_job_id",
+    CLAIM_RUN_ID,
 ]
 
 WRITING_LOG_COLUMNS = [
@@ -401,21 +397,10 @@ def load_submit_gates(root: Optional[Path] = None) -> Dict[str, Any]:
     return data
 
 
-def lease_ttl_minutes(root: Optional[Path] = None) -> int:
-    raw = (load_operator(root).get("lease") or {}).get("ttl_minutes")
+def work_claim_ttl_minutes(root: Optional[Path] = None) -> int:
+    raw = (load_operator(root).get("work_claim") or {}).get("ttl_minutes")
     if raw is None:
-        raise ValueError("lease.ttl_minutes is missing from polar_operator.yaml")
-    return int(raw)
-
-
-def lease_refresh_minutes(root: Optional[Path] = None) -> int:
-    raw = (load_operator(root).get("lease") or {}).get(
-        "refresh_if_remaining_below_minutes"
-    )
-    if raw is None:
-        raise ValueError(
-            "lease.refresh_if_remaining_below_minutes is missing from polar_operator.yaml"
-        )
+        raise ValueError("work_claim.ttl_minutes is missing from polar_operator.yaml")
     return int(raw)
 
 
@@ -446,6 +431,58 @@ def named_row(headers: Sequence[str], fields: Mapping[str, Any]) -> List[str]:
     return row
 
 
+def claim_header_state(headers: Sequence[str]) -> str:
+    count = sum(1 for header in headers if str(header or "").strip() == CLAIM_RUN_ID)
+    if count == 0:
+        return CLAIM_HEADER_MISSING
+    if count == 1:
+        return CLAIM_HEADER_READY
+    return CLAIM_HEADER_DUPLICATE
+
+
+def plan_claim_header_migration(
+    headers: Sequence[str],
+) -> Tuple[str, Tuple[str, ...]]:
+    state = claim_header_state(headers)
+    current = tuple(str(header) for header in headers)
+    if state == CLAIM_HEADER_MISSING:
+        return state, current + (CLAIM_RUN_ID,)
+    return state, current
+
+
+DISCOVER_PROTECTED_STATUSES = frozenset(
+    {
+        "IN_PROGRESS",
+        "SUBMITTED",
+        "SUBMISSION_UNKNOWN",
+        "REVIEW_READY",
+        "BLOCKED",
+    }
+)
+DISCOVER_PROTECTED_FIELDS = (
+    "status",
+    CLAIM_RUN_ID,
+    "last_stage",
+    "attempt_count",
+    "submitted_at",
+    "confirmation",
+    "blocker",
+    "writing_summary",
+)
+
+
+def discover_may_overwrite_execution_fields(status: str) -> bool:
+    return str(status or "").strip() not in DISCOVER_PROTECTED_STATUSES
+
+
+def submit_claim_still_held(row: Mapping[str, Any], run_id: str) -> bool:
+    return (
+        str(row.get("status") or "") == "IN_PROGRESS"
+        and str(row.get(CLAIM_RUN_ID) or "").strip() == str(run_id or "").strip()
+        and bool(str(row.get("job_key") or "").strip())
+    )
+
+
 def readback_fields(headers: Sequence[str], row: Sequence[str]) -> Dict[str, str]:
     mapping = header_map(headers)
     out: Dict[str, str] = {}
@@ -470,94 +507,212 @@ def parse_timestamp(value: str) -> Optional[datetime]:
         return None
 
 
+def _attempt_count(row: Mapping[str, Any]) -> int:
+    raw = str(row.get("attempt_count") or "0").strip() or "0"
+    try:
+        return int(raw)
+    except ValueError:
+        return 0
+
+
+def _run_log_for(run_logs: Sequence[Mapping[str, Any]], run_id: str) -> Optional[Mapping[str, Any]]:
+    target = normalize_text(run_id)
+    if not target:
+        return None
+    for row in run_logs:
+        if normalize_text(str(row.get("run_id") or "")) == target:
+            return row
+    return None
+
+
+def claim_is_abandoned(
+    row: Mapping[str, Any],
+    *,
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    run_logs: Sequence[Mapping[str, Any]] = (),
+    root: Optional[Path] = None,
+) -> bool:
+    if str(row.get("status") or "") != "IN_PROGRESS":
+        return False
+    owner = str(row.get(CLAIM_RUN_ID) or "").strip()
+    if not owner:
+        return True
+    log = _run_log_for(run_logs, owner)
+    if log is not None:
+        result = str(log.get("result") or "").strip()
+        if result and result != "PARTIAL":
+            return True
+    if now is None:
+        return False
+    ttl = work_claim_ttl_minutes(root) if ttl_minutes is None else ttl_minutes
+    stamped = parse_timestamp(str(row.get("updated_at") or ""))
+    if stamped is None:
+        return False
+    return stamped + timedelta(minutes=ttl) <= now
+
+
 @dataclass(frozen=True)
-class LeaseDecision:
+class WorkClaimDecision:
+    result: str
     action: str
-    lock_result: str
+    job_key: str
     owner_run_id: str
-    workflow: str
-    expires_at: str
+    status: str
+    prior_status: str
+    attempt_count: int
+    fields: Dict[str, str]
     notes: str
 
 
-def decide_lease(
-    current: Optional[Mapping[str, str]],
+def attempt_claim_job(
+    row: Mapping[str, Any],
     *,
-    now: datetime,
     run_id: str,
-    workflow: str,
-    needs_lock: bool,
+    now: datetime,
     ttl_minutes: Optional[int] = None,
-    refresh_below_minutes: Optional[int] = None,
-    key: str = LEASE_KEY,
-) -> LeaseDecision:
-    ttl = lease_ttl_minutes() if ttl_minutes is None else ttl_minutes
-    refresh_after = (
-        lease_refresh_minutes()
-        if refresh_below_minutes is None
-        else refresh_below_minutes
-    )
-    if not needs_lock:
-        return LeaseDecision(
-            action="skip",
-            lock_result="NOT_REQUIRED",
-            owner_run_id="",
-            workflow=workflow,
-            expires_at="",
-            notes=f"{key} lock not required for {workflow}",
+    run_logs: Sequence[Mapping[str, Any]] = (),
+    root: Optional[Path] = None,
+) -> WorkClaimDecision:
+    job_key = str(row.get("job_key") or "")
+    status = str(row.get("status") or "")
+    attempt = _attempt_count(row)
+    owner = str(row.get(CLAIM_RUN_ID) or "").strip()
+    if status in READY_STATUSES:
+        next_attempt = attempt + 1
+        fields = {
+            "status": "IN_PROGRESS",
+            CLAIM_RUN_ID: run_id,
+            "updated_at": now.isoformat(),
+            "attempt_count": str(next_attempt),
+        }
+        return WorkClaimDecision(
+            "CLAIMED",
+            "write",
+            job_key,
+            run_id,
+            "IN_PROGRESS",
+            status,
+            next_attempt,
+            fields,
+            "claimed ready work",
         )
-    row = current or {}
-    owner = str(row.get("owner_run_id") or "").strip()
-    expires = parse_timestamp(str(row.get("expires_at") or ""))
-    expired = expires is None or expires <= now
-    expiry = (now + timedelta(minutes=ttl)).isoformat()
-    if owner and owner != run_id and not expired:
-        return LeaseDecision(
-            action="abort",
-            lock_result="SKIPPED_LOCKED",
-            owner_run_id=owner,
-            workflow=str(row.get("workflow") or ""),
-            expires_at=str(row.get("expires_at") or ""),
-            notes=f"{key} held by {owner}",
-        )
-    if owner == run_id and not expired:
-        remaining = expires - now if expires else timedelta(0)
-        if remaining <= timedelta(minutes=refresh_after):
-            return LeaseDecision(
-                action="refresh",
-                lock_result="REFRESHED",
-                owner_run_id=run_id,
-                workflow=workflow,
-                expires_at=expiry,
-                notes=f"refreshed {key}",
+    if status == "IN_PROGRESS":
+        if owner == run_id:
+            return WorkClaimDecision(
+                "CLAIMED",
+                "hold",
+                job_key,
+                run_id,
+                status,
+                status,
+                attempt,
+                {},
+                "already owned by this run",
             )
-        return LeaseDecision(
-            action="hold",
-            lock_result="ACQUIRED",
-            owner_run_id=run_id,
-            workflow=workflow,
-            expires_at=str(row.get("expires_at") or expiry),
-            notes=f"already holds {key}",
+        if claim_is_abandoned(
+            row,
+            now=now,
+            ttl_minutes=ttl_minutes,
+            run_logs=run_logs,
+            root=root,
+        ):
+            fields = {
+                "status": "IN_PROGRESS",
+                CLAIM_RUN_ID: run_id,
+                "updated_at": now.isoformat(),
+            }
+            return WorkClaimDecision(
+                "RECOVERED",
+                "write",
+                job_key,
+                run_id,
+                "IN_PROGRESS",
+                status,
+                attempt,
+                fields,
+                "recovered abandoned claim",
+            )
+        return WorkClaimDecision(
+            "ALREADY_CLAIMED",
+            "skip",
+            job_key,
+            owner,
+            status,
+            status,
+            attempt,
+            {},
+            "foreign live claim",
         )
-    return LeaseDecision(
-        action="acquire",
-        lock_result="ACQUIRED",
-        owner_run_id=run_id,
-        workflow=workflow,
-        expires_at=expiry,
-        notes=f"acquired {key}",
+    return WorkClaimDecision(
+        "INELIGIBLE",
+        "skip",
+        job_key,
+        owner,
+        status,
+        status,
+        attempt,
+        {},
+        f"status {status} is not claimable",
     )
 
 
-def release_lease(run_id: str, workflow: str, now: datetime) -> LeaseDecision:
-    return LeaseDecision(
-        action="release",
-        lock_result="RELEASED",
-        owner_run_id="",
-        workflow=workflow,
-        expires_at=now.isoformat(),
-        notes=f"released by {run_id}",
-    )
+def confirm_claim_readback(
+    after: Mapping[str, Any],
+    *,
+    run_id: str,
+    job_key: str,
+) -> str:
+    if str(after.get("job_key") or "") != job_key:
+        return "ALREADY_CLAIMED"
+    if str(after.get("status") or "") != "IN_PROGRESS":
+        return "INELIGIBLE"
+    owner = str(after.get(CLAIM_RUN_ID) or "").strip()
+    if owner == run_id:
+        return "CLAIMED"
+    return "ALREADY_CLAIMED"
+
+
+def requisition_submit_blocked(
+    rows: Sequence[Mapping[str, Any]],
+    identity: Optional[Tuple[str, str]],
+    job_key: str,
+    *,
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    run_logs: Sequence[Mapping[str, Any]] = (),
+    root: Optional[Path] = None,
+) -> Optional[str]:
+    if identity is None:
+        return None
+    peers: List[Mapping[str, Any]] = []
+    for row in rows:
+        other = str(row.get("job_key") or "")
+        if not other:
+            continue
+        other_id = requisition_identity(
+            employer_requisition_id=str(row.get("employer_requisition_id") or ""),
+            ats_job_id=str(row.get("ats_job_id") or ""),
+            apply_url=str(row.get("apply_url") or ""),
+        )
+        if other_id != identity:
+            continue
+        status = str(row.get("status") or "")
+        if status == "SKIP":
+            continue
+        if status == "IN_PROGRESS" and claim_is_abandoned(
+            row,
+            now=now,
+            ttl_minutes=ttl_minutes,
+            run_logs=run_logs,
+            root=root,
+        ):
+            continue
+        peers.append(row)
+    canonical = pick_canonical_requisition_row(peers, identity)
+    if canonical and canonical != job_key:
+        return canonical
+    return None
 
 
 @dataclass(frozen=True)
@@ -660,19 +815,6 @@ def control_write_persisted(
             if str(later.get(field) or "") != str(prior.get(field) or ""):
                 return False
     return True
-
-
-def lease_checkpoint_notes(job_key: str, last_stage: str) -> str:
-    return f"checkpoint job_key={job_key} last_stage={last_stage}"
-
-
-def parse_lease_checkpoint(notes: str) -> Optional[Tuple[str, str]]:
-    text = notes or ""
-    job_match = re.search(r"job_key=([A-Za-z0-9._:-]+)", text)
-    stage_match = re.search(r"last_stage=([A-Za-z0-9._:-]+)", text)
-    if not job_match or not stage_match:
-        return None
-    return job_match.group(1), stage_match.group(1)
 
 
 def plan_run_log_write(
@@ -1107,7 +1249,6 @@ class ApplyBatch:
 class ApplyRunCaps:
     max_new_jobs: int
     reserved_priority_slots: int
-    max_regular_submissions_per_local_day: int
     prioritized_auto_submit: bool
 
 
@@ -1132,33 +1273,15 @@ def resolve_apply_run_caps(
     polar_local: Mapping[str, Any],
 ) -> ApplyRunCaps:
     max_jobs = _positive_int(canary.get("max_jobs_per_run"), "canary.max_jobs_per_run")
-    regular_alias = _positive_int(
-        canary.get("max_regular_jobs_per_run"),
-        "canary.max_regular_jobs_per_run",
-    )
     gate_cap = _positive_int(
         polar_local.get("regular_submit_cap_per_run"),
         "polar_local.regular_submit_cap_per_run",
     )
-    if not (max_jobs == regular_alias == gate_cap):
+    if max_jobs != gate_cap:
         raise ValueError(
-            "apply run cap mismatch: canary.max_jobs_per_run, "
-            "canary.max_regular_jobs_per_run, and "
+            "apply run cap mismatch: canary.max_jobs_per_run and "
             "polar_local.regular_submit_cap_per_run must be the same "
-            "shared new-execution pool, not additive numbers"
-        )
-    day_canary = _positive_int(
-        canary.get("max_regular_submissions_per_local_day"),
-        "canary.max_regular_submissions_per_local_day",
-    )
-    day_gate = _positive_int(
-        polar_local.get("regular_submit_cap_per_local_day"),
-        "polar_local.regular_submit_cap_per_local_day",
-    )
-    if day_canary != day_gate:
-        raise ValueError(
-            "regular day cap mismatch between polar_operator canary "
-            "and submit_gates polar_local"
+            "per-run worker budget"
         )
     reserved = canary.get("reserved_priority_slots_per_run")
     try:
@@ -1181,7 +1304,6 @@ def resolve_apply_run_caps(
     return ApplyRunCaps(
         max_new_jobs=max_jobs,
         reserved_priority_slots=reserved_slots,
-        max_regular_submissions_per_local_day=day_canary,
         prioritized_auto_submit=bool(auto),
     )
 
@@ -1277,6 +1399,13 @@ def select_apply_batch(
     max_new_jobs: Optional[int] = None,
     reserved_priority_slots: Optional[int] = None,
     root: Optional[Path] = None,
+    run_id: str = "",
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    run_logs: Sequence[Mapping[str, Any]] = (),
+    exclude_keys: Sequence[str] = (),
+    new_jobs_already_claimed: int = 0,
+    priority_already_claimed: int = 0,
 ) -> ApplyBatch:
     if max_new_jobs is None or reserved_priority_slots is None:
         caps = apply_run_caps(root)
@@ -1284,18 +1413,38 @@ def select_apply_batch(
             max_new_jobs = caps.max_new_jobs
         if reserved_priority_slots is None:
             reserved_priority_slots = caps.reserved_priority_slots
-    unknown = [r for r in rows if r.get("status") == "SUBMISSION_UNKNOWN"]
-    in_progress = sorted(
-        [r for r in rows if r.get("status") == "IN_PROGRESS"],
-        key=_sort_key,
-    )
-    priority = [r for r in rows if r.get("status") == "READY_PRIORITY"]
-    regular = [r for r in rows if r.get("status") == "READY_REGULAR"]
+    skipped = {normalize_text(key) for key in exclude_keys if str(key or "").strip()}
+    visible = [
+        row
+        for row in rows
+        if normalize_text(str(row.get("job_key") or "")) not in skipped
+    ]
+    unknown = [r for r in visible if r.get("status") == "SUBMISSION_UNKNOWN"]
+    recoverable: List[Mapping[str, str]] = []
+    for row in visible:
+        if row.get("status") != "IN_PROGRESS":
+            continue
+        owner = str(row.get(CLAIM_RUN_ID) or "").strip()
+        if run_id and owner == run_id:
+            recoverable.append(row)
+            continue
+        if claim_is_abandoned(
+            row,
+            now=now,
+            ttl_minutes=ttl_minutes,
+            run_logs=run_logs,
+            root=root,
+        ):
+            recoverable.append(row)
+    in_progress = sorted(recoverable, key=_sort_key)
+    priority = [r for r in visible if r.get("status") == "READY_PRIORITY"]
+    regular = [r for r in visible if r.get("status") == "READY_REGULAR"]
     recovery = [str(r.get("job_key") or "") for r in unknown + in_progress]
     chosen_priority: List[str] = []
-    remaining = max_new_jobs
-    if reserved_priority_slots > 0 and priority and remaining > 0:
-        take = min(reserved_priority_slots, remaining, len(priority))
+    remaining = max(0, max_new_jobs - max(0, new_jobs_already_claimed))
+    reserved_left = max(0, reserved_priority_slots - max(0, priority_already_claimed))
+    if reserved_left > 0 and priority and remaining > 0:
+        take = min(reserved_left, remaining, len(priority))
         chosen_priority = [str(r.get("job_key") or "") for r in priority[:take]]
         remaining -= take
     chosen_regular = [str(r.get("job_key") or "") for r in regular[:remaining]]
@@ -1304,6 +1453,14 @@ def select_apply_batch(
         priority=tuple(k for k in chosen_priority if k),
         regular=tuple(k for k in chosen_regular if k),
     )
+
+
+def select_next_apply_job(
+    rows: Sequence[Mapping[str, str]],
+    **kwargs: Any,
+) -> Optional[str]:
+    keys = select_apply_batch(rows, **kwargs).job_keys
+    return keys[0] if keys else None
 
 
 def requisition_identity(
@@ -1597,10 +1754,6 @@ def document_availability(root: Optional[Path] = None) -> List[Dict[str, Any]]:
     return rows
 
 
-def needs_browser_lock(workflow: str) -> bool:
-    return workflow in BROWSER_LOCK_WORKFLOWS
-
-
 def parse_contract_block(text: str, heading: str) -> Dict[str, str]:
     marker = f"## {heading}"
     if marker not in text:
@@ -1630,6 +1783,7 @@ class CopilotMissRestore:
     status: str
     attempt_count: int
     consume_job: bool
+    claim_run_id: str = ""
 
 
 @dataclass(frozen=True)
@@ -1677,10 +1831,6 @@ def missing_copilot_run_result() -> str:
     return "OWNER_ACTION_REQUIRED"
 
 
-def missing_copilot_should_release_lease() -> bool:
-    return True
-
-
 def restore_queue_after_copilot_miss(
     *,
     ready_status: str,
@@ -1692,6 +1842,7 @@ def restore_queue_after_copilot_miss(
         status=ready_status,
         attempt_count=attempt_count_before_run,
         consume_job=False,
+        claim_run_id="",
     )
 
 

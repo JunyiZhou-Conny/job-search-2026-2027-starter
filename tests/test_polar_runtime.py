@@ -110,10 +110,11 @@ class TestPolarRuntime(unittest.TestCase):
         text = compile_text()
         for status in STATUSES:
             self.assertIn(status, text, status)
-        self.assertIn("Shared new-execution pool per apply-ready-jobs run: 3.", text)
+        self.assertIn("Per-run worker budget on apply-ready-jobs: 3 new jobs.", text)
         self.assertIn("taken from that pool, not added to it", text)
         self.assertNotIn("Regular jobs per apply-ready-jobs run:", text)
-        self.assertIn("Regular submissions per local calendar day (America/New_York): 10", text)
+        self.assertIn("There is no shared daily regular submission pool.", text)
+        self.assertNotIn("Regular submissions per local calendar day", text)
         self.assertIn("Prioritized auto-submit: True", text)
         self.assertIn("polar_policy.priority_submit_permitted", text)
         self.assertIn("writing_observation_mode: True", text)
@@ -204,7 +205,7 @@ class TestPolarRuntime(unittest.TestCase):
         gates = load_gates()
         self.assertIn("ashby", gates["gates"])
         self.assertEqual(gates["regular_submit_cap_per_run"], 3)
-        self.assertEqual(gates["polar_local"]["regular_submit_cap_per_local_day"], 10)
+        self.assertNotIn("regular_submit_cap_per_local_day", gates["polar_local"])
 
     def test_historical_guard_includes_known_ledger_keys(self):
         text = compile_text()
