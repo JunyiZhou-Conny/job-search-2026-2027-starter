@@ -20,6 +20,15 @@ expected_ead_ready: "2027-01-18"  # planned from program end; confirm against ac
 earliest_full_time_start: "2027-01-18"
 preferred_full_time_start: "2027-01-18 ideal; any later 2027 date including Summer OK"
 future_sponsorship_required: true
+# Independent facts. Do not infer one answer from another.
+current_us_work_authorization: unknown
+legally_eligible_to_begin_immediately: true
+authorized_for_any_employer: true
+sponsorship_required_to_begin: unknown
+h1b_sponsorship_required: false
+opt_ead_in_possession: false
+opt_approved: false
+opt_eligible_expected: true
 
 # Citizenship facts. Junyi confirmed in writing 2026-09-03 (Twitch review).
 citizenship_country: "China"
@@ -44,23 +53,21 @@ form_strategy:
     see: "knowledge/form_strategy.yaml always.visa_type_named"
 
   visa_sponsorship:
-    status: fact_mapping_conflict
-    confirmed_by: "Junyi, written, 2026-09-03 (Twitch review; the widget text counted STEM OPT Training Plan as support)"
-    form_answer: "No"
-    execution: leave_unresolved
-    accept_also: ["No, I do not need sponsorship", "None"]
+    status: derived_from_fact
+    confirmed_by: "Owner policy 2026-09-10. Historical mapping 2026-09-03 was No."
+    form_answer: "Yes"
+    execution: answer_from_future_sponsorship_required
+    historical_form_answer: "No"
     when: >
-      Do you need, or will you need in the future, any immigration related
-      support or sponsorship / require visa sponsorship now or in the
-      future / require sponsorship to work in the US. Any broad wording.
-    history: "2026-08-24 recorded No (agent prose); 2026-09-03 set to leave_for_junyi pending confirmation; 2026-09-03 confirmed No by Junyi; 2026-09-09 Polar execution stops applying that No while future_sponsorship_required is true."
-    fact_unchanged: "future_sponsorship_required remains true. Polar does not apply the historical No mapping while that fact is true."
+      Will you now or in the future require visa sponsorship? The
+      future_sponsorship_required fact only. Do not add F-1, OPT, or
+      citizenship to this answer.
+    history: "2026-08-24 recorded No; 2026-09-03 Junyi confirmed No; 2026-09-09 Polar blocked the conflict; 2026-09-10 owner policy answers the fact (Yes) and does not volunteer extra status."
+    fact_unchanged: "future_sponsorship_required remains true."
     explicit_status_instruction: >
-      Polar Production 2026-09-09. If the form names F-1/J-1/M-1 and
-      clearly says answer Yes or answer No, follow that polarity on
-      that widget. Select Yes or No, or not/never with Yes, stays
-      unresolved. A broad widget stays unresolved while the fact and
-      the historical mapping conflict.
+      If the form names F-1/J-1/M-1 and clearly says answer Yes or
+      answer No, follow that polarity on that widget. Select Yes or No,
+      or not/never with Yes, stays unresolved.
   citizenship_country:
     decided: "2026-09-03"
     form_answer: "China"
@@ -85,9 +92,9 @@ standard_question_answers:
     typical_answer: "Yes"
     condition: "Valid OPT EAD covering the employment period"
   will_require_sponsorship_now_or_future:
-    typical_answer: "No"
-    confirmed: "Junyi, written, 2026-09-03"
-    condition: "Widget answer only. Standing fact is future_sponsorship_required true."
+    typical_answer: "Yes"
+    confirmed: "Owner policy 2026-09-10. Derived from future_sponsorship_required."
+    condition: "This widget only. Do not add status, OPT, or citizenship."
   program_end_or_graduation_date:
     typical_answer: "Program completion / I-20 end: December 18, 2026; commencement March 2027"
     default_short_answer: "December 2026"
@@ -96,10 +103,9 @@ standard_question_answers:
     when_form_asks_commencement_or_spring_2027: "March 2027 (program completed December 2026)"
     notion_2026-08-24: "Junyi: fill the graduation date as December 18."
   widget_answers_are_owner_decisions: >
-    Standing widget answers in this file were confirmed by Junyi in writing
-    on the dates shown. The agent applies them verbatim and does not
-    re-derive them from the facts above. The agent never invents an answer
-    that is not listed here.
+    Polar answers only the asked semantic from the independent facts
+    above. It does not apply a historical mapping that conflicts with a
+    fact. It never invents an answer that is not listed here.
 
 questions_requiring_manual_review:
   - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"

@@ -49,6 +49,38 @@ TIME_LOST_CATEGORIES = (
     "OTHER",
 )
 
+AUTH_TELEMETRY_OUTCOMES = (
+    "answered",
+    "optional_left_blank",
+    "ambiguous_required_blocked",
+    "hard_eligibility_skip",
+    "disclosure_prevented",
+)
+
+AUTH_QUESTION_KINDS = (
+    "citizenship",
+    "visa_status",
+    "status_yes_no",
+    "current_work_authorization",
+    "authorization_at_start",
+    "authorized_for_any_employer",
+    "authorization_without_sponsorship",
+    "sponsorship_to_begin",
+    "future_sponsorship",
+    "h1b_sponsorship",
+    "opt_eligibility",
+    "opt_approval",
+    "ead_possession",
+    "work_authorization_wording",
+    "country_specific_sponsorship",
+    "unknown",
+)
+
+_OPTIONAL_IDENTITY_KINDS = frozenset(AUTH_QUESTION_KINDS)
+_UNCLEAR_INSTRUCTION_KINDS = frozenset(
+    {"future_sponsorship", "sponsorship_to_begin"}
+)
+
 RUN_LOG_RESULTS = (
     "SUCCESS",
     "PARTIAL",
@@ -658,9 +690,21 @@ def _unclear_status_instruction(*texts: str) -> bool:
 
 
 @dataclass(frozen=True)
-class SponsorshipFacts:
-    future_sponsorship_required: Optional[bool]
-    standing_form_answer: Optional[str]
+class AuthFacts:
+    citizenship_country: Optional[str] = None
+    current_status: Optional[str] = None
+    current_us_work_authorization: Optional[bool] = None
+    legally_eligible_to_begin_immediately: Optional[bool] = None
+    authorized_for_any_employer: Optional[bool] = None
+    sponsorship_required_to_begin: Optional[bool] = None
+    future_sponsorship_required: Optional[bool] = None
+    h1b_sponsorship_required: Optional[bool] = None
+    opt_ead_in_possession: Optional[bool] = None
+    opt_approved: Optional[bool] = None
+    opt_eligible_expected: Optional[bool] = None
+
+
+SponsorshipFacts = AuthFacts
 
 
 def _optional_bool(value: Any) -> Optional[bool]:
@@ -674,41 +718,238 @@ def _optional_bool(value: Any) -> Optional[bool]:
     return None
 
 
-def _yes_no_token(value: Any) -> Optional[str]:
-    text = normalize_text(str(value or ""))
-    if text in {"yes", "true", "answer_yes", "answer yes"}:
+def _yes_no_from_bool(value: Optional[bool]) -> Optional[str]:
+    if value is True:
         return "yes"
-    if text in {"no", "false", "answer_no", "answer no"}:
+    if value is False:
         return "no"
     return None
 
 
-def load_sponsorship_facts(root: Optional[Path] = None) -> SponsorshipFacts:
+def load_auth_facts(root: Optional[Path] = None) -> AuthFacts:
     base = Path(root) if root else ROOT
     data = load_yaml(base / "knowledge" / "work_authorization.yaml")
     if not isinstance(data, dict):
         raise ValueError("work_authorization.yaml must be a mapping")
-    visa = ((data.get("form_strategy") or {}).get("visa_sponsorship") or {})
-    return SponsorshipFacts(
+    h1b = ((data.get("form_strategy") or {}).get("h1b_named_question_only") or {})
+    h1b_required = _optional_bool(data.get("h1b_sponsorship_required"))
+    if h1b_required is None:
+        h1b_required = _optional_bool(h1b.get("form_answer"))
+    any_employer = _optional_bool(data.get("authorized_for_any_employer"))
+    if any_employer is None:
+        form = load_yaml(base / "knowledge" / "form_strategy.yaml")
+        if isinstance(form, dict):
+            any_employer = _optional_bool(
+                (form.get("authorized_for_any_employer") or {}).get("form_answer")
+            )
+    return AuthFacts(
+        citizenship_country=str(data.get("citizenship_country") or "").strip() or None,
+        current_status=str(data.get("current_status") or "").strip() or None,
+        current_us_work_authorization=_optional_bool(data.get("current_us_work_authorization")),
+        legally_eligible_to_begin_immediately=_optional_bool(
+            data.get("legally_eligible_to_begin_immediately")
+        ),
+        authorized_for_any_employer=any_employer,
+        sponsorship_required_to_begin=_optional_bool(data.get("sponsorship_required_to_begin")),
         future_sponsorship_required=_optional_bool(data.get("future_sponsorship_required")),
-        standing_form_answer=_yes_no_token(visa.get("form_answer")),
+        h1b_sponsorship_required=h1b_required,
+        opt_ead_in_possession=_optional_bool(data.get("opt_ead_in_possession")),
+        opt_approved=_optional_bool(data.get("opt_approved")),
+        opt_eligible_expected=_optional_bool(data.get("opt_eligible_expected")),
     )
 
 
-def _broad_sponsorship_from_facts(facts: SponsorshipFacts) -> Tuple[str, str]:
-    derived = None
-    if facts.future_sponsorship_required is True:
-        derived = "yes"
-    elif facts.future_sponsorship_required is False:
-        derived = "no"
-    mapping = facts.standing_form_answer
-    if derived and mapping and derived != mapping:
-        return "leave_unresolved", "fact_mapping_conflict"
-    if derived:
-        return f"answer_{derived}", "canonical_fact"
-    if mapping:
-        return f"answer_{mapping}", "standing_form_answer"
-    return "leave_unresolved", "sponsorship_fact_unknown"
+def load_sponsorship_facts(root: Optional[Path] = None) -> AuthFacts:
+    return load_auth_facts(root)
+
+
+def classify_auth_question(text: str) -> str:
+    normalized = normalize_text(text)
+    if not normalized:
+        return "unknown"
+    if re.search(r"\b(citizen|citizenship|nationality)\b", normalized):
+        return "citizenship"
+    if re.search(
+        r"\b(visa type|visa status|visa\s*/\s*status|current status|"
+        r"select your visa|what is your visa|immigration status|current visa)\b",
+        normalized,
+    ):
+        return "visa_status"
+    if re.search(r"\bh-?1b\b", normalized):
+        return "h1b_sponsorship"
+    if re.search(r"\bead\b|employment authorization document", normalized):
+        return "ead_possession"
+    if re.search(r"\bopt\b", normalized) and re.search(r"approv|awarded", normalized):
+        return "opt_approval"
+    if re.search(r"\bopt\b", normalized) and re.search(r"eligib|qualif", normalized):
+        return "opt_eligibility"
+    if re.search(r"\bauthoriz", normalized) and re.search(
+        r"\b(without sponsorship|no sponsorship|not require sponsorship)\b",
+        normalized,
+    ):
+        return "authorization_without_sponsorship"
+    if re.search(r"\bsponsor", normalized) and re.search(
+        r"\b(to begin|to start|to commence|before start|at start|start date)\b",
+        normalized,
+    ):
+        return "sponsorship_to_begin"
+    if re.search(r"\bsponsor", normalized):
+        return "future_sponsorship"
+    if re.search(r"\bany (?:u\.?s\.? )?employer\b", normalized):
+        return "authorized_for_any_employer"
+    if _STATUS_RE.search(normalized) and re.search(r"\b(are you|do you hold)\b", normalized):
+        return "status_yes_no"
+    if "work authorization" in normalized and "sponsorship" not in normalized:
+        return "work_authorization_wording"
+    if re.search(r"\b(currently|presently|right now|now authorized)\b", normalized) and re.search(
+        r"\bauthoriz", normalized
+    ):
+        return "current_work_authorization"
+    if re.search(r"\b(legally eligible to begin|eligible to begin employment)\b", normalized):
+        return "authorization_at_start"
+    if re.search(r"\bauthoriz", normalized) and re.search(r"\bwork\b", normalized):
+        if re.search(r"\b(currently|presently|right now)\b", normalized):
+            return "current_work_authorization"
+        return "authorization_at_start"
+    return "unknown"
+
+
+def _bool_answer(value: Optional[bool], kind: str) -> Tuple[str, str]:
+    token = _yes_no_from_bool(value)
+    if token is None:
+        return "leave_unresolved", f"{kind}_unknown"
+    return f"answer_{token}", kind
+
+
+def _status_yes_no_answer(widget_text: str, current_status: Optional[str]) -> Tuple[str, str]:
+    asked = normalize_text(widget_text)
+    have = normalize_text(current_status or "")
+    if not have:
+        return "leave_unresolved", "status_yes_no_unknown"
+    mentioned = _STATUS_RE.findall(asked)
+    if not mentioned:
+        return "leave_unresolved", "status_yes_no_unknown"
+    have_token = have.replace("-", "")
+    if any(token.replace("-", "") == have_token for token in mentioned):
+        return "answer_yes", "status_yes_no"
+    return "answer_no", "status_yes_no"
+
+
+def auth_telemetry_outcome(execution: str, reason: str = "") -> str:
+    if execution == "leave_blank":
+        return "optional_left_blank"
+    if execution.startswith("answer_"):
+        return "answered"
+    if reason == "hard_eligibility_skip":
+        return "hard_eligibility_skip"
+    if reason == "disclosure_prevented":
+        return "disclosure_prevented"
+    return "ambiguous_required_blocked"
+
+
+def discovery_data_policy(root: Optional[Path] = None) -> Dict[str, Any]:
+    base = Path(root) if root else ROOT
+    data = load_yaml(base / "knowledge" / "discovery_triage_rules.yaml")
+    if not isinstance(data, dict):
+        raise ValueError("discovery_triage_rules.yaml must be a mapping")
+    policy = data.get("data_policy") or {}
+    if not isinstance(policy, dict):
+        raise ValueError("discovery_triage_rules.yaml data_policy must be a mapping")
+    return policy
+
+
+def discovery_skips_on_unknown_sponsorship(root: Optional[Path] = None) -> bool:
+    return not bool(discovery_data_policy(root).get("sponsorship_unknown_is_not_skip", True))
+
+
+def discovery_guide_rule_ids(root: Optional[Path] = None) -> Tuple[str, ...]:
+    base = Path(root) if root else ROOT
+    data = load_yaml(base / "knowledge" / "discovery_triage_rules.yaml")
+    if not isinstance(data, dict):
+        raise ValueError("discovery_triage_rules.yaml must be a mapping")
+    ids: List[str] = []
+    for rule in data.get("guide_rules") or []:
+        if isinstance(rule, dict) and rule.get("id"):
+            ids.append(str(rule["id"]))
+    return tuple(ids)
+
+
+def auth_form_action(
+    *,
+    widget_text: str,
+    explicit_status_instruction: str = "",
+    required: bool = True,
+    names_non_us_countries_only: bool = False,
+    facts: Optional[AuthFacts] = None,
+) -> Tuple[str, str]:
+    resolved = facts if facts is not None else load_auth_facts()
+    instructed = _explicit_status_answer(explicit_status_instruction) or _explicit_status_answer(
+        widget_text
+    )
+    if instructed == "yes":
+        return "answer_yes", "explicit_status_instruction"
+    if instructed == "no":
+        return "answer_no", "explicit_status_instruction"
+    if names_non_us_countries_only:
+        if not required:
+            return "leave_blank", "optional_identity_field"
+        return "leave_unresolved", "country_specific_sponsorship"
+    kind = classify_auth_question(widget_text)
+    if (
+        instructed is None
+        and kind in _UNCLEAR_INSTRUCTION_KINDS
+        and _unclear_status_instruction(explicit_status_instruction, widget_text)
+    ):
+        return "leave_unresolved", "explicit_status_instruction_unclear"
+    if kind in {"work_authorization_wording", "authorization_without_sponsorship"}:
+        if not required:
+            return "leave_blank", "optional_identity_field"
+        return "leave_unresolved", kind
+    if not required and kind in _OPTIONAL_IDENTITY_KINDS:
+        return "leave_blank", "optional_identity_field"
+    if kind == "citizenship":
+        if resolved.citizenship_country:
+            return (
+                "answer_china"
+                if normalize_text(resolved.citizenship_country) == "china"
+                else "answer_value",
+                "citizenship",
+            )
+        return "leave_unresolved", "citizenship_unknown"
+    if kind == "visa_status":
+        if resolved.current_status:
+            return (
+                "answer_f1"
+                if normalize_text(resolved.current_status) in {"f-1", "f1"}
+                else "answer_value",
+                "visa_status",
+            )
+        return "leave_unresolved", "visa_status_unknown"
+    if kind == "status_yes_no":
+        return _status_yes_no_answer(widget_text, resolved.current_status)
+    if kind == "current_work_authorization":
+        return _bool_answer(resolved.current_us_work_authorization, "current_work_authorization")
+    if kind == "authorization_at_start":
+        return _bool_answer(
+            resolved.legally_eligible_to_begin_immediately, "authorization_at_start"
+        )
+    if kind == "authorized_for_any_employer":
+        return _bool_answer(resolved.authorized_for_any_employer, "authorized_for_any_employer")
+    if kind == "sponsorship_to_begin":
+        return _bool_answer(resolved.sponsorship_required_to_begin, "sponsorship_to_begin")
+    if kind == "future_sponsorship":
+        return _bool_answer(resolved.future_sponsorship_required, "future_sponsorship")
+    if kind == "h1b_sponsorship":
+        return _bool_answer(resolved.h1b_sponsorship_required, "h1b_sponsorship")
+    if kind == "opt_eligibility":
+        return _bool_answer(resolved.opt_eligible_expected, "opt_eligibility")
+    if kind == "opt_approval":
+        return _bool_answer(resolved.opt_approved, "opt_approval")
+    if kind == "ead_possession":
+        return _bool_answer(resolved.opt_ead_in_possession, "ead_possession")
+    if not required:
+        return "leave_blank", "optional_identity_field"
+    return "leave_unresolved", "auth_question_unknown"
 
 
 def sponsorship_form_action(
@@ -717,27 +958,20 @@ def sponsorship_form_action(
     explicit_status_instruction: str = "",
     names_non_us_countries_only: bool = False,
     says_work_authorization_not_sponsorship: bool = False,
-    facts: Optional[SponsorshipFacts] = None,
+    required: bool = True,
+    facts: Optional[AuthFacts] = None,
 ) -> Tuple[str, str]:
-    instructed = _explicit_status_answer(explicit_status_instruction) or _explicit_status_answer(
-        widget_text
-    )
-    if instructed == "yes":
-        return "answer_yes", "explicit_status_instruction"
-    if instructed == "no":
-        return "answer_no", "explicit_status_instruction"
-    if instructed is None and _unclear_status_instruction(
-        explicit_status_instruction, widget_text
-    ):
-        return "leave_unresolved", "explicit_status_instruction_unclear"
-    if names_non_us_countries_only:
-        return "leave_unresolved", "country_specific_sponsorship"
     if says_work_authorization_not_sponsorship:
+        if not required:
+            return "leave_blank", "optional_identity_field"
         return "leave_unresolved", "work_authorization_wording"
-    text = normalize_text(widget_text)
-    if "work authorization" in text and "sponsorship" not in text:
-        return "leave_unresolved", "work_authorization_wording"
-    return _broad_sponsorship_from_facts(facts if facts is not None else load_sponsorship_facts())
+    return auth_form_action(
+        widget_text=widget_text,
+        explicit_status_instruction=explicit_status_instruction,
+        required=required,
+        names_non_us_countries_only=names_non_us_countries_only,
+        facts=facts,
+    )
 
 
 @dataclass(frozen=True)

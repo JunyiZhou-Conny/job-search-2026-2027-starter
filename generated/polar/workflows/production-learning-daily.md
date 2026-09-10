@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-09.prod-learn+b384c9ca0fe4
+workflow_version: 2026-09-09.prod-learn+fe128f2d6ba7
 status: production
 enabled: true
 needs_browser_lock: false
@@ -79,6 +79,7 @@ The sequence is monotonic. Read existing values for that date. The next id is on
 If 001 and 003 exist, write 004. Do not fill gaps. Never reuse one. Do not write INC-YYYYMMDD-01.
 01 and 001 count as the same number.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
+For authorization widgets, record auth_outcome as answered, optional_left_blank, ambiguous_required_blocked, hard_eligibility_skip, or disclosure_prevented.
 durable_candidate is yes only when a repo policy or compiler change would prevent a repeat.
 Evidence must be enough for an engineer. No secrets.
 

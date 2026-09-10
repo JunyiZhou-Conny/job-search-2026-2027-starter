@@ -83,8 +83,10 @@ Block Submit and record the reason when any of these hold.
   confirmed in `form_strategy.yaml` `eeo_self_identification`.
 - Work authorization widget shows US citizen or green card, or a
   citizenship or export-control widget shows anything other than China.
-- A sponsorship widget shows anything other than No after the correction
-  pass.
+- A sponsorship or authorization widget shows an answer that does not
+  match `polar_policy.auth_form_action` for that exact question. Polar
+  Local may show Yes on a future-sponsorship widget. That is the
+  stored fact, not a Cloud G2 identity error.
 - A required free response has no approved answer in
   `knowledge/written_response_bank.yaml` or
   `docs/apply/written_answers/`.
@@ -128,16 +130,14 @@ Block Submit and record the reason when any of these hold.
 
 ## Open owner decisions
 
-- Broad sponsorship question. Historical mapping 2026-09-03 is No.
-  The stored fact `future_sponsorship_required: true` still conflicts
-  with that mapping. Polar leaves a broad widget unresolved and does
-  not Submit it until the owner resolves the conflict. If the form
-  names F-1/J-1/M-1 and clearly says answer Yes or answer No, that
-  polarity governs that widget. If polarity is unclear, leave the
-  field. Citizenship China, no permanent residence elsewhere, eligible
-  to begin immediately Yes, and Copilot's EEO values preserved.
-  Recorded in `knowledge/work_authorization.yaml` and
-  `knowledge/form_strategy.yaml`.
+- Authorization widgets. Polar Local answers only the asked semantic.
+  A required future-sponsorship widget is Yes from
+  `future_sponsorship_required`. A required H-1B-named widget is No.
+  Citizenship China. Eligible to begin immediately Yes. Optional
+  identity fields stay blank. An ambiguous required widget blocks
+  that job only. Cursor Cloud G2 still re-reads every sponsorship,
+  citizenship, and export-control widget after correction. Recorded in
+  `knowledge/work_authorization.yaml` and `knowledge/form_strategy.yaml`.
 - Outlook MCP authentication for confirmation-email verification.
 
 ## History

@@ -41,6 +41,13 @@ from polar_policy import (  # noqa: E402
     sanitize_learning_text,
     select_apply_batch,
     sibling_job_keys,
+    AUTH_TELEMETRY_OUTCOMES,
+    auth_form_action,
+    auth_telemetry_outcome,
+    classify_auth_question,
+    discovery_guide_rule_ids,
+    discovery_skips_on_unknown_sponsorship,
+    load_auth_facts,
     SponsorshipFacts,
     sponsorship_form_action,
     workflow_version,
@@ -627,34 +634,28 @@ class TestClosedPostingAndSponsorship(unittest.TestCase):
         self.assertEqual(action, "answer_yes")
         self.assertEqual(reason, "explicit_status_instruction")
 
-    def test_repo_facts_block_broad_widget(self):
+    def test_repo_facts_answer_yes_on_required_future_widget(self):
         action, reason = sponsorship_form_action(
             widget_text="Will you now or in the future require visa sponsorship?"
         )
-        self.assertEqual(action, "leave_unresolved")
-        self.assertEqual(reason, "fact_mapping_conflict")
+        self.assertEqual(action, "answer_yes")
+        self.assertEqual(reason, "future_sponsorship")
 
-    def test_agreed_no_facts_answer_no(self):
+    def test_future_fact_false_answers_no(self):
         action, reason = sponsorship_form_action(
             widget_text="Will you now or in the future require visa sponsorship?",
-            facts=SponsorshipFacts(
-                future_sponsorship_required=False,
-                standing_form_answer="no",
-            ),
+            facts=SponsorshipFacts(future_sponsorship_required=False),
         )
         self.assertEqual(action, "answer_no")
-        self.assertEqual(reason, "canonical_fact")
+        self.assertEqual(reason, "future_sponsorship")
 
     def test_fact_only_true_answers_yes(self):
         action, reason = sponsorship_form_action(
             widget_text="Will you now or in the future require visa sponsorship?",
-            facts=SponsorshipFacts(
-                future_sponsorship_required=True,
-                standing_form_answer=None,
-            ),
+            facts=SponsorshipFacts(future_sponsorship_required=True),
         )
         self.assertEqual(action, "answer_yes")
-        self.assertEqual(reason, "canonical_fact")
+        self.assertEqual(reason, "future_sponsorship")
 
     def test_work_authorization_wording_stays_unresolved(self):
         action, reason = sponsorship_form_action(
@@ -676,8 +677,8 @@ class TestClosedPostingAndSponsorship(unittest.TestCase):
             widget_text="Will you now or in the future require visa sponsorship?",
             explicit_status_instruction="F-1 students are welcome to apply.",
         )
-        self.assertEqual(action, "leave_unresolved")
-        self.assertEqual(reason, "fact_mapping_conflict")
+        self.assertEqual(action, "answer_yes")
+        self.assertEqual(reason, "future_sponsorship")
 
     def test_unclear_f1_select_instruction_stays_unresolved(self):
         action, reason = sponsorship_form_action(
@@ -702,6 +703,156 @@ class TestClosedPostingAndSponsorship(unittest.TestCase):
         )
         self.assertEqual(action, "leave_unresolved")
         self.assertEqual(reason, "explicit_status_instruction_unclear")
+
+    def test_optional_work_authorization_wording_left_blank(self):
+        action, reason = sponsorship_form_action(
+            widget_text="Will you now or in the future require work authorization to work in the U.S.?",
+            required=False,
+        )
+        self.assertEqual(action, "leave_blank")
+        self.assertEqual(reason, "optional_identity_field")
+
+
+class TestAuthSemanticSeparation(unittest.TestCase):
+    def setUp(self) -> None:
+        self.facts = load_auth_facts()
+
+    def test_classifier_keeps_independent_semantics(self):
+        cases = (
+            ("Will you require H-1B sponsorship?", "h1b_sponsorship"),
+            ("Are you a U.S. citizen?", "citizenship"),
+            ("What is your visa / status?", "visa_status"),
+            ("Are you an F-1 student?", "status_yes_no"),
+            ("Do you have an EAD?", "ead_possession"),
+            ("Has your OPT been approved?", "opt_approval"),
+            ("Will you be eligible for OPT?", "opt_eligibility"),
+            ("Do you require sponsorship to begin employment?", "sponsorship_to_begin"),
+            ("Will you now or in the future require visa sponsorship?", "future_sponsorship"),
+            ("Are you authorized to work without sponsorship?", "authorization_without_sponsorship"),
+            ("Are you authorized to work in the United States for any employer?", "authorized_for_any_employer"),
+            ("Will you now or in the future require work authorization?", "work_authorization_wording"),
+            ("Are you currently authorized to work in the U.S.?", "current_work_authorization"),
+            ("Are you authorized to work in the United States?", "authorization_at_start"),
+            ("Are you legally eligible to begin employment immediately?", "authorization_at_start"),
+        )
+        for prompt, kind in cases:
+            self.assertEqual(classify_auth_question(prompt), kind, prompt)
+
+    def test_optional_identity_fields_stay_blank(self):
+        prompts = (
+            "Country of citizenship (optional)",
+            "Visa / status (optional)",
+            "Are you currently authorized to work in the U.S.?",
+            "Do you have an EAD?",
+            "Will you now or in the future require visa sponsorship?",
+        )
+        for prompt in prompts:
+            action, reason = auth_form_action(
+                widget_text=prompt,
+                required=False,
+                facts=self.facts,
+            )
+            self.assertEqual(action, "leave_blank", prompt)
+            self.assertEqual(reason, "optional_identity_field", prompt)
+            self.assertEqual(auth_telemetry_outcome(action, reason), "optional_left_blank")
+
+    def test_required_clear_questions_use_one_fact(self):
+        expected = (
+            ("Will you now or in the future require visa sponsorship?", "answer_yes", "future_sponsorship"),
+            ("Will you require H-1B visa sponsorship?", "answer_no", "h1b_sponsorship"),
+            ("Country of citizenship", "answer_china", "citizenship"),
+            ("What is your current visa type?", "answer_f1", "visa_status"),
+            ("Are you an F-1 student?", "answer_yes", "status_yes_no"),
+            ("Are you authorized to work in the United States?", "answer_yes", "authorization_at_start"),
+            ("Are you authorized to work in the United States for any employer?", "answer_yes", "authorized_for_any_employer"),
+            ("Are you legally eligible to begin employment immediately?", "answer_yes", "authorization_at_start"),
+            ("Do you currently possess an Employment Authorization Document (EAD)?", "answer_no", "ead_possession"),
+            ("Has your OPT been approved?", "answer_no", "opt_approval"),
+            ("Will you be eligible for OPT?", "answer_yes", "opt_eligibility"),
+        )
+        for prompt, action, reason in expected:
+            got_action, got_reason = auth_form_action(
+                widget_text=prompt,
+                required=True,
+                facts=self.facts,
+            )
+            self.assertEqual((got_action, got_reason), (action, reason), prompt)
+            self.assertEqual(auth_telemetry_outcome(got_action, got_reason), "answered")
+
+    def test_required_unknown_facts_block_only_that_question(self):
+        cases = (
+            ("Are you currently authorized to work in the U.S.?", "current_work_authorization_unknown"),
+            ("Do you require sponsorship to begin employment?", "sponsorship_to_begin_unknown"),
+            ("Will you now or in the future require work authorization to work in the U.S.?", "work_authorization_wording"),
+            ("Are you authorized to work without sponsorship?", "authorization_without_sponsorship"),
+        )
+        for prompt, reason in cases:
+            action, got_reason = auth_form_action(
+                widget_text=prompt,
+                required=True,
+                facts=self.facts,
+            )
+            self.assertEqual(action, "leave_unresolved", prompt)
+            self.assertEqual(got_reason, reason, prompt)
+            self.assertEqual(
+                auth_telemetry_outcome(action, got_reason),
+                "ambiguous_required_blocked",
+            )
+
+    def test_future_yes_does_not_answer_currently_authorized(self):
+        action, reason = auth_form_action(
+            widget_text="Are you currently authorized to work in the U.S.?",
+            required=True,
+            facts=self.facts,
+        )
+        self.assertEqual(action, "leave_unresolved")
+        self.assertEqual(reason, "current_work_authorization_unknown")
+        self.assertTrue(self.facts.future_sponsorship_required)
+
+    def test_select_your_visa_is_not_an_unclear_instruction(self):
+        action, reason = auth_form_action(
+            widget_text="Select your visa type: F-1, H-1B, or Other",
+            required=True,
+            facts=self.facts,
+        )
+        self.assertEqual(action, "answer_f1")
+        self.assertEqual(reason, "visa_status")
+
+    def test_loaded_facts_stay_independent(self):
+        self.assertEqual(self.facts.citizenship_country, "China")
+        self.assertEqual(self.facts.current_status, "F-1")
+        self.assertIsNone(self.facts.current_us_work_authorization)
+        self.assertTrue(self.facts.legally_eligible_to_begin_immediately)
+        self.assertTrue(self.facts.authorized_for_any_employer)
+        self.assertIsNone(self.facts.sponsorship_required_to_begin)
+        self.assertTrue(self.facts.future_sponsorship_required)
+        self.assertFalse(self.facts.h1b_sponsorship_required)
+        self.assertFalse(self.facts.opt_ead_in_possession)
+        self.assertFalse(self.facts.opt_approved)
+        self.assertTrue(self.facts.opt_eligible_expected)
+
+    def test_discovery_does_not_skip_on_sponsorship(self):
+        self.assertFalse(discovery_skips_on_unknown_sponsorship())
+        self.assertIn("sponsorship_not_skip", discovery_guide_rule_ids())
+        self.assertTrue(self.facts.future_sponsorship_required)
+
+    def test_telemetry_outcomes_are_named(self):
+        self.assertEqual(
+            AUTH_TELEMETRY_OUTCOMES,
+            (
+                "answered",
+                "optional_left_blank",
+                "ambiguous_required_blocked",
+                "hard_eligibility_skip",
+                "disclosure_prevented",
+            ),
+        )
+        self.assertEqual(auth_telemetry_outcome("answer_yes", "future_sponsorship"), "answered")
+        self.assertEqual(auth_telemetry_outcome("leave_blank", "optional_identity_field"), "optional_left_blank")
+        self.assertEqual(
+            auth_telemetry_outcome("leave_unresolved", "auth_question_unknown"),
+            "ambiguous_required_blocked",
+        )
 
 
 if __name__ == "__main__":

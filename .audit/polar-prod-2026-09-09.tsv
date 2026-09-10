@@ -16,3 +16,5 @@ ts	phase	decision	why	evidence	result
 2026-09-09T14:25:00Z	handback	One maintenance PR. Stop before merge. ChatGPT not required.	Issue 115 asked for tomorrow to behave better, not more code.	cursor/polar-prod-learn-0909-9a03	open
 2026-09-09T14:28:00Z	verify	Second-look found parser and lock-readback bugs. Tightened helpers and restored the owner No quote.	Negated F-1 Yes, yes-or-no menus, not-PhD-only, R404 job ids, and blanked expires_at would have made tomorrow worse.	tests/test_polar_policy.py	242 OK
 2026-09-09T14:56:00Z	verify	Broad sponsorship no longer defaults to No. Incident ids are monotonic.	Fact true and mapping No now leave_unresolved. 001 and 003 yield 004.	scripts/polar_policy.py	244 OK
+2026-09-10T01:40:00Z	policy	Owner retired self-reject and volunteer-status behavior.	Exact question to one fact. Sponsorship is not a discovery skip. Optional identity fields stay blank.	knowledge/work_authorization.yaml	encoded
+2026-09-10T01:41:00Z	design	Keep independent AuthFacts. Skip Architect and Arena.	Citizenship, status, current auth, start-date auth, OPT, EAD, future sponsorship, and H-1B stay separate.	scripts/polar_policy.py	encoded
