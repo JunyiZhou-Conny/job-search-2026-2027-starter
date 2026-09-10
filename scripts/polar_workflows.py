@@ -20,8 +20,9 @@ from polar_policy import (
     LEASE_KEY,
     LOCAL_PREFERENCES_PATH,
     MEMORY_PRECEDENCE,
+    RESOLUTION_KEEP_LOCAL_OUTCOME,
+    RESOLUTION_PENDING_OUTCOMES,
     RESOLUTION_REMOVE_OUTCOMES,
-    RESOLUTION_RETAIN_OUTCOMES,
     PREFERENCE_CLASSES,
     PROMOTION_OUTCOMES,
     QUEUE_COLUMNS,
@@ -105,7 +106,7 @@ def _open_files() -> str:
 
 def _preferences_reconcile_block() -> str:
     remove = ", ".join(sorted(RESOLUTION_REMOVE_OUTCOMES))
-    retain = ", ".join(sorted(RESOLUTION_RETAIN_OUTCOMES))
+    pending_keep = ", ".join(sorted(RESOLUTION_PENDING_OUTCOMES))
     return _lines(
         [
             "## Preferences reconcile",
@@ -114,8 +115,11 @@ def _preferences_reconcile_block() -> str:
             "Those rows come from main. An open Cursor PR is not canonical.",
             "Match candidate_id only. Do not compare wording.",
             f"Remove a pending id whose main outcome is {remove}.",
-            f"Keep {retain}, and keep any id with no main row.",
-            "Keep LOCAL_PRIVATE values.",
+            f"Move {RESOLUTION_KEEP_LOCAL_OUTCOME} out of pending into Local-only facts as a keep_local line.",
+            f"Keep {pending_keep} pending, and keep any id with no main row.",
+            "Keep LOCAL_PRIVATE values. Do not emit keep_local ids in Preferences Delta.",
+            "Allocate a new pref_YYYYMMDD_NNN from pending ids, keep_local ids, and section P resolution ids.",
+            "Use max(used numbers for that date) + 1. Never fill gaps. Never reuse an id.",
             "If there are no pending ids or no new main rows, write nothing.",
             "The rewrite is idempotent. Do not create a preferences-cleanup workflow.",
             "",
@@ -570,6 +574,7 @@ def render_learning(operator: Dict[str, Any]) -> str:
             "Do not upload the raw file. Do not paste it into git, Issues, email, or the Sheet.",
             "Classify each entry as " + ", ".join(PREFERENCE_CLASSES) + ".",
             "Assign or preserve a stable candidate_id pref_YYYYMMDD_NNN on every pending learning.",
+            "Mint the next id from pending ids, keep_local ids, and main preference_resolutions. Never reuse.",
             "For LEARNING_CANDIDATE, REDUNDANT, STALE, ONE_OFF, EPHEMERAL, and CANONICAL_GITHUB pointers,",
             "emit a sanitized bullet with candidate_id, class, evidence, proposed destination, and already_in_github.",
             "For LOCAL_PRIVATE, report only a count. Never report the value.",
@@ -580,6 +585,7 @@ def render_learning(operator: Dict[str, Any]) -> str:
             "Canonical behavior (GitHub pointer), Local-only facts, Pending learning candidates, Sync state.",
             "Keep LOCAL_PRIVATE values in the local file only.",
             "Keep every unresolved candidate_id. Emitting the report does not resolve it.",
+            "Do not emit keep_local ids. Those are already resolved as local-only.",
             "Delete SECRET_OR_CREDENTIAL. Delete an exact GitHub duplicate marked REDUNDANT.",
             "Delete EPHEMERAL session notes. Do not delete ONE_OFF or STALE here.",
             "Do not delete a candidate because Cursor opened a PR.",
@@ -711,7 +717,8 @@ def render_cursor(operator: Dict[str, Any]) -> str:
             "   PROMOTE also writes the generalized lesson into the matching canonical GitHub source.",
             "   Application strategy goes to knowledge/form_strategy.yaml.",
             "   Operator behavior goes to knowledge/polar_operator.yaml or the workflow compiler.",
-            "   KEEP_LOCAL stays out of policy files. DROP_REDUNDANT and DROP_ONE_OFF still get a resolution row.",
+            "   KEEP_LOCAL stays out of policy files. After merge, Polar moves that id to Local-only facts and stops exporting it.",
+            "   DROP_REDUNDANT and DROP_ONE_OFF still get a resolution row.",
             "   An open PR is not canonical. Polar deletes a removed outcome only after that row is on main.",
             "7. STOP BEFORE MERGE.",
             "",

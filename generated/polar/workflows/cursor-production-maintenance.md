@@ -1,7 +1,7 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-10.pref-reconcile+2956131b4e14
+workflow_version: 2026-09-10.pref-reconcile+0cb6b6e8669b
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
@@ -44,7 +44,8 @@ Do not run it until the ChatGPT review path and Cursor browser handoff are prove
    PROMOTE also writes the generalized lesson into the matching canonical GitHub source.
    Application strategy goes to knowledge/form_strategy.yaml.
    Operator behavior goes to knowledge/polar_operator.yaml or the workflow compiler.
-   KEEP_LOCAL stays out of policy files. DROP_REDUNDANT and DROP_ONE_OFF still get a resolution row.
+   KEEP_LOCAL stays out of policy files. After merge, Polar moves that id to Local-only facts and stops exporting it.
+   DROP_REDUNDANT and DROP_ONE_OFF still get a resolution row.
    An open PR is not canonical. Polar deletes a removed outcome only after that row is on main.
 7. STOP BEFORE MERGE.
 

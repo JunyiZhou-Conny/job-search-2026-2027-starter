@@ -128,6 +128,8 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("preference_resolutions: none", text)
         self.assertIn("An open Cursor PR is not canonical.", text)
         self.assertIn("Match candidate_id only.", text)
+        self.assertIn("Never reuse. Never fill gaps.", text)
+        self.assertIn("KEEP_LOCAL leaves pending", text)
 
     def test_committed_file_matches_compiler(self):
         generated = compile_text()

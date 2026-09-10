@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.pref-reconcile+073325e8a42c
+workflow_version: 2026-09-10.pref-reconcile+77699f609893
 status: production
 enabled: true
 needs_browser_lock: true
@@ -23,8 +23,11 @@ After POLAR_RUNTIME is open, reconcile /home/polar/PREFERENCES.md against sectio
 Those rows come from main. An open Cursor PR is not canonical.
 Match candidate_id only. Do not compare wording.
 Remove a pending id whose main outcome is DROP_ONE_OFF, DROP_REDUNDANT, PROMOTE, STALE.
-Keep KEEP_LOCAL, NEEDS_MORE_EVIDENCE, OWNER_DECISION, and keep any id with no main row.
-Keep LOCAL_PRIVATE values.
+Move KEEP_LOCAL out of pending into Local-only facts as a keep_local line.
+Keep NEEDS_MORE_EVIDENCE, OWNER_DECISION pending, and keep any id with no main row.
+Keep LOCAL_PRIVATE values. Do not emit keep_local ids in Preferences Delta.
+Allocate a new pref_YYYYMMDD_NNN from pending ids, keep_local ids, and section P resolution ids.
+Use max(used numbers for that date) + 1. Never fill gaps. Never reuse an id.
 If there are no pending ids or no new main rows, write nothing.
 The rewrite is idempotent. Do not create a preferences-cleanup workflow.
 

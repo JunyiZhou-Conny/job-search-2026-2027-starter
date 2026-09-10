@@ -137,7 +137,7 @@ See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery ord
 
 `last_stage` is a coarse checkpoint. Status is the state machine. Do not add more statuses without an owner decision.
 
-`/home/polar/PREFERENCES.md` is a local inbox. `production-learning-daily` assigns `pref_YYYYMMDD_NNN` and emits Preferences Delta. It does not delete an unresolved candidate. Cursor writes `knowledge/preference_resolutions.yaml` in a PR. Polar reconciles those ids on the next production run after the row is on `main`. An open PR is not enough.
+`/home/polar/PREFERENCES.md` is a local inbox. `production-learning-daily` assigns `pref_YYYYMMDD_NNN` from pending ids, keep_local ids, and main resolutions. It never reuses an id. Cursor writes `knowledge/preference_resolutions.yaml` in a PR. Polar reconciles those ids on the next production run after the row is on `main`. An open PR is not enough. `KEEP_LOCAL` leaves pending and stays in Local-only facts.
 
 ## Regular versus prioritized
 

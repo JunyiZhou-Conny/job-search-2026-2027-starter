@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-10.pref-reconcile+108e4c5e5d54
+workflow_version: 2026-09-10.pref-reconcile+b16ca3614159
 status: production
 enabled: true
 needs_browser_lock: false
@@ -23,8 +23,11 @@ After POLAR_RUNTIME is open, reconcile /home/polar/PREFERENCES.md against sectio
 Those rows come from main. An open Cursor PR is not canonical.
 Match candidate_id only. Do not compare wording.
 Remove a pending id whose main outcome is DROP_ONE_OFF, DROP_REDUNDANT, PROMOTE, STALE.
-Keep KEEP_LOCAL, NEEDS_MORE_EVIDENCE, OWNER_DECISION, and keep any id with no main row.
-Keep LOCAL_PRIVATE values.
+Move KEEP_LOCAL out of pending into Local-only facts as a keep_local line.
+Keep NEEDS_MORE_EVIDENCE, OWNER_DECISION pending, and keep any id with no main row.
+Keep LOCAL_PRIVATE values. Do not emit keep_local ids in Preferences Delta.
+Allocate a new pref_YYYYMMDD_NNN from pending ids, keep_local ids, and section P resolution ids.
+Use max(used numbers for that date) + 1. Never fill gaps. Never reuse an id.
 If there are no pending ids or no new main rows, write nothing.
 The rewrite is idempotent. Do not create a preferences-cleanup workflow.
 
@@ -119,6 +122,7 @@ GitHub cannot mutate that file. This Polar workflow can read and rewrite it.
 Do not upload the raw file. Do not paste it into git, Issues, email, or the Sheet.
 Classify each entry as CANONICAL_GITHUB, LOCAL_PRIVATE, LEARNING_CANDIDATE, REDUNDANT, EPHEMERAL, SECRET_OR_CREDENTIAL, STALE, ONE_OFF.
 Assign or preserve a stable candidate_id pref_YYYYMMDD_NNN on every pending learning.
+Mint the next id from pending ids, keep_local ids, and main preference_resolutions. Never reuse.
 For LEARNING_CANDIDATE, REDUNDANT, STALE, ONE_OFF, EPHEMERAL, and CANONICAL_GITHUB pointers,
 emit a sanitized bullet with candidate_id, class, evidence, proposed destination, and already_in_github.
 For LOCAL_PRIVATE, report only a count. Never report the value.
@@ -129,6 +133,7 @@ After the report is sanitized, rewrite PREFERENCES to four sections only:
 Canonical behavior (GitHub pointer), Local-only facts, Pending learning candidates, Sync state.
 Keep LOCAL_PRIVATE values in the local file only.
 Keep every unresolved candidate_id. Emitting the report does not resolve it.
+Do not emit keep_local ids. Those are already resolved as local-only.
 Delete SECRET_OR_CREDENTIAL. Delete an exact GitHub duplicate marked REDUNDANT.
 Delete EPHEMERAL session notes. Do not delete ONE_OFF or STALE here.
 Do not delete a candidate because Cursor opened a PR.

@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the bootstrap prompt from docs/automation/POLAR_WORKFLOWS.md.
 They open the raw main URL on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-10.pref-reconcile+0a0ac3c1b667`
-- `apply-ready-jobs` workflow_version `2026-09-10.pref-reconcile+073325e8a42c`
+- `discover-jobs-hourly` workflow_version `2026-09-10.pref-reconcile+dc16d067a14e`
+- `apply-ready-jobs` workflow_version `2026-09-10.pref-reconcile+77699f609893`
 - `daily-job-summary` workflow_version `2026-09-10.pref-reconcile+bcb93109c0c9`
-- `production-learning-daily` workflow_version `2026-09-10.pref-reconcile+108e4c5e5d54`
+- `production-learning-daily` workflow_version `2026-09-10.pref-reconcile+b16ca3614159`
 - `polar-scheduler-heartbeat` workflow_version `2026-09-10.pref-reconcile+d99af025ea26`
 - `polar-github-write-canary` workflow_version `2026-09-10.pref-reconcile+853be3086a51`
 - `chatgpt-production-review` workflow_version `2026-09-10.pref-reconcile+1689f8dc545a`
-- `cursor-production-maintenance` workflow_version `2026-09-10.pref-reconcile+2956131b4e14`
+- `cursor-production-maintenance` workflow_version `2026-09-10.pref-reconcile+0cb6b6e8669b`
 - `polar-sheet-migration` workflow_version `2026-09-10.pref-reconcile+44ede66d90fc`

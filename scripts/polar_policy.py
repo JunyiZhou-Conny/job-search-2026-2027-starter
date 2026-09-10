@@ -135,11 +135,16 @@ PREF_LINE_RE = re.compile(r"^(pref_\d{8}_\d{3})\s*:\s*(.*)$")
 RESOLUTION_REMOVE_OUTCOMES = frozenset(
     {"PROMOTE", "DROP_REDUNDANT", "DROP_ONE_OFF", "STALE"}
 )
-RESOLUTION_RETAIN_OUTCOMES = frozenset(
-    {"KEEP_LOCAL", "NEEDS_MORE_EVIDENCE", "OWNER_DECISION"}
+RESOLUTION_PENDING_OUTCOMES = frozenset(
+    {"NEEDS_MORE_EVIDENCE", "OWNER_DECISION"}
 )
+RESOLUTION_KEEP_LOCAL_OUTCOME = "KEEP_LOCAL"
+RESOLUTION_RETAIN_OUTCOMES = RESOLUTION_PENDING_OUTCOMES | {RESOLUTION_KEEP_LOCAL_OUTCOME}
 EXPORT_RETAINS_CLASSES = frozenset(
     {"LEARNING_CANDIDATE", "ONE_OFF", "STALE"}
+)
+KEEP_LOCAL_LINE_RE = re.compile(
+    r"^keep_local (pref_\d{8}_\d{3})\s*:\s*(.*)$"
 )
 
 LOCK_RESULTS = (
@@ -1623,10 +1628,15 @@ def compact_preferences_markdown(
     last_reconciled: str,
     github_runtime_url: str,
     main_revision: str = "",
+    keep_local: Sequence[PreferenceCandidate] = (),
 ) -> str:
     private_lines = []
     for title, value in local_private:
         private_lines.append(f"- {title}: {value}")
+    for item in keep_local:
+        private_lines.append(
+            f"- keep_local {item.candidate_id}: {sanitize_learning_text(item.summary)}"
+        )
     candidate_lines = []
     for item in candidates:
         candidate_lines.append(
@@ -1699,6 +1709,25 @@ def next_preference_id(existing: Sequence[str], day: str) -> str:
     return f"pref_{compact}_{next_number:03d}"
 
 
+def used_preference_ids(
+    *,
+    pending: Sequence[PreferenceCandidate] = (),
+    keep_local: Sequence[PreferenceCandidate] = (),
+    resolutions: Sequence[PreferenceResolution] = (),
+) -> Tuple[str, ...]:
+    ids: List[str] = []
+    seen = set()
+    for item in (*pending, *keep_local):
+        if item.candidate_id and item.candidate_id not in seen:
+            ids.append(item.candidate_id)
+            seen.add(item.candidate_id)
+    for row in resolutions:
+        if row.candidate_id and row.candidate_id not in seen:
+            ids.append(row.candidate_id)
+            seen.add(row.candidate_id)
+    return tuple(ids)
+
+
 def export_retains_candidate(cls: str) -> bool:
     return cls in EXPORT_RETAINS_CLASSES
 
@@ -1707,9 +1736,10 @@ def assign_preference_ids(
     items: Sequence[PreferenceCandidate | str],
     *,
     day: str,
+    reserved_ids: Sequence[str] = (),
 ) -> List[PreferenceCandidate]:
     assigned: List[PreferenceCandidate] = []
-    seen: List[str] = []
+    seen: List[str] = [raw for raw in reserved_ids if parse_preference_id(raw)]
     for item in items:
         if isinstance(item, PreferenceCandidate) and parse_preference_id(item.candidate_id):
             assigned.append(
@@ -1752,6 +1782,25 @@ def parse_pending_candidates(markdown: str) -> List[PreferenceCandidate]:
         if body == "none":
             continue
         match = PREF_LINE_RE.match(body)
+        if match:
+            found.append(
+                PreferenceCandidate(candidate_id=match.group(1), summary=match.group(2))
+            )
+    return found
+
+
+def parse_keep_local_candidates(markdown: str) -> List[PreferenceCandidate]:
+    found: List[PreferenceCandidate] = []
+    in_local = False
+    for line in (markdown or "").splitlines():
+        if line.strip() == "## Local-only facts":
+            in_local = True
+            continue
+        if in_local and line.startswith("## "):
+            break
+        if not in_local or not line.startswith("- "):
+            continue
+        match = KEEP_LOCAL_LINE_RE.match(line[2:].strip())
         if match:
             found.append(
                 PreferenceCandidate(candidate_id=match.group(1), summary=match.group(2))
@@ -1821,20 +1870,28 @@ def resolution_is_canonical(*, on_main: bool) -> bool:
     return on_main
 
 
+def preference_resolution_action(
+    outcome: Optional[str],
+    *,
+    on_main: bool,
+) -> str:
+    if not outcome or not resolution_is_canonical(on_main=on_main):
+        return "pending"
+    if outcome == RESOLUTION_KEEP_LOCAL_OUTCOME:
+        return "keep_local"
+    if outcome in RESOLUTION_PENDING_OUTCOMES:
+        return "pending"
+    if outcome in RESOLUTION_REMOVE_OUTCOMES:
+        return "remove"
+    return "pending"
+
+
 def candidate_survives_resolution(
     outcome: Optional[str],
     *,
     on_main: bool,
 ) -> bool:
-    if not outcome:
-        return True
-    if not resolution_is_canonical(on_main=on_main):
-        return True
-    if outcome in RESOLUTION_RETAIN_OUTCOMES:
-        return True
-    if outcome in RESOLUTION_REMOVE_OUTCOMES:
-        return False
-    return True
+    return preference_resolution_action(outcome, on_main=on_main) == "pending"
 
 
 def reconcile_preference_candidates(
@@ -1843,13 +1900,49 @@ def reconcile_preference_candidates(
     *,
     on_main: bool,
 ) -> List[PreferenceCandidate]:
+    return list(
+        reconcile_preference_inbox(
+            pending=candidates,
+            resolutions=resolutions,
+            on_main=on_main,
+        ).pending
+    )
+
+
+@dataclass(frozen=True)
+class PreferenceInbox:
+    pending: Tuple[PreferenceCandidate, ...]
+    keep_local: Tuple[PreferenceCandidate, ...]
+
+
+def reconcile_preference_inbox(
+    *,
+    pending: Sequence[PreferenceCandidate],
+    resolutions: Sequence[PreferenceResolution],
+    on_main: bool,
+    keep_local: Sequence[PreferenceCandidate] = (),
+) -> PreferenceInbox:
     latest: Dict[str, PreferenceResolution] = {}
     for row in resolutions:
         latest[row.candidate_id] = row
-    kept: List[PreferenceCandidate] = []
-    for item in candidates:
+    next_pending: List[PreferenceCandidate] = []
+    next_keep: List[PreferenceCandidate] = []
+    seen_keep = set()
+    for item in keep_local:
+        next_keep.append(item)
+        seen_keep.add(item.candidate_id)
+    for item in pending:
         row = latest.get(item.candidate_id)
-        outcome = row.outcome if row else None
-        if candidate_survives_resolution(outcome, on_main=on_main):
-            kept.append(item)
-    return kept
+        action = preference_resolution_action(
+            row.outcome if row else None,
+            on_main=on_main,
+        )
+        if action == "pending":
+            next_pending.append(item)
+        elif action == "keep_local" and item.candidate_id not in seen_keep:
+            next_keep.append(item)
+            seen_keep.add(item.candidate_id)
+    return PreferenceInbox(
+        pending=tuple(next_pending),
+        keep_local=tuple(next_keep),
+    )

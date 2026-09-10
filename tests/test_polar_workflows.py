@@ -122,6 +122,8 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertNotIn("preferences-learning-daily", learning)
         self.assertIn("Do not create a preferences-cleanup workflow.", learning)
         self.assertIn("Emitting the report does not resolve it.", learning)
+        self.assertIn("Do not emit keep_local ids.", learning)
+        self.assertIn("Never reuse an id.", learning)
         self.assertIn("candidate_id", learning)
         self.assertIn("An open Cursor PR is not canonical.", learning)
         self.assertIn("## Preferences reconcile", read_workflow("discover-jobs-hourly"))

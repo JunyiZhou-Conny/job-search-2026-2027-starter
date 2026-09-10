@@ -19,6 +19,10 @@ from polar_policy import (  # noqa: E402
     candidate_survives_resolution,
     classify_preference_entry,
     compact_preferences_markdown,
+    parse_keep_local_candidates,
+    preference_resolution_action,
+    reconcile_preference_inbox,
+    used_preference_ids,
     control_write_persisted,
     copilot_allows_apply,
     copilot_state,
@@ -390,11 +394,11 @@ class TestPreferenceLifecycle(unittest.TestCase):
         )
         self.assertEqual(kept, [])
 
-    def test_keep_local_is_retained(self):
+    def test_keep_local_leaves_pending(self):
         candidate = PreferenceCandidate("pref_20260910_005", "consent prompt choice")
-        kept = reconcile_preference_candidates(
-            [candidate],
-            [
+        inbox = reconcile_preference_inbox(
+            pending=[candidate],
+            resolutions=[
                 PreferenceResolution(
                     candidate_id="pref_20260910_005",
                     outcome="KEEP_LOCAL",
@@ -402,7 +406,24 @@ class TestPreferenceLifecycle(unittest.TestCase):
             ],
             on_main=True,
         )
-        self.assertEqual(kept, [candidate])
+        self.assertEqual(inbox.pending, ())
+        self.assertEqual(inbox.keep_local, (candidate,))
+        compact = compact_preferences_markdown(
+            local_private=[("street", "kept locally")],
+            candidates=inbox.pending,
+            keep_local=inbox.keep_local,
+            last_reconciled="2026-09-10T22:00:00-04:00",
+            github_runtime_url="https://example.invalid/POLAR_RUNTIME.md",
+        )
+        self.assertEqual(parse_pending_candidates(compact), [])
+        self.assertEqual(parse_keep_local_candidates(compact), [candidate])
+        self.assertIn("kept locally", compact)
+        delta = render_preferences_delta([])
+        self.assertNotIn("pref_20260910_005", delta)
+        self.assertEqual(
+            preference_resolution_action("KEEP_LOCAL", on_main=True),
+            "keep_local",
+        )
 
     def test_needs_more_evidence_is_retained(self):
         candidate = PreferenceCandidate("pref_20260910_003", "Workday date widget")
@@ -503,6 +524,48 @@ class TestPreferenceLifecycle(unittest.TestCase):
         )
         self.assertEqual(assigned[0].candidate_id, "pref_20260910_001")
         self.assertEqual(assigned[1].candidate_id, "pref_20260910_002")
+
+    def test_promoted_id_is_never_reused(self):
+        history = [
+            PreferenceResolution(
+                candidate_id="pref_20260910_001",
+                outcome="PROMOTE",
+                canonical_destination="knowledge/form_strategy.yaml",
+            )
+        ]
+        reserved = used_preference_ids(pending=(), resolutions=history)
+        assigned = assign_preference_ids(
+            ["unrelated new observation"],
+            day="2026-09-10",
+            reserved_ids=reserved,
+        )
+        self.assertEqual(assigned[0].candidate_id, "pref_20260910_002")
+        self.assertNotEqual(assigned[0].candidate_id, "pref_20260910_001")
+
+    def test_mixed_pending_and_resolution_history(self):
+        pending = [PreferenceCandidate("pref_20260910_003", "still open")]
+        history = [
+            PreferenceResolution(candidate_id="pref_20260910_001", outcome="PROMOTE"),
+            PreferenceResolution(candidate_id="pref_20260910_002", outcome="DROP_ONE_OFF"),
+        ]
+        reserved = used_preference_ids(pending=pending, resolutions=history)
+        assigned = assign_preference_ids(
+            [*pending, "another same-day observation"],
+            day="2026-09-10",
+            reserved_ids=reserved,
+        )
+        self.assertEqual(assigned[0].candidate_id, "pref_20260910_003")
+        self.assertEqual(assigned[1].candidate_id, "pref_20260910_004")
+
+    def test_keep_local_id_is_reserved(self):
+        keep_local = [PreferenceCandidate("pref_20260910_001", "consent")]
+        reserved = used_preference_ids(keep_local=keep_local, resolutions=())
+        assigned = assign_preference_ids(
+            ["new observation"],
+            day="2026-09-10",
+            reserved_ids=reserved,
+        )
+        self.assertEqual(assigned[0].candidate_id, "pref_20260910_002")
 
 
 if __name__ == "__main__":
