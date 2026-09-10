@@ -25,6 +25,7 @@ INCIDENT_CATEGORIES = (
     "UI_ONE_OFF",
     "LOCAL_PRIVATE_FACT",
     "MISSING_DOCUMENT",
+    "MISSING_FACT",
     "FACT_POLICY",
     "TRIAGE",
     "QUEUE_STATE",
@@ -48,6 +49,38 @@ TIME_LOST_CATEGORIES = (
     "OTHER",
 )
 
+AUTH_TELEMETRY_OUTCOMES = (
+    "answered",
+    "optional_left_blank",
+    "ambiguous_required_blocked",
+    "hard_eligibility_skip",
+    "disclosure_prevented",
+)
+
+AUTH_QUESTION_KINDS = (
+    "citizenship",
+    "visa_status",
+    "status_yes_no",
+    "current_work_authorization",
+    "authorization_at_start",
+    "authorized_for_any_employer",
+    "authorization_without_sponsorship",
+    "sponsorship_to_begin",
+    "future_sponsorship",
+    "h1b_sponsorship",
+    "opt_eligibility",
+    "opt_approval",
+    "ead_possession",
+    "work_authorization_wording",
+    "country_specific_sponsorship",
+    "unknown",
+)
+
+_OPTIONAL_IDENTITY_KINDS = frozenset(AUTH_QUESTION_KINDS)
+_UNCLEAR_INSTRUCTION_KINDS = frozenset(
+    {"future_sponsorship", "sponsorship_to_begin"}
+)
+
 RUN_LOG_RESULTS = (
     "SUCCESS",
     "PARTIAL",
@@ -65,6 +98,10 @@ LOCK_RESULTS = (
 )
 
 REQUIRED_QUEUE_READBACK = ("job_key", "status", "last_stage")
+CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
+CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
+DEGREE_LEVEL_REPEAT_KEY = "degree_level_gate_missed_at_discovery"
+INCIDENT_ID_RE = re.compile(r"^INC-(\d{8})-(\d{1,3})$")
 
 BROWSER_LOCK_WORKFLOWS = (
     "discover-jobs-hourly",
@@ -402,6 +439,538 @@ def release_lease(run_id: str, workflow: str, now: datetime) -> LeaseDecision:
         workflow=workflow,
         expires_at=now.isoformat(),
         notes=f"released by {run_id}",
+    )
+
+
+@dataclass(frozen=True)
+class ControlWritePlan:
+    action: str
+    row_index: Optional[int]
+    key: str
+    notes: str
+
+
+def locate_row_by_key(
+    rows: Sequence[Mapping[str, Any]],
+    key: str,
+    field: str = "key",
+) -> Optional[int]:
+    target = normalize_text(key)
+    matches = [
+        index
+        for index, row in enumerate(rows)
+        if normalize_text(str(row.get(field) or "")) == target
+    ]
+    if len(matches) > 1:
+        raise ValueError(f"duplicate {field} {key}")
+    if not matches:
+        return None
+    return matches[0]
+
+
+def control_row_is_writable(row: Mapping[str, Any], intended_key: str) -> bool:
+    existing = normalize_text(str(row.get("key") or ""))
+    if not existing:
+        return False
+    return existing == normalize_text(intended_key)
+
+
+def inspect_visible_control_row(
+    row: Mapping[str, Any],
+    intended_key: str,
+) -> ControlWritePlan:
+    existing = normalize_text(str(row.get("key") or ""))
+    if not existing:
+        return ControlWritePlan(
+            "abort",
+            None,
+            intended_key,
+            "do not write a visually empty row",
+        )
+    if existing != normalize_text(intended_key):
+        return ControlWritePlan(
+            "abort",
+            None,
+            intended_key,
+            "visible row has a different key",
+        )
+    return ControlWritePlan("update", None, intended_key, "visible row is the intended key")
+
+
+def plan_control_write(
+    rows: Sequence[Mapping[str, Any]],
+    key: str,
+) -> ControlWritePlan:
+    index = locate_row_by_key(rows, key, "key")
+    if index is None:
+        return ControlWritePlan("append", None, key, "append new control key")
+    return ControlWritePlan("update", index, key, "update existing control key")
+
+
+def control_write_persisted(
+    after_rows: Sequence[Mapping[str, Any]],
+    *,
+    key: str,
+    intended: Mapping[str, Any],
+    protected_keys: Sequence[str] = (),
+    before_rows: Sequence[Mapping[str, Any]] = (),
+) -> bool:
+    index = locate_row_by_key(after_rows, key, "key")
+    if index is None:
+        return False
+    row = after_rows[index]
+    for field, value in intended.items():
+        if str(row.get(field) or "") != str(value):
+            return False
+    before_by_key = {
+        normalize_text(str(row.get("key") or "")): row
+        for row in before_rows
+        if str(row.get("key") or "").strip()
+    }
+    for protected in protected_keys:
+        protected_norm = normalize_text(protected)
+        if protected_norm == normalize_text(key):
+            continue
+        prior = before_by_key.get(protected_norm)
+        if prior is None:
+            continue
+        later_index = locate_row_by_key(after_rows, protected, "key")
+        if later_index is None:
+            return False
+        later = after_rows[later_index]
+        for field in CONTROL_LEASE_READBACK:
+            if str(later.get(field) or "") != str(prior.get(field) or ""):
+                return False
+    return True
+
+
+def lease_checkpoint_notes(job_key: str, last_stage: str) -> str:
+    return f"checkpoint job_key={job_key} last_stage={last_stage}"
+
+
+def parse_lease_checkpoint(notes: str) -> Optional[Tuple[str, str]]:
+    text = notes or ""
+    job_match = re.search(r"job_key=([A-Za-z0-9._:-]+)", text)
+    stage_match = re.search(r"last_stage=([A-Za-z0-9._:-]+)", text)
+    if not job_match or not stage_match:
+        return None
+    return job_match.group(1), stage_match.group(1)
+
+
+def plan_run_log_write(
+    rows: Sequence[Mapping[str, Any]],
+    run_id: str,
+) -> ControlWritePlan:
+    index = locate_row_by_key(rows, run_id, "run_id")
+    if index is None:
+        return ControlWritePlan("append", None, run_id, "append new run_log row")
+    return ControlWritePlan("update", index, run_id, "update existing run_log row")
+
+
+def parse_incident_id(value: str) -> Optional[Tuple[str, int]]:
+    match = INCIDENT_ID_RE.match((value or "").strip())
+    if not match:
+        return None
+    return match.group(1), int(match.group(2))
+
+
+def next_incident_id(existing: Sequence[str], day: str) -> str:
+    compact = (day or "").replace("-", "")
+    if len(compact) != 8 or not compact.isdigit():
+        raise ValueError("incident day must be YYYY-MM-DD or YYYYMMDD")
+    used = {
+        number
+        for parsed in (parse_incident_id(raw) for raw in existing)
+        if parsed and parsed[0] == compact
+        for number in (parsed[1],)
+    }
+    next_number = max(used) + 1 if used else 1
+    return f"INC-{compact}-{next_number:03d}"
+
+
+def incident_ids_are_unique(existing: Sequence[str]) -> bool:
+    values = [str(raw).strip() for raw in existing if str(raw).strip()]
+    if len(values) != len(set(values)):
+        return False
+    parsed = [parse_incident_id(value) for value in values]
+    valid = [item for item in parsed if item]
+    return len(valid) == len(set(valid))
+
+
+def _marker_without_negation(text: str, marker: str) -> bool:
+    for match in re.finditer(re.escape(marker), text):
+        prefix = text[max(0, match.start() - 28) : match.start()]
+        if re.search(r"\b(not|no longer|except)\b.{0,20}$", prefix):
+            continue
+        return True
+    return False
+
+
+def degree_level_hard_skip(jd_text: str) -> Optional[str]:
+    text = normalize_text(jd_text)
+    if not text:
+        return None
+    phd_markers = (
+        "phd only",
+        "ph.d. only",
+        "ph.d only",
+        "doctoral students only",
+        "doctoral candidates only",
+        "phd students only",
+        "phd candidates only",
+        "must be a current phd",
+        "must be pursuing a phd",
+        "must be enrolled in a phd",
+        "must be enrolled in a ph.d",
+        "candidates must be pursuing a phd",
+    )
+    undergrad_markers = (
+        "undergraduate students only",
+        "undergraduates only",
+        "current undergraduate students only",
+        "must be an undergraduate",
+        "bachelor's students only",
+        "bachelors students only",
+    )
+    if any(_marker_without_negation(text, marker) for marker in phd_markers):
+        return "phd_only"
+    if any(_marker_without_negation(text, marker) for marker in undergrad_markers):
+        return "undergrad_only"
+    return None
+
+
+_CLOSED_PAGE_RE = re.compile(
+    r"(?:\b404\b|page not found|no longer open|no longer accepting|"
+    r"(?:this |the )?(?:job|requisition|posting|application)(?: has been)? "
+    r"(?:removed|closed))"
+)
+
+
+def closed_posting_action(page_signal: str) -> str:
+    text = normalize_text(page_signal)
+    if _CLOSED_PAGE_RE.search(text):
+        return "skip_no_sibling"
+    return "continue"
+
+
+_STATUS_RE = re.compile(r"\b(f-1|f1|j-1|j1|m-1|m1)\b")
+_YES_OR_NO_RE = re.compile(r"\byes\s+or\s+no\b|\bno\s+or\s+yes\b")
+_NEGATION_RE = re.compile(r"\b(not|never|do not|don't|dont|cannot|must not)\b")
+_ANSWER_YES_RE = re.compile(r"\b(?:answer|select|choose|pick)\s+yes\b")
+_ANSWER_NO_RE = re.compile(r"\b(?:answer|select|choose|pick)\s+no\b")
+
+
+def _explicit_status_answer(text: str) -> Optional[str]:
+    normalized = normalize_text(text)
+    if not normalized or not _STATUS_RE.search(normalized):
+        return None
+    if _YES_OR_NO_RE.search(normalized):
+        return None
+    has_yes = bool(_ANSWER_YES_RE.search(normalized))
+    has_no = bool(_ANSWER_NO_RE.search(normalized))
+    if has_yes and has_no:
+        return None
+    if _NEGATION_RE.search(normalized) and (has_yes or has_no):
+        return None
+    if has_yes:
+        return "yes"
+    if has_no:
+        return "no"
+    return None
+
+
+def _unclear_status_instruction(*texts: str) -> bool:
+    for text in texts:
+        normalized = normalize_text(text)
+        if not normalized or not _STATUS_RE.search(normalized):
+            continue
+        if re.search(r"\b(answer|select|choose|pick)\b", normalized):
+            return True
+    return False
+
+
+@dataclass(frozen=True)
+class AuthFacts:
+    citizenship_country: Optional[str] = None
+    current_status: Optional[str] = None
+    current_us_work_authorization: Optional[bool] = None
+    legally_eligible_to_begin_immediately: Optional[bool] = None
+    authorized_for_any_employer: Optional[bool] = None
+    sponsorship_required_to_begin: Optional[bool] = None
+    future_sponsorship_required: Optional[bool] = None
+    h1b_sponsorship_required: Optional[bool] = None
+    opt_ead_in_possession: Optional[bool] = None
+    opt_approved: Optional[bool] = None
+    opt_eligible_expected: Optional[bool] = None
+
+
+SponsorshipFacts = AuthFacts
+
+
+def _optional_bool(value: Any) -> Optional[bool]:
+    if value is True or value is False:
+        return value
+    text = normalize_text(str(value or ""))
+    if text in {"true", "yes"}:
+        return True
+    if text in {"false", "no"}:
+        return False
+    return None
+
+
+def _yes_no_from_bool(value: Optional[bool]) -> Optional[str]:
+    if value is True:
+        return "yes"
+    if value is False:
+        return "no"
+    return None
+
+
+def load_auth_facts(root: Optional[Path] = None) -> AuthFacts:
+    base = Path(root) if root else ROOT
+    data = load_yaml(base / "knowledge" / "work_authorization.yaml")
+    if not isinstance(data, dict):
+        raise ValueError("work_authorization.yaml must be a mapping")
+    h1b = ((data.get("form_strategy") or {}).get("h1b_named_question_only") or {})
+    h1b_required = _optional_bool(data.get("h1b_sponsorship_required"))
+    if h1b_required is None:
+        h1b_required = _optional_bool(h1b.get("form_answer"))
+    any_employer = _optional_bool(data.get("authorized_for_any_employer"))
+    if any_employer is None:
+        form = load_yaml(base / "knowledge" / "form_strategy.yaml")
+        if isinstance(form, dict):
+            any_employer = _optional_bool(
+                (form.get("authorized_for_any_employer") or {}).get("form_answer")
+            )
+    return AuthFacts(
+        citizenship_country=str(data.get("citizenship_country") or "").strip() or None,
+        current_status=str(data.get("current_status") or "").strip() or None,
+        current_us_work_authorization=_optional_bool(data.get("current_us_work_authorization")),
+        legally_eligible_to_begin_immediately=_optional_bool(
+            data.get("legally_eligible_to_begin_immediately")
+        ),
+        authorized_for_any_employer=any_employer,
+        sponsorship_required_to_begin=_optional_bool(data.get("sponsorship_required_to_begin")),
+        future_sponsorship_required=_optional_bool(data.get("future_sponsorship_required")),
+        h1b_sponsorship_required=h1b_required,
+        opt_ead_in_possession=_optional_bool(data.get("opt_ead_in_possession")),
+        opt_approved=_optional_bool(data.get("opt_approved")),
+        opt_eligible_expected=_optional_bool(data.get("opt_eligible_expected")),
+    )
+
+
+def load_sponsorship_facts(root: Optional[Path] = None) -> AuthFacts:
+    return load_auth_facts(root)
+
+
+def classify_auth_question(text: str) -> str:
+    normalized = normalize_text(text)
+    if not normalized:
+        return "unknown"
+    if re.search(r"\b(citizen|citizenship|nationality)\b", normalized):
+        return "citizenship"
+    if re.search(
+        r"\b(visa type|visa status|visa\s*/\s*status|current status|"
+        r"select your visa|what is your visa|immigration status|current visa)\b",
+        normalized,
+    ):
+        return "visa_status"
+    if re.search(r"\bh-?1b\b", normalized):
+        return "h1b_sponsorship"
+    if re.search(r"\bead\b|employment authorization document", normalized):
+        return "ead_possession"
+    if re.search(r"\bopt\b", normalized) and re.search(r"approv|awarded", normalized):
+        return "opt_approval"
+    if re.search(r"\bopt\b", normalized) and re.search(r"eligib|qualif", normalized):
+        return "opt_eligibility"
+    if re.search(r"\bauthoriz", normalized) and re.search(
+        r"\b(without sponsorship|no sponsorship|not require sponsorship)\b",
+        normalized,
+    ):
+        return "authorization_without_sponsorship"
+    if re.search(r"\bsponsor", normalized) and re.search(
+        r"\b(to begin|to start|to commence|before start|at start|start date)\b",
+        normalized,
+    ):
+        return "sponsorship_to_begin"
+    if re.search(r"\bsponsor", normalized):
+        return "future_sponsorship"
+    if re.search(r"\bany (?:u\.?s\.? )?employer\b", normalized):
+        return "authorized_for_any_employer"
+    if _STATUS_RE.search(normalized) and re.search(r"\b(are you|do you hold)\b", normalized):
+        return "status_yes_no"
+    if "work authorization" in normalized and "sponsorship" not in normalized:
+        return "work_authorization_wording"
+    if re.search(r"\b(currently|presently|right now|now authorized)\b", normalized) and re.search(
+        r"\bauthoriz", normalized
+    ):
+        return "current_work_authorization"
+    if re.search(r"\b(legally eligible to begin|eligible to begin employment)\b", normalized):
+        return "authorization_at_start"
+    if re.search(r"\bauthoriz", normalized) and re.search(r"\bwork\b", normalized):
+        if re.search(r"\b(currently|presently|right now)\b", normalized):
+            return "current_work_authorization"
+        return "authorization_at_start"
+    return "unknown"
+
+
+def _bool_answer(value: Optional[bool], kind: str) -> Tuple[str, str]:
+    token = _yes_no_from_bool(value)
+    if token is None:
+        return "leave_unresolved", f"{kind}_unknown"
+    return f"answer_{token}", kind
+
+
+def _status_yes_no_answer(widget_text: str, current_status: Optional[str]) -> Tuple[str, str]:
+    asked = normalize_text(widget_text)
+    have = normalize_text(current_status or "")
+    if not have:
+        return "leave_unresolved", "status_yes_no_unknown"
+    mentioned = _STATUS_RE.findall(asked)
+    if not mentioned:
+        return "leave_unresolved", "status_yes_no_unknown"
+    have_token = have.replace("-", "")
+    if any(token.replace("-", "") == have_token for token in mentioned):
+        return "answer_yes", "status_yes_no"
+    return "answer_no", "status_yes_no"
+
+
+def auth_telemetry_outcome(execution: str, reason: str = "") -> str:
+    if execution == "leave_blank":
+        return "optional_left_blank"
+    if execution.startswith("answer_"):
+        return "answered"
+    if reason == "hard_eligibility_skip":
+        return "hard_eligibility_skip"
+    if reason == "disclosure_prevented":
+        return "disclosure_prevented"
+    return "ambiguous_required_blocked"
+
+
+def discovery_data_policy(root: Optional[Path] = None) -> Dict[str, Any]:
+    base = Path(root) if root else ROOT
+    data = load_yaml(base / "knowledge" / "discovery_triage_rules.yaml")
+    if not isinstance(data, dict):
+        raise ValueError("discovery_triage_rules.yaml must be a mapping")
+    policy = data.get("data_policy") or {}
+    if not isinstance(policy, dict):
+        raise ValueError("discovery_triage_rules.yaml data_policy must be a mapping")
+    return policy
+
+
+def discovery_skips_on_unknown_sponsorship(root: Optional[Path] = None) -> bool:
+    return not bool(discovery_data_policy(root).get("sponsorship_unknown_is_not_skip", True))
+
+
+def discovery_guide_rule_ids(root: Optional[Path] = None) -> Tuple[str, ...]:
+    base = Path(root) if root else ROOT
+    data = load_yaml(base / "knowledge" / "discovery_triage_rules.yaml")
+    if not isinstance(data, dict):
+        raise ValueError("discovery_triage_rules.yaml must be a mapping")
+    ids: List[str] = []
+    for rule in data.get("guide_rules") or []:
+        if isinstance(rule, dict) and rule.get("id"):
+            ids.append(str(rule["id"]))
+    return tuple(ids)
+
+
+def auth_form_action(
+    *,
+    widget_text: str,
+    explicit_status_instruction: str = "",
+    required: bool = True,
+    names_non_us_countries_only: bool = False,
+    facts: Optional[AuthFacts] = None,
+) -> Tuple[str, str]:
+    resolved = facts if facts is not None else load_auth_facts()
+    instructed = _explicit_status_answer(explicit_status_instruction) or _explicit_status_answer(
+        widget_text
+    )
+    if instructed == "yes":
+        return "answer_yes", "explicit_status_instruction"
+    if instructed == "no":
+        return "answer_no", "explicit_status_instruction"
+    if names_non_us_countries_only:
+        if not required:
+            return "leave_blank", "optional_identity_field"
+        return "leave_unresolved", "country_specific_sponsorship"
+    kind = classify_auth_question(widget_text)
+    if (
+        instructed is None
+        and kind in _UNCLEAR_INSTRUCTION_KINDS
+        and _unclear_status_instruction(explicit_status_instruction, widget_text)
+    ):
+        return "leave_unresolved", "explicit_status_instruction_unclear"
+    if kind in {"work_authorization_wording", "authorization_without_sponsorship"}:
+        if not required:
+            return "leave_blank", "optional_identity_field"
+        return "leave_unresolved", kind
+    if not required and kind in _OPTIONAL_IDENTITY_KINDS:
+        return "leave_blank", "optional_identity_field"
+    if kind == "citizenship":
+        if resolved.citizenship_country:
+            return (
+                "answer_china"
+                if normalize_text(resolved.citizenship_country) == "china"
+                else "answer_value",
+                "citizenship",
+            )
+        return "leave_unresolved", "citizenship_unknown"
+    if kind == "visa_status":
+        if resolved.current_status:
+            return (
+                "answer_f1"
+                if normalize_text(resolved.current_status) in {"f-1", "f1"}
+                else "answer_value",
+                "visa_status",
+            )
+        return "leave_unresolved", "visa_status_unknown"
+    if kind == "status_yes_no":
+        return _status_yes_no_answer(widget_text, resolved.current_status)
+    if kind == "current_work_authorization":
+        return _bool_answer(resolved.current_us_work_authorization, "current_work_authorization")
+    if kind == "authorization_at_start":
+        return _bool_answer(
+            resolved.legally_eligible_to_begin_immediately, "authorization_at_start"
+        )
+    if kind == "authorized_for_any_employer":
+        return _bool_answer(resolved.authorized_for_any_employer, "authorized_for_any_employer")
+    if kind == "sponsorship_to_begin":
+        return _bool_answer(resolved.sponsorship_required_to_begin, "sponsorship_to_begin")
+    if kind == "future_sponsorship":
+        return _bool_answer(resolved.future_sponsorship_required, "future_sponsorship")
+    if kind == "h1b_sponsorship":
+        return _bool_answer(resolved.h1b_sponsorship_required, "h1b_sponsorship")
+    if kind == "opt_eligibility":
+        return _bool_answer(resolved.opt_eligible_expected, "opt_eligibility")
+    if kind == "opt_approval":
+        return _bool_answer(resolved.opt_approved, "opt_approval")
+    if kind == "ead_possession":
+        return _bool_answer(resolved.opt_ead_in_possession, "ead_possession")
+    if not required:
+        return "leave_blank", "optional_identity_field"
+    return "leave_unresolved", "auth_question_unknown"
+
+
+def sponsorship_form_action(
+    *,
+    widget_text: str,
+    explicit_status_instruction: str = "",
+    names_non_us_countries_only: bool = False,
+    says_work_authorization_not_sponsorship: bool = False,
+    required: bool = True,
+    facts: Optional[AuthFacts] = None,
+) -> Tuple[str, str]:
+    if says_work_authorization_not_sponsorship:
+        if not required:
+            return "leave_blank", "optional_identity_field"
+        return "leave_unresolved", "work_authorization_wording"
+    return auth_form_action(
+        widget_text=widget_text,
+        explicit_status_instruction=explicit_status_instruction,
+        required=required,
+        names_non_us_countries_only=names_non_us_countries_only,
+        facts=facts,
     )
 
 

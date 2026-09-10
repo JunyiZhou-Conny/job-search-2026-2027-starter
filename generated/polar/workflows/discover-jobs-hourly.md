@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-08.learning-loop+19a7760d4388
+workflow_version: 2026-09-09.prod-learn+429c986e5c66
 status: production
 enabled: true
 needs_browser_lock: true
@@ -30,12 +30,16 @@ lock_key: polar_browser
 ttl_minutes: 180
 tab: control
 
-At start, read the control row whose key is polar_browser.
+At start, locate the control row by the key cell polar_browser. Do not pick a visually empty row.
 If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.
 If the lock is free or expired, acquire it with this run_id, this workflow, acquired_at now, and expires_at now plus 180 minutes.
+Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL. Notes may say acquired.
+A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.
 If this long run is still active and remaining time is under 60 minutes, refresh expires_at to now plus 180 minutes.
-Release the lock on normal completion by clearing owner_run_id.
+After each job stage, refresh control notes with polar_policy.lease_checkpoint_notes(job_key, last_stage).
+Release the lock on normal completion by clearing owner_run_id. Keep the checkpoint until then.
 A crashed run must not lock the browser forever. Treat an expired expires_at as free.
+Do not weaken the lease to recover a crashed run.
 
 ## Sheet write contract
 
@@ -52,6 +56,18 @@ never_omit: apply_url_confidence
 6. After an important queue write, read back job_key, status, and last_stage.
 7. If those three fields do not match what you meant, repair the row before the next job.
 
+Control tab writes are key upserts.
+Locate the row by the key cell. Never choose a row because it looks empty on screen.
+If the target key is missing, append a new row.
+If the visible row has a different key, or no key, abort. Do not write that row.
+If two rows share the same key, abort.
+Commit the edit. Then reread key, owner_run_id, notes.
+A cell that looked correct is not proof the write persisted. The reread is the proof.
+github_write_canary must never overwrite polar_browser.
+After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
+Those four cells must still match the values from before the canary write. Notes on that lock may change.
+These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.
+
 Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.
 Named writes are the fix. Prose that says remember column I is not the fix.
 
@@ -65,10 +81,17 @@ result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, or NO_WORK.
 
 Write an incident_log row when something material happens.
 Use one category from this list:
-UI_ONE_OFF, LOCAL_PRIVATE_FACT, MISSING_DOCUMENT, FACT_POLICY, TRIAGE, QUEUE_STATE, DEDUP, WRITING, AUTH, PERFORMANCE, NO_ACTION.
+UI_ONE_OFF, LOCAL_PRIVATE_FACT, MISSING_DOCUMENT, MISSING_FACT, FACT_POLICY, TRIAGE, QUEUE_STATE, DEDUP, WRITING, AUTH, PERFORMANCE, NO_ACTION.
 If minutes were lost, also set time_lost_category from:
 AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPDOWN_UI, DUPLICATE, SUBMIT_VERIFY, OTHER.
-repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift.
+repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, degree_level_gate_missed_at_discovery.
+Degree-level hard gates that discovery missed use that one repeat_key. Do not invent phd_only_missed_at_discovery variants.
+incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits.
+The sequence is monotonic. Read existing values for that date. The next id is one more than the highest number.
+If 001 and 003 exist, write 004. Do not fill gaps. Never reuse one. Do not write INC-YYYYMMDD-01.
+01 and 001 count as the same number.
+A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
+For authorization widgets, record auth_outcome as answered, optional_left_blank, ambiguous_required_blocked, hard_eligibility_skip, or disclosure_prevented.
 durable_candidate is yes only when a repo policy or compiler change would prevent a repeat.
 Evidence must be enough for an engineer. No secrets.
 

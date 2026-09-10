@@ -232,6 +232,13 @@ def auto_map_ban(block: Dict[str, Any]) -> str:
 def form_answer_line(name: str, block: Any) -> str:
     if not isinstance(block, dict):
         return ""
+    if block.get("execution") == "leave_unresolved":
+        when = md_escape(block.get("when", name))
+        return (
+            f"{name}: leave unresolved. Do not apply a historical Yes or No "
+            f"while it conflicts with a stored fact. When: {when}"
+            + auto_map_ban(block)
+        )
     if block.get("status") == "needs_human" or block.get("form_answer") == "unknown":
         when = md_escape(block.get("when", name))
         return (
@@ -334,7 +341,9 @@ def compile_sections() -> Dict[str, str]:
     program_end = md_escape(auth.get("program_end_date") or anchors.get("program_end_date"))
     commencement = md_escape(auth.get("commencement_date") or anchors.get("commencement_date"))
     earliest_ft = md_escape(auth.get("earliest_full_time_start") or profile.get("earliest_start_date"))
-    sponsorship_form = md_escape((auth_form.get("visa_sponsorship") or {}).get("form_answer") or "No")
+    visa_block = auth_form.get("visa_sponsorship") or {}
+    sponsorship_form = md_escape(visa_block.get("form_answer") or "unknown")
+    sponsorship_execution = md_escape(visa_block.get("execution") or "")
 
     docs = document_availability()
     doc_lines = []
@@ -372,8 +381,15 @@ def compile_sections() -> Dict[str, str]:
                     "Permanent resident elsewhere since citizenship: No",
                     f"Current visa type when asked: {visa}",
                     f"Future sponsorship required (standing fact): {auth.get('future_sponsorship_required')}",
-                    f"Broad visa-sponsorship widget: {sponsorship_form}",
+                    f"Required future-sponsorship widget: {sponsorship_form}. Execution: {sponsorship_execution or 'answer the asked fact only'}.",
+                    "Answer only the asked semantic. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship on a field that did not ask.",
+                    "Optional identity or status fields stay blank. Required and clear fields get the one matching fact. Required and unclear fields BLOCK that job only.",
+                    "If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.",
+                    "Country-only sponsorship lists and work-authorization-without-sponsorship wording stay unresolved when required, and blank when optional.",
                     "H-1B-named widget: No",
+                    "Authorized-for-any-employer widget: Yes",
+                    "Required currently-authorized widget: leave unresolved. The current-authorization fact is unknown.",
+                    "Required EAD widget: No. Required OPT-approval widget: No. Required OPT-eligibility widget: Yes.",
                     f"Program end / I-20 date: {program_end}",
                     f"Commencement: {commencement}",
                     f"Graduation date widget: {program_end}",
@@ -450,11 +466,14 @@ def compile_sections() -> Dict[str, str]:
             "",
             "An exclusive graduation or enrollment window is an eligibility note, not a skip.",
             "Do not invent a graduation date.",
-            "Sponsorship unknown or no is not a skip.",
+            "Sponsorship unknown, unavailable, or generally not offered is not a skip.",
+            "F-1 or OPT mentioned on a board is not a skip.",
             "Do not invent work_model, location, graduation windows, or H1B facts.",
             "Blank location is not an automatic skip.",
-            "apply-ready-jobs re-reads the full employer posting before major fill and applies these same hard rules.",
-            "A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, or TS-SCI/polygraph skip that discovery missed.",
+            "apply-ready-jobs reads the full employer posting immediately after it is open, before login or form fill.",
+            "A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip that discovery missed.",
+            "Those degree-level misses share repeat_key degree_level_gate_missed_at_discovery.",
+            "Do not reopen Original Job Post during hourly discovery to catch them.",
         ]
     )
 
@@ -712,6 +731,10 @@ def compile_sections() -> Dict[str, str]:
             "apply_url_confidence must stay in its named column even when the value is none or blank.",
             "After an important queue write, read back job_key, status, and last_stage.",
             "If those fields do not match, repair the row before the next job.",
+            "Control writes locate the row by key. Never pick a visually empty row.",
+            "If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.",
+            "After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.",
+            "Commit the edit, then reread key, owner_run_id, and notes. Looking correct is not persistence.",
         ]
     )
     section_m = "\n".join(
@@ -721,15 +744,21 @@ def compile_sections() -> Dict[str, str]:
             f"TTL minutes: {lease['ttl_minutes']}.",
             "discover-jobs-hourly and apply-ready-jobs must acquire this lock before driving Jobright or employer pages.",
             "If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.",
+            "On acquire, upsert a run_log row for this run_id with result PARTIAL so a crash still leaves a row.",
+            "After each job stage, store checkpoint job_key and last_stage in control notes.",
             "Refresh the lock when a long run has under 60 minutes remaining.",
-            "Release on normal completion. Treat an expired lock as free.",
+            "Release on normal completion. Treat an expired lock as free. Do not weaken the lease to recover a crash.",
             "Heartbeat, daily summary, and production-learning-daily do not take this lock.",
         ]
     )
     section_n = "\n".join(
         [
-            "One workflow invocation writes one run_log row and copies workflow_version from the instruction file.",
+            "One workflow invocation upserts one run_log row by run_id and copies workflow_version from the instruction file.",
             "Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.",
+            "incident_id is INC-YYYYMMDD-NNN with three digits. The sequence is monotonic. The next id is one more than the highest number for that date. If 001 and 003 exist, write 004. 01 and 001 count as the same number.",
+            "Degree-level apply-time skips share repeat_key degree_level_gate_missed_at_discovery.",
+            "A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.",
+            "Authorization telemetry uses auth_outcome answered, optional_left_blank, ambiguous_required_blocked, hard_eligibility_skip, or disclosure_prevented.",
             "If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.",
             "Do not count every click. Coarse stage timing is enough.",
             "production-learning-daily aggregates today's telemetry into a sanitized Markdown report.",

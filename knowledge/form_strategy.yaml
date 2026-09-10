@@ -3,7 +3,7 @@
 # Cursor / computer-use must apply these after Copilot, or Junyi types them.
 # Submit is governed by docs/policy/SUBMIT_ROLLOUT.md.
 
-last_updated: "2026-09-07"
+last_updated: "2026-09-10"
 source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules; Junyi 2026-08-25 work-auth / GPA / website / discipline; Junyi leftover rules after Advanced Space redo 2026-08-25"
 
 always:
@@ -24,16 +24,17 @@ always:
     form_answer: "No"
 
   visa_sponsorship:
-    status: owner_confirmed
-    confirmed_by: "Junyi, written, 2026-09-03 (Twitch review)"
-    form_answer: "No"
-    accept_also: ["No, I do not need sponsorship", "None"]
+    status: derived_from_fact
+    confirmed_by: "Owner policy 2026-09-10"
+    form_answer: "Yes"
+    execution: answer_from_future_sponsorship_required
+    historical_form_answer: "No"
+    accept_also: ["Yes"]
     see: "knowledge/work_authorization.yaml form_strategy.visa_sponsorship"
     when: >
-      Will you now or in the future require visa sponsorship? / require
-      sponsorship? / visa sponsorship yes-no / None. Prefer the exact No
-      wording if the widget is a radio. If None is an option, pick None.
-      If it is free text, type the sentence.
+      Will you now or in the future require visa sponsorship? Answer
+      the future_sponsorship_required fact only. Do not mention F-1,
+      OPT, EAD, or citizenship.
     do_not_auto_map:
       - >
         Will you now or in the future require work authorization to
@@ -44,13 +45,21 @@ always:
       sponsorship. Leave for Junyi until that wording is confirmed.
     supersedes: "2026-08-23 broad-Yes flip (Lila/Hayden/Relativity/Scale)"
     before_any_submit: >
-      Re-read the sponsorship widget. If it is Yes, stop. Junyi: this
-      answer is crucial for not getting filtered out.
+      Re-read each authorization widget as its own question. If the form
+      names F-1, J-1, or M-1 and clearly says answer Yes or answer No,
+      that polarity governs that widget. A required future-sponsorship
+      widget should match future_sponsorship_required (Yes). If a
+      required widget is semantically unclear, leave it and mark only
+      that job BLOCKED. Do not Submit a Yes that belongs to a different
+      semantic.
     fact_unchanged: "future_sponsorship_required remains true"
+    explicit_status_instruction: >
+      Follow a clear F-1, J-1, or M-1 Yes or No instruction on that
+      widget. Select Yes or No, or not/never with Yes, stays unresolved.
     reason: >
-      Junyi Hayden review 2026-08-24. Computer-use had flipped Hayden
-      from Copilot No to Yes under the old rule. Form still shows Yes.
-      Not re-clicked. Later pass must set No.
+      Historical Hayden 2026-08-24 mapping was No. Owner policy
+      2026-09-10 answers the stored future-sponsorship fact (Yes) on
+      that exact widget and does not volunteer extra status.
 
   citizenship_country:
     decided: "2026-09-03"
@@ -159,7 +168,7 @@ always:
     when: "Current visa type / what is your visa status / select your visa"
     reason: >
       Junyi Notion 2026-08-24: when they ask for the type, put F-1.
-      Future-sponsorship widgets stay No / None.
+      Do not mention visa type on a widget that did not ask.
 
   prior_internship_count:
     decided: "2026-08-24"

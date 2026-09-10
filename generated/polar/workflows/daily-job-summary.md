@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-08.learning-loop+422dece0d58a
+workflow_version: 2026-09-09.prod-learn+56b0e68af85d
 status: production
 enabled: true
 needs_browser_lock: false
@@ -43,6 +43,18 @@ never_omit: apply_url_confidence
 5. Do not shorten a row and shift later fields left.
 6. After an important queue write, read back job_key, status, and last_stage.
 7. If those three fields do not match what you meant, repair the row before the next job.
+
+Control tab writes are key upserts.
+Locate the row by the key cell. Never choose a row because it looks empty on screen.
+If the target key is missing, append a new row.
+If the visible row has a different key, or no key, abort. Do not write that row.
+If two rows share the same key, abort.
+Commit the edit. Then reread key, owner_run_id, notes.
+A cell that looked correct is not proof the write persisted. The reread is the proof.
+github_write_canary must never overwrite polar_browser.
+After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
+Those four cells must still match the values from before the canary write. Notes on that lock may change.
+These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.
 
 Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.
 Named writes are the fix. Prose that says remember column I is not the fix.

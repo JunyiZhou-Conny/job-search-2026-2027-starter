@@ -97,7 +97,7 @@ From the 2026-08-22 10-tab review
 |---|---|
 | Copilot filled EEO (gender/race/veteran/disability) | `eeo_touched=true`. **Block Submit.** |
 | Work auth is US citizen / green card and profile is F-1 | `work_auth_mismatch=true`. **Block Submit.** |
-| Visa sponsorship / now-or-future sponsorship answered **Yes** | `sponsorship_needs_review=true`. **Block Submit.** Form strategy as of 2026-08-24 is **No, I do not need sponsorship**. Fact file still has `future_sponsorship_required: true`. |
+| Visa sponsorship / now-or-future sponsorship answered **Yes** | Matches `future_sponsorship_required`. Polar Local continues. Cursor Cloud G2 still re-reads the exact widget after autofill. Do not treat Yes as a global identity error. |
 | “H-1B sponsorship?” named and answered No | Intended. Do not block on that alone. |
 | Education widgets look like a dumped blob | `education_misfill=true`. Review, do not Submit. |
 | Copilot “need review” matches empty form fields | Expected. Log the empty field names into `knowledge/autofill_obstacles.yaml` if they are new gaps. |

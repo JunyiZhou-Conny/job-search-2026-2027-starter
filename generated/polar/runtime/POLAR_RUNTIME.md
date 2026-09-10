@@ -52,8 +52,15 @@ Approved documents. Attach only when the form asks for that class. Never paste c
 - Permanent resident elsewhere since citizenship: No
 - Current visa type when asked: F-1
 - Future sponsorship required (standing fact): True
-- Broad visa-sponsorship widget: No
+- Required future-sponsorship widget: Yes. Execution: answer_from_future_sponsorship_required.
+- Answer only the asked semantic. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship on a field that did not ask.
+- Optional identity or status fields stay blank. Required and clear fields get the one matching fact. Required and unclear fields BLOCK that job only.
+- If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.
+- Country-only sponsorship lists and work-authorization-without-sponsorship wording stay unresolved when required, and blank when optional.
 - H-1B-named widget: No
+- Authorized-for-any-employer widget: Yes
+- Required currently-authorized widget: leave unresolved. The current-authorization fact is unknown.
+- Required EAD widget: No. Required OPT-approval widget: No. Required OPT-eligibility widget: Yes.
 - Program end / I-20 date: 2026-12-18
 - Commencement: 2027-03
 - Graduation date widget: 2026-12-18
@@ -72,7 +79,7 @@ Standing widget answers (owner-confirmed). Apply them verbatim.
 - employed_by_this_company_before: No. When: Have you been employed by [this company] in the past?.
 - open_to_relocating: Yes. When: Are you open to relocating?.
 - h1b_named_question_only: No.
-- visa_sponsorship: No. When: Will you now or in the future require visa sponsorship? / require sponsorship? / visa sponsorship yes-no / None. Prefer the exact No wording if the widget is a radio. If None is an option, pick None. If it is free text, type the sentence.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
+- visa_sponsorship: Yes. When: Will you now or in the future require visa sponsorship? Answer the future_sponsorship_required fact only. Do not mention F-1, OPT, EAD, or citizenship.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
 - citizenship_country: China. When: Country of citizenship / nationality. Also the export-control country widget..
 - permanent_resident_elsewhere: No. When: Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?.
 - eligible_to_begin_employment_immediately: Yes. When: If offered employment, would you be legally eligible to begin employment immediately?.
@@ -132,6 +139,7 @@ apply-ready-jobs resolves Original Job Post on demand.
 
 - `remote` (hard, default skip): If work_model (or clear title/notes) indicates fully remote / remote-only, skip. Hybrid or on-site is fine. If work_model blank, do not assume remote; use later or keep based on other fit, and say evidence is incomplete.
 - `non_target_role` (hard, default skip): Skip roles clearly outside SWE / data / ML / AI infra targets (e.g. data-center technician, pure QA-only, unrelated clinical non-tech, wholesale sales). Adjacent cyber/quant may be later, not automatic skip.
+- `sponsorship_not_skip` (hard, default keep): Never skip because sponsorship is unknown, unavailable, F-1 or OPT is mentioned, the company generally does not sponsor, or a board predicts sponsorship difficulty. Keep an otherwise-qualified job. Sponsorship is not a discovery rejection axis.
 - `hard_gate` (hard, default skip): Skip only when board text clearly shows an incompatible hard gate that is independent of graduation wording: PhD-only, or polygraph/TS-SCI when not viable. An exclusive graduation or enrollment window that matches NEITHER (A) program end 2026-12-18 / December 2026 completion, NOR (B) commencement / school-listed March 2027 is a non-blocking eligibility note, not a skip, unless another hard rule independently applies (remote, non_us_location, start_date_conflict / 2026 job term, PhD-only, TS-SCI). Do not invent a graduation date. Application time still answers widgets truthfully (2026-12-18 / year 2027). Examples that should NOT auto-skip: "graduating Spring 2027", "December 2026 graduates", "currently pursuing a degree". Soft/vague windows stay a note. Return-to-school after internship: evaluate against still being a student through program end and ceremony timing; if unclear, prefer later/keep over skip and note uncertainty.
 - `start_date_conflict` (hard, default skip): Candidate target work window: internships starting Summer 2027 (preferred), and full-time on/after 2027-01-18. SKIP when the ROLE TERM / START is in 2026: - "Summer 2026", "Fall 2026", "Spring 2026", "Winter 2026" intern/co-op - "2026 Intern", "Intern 2026", "new grad 2026 start", start Jun–Dec 2026 - Any clear employment start before 2027-01-18 KEEP/review targets: Summer 2027 intern, Fall 2027 if relevant, 2027 FT. IMPORTANT — do NOT skip only because text mentions the candidate's graduation / program end "December 2026" / "2026-12-18". That is the person's date, not the job's start year. Skip on job-cycle/start-year 2026.
 - `timing_expired` (hard, default skip): Same policy as start_date_conflict for intern cycles: any 2026 internship term is out of scope (not only "already over"). Prefer skip when the posting is a 2026 intern/new-grad cycle. Summer 2027+ is the default keep window for internships.
@@ -145,11 +153,14 @@ apply-ready-jobs resolves Original Job Post on demand.
 
 An exclusive graduation or enrollment window is an eligibility note, not a skip.
 Do not invent a graduation date.
-Sponsorship unknown or no is not a skip.
+Sponsorship unknown, unavailable, or generally not offered is not a skip.
+F-1 or OPT mentioned on a board is not a skip.
 Do not invent work_model, location, graduation windows, or H1B facts.
 Blank location is not an automatic skip.
-apply-ready-jobs re-reads the full employer posting before major fill and applies these same hard rules.
-A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, or TS-SCI/polygraph skip that discovery missed.
+apply-ready-jobs reads the full employer posting immediately after it is open, before login or form fill.
+A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip that discovery missed.
+Those degree-level misses share repeat_key degree_level_gate_missed_at_discovery.
+Do not reopen Original Job Post during hourly discovery to catch them.
 
 ## D. Regular vs prioritized policy
 
@@ -239,6 +250,7 @@ Why-us must not:
 - claim FDE / Palantir / Epic-admin work that is not in the bank
 - upgrade Emory to a CS degree
 - dump computer vision / language models / transformers onto a non-ML Why-us
+- mention F-1, OPT, EAD, citizenship, or sponsorship unless the prompt asked
 - em dashes or hyphen asides in the text that goes on the form
 
 Tone: Ardent, genuine, truthful. First intern / student voice is fine. Honest hedges about missing domain experience are OK (Lila). On Charta / ML-FDE, a little assertiveness is OK. Do not invent jobs. Write like a person.
@@ -557,6 +569,10 @@ Write by header name. Write explicit blanks. Do not shorten a positional row.
 apply_url_confidence must stay in its named column even when the value is none or blank.
 After an important queue write, read back job_key, status, and last_stage.
 If those fields do not match, repair the row before the next job.
+Control writes locate the row by key. Never pick a visually empty row.
+If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.
+After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
+Commit the edit, then reread key, owner_run_id, and notes. Looking correct is not persistence.
 
 ## M. Browser lease
 
@@ -565,14 +581,20 @@ Lock key: polar_browser.
 TTL minutes: 180.
 discover-jobs-hourly and apply-ready-jobs must acquire this lock before driving Jobright or employer pages.
 If another non-expired production workflow owns it, write run_log result SKIPPED_LOCKED and exit.
+On acquire, upsert a run_log row for this run_id with result PARTIAL so a crash still leaves a row.
+After each job stage, store checkpoint job_key and last_stage in control notes.
 Refresh the lock when a long run has under 60 minutes remaining.
-Release on normal completion. Treat an expired lock as free.
+Release on normal completion. Treat an expired lock as free. Do not weaken the lease to recover a crash.
 Heartbeat, daily summary, and production-learning-daily do not take this lock.
 
 ## N. Run and incident telemetry
 
-One workflow invocation writes one run_log row and copies workflow_version from the instruction file.
+One workflow invocation upserts one run_log row by run_id and copies workflow_version from the instruction file.
 Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.
+incident_id is INC-YYYYMMDD-NNN with three digits. The sequence is monotonic. The next id is one more than the highest number for that date. If 001 and 003 exist, write 004. 01 and 001 count as the same number.
+Degree-level apply-time skips share repeat_key degree_level_gate_missed_at_discovery.
+A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
+Authorization telemetry uses auth_outcome answered, optional_left_blank, ambiguous_required_blocked, hard_eligibility_skip, or disclosure_prevented.
 If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.
 Do not count every click. Coarse stage timing is enough.
 production-learning-daily aggregates today's telemetry into a sanitized Markdown report.

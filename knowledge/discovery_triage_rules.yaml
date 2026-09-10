@@ -5,8 +5,8 @@
 # Decisions: keep | later | skip
 # Only user-confirmed keep rows should be ingested into data/applications.csv.
 
-version: 5
-updated: "2026-09-08"
+version: 6
+updated: "2026-09-10"
 
 profile_anchors:
   # On a personal fork, rewrite these anchors to match config/profile.yaml.
@@ -31,6 +31,9 @@ data_policy:
   # AND the row would otherwise be keep/borderline — note if unread.
   do_not_fabricate: true
   sponsorship_unknown_is_not_skip: true
+  sponsorship_unavailable_is_not_skip: true
+  visa_or_opt_mention_is_not_skip: true
+  company_no_sponsor_policy_is_not_skip: true
 
 outputs:
   csv: "generated/discovery_triage_YYYY-MM-DD.csv"
@@ -76,6 +79,15 @@ guide_rules:
       Skip roles clearly outside SWE / data / ML / AI infra targets
       (e.g. data-center technician, pure QA-only, unrelated clinical non-tech,
       wholesale sales). Adjacent cyber/quant may be later, not automatic skip.
+
+  - id: sponsorship_not_skip
+    severity: hard
+    default_decision: keep
+    guidance: >
+      Never skip because sponsorship is unknown, unavailable, F-1 or OPT
+      is mentioned, the company generally does not sponsor, or a board
+      predicts sponsorship difficulty. Keep an otherwise-qualified job.
+      Sponsorship is not a discovery rejection axis.
 
   - id: hard_gate
     severity: hard
