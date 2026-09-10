@@ -62,7 +62,7 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Base ledger: Simplify. Polar runtime state lives in the Google Sheet,
   not a second `applications.csv`.
 - Local repo: resume version, lane, sponsorship signal, auth Q&A, networking, interview learning, next actions.
-- Browser execution has two environments. Cursor cloud Computer Use, and Polar on Junyi's machine. Polar reads `generated/polar/runtime/POLAR_RUNTIME.md`. Prefer a trusted `apply_url`. If the source is still Jobright, Polar uses **Original Job Post**, never **APPLY WITH AUTOFILL**.
+- Browser execution has two environments. Cursor cloud Computer Use, and Polar on Junyi's machine. Polar reads `generated/polar/runtime/POLAR_RUNTIME.md`. Prefer a trusted `apply_url`. If the source is still Jobright, Polar uses **Original Job Post**, never **APPLY WITH AUTOFILL**. Polar apply requires visible Simplify Copilot on the employer ATS page. A simplify.jobs login is not proof. If Copilot is missing, Polar stops the apply run for owner action, keeps the queue job READY, and releases the browser lease. Polar must not fall back to manual clicking. Pending PREFERENCES candidates keep a `pref_YYYYMMDD_NNN` id until a resolution row is on `main`.
 - Prefer one-way `import-simplify` over retyping every application. See `docs/platforms.md`.
 
 ## Boundaries (see `docs/BOUNDARIES.md`)

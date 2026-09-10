@@ -10,6 +10,7 @@ Canonical sources:
 - `config/profile.yaml`
 - `config/submit_gates.yaml`
 - `knowledge/polar_operator.yaml`
+- `knowledge/preference_resolutions.yaml`
 - `knowledge/polar_documents.yaml`
 - `knowledge/work_authorization.yaml`
 - `knowledge/form_strategy.yaml`
@@ -301,10 +302,9 @@ Do not implement CAPTCHA-bypass services, fingerprint spoofing, or anti-abuse ev
 Escalate to BLOCKED only after this local environment cannot complete a required step.
 A blocked job must not stall the queue. Persist the blocker and continue to the next READY job.
 ATS family is diagnostic metadata only. Do not organize work by ATS worker class.
-Simplify is optional acceleration. Try it at most once per application when it is already useful.
-If onboarding, missing injection, a broken session, or repeat navigation appears, fall back immediately
-to POLAR_RUNTIME, the approved resume or document registry, and the local Polar profile.
-Do not spend the run repairing Simplify. Record a PERFORMANCE incident if it materially slowed the run.
+Simplify Copilot is a required apply precondition. See section P.
+Missing Copilot is an ENVIRONMENT blocker. Do not mark the queue job BLOCKED.
+Do not silently fall back to traditional clicking.
 
 ## H. Submission behavior
 
@@ -609,3 +609,33 @@ Mark siblings SKIP with the canonical job_key.
 Do not submit the same employer requisition twice.
 Jobright ids and company+role+location remain useful. They are not enough once the employer identity is known.
 Section K still applies.
+
+## P. Memory ownership and Copilot preflight
+
+GitHub is the only canonical behavioral memory.
+Local inbox: /home/polar/PREFERENCES.md.
+Canonical pointer: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md.
+PREFERENCES.md is not a second strategy database.
+precedence: owner_instruction > canonical_github > local_private > learning_candidate.
+preference_classes: CANONICAL_GITHUB, LOCAL_PRIVATE, LEARNING_CANDIDATE, REDUNDANT, EPHEMERAL, SECRET_OR_CREDENTIAL, STALE, ONE_OFF.
+An old PREFERENCES strategy line must not override newer GitHub behavior.
+LOCAL_PRIVATE values stay local. SECRET_OR_CREDENTIAL is never exported.
+Export assigns pref_YYYYMMDD_NNN and emits Polar Preferences Delta. Unresolved ids stay pending.
+Mint the next id from pending ids, keep_local ids, and main preference_resolutions. Never reuse. Never fill gaps.
+An open Cursor PR is not canonical. Polar reconciles only after a resolution row is on main.
+KEEP_LOCAL leaves pending and stays in Local-only facts. Do not re-export it.
+Match candidate_id only. Do not compare wording.
+preference_resolutions: none
+Cursor writes generalized lessons and knowledge/preference_resolutions.yaml. STOP BEFORE MERGE.
+
+Simplify Copilot is a required apply precondition.
+proof: Copilot UI on the employer ATS page.
+not_proof: simplify.jobs login or API.
+states: PRESENT, MISSING, UNKNOWN.
+control_key: env_simplify_copilot. Locate by key. Never overwrite polar_browser.
+If Copilot is PRESENT, Autofill once. Then read the visible widgets.
+If Copilot is MISSING or UNKNOWN, do not fall back to traditional clicking.
+Restore the probe job to READY. Do not consume it as BLOCKED.
+Incident category ENVIRONMENT. repeat_key simplify_copilot_missing.
+run_log result OWNER_ACTION_REQUIRED. Release polar_browser. Exit the apply run.
+The next apply run rechecks the employer page. Last MISSING is not a cache that skips the check.

@@ -25,7 +25,7 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `heartbeat` | Locked-screen scheduler proof. Not a job row. |
 | `run_log` | One row per workflow invocation. |
 | `incident_log` | One row per material event. No secrets. |
-| `control` | Browser lease and canary flags. |
+| `control` | Browser lease, GitHub write canary, and `env_simplify_copilot`. |
 | `learning_reports` | Sanitized daily production-learning Markdown. |
 
 ## `queue` columns
@@ -67,7 +67,7 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `REVIEW_READY` | Form is complete but Polar stopped for a missing owner fact or explicit hold. |
 | `SUBMITTED` | Submit clicked and verification succeeded. |
 | `SUBMISSION_UNKNOWN` | Submit may have happened. Verify before any retry. |
-| `BLOCKED` | This environment cannot finish a required step. The queue continues. |
+| `BLOCKED` | This job cannot finish a required job-specific step. The queue continues. Missing Copilot is not `BLOCKED`. |
 | `SKIP` | Hard skip, closed posting, or owner skip. |
 
 ## `last_stage` values
@@ -92,6 +92,14 @@ Read the live header row. Map field names to columns. Write by name. Write expli
 `discover-jobs-hourly` and `apply-ready-jobs` take the `control` row `polar_browser` for 180 minutes. If another non-expired production workflow owns it, write `run_log` result `SKIPPED_LOCKED` and exit.
 
 If the Mac slept while Job 6 was `IN_PROGRESS`, resume Job 6. Do not start over from Job 1.
+
+## Environment Copilot row
+
+`apply-ready-jobs` upserts the control key `env_simplify_copilot` after it checks the employer page.
+
+This row is not a lease. Leave `expires_at` empty. Locate the row by key. Never write these fields into the `polar_browser` row.
+
+States are `PRESENT`, `MISSING`, and `UNKNOWN`. `MISSING` or `UNKNOWN` stops the apply run. It does not mark the queue job `BLOCKED`. Restore the job to its prior `READY_REGULAR` or `READY_PRIORITY` status. Write `run_log` result `OWNER_ACTION_REQUIRED`. Release `polar_browser`. The next apply run checks the employer page again.
 
 ## Dedup
 

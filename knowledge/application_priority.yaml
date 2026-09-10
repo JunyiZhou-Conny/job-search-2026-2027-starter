@@ -109,7 +109,7 @@ do_not_conflate:
 apply_behavior:
   regular:
     - Cluster resume
-    - Simplify once when useful, then read the visible widgets
+    - Copilot preflight on the employer page. Autofill once when PRESENT. No silent manual fallback
     - Standing form_strategy answers
     - Free response answers the prompt; no project dump
     - Cover letter stays empty unless Junyi asks

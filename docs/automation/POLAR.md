@@ -75,6 +75,7 @@ Polar must not become a second job-search truth system.
 
 - Own `data/applications.csv` or mint ledger ids.
 - Click Jobright **APPLY WITH AUTOFILL**.
+- Silently fall back to traditional clicking when Simplify Copilot is missing.
 - Copy the whole repository into the Workflow prompt.
 - Store passwords, cookies, OTP codes, or 2FA secrets in git, the Sheet, or mail.
 - Invent metrics, projects, employers, referrals, clearance, or technologies outside the evidence bank.
@@ -136,11 +137,13 @@ See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery ord
 
 `last_stage` is a coarse checkpoint. Status is the state machine. Do not add more statuses without an owner decision.
 
+`/home/polar/PREFERENCES.md` is a local inbox. `production-learning-daily` assigns `pref_YYYYMMDD_NNN` from pending ids, keep_local ids, and main resolutions. It never reuses an id. Cursor writes `knowledge/preference_resolutions.yaml` in a PR. Polar reconciles those ids on the next production run after the row is on `main`. An open PR is not enough. `KEEP_LOCAL` leaves pending and stays in Local-only facts.
+
 ## Regular versus prioritized
 
 `application_weight` stays. It is production policy, not a pilot leftover.
 
-Regular work is fast and truthful. Use the cluster resume. Use Simplify once when it helps. Correct visible fields. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist.
+Regular work is fast and truthful. Use the cluster resume. Require Simplify Copilot on the employer page, Autofill once, then correct visible fields. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. If Copilot is missing, stop the apply run for owner action. Do not consume the queue job.
 
 Prioritized work gets more care. Signals include startup or scale-up Junyi values, Fortune 500 or major companies, NVIDIA GTC, prestige, biotech or health AI, strong biostatistics or bio data-science fit, FDE, and unusually strong personal fit. Do not mark a generic analyst or data role prioritized only because the title contains "data".
 

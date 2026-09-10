@@ -2,7 +2,7 @@
 
 COMPILED ARTIFACT. Not canonical.
 
-policy_revision: 2026-09-09.prod-learn
+policy_revision: 2026-09-10.pref-reconcile
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 | Workflow | Status | Lock | Raw URL |
@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the bootstrap prompt from docs/automation/POLAR_WORKFLOWS.md.
 They open the raw main URL on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-09.prod-learn+429c986e5c66`
-- `apply-ready-jobs` workflow_version `2026-09-09.prod-learn+11e76c2418e8`
-- `daily-job-summary` workflow_version `2026-09-09.prod-learn+56b0e68af85d`
-- `production-learning-daily` workflow_version `2026-09-09.prod-learn+fe128f2d6ba7`
-- `polar-scheduler-heartbeat` workflow_version `2026-09-09.prod-learn+d99af025ea26`
-- `polar-github-write-canary` workflow_version `2026-09-09.prod-learn+dbeea5e727df`
-- `chatgpt-production-review` workflow_version `2026-09-09.prod-learn+1689f8dc545a`
-- `cursor-production-maintenance` workflow_version `2026-09-09.prod-learn+21b841a26ef0`
-- `polar-sheet-migration` workflow_version `2026-09-09.prod-learn+876410de385b`
+- `discover-jobs-hourly` workflow_version `2026-09-10.pref-reconcile+dc16d067a14e`
+- `apply-ready-jobs` workflow_version `2026-09-10.pref-reconcile+77699f609893`
+- `daily-job-summary` workflow_version `2026-09-10.pref-reconcile+bcb93109c0c9`
+- `production-learning-daily` workflow_version `2026-09-10.pref-reconcile+b16ca3614159`
+- `polar-scheduler-heartbeat` workflow_version `2026-09-10.pref-reconcile+d99af025ea26`
+- `polar-github-write-canary` workflow_version `2026-09-10.pref-reconcile+853be3086a51`
+- `chatgpt-production-review` workflow_version `2026-09-10.pref-reconcile+1689f8dc545a`
+- `cursor-production-maintenance` workflow_version `2026-09-10.pref-reconcile+0cb6b6e8669b`
+- `polar-sheet-migration` workflow_version `2026-09-10.pref-reconcile+44ede66d90fc`

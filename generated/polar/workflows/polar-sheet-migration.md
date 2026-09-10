@@ -1,7 +1,7 @@
 # polar-sheet-migration
 
 workflow: polar-sheet-migration
-workflow_version: 2026-09-09.prod-learn+876410de385b
+workflow_version: 2026-09-10.pref-reconcile+44ede66d90fc
 status: manual_once
 enabled: false
 needs_browser_lock: false
@@ -37,7 +37,7 @@ If the visible row has a different key, or no key, abort. Do not write that row.
 If two rows share the same key, abort.
 Commit the edit. Then reread key, owner_run_id, notes.
 A cell that looked correct is not proof the write persisted. The reread is the proof.
-github_write_canary must never overwrite polar_browser.
+github_write_canary and env_simplify_copilot must never overwrite polar_browser.
 After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
 Those four cells must still match the values from before the canary write. Notes on that lock may change.
 These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.

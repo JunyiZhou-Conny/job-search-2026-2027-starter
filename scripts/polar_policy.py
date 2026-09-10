@@ -15,6 +15,9 @@ from js_lib import canonical_url, normalize_text
 ROOT = Path(__file__).resolve().parents[1]
 
 LEASE_KEY = "polar_browser"
+ENV_SIMPLIFY_KEY = "env_simplify_copilot"
+LOCAL_PREFERENCES_PATH = "/home/polar/PREFERENCES.md"
+PREFERENCE_RESOLUTIONS_PATH = ROOT / "knowledge" / "preference_resolutions.yaml"
 
 GITHUB_RAW_BASE = (
     "https://raw.githubusercontent.com/JunyiZhou-Conny/"
@@ -33,6 +36,7 @@ INCIDENT_CATEGORIES = (
     "WRITING",
     "AUTH",
     "PERFORMANCE",
+    "ENVIRONMENT",
     "NO_ACTION",
 )
 
@@ -87,6 +91,60 @@ RUN_LOG_RESULTS = (
     "FAILED",
     "SKIPPED_LOCKED",
     "NO_WORK",
+    "OWNER_ACTION_REQUIRED",
+)
+
+COPILOT_STATES = (
+    "PRESENT",
+    "MISSING",
+    "UNKNOWN",
+)
+
+PREFERENCE_CLASSES = (
+    "CANONICAL_GITHUB",
+    "LOCAL_PRIVATE",
+    "LEARNING_CANDIDATE",
+    "REDUNDANT",
+    "EPHEMERAL",
+    "SECRET_OR_CREDENTIAL",
+    "STALE",
+    "ONE_OFF",
+)
+
+PROMOTION_OUTCOMES = (
+    "PROMOTE",
+    "KEEP_LOCAL",
+    "DROP_REDUNDANT",
+    "DROP_ONE_OFF",
+    "STALE",
+    "NEEDS_MORE_EVIDENCE",
+    "OWNER_DECISION",
+)
+
+MEMORY_PRECEDENCE = (
+    "owner_instruction",
+    "canonical_github",
+    "local_private",
+    "learning_candidate",
+)
+
+COPILOT_REPEAT_KEY = "simplify_copilot_missing"
+READY_STATUSES = ("READY_REGULAR", "READY_PRIORITY")
+PREF_ID_RE = re.compile(r"^pref_(\d{8})_(\d{3})$")
+PREF_LINE_RE = re.compile(r"^(pref_\d{8}_\d{3})\s*:\s*(.*)$")
+RESOLUTION_REMOVE_OUTCOMES = frozenset(
+    {"PROMOTE", "DROP_REDUNDANT", "DROP_ONE_OFF", "STALE"}
+)
+RESOLUTION_PENDING_OUTCOMES = frozenset(
+    {"NEEDS_MORE_EVIDENCE", "OWNER_DECISION"}
+)
+RESOLUTION_KEEP_LOCAL_OUTCOME = "KEEP_LOCAL"
+RESOLUTION_RETAIN_OUTCOMES = RESOLUTION_PENDING_OUTCOMES | {RESOLUTION_KEEP_LOCAL_OUTCOME}
+EXPORT_RETAINS_CLASSES = frozenset(
+    {"LEARNING_CANDIDATE", "ONE_OFF", "STALE"}
+)
+KEEP_LOCAL_LINE_RE = re.compile(
+    r"^keep_local (pref_\d{8}_\d{3})\s*:\s*(.*)$"
 )
 
 LOCK_RESULTS = (
@@ -240,6 +298,9 @@ PASSWORD_ASSIGN_RE = re.compile(r"(?i)\b(password|passwd|pwd)\s*[:=]\s*\S+")
 COOKIE_ASSIGN_RE = re.compile(
     r"(?i)\b(cookie|set-cookie|session[_ -]?token|storage_state)\s*[:=]\s*\S+"
 )
+TOKEN_ASSIGN_RE = re.compile(
+    r"(?i)\b(api[_-]?key|bearer|authorization)\s*[:=]\s*\S+"
+)
 STREET_RE = re.compile(
     r"\b\d{1,6}\s+[A-Za-z0-9.#']+\s+"
     r"(Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Way|"
@@ -253,6 +314,7 @@ TRANSCRIPT_LEAK_RE = re.compile(
 SANITIZE_REPLACEMENTS = (
     (PASSWORD_ASSIGN_RE, "[REDACTED_PASSWORD]"),
     (COOKIE_ASSIGN_RE, "[REDACTED_SECRET]"),
+    (TOKEN_ASSIGN_RE, "[REDACTED_SECRET]"),
     (OTP_ASSIGN_RE, "[REDACTED_OTP]"),
     (EMAIL_RE, "[REDACTED_EMAIL]"),
     (PHONE_RE, "[REDACTED_PHONE]"),
@@ -1345,3 +1407,542 @@ def parse_contract_block(text: str, heading: str) -> Dict[str, str]:
         if key:
             fields[key] = value.strip()
     return fields
+
+
+@dataclass(frozen=True)
+class CopilotObservation:
+    employer_page_copilot_ui: bool
+    simplify_jobs_session: bool
+    evidence: str
+
+
+@dataclass(frozen=True)
+class CopilotMissRestore:
+    status: str
+    attempt_count: int
+    consume_job: bool
+
+
+@dataclass(frozen=True)
+class PreferenceDeltaRow:
+    title: str
+    cls: str
+    evidence: str
+    proposed_destination: str
+    already_in_github: bool
+    body: str = ""
+    candidate_id: str = ""
+
+
+@dataclass(frozen=True)
+class PreferenceCandidate:
+    candidate_id: str
+    summary: str
+
+
+@dataclass(frozen=True)
+class PreferenceResolution:
+    candidate_id: str
+    outcome: str
+    canonical_destination: str = ""
+    resolved_revision: str = ""
+
+
+def copilot_state(obs: CopilotObservation) -> str:
+    if obs.employer_page_copilot_ui:
+        return "PRESENT"
+    if str(obs.evidence or "").strip():
+        return "MISSING"
+    return "UNKNOWN"
+
+
+def simplify_jobs_session_is_copilot_proof(_session_ok: bool) -> bool:
+    return False
+
+
+def copilot_allows_apply(state: str) -> bool:
+    return state == "PRESENT"
+
+
+def missing_copilot_run_result() -> str:
+    return "OWNER_ACTION_REQUIRED"
+
+
+def missing_copilot_should_release_lease() -> bool:
+    return True
+
+
+def restore_queue_after_copilot_miss(
+    *,
+    ready_status: str,
+    attempt_count_before_run: int,
+) -> CopilotMissRestore:
+    if ready_status not in READY_STATUSES:
+        raise ValueError(f"ready_status must be READY_REGULAR or READY_PRIORITY, got {ready_status}")
+    return CopilotMissRestore(
+        status=ready_status,
+        attempt_count=attempt_count_before_run,
+        consume_job=False,
+    )
+
+
+def format_env_simplify_notes(state: str, evidence: str) -> str:
+    if state not in COPILOT_STATES:
+        raise ValueError(f"unknown copilot state {state}")
+    clean = sanitize_learning_text(evidence or "").replace(";", ",")
+    return f"state={state}; evidence={clean}"
+
+
+def parse_env_simplify_notes(notes: str) -> Tuple[str, str]:
+    text = notes or ""
+    state = "UNKNOWN"
+    evidence = ""
+    for part in text.split(";"):
+        if ":" not in part and "=" not in part:
+            continue
+        key, value = re.split(r"[:=]", part, maxsplit=1)
+        key = key.strip().lower()
+        value = value.strip()
+        if key == "state" and value in COPILOT_STATES:
+            state = value
+        elif key == "evidence":
+            evidence = value
+    return state, evidence
+
+
+def env_simplify_control_fields(
+    *,
+    run_id: str,
+    workflow: str,
+    checked_at: str,
+    state: str,
+    evidence: str,
+) -> Dict[str, str]:
+    return {
+        "key": ENV_SIMPLIFY_KEY,
+        "owner_run_id": run_id,
+        "workflow": workflow,
+        "acquired_at": checked_at,
+        "expires_at": "",
+        "notes": format_env_simplify_notes(state, evidence),
+    }
+
+
+def _near_duplicate(body: str, github_corpus: str) -> bool:
+    blob = normalize_text(body)
+    corpus = normalize_text(github_corpus)
+    if not blob or not corpus:
+        return False
+    return blob in corpus
+
+
+def classify_preference_entry(
+    title: str,
+    body: str,
+    *,
+    github_corpus: str = "",
+) -> str:
+    blob = f"{title}\n{body}"
+    if (
+        PASSWORD_ASSIGN_RE.search(blob)
+        or COOKIE_ASSIGN_RE.search(blob)
+        or TOKEN_ASSIGN_RE.search(blob)
+        or OTP_ASSIGN_RE.search(blob)
+    ):
+        return "SECRET_OR_CREDENTIAL"
+    if STREET_RE.search(blob) or EMAIL_RE.search(blob) or PHONE_RE.search(blob):
+        return "LOCAL_PRIVATE"
+    if re.search(r"\b(this tab|this run|temporary|lost the tab)\b", blob, re.I):
+        return "EPHEMERAL"
+    if github_corpus and _near_duplicate(body, github_corpus):
+        return "REDUNDANT"
+    if re.search(r"\b(one[- ]off|single posting|this employer only)\b", blob, re.I):
+        return "ONE_OFF"
+    if re.search(r"\b(stale learning|superseded by github|^stale:)\b", blob, re.I):
+        return "STALE"
+    if re.search(r"\b(follow GitHub|POLAR_RUNTIME|canonical)\b", blob, re.I) and len(body) < 240:
+        return "CANONICAL_GITHUB"
+    return "LEARNING_CANDIDATE"
+
+
+def preference_export_mode(cls: str) -> str:
+    if cls == "SECRET_OR_CREDENTIAL":
+        return "omit"
+    if cls == "LOCAL_PRIVATE":
+        return "count_only"
+    return "sanitized"
+
+
+def local_overrides_github(cls: str, *, kind: str = "behavior") -> bool:
+    return kind == "private_value" and cls == "LOCAL_PRIVATE"
+
+
+def winning_memory_source(cls: str, *, kind: str = "behavior") -> str:
+    if local_overrides_github(cls, kind=kind):
+        return "local_private"
+    return "canonical_github"
+
+
+def proposed_github_destination(text: str) -> str:
+    blob = (text or "").lower()
+    if "form" in blob or "widget" in blob or "autofill" in blob:
+        return "knowledge/form_strategy.yaml"
+    if "copilot" in blob or "simplify" in blob or "lease" in blob:
+        return "knowledge/polar_operator.yaml"
+    return "knowledge/polar_operator.yaml"
+
+
+def render_preferences_delta(
+    rows: Sequence[PreferenceDeltaRow],
+) -> str:
+    lines = ["## Polar Preferences Delta", ""]
+    local_private = 0
+    secrets = 0
+    for row in rows:
+        mode = preference_export_mode(row.cls)
+        if mode == "omit":
+            secrets += 1
+            continue
+        if mode == "count_only":
+            local_private += 1
+            continue
+        title = sanitize_learning_text(row.title)
+        evidence = sanitize_learning_text(row.evidence)
+        already = "yes" if row.already_in_github else "no"
+        pref_id = (row.candidate_id or "").strip() or "unassigned"
+        lines.append(
+            f"- {pref_id} | {title} | class {row.cls} | already_in_github {already} | "
+            f"destination {row.proposed_destination} | evidence {evidence}"
+        )
+    lines.append("")
+    lines.append(f"local_private_count: {local_private}")
+    lines.append(f"secret_or_credential_count: {secrets}")
+    lines.append("Do not print LOCAL_PRIVATE values or SECRET_OR_CREDENTIAL contents.")
+    return "\n".join(lines) + "\n"
+
+
+def compact_preferences_markdown(
+    *,
+    local_private: Sequence[Tuple[str, str]],
+    candidates: Sequence[PreferenceCandidate],
+    last_reconciled: str,
+    github_runtime_url: str,
+    main_revision: str = "",
+    keep_local: Sequence[PreferenceCandidate] = (),
+) -> str:
+    private_lines = []
+    for title, value in local_private:
+        private_lines.append(f"- {title}: {value}")
+    for item in keep_local:
+        private_lines.append(
+            f"- keep_local {item.candidate_id}: {sanitize_learning_text(item.summary)}"
+        )
+    candidate_lines = []
+    for item in candidates:
+        candidate_lines.append(
+            f"- {item.candidate_id}: {sanitize_learning_text(item.summary)}"
+        )
+    if not private_lines:
+        private_lines = ["- none"]
+    if not candidate_lines:
+        candidate_lines = ["- none"]
+    sync = [f"last_reconciled: {last_reconciled}"]
+    if main_revision:
+        sync.append(f"main_revision: {main_revision}")
+    return "\n".join(
+        [
+            "# Polar Preferences",
+            "",
+            "## Canonical behavior",
+            "Follow current GitHub runtime and workflow.",
+            github_runtime_url,
+            "",
+            "## Local-only facts",
+            *private_lines,
+            "",
+            "## Pending learning candidates",
+            *candidate_lines,
+            "",
+            "## Sync state",
+            *sync,
+            "",
+        ]
+    )
+
+
+def _mentions_form_yes(text: str) -> bool:
+    return bool(re.search(r"\bform[ _]?answer(?: is|:)? yes\b|\banswer yes\b", text))
+
+
+def _mentions_form_no(text: str) -> bool:
+    return bool(re.search(r"\bform[ _]?answer(?: is|:)? no\b|\banswer no\b", text))
+
+
+def preference_conflicts_github(body: str, github_corpus: str) -> bool:
+    blob = normalize_text(body)
+    corpus = normalize_text(github_corpus)
+    if not blob or not corpus:
+        return False
+    return (_mentions_form_yes(blob) and _mentions_form_no(corpus)) or (
+        _mentions_form_no(blob) and _mentions_form_yes(corpus)
+    )
+
+
+def parse_preference_id(value: str) -> Optional[Tuple[str, int]]:
+    match = PREF_ID_RE.match((value or "").strip())
+    if not match:
+        return None
+    return match.group(1), int(match.group(2))
+
+
+def next_preference_id(existing: Sequence[str], day: str) -> str:
+    compact = (day or "").replace("-", "")
+    if len(compact) != 8 or not compact.isdigit():
+        raise ValueError("preference day must be YYYY-MM-DD or YYYYMMDD")
+    used = {
+        number
+        for parsed in (parse_preference_id(raw) for raw in existing)
+        if parsed and parsed[0] == compact
+        for number in (parsed[1],)
+    }
+    next_number = max(used) + 1 if used else 1
+    return f"pref_{compact}_{next_number:03d}"
+
+
+def used_preference_ids(
+    *,
+    pending: Sequence[PreferenceCandidate] = (),
+    keep_local: Sequence[PreferenceCandidate] = (),
+    resolutions: Sequence[PreferenceResolution] = (),
+) -> Tuple[str, ...]:
+    ids: List[str] = []
+    seen = set()
+    for item in (*pending, *keep_local):
+        if item.candidate_id and item.candidate_id not in seen:
+            ids.append(item.candidate_id)
+            seen.add(item.candidate_id)
+    for row in resolutions:
+        if row.candidate_id and row.candidate_id not in seen:
+            ids.append(row.candidate_id)
+            seen.add(row.candidate_id)
+    return tuple(ids)
+
+
+def export_retains_candidate(cls: str) -> bool:
+    return cls in EXPORT_RETAINS_CLASSES
+
+
+def assign_preference_ids(
+    items: Sequence[PreferenceCandidate | str],
+    *,
+    day: str,
+    reserved_ids: Sequence[str] = (),
+) -> List[PreferenceCandidate]:
+    assigned: List[PreferenceCandidate] = []
+    seen: List[str] = [raw for raw in reserved_ids if parse_preference_id(raw)]
+    for item in items:
+        if isinstance(item, PreferenceCandidate) and parse_preference_id(item.candidate_id):
+            assigned.append(
+                PreferenceCandidate(
+                    candidate_id=item.candidate_id,
+                    summary=item.summary,
+                )
+            )
+            seen.append(item.candidate_id)
+            continue
+        text = item.summary if isinstance(item, PreferenceCandidate) else str(item)
+        match = PREF_LINE_RE.match(text.strip())
+        if match and parse_preference_id(match.group(1)):
+            assigned.append(
+                PreferenceCandidate(
+                    candidate_id=match.group(1),
+                    summary=match.group(2),
+                )
+            )
+            seen.append(match.group(1))
+            continue
+        new_id = next_preference_id(seen, day)
+        assigned.append(PreferenceCandidate(candidate_id=new_id, summary=text.strip()))
+        seen.append(new_id)
+    return assigned
+
+
+def parse_pending_candidates(markdown: str) -> List[PreferenceCandidate]:
+    found: List[PreferenceCandidate] = []
+    in_pending = False
+    for line in (markdown or "").splitlines():
+        if line.strip() == "## Pending learning candidates":
+            in_pending = True
+            continue
+        if in_pending and line.startswith("## "):
+            break
+        if not in_pending or not line.startswith("- "):
+            continue
+        body = line[2:].strip()
+        if body == "none":
+            continue
+        match = PREF_LINE_RE.match(body)
+        if match:
+            found.append(
+                PreferenceCandidate(candidate_id=match.group(1), summary=match.group(2))
+            )
+    return found
+
+
+def parse_keep_local_candidates(markdown: str) -> List[PreferenceCandidate]:
+    found: List[PreferenceCandidate] = []
+    in_local = False
+    for line in (markdown or "").splitlines():
+        if line.strip() == "## Local-only facts":
+            in_local = True
+            continue
+        if in_local and line.startswith("## "):
+            break
+        if not in_local or not line.startswith("- "):
+            continue
+        match = KEEP_LOCAL_LINE_RE.match(line[2:].strip())
+        if match:
+            found.append(
+                PreferenceCandidate(candidate_id=match.group(1), summary=match.group(2))
+            )
+    return found
+
+
+def load_preference_resolutions(raw: Any) -> List[PreferenceResolution]:
+    rows = []
+    if isinstance(raw, dict):
+        items = raw.get("resolutions") or []
+    elif isinstance(raw, list):
+        items = raw
+    else:
+        items = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        candidate_id = str(item.get("candidate_id") or "").strip()
+        outcome = str(item.get("outcome") or "").strip()
+        if not parse_preference_id(candidate_id):
+            raise ValueError(f"invalid preference candidate_id {candidate_id}")
+        if outcome not in PROMOTION_OUTCOMES:
+            raise ValueError(f"unknown preference outcome {outcome}")
+        rows.append(
+            PreferenceResolution(
+                candidate_id=candidate_id,
+                outcome=outcome,
+                canonical_destination=str(item.get("canonical_destination") or "").strip(),
+                resolved_revision=str(item.get("resolved_revision") or "").strip(),
+            )
+        )
+    return rows
+
+
+def format_runtime_resolutions(rows: Sequence[PreferenceResolution]) -> str:
+    if not rows:
+        return "preference_resolutions: none"
+    lines = ["preference_resolutions:"]
+    for row in rows:
+        dest = row.canonical_destination or "none"
+        rev = row.resolved_revision or "none"
+        lines.append(f"- {row.candidate_id} | {row.outcome} | {dest} | {rev}")
+    return "\n".join(lines)
+
+
+def parse_runtime_resolutions(text: str) -> List[PreferenceResolution]:
+    rows: List[PreferenceResolution] = []
+    for line in (text or "").splitlines():
+        if not line.startswith("- pref_"):
+            continue
+        parts = [part.strip() for part in line[2:].split("|")]
+        if len(parts) < 2:
+            continue
+        rows.append(
+            PreferenceResolution(
+                candidate_id=parts[0],
+                outcome=parts[1],
+                canonical_destination="" if parts[2:3] == ["none"] else (parts[2] if len(parts) > 2 else ""),
+                resolved_revision="" if parts[3:4] == ["none"] else (parts[3] if len(parts) > 3 else ""),
+            )
+        )
+    return rows
+
+
+def resolution_is_canonical(*, on_main: bool) -> bool:
+    return on_main
+
+
+def preference_resolution_action(
+    outcome: Optional[str],
+    *,
+    on_main: bool,
+) -> str:
+    if not outcome or not resolution_is_canonical(on_main=on_main):
+        return "pending"
+    if outcome == RESOLUTION_KEEP_LOCAL_OUTCOME:
+        return "keep_local"
+    if outcome in RESOLUTION_PENDING_OUTCOMES:
+        return "pending"
+    if outcome in RESOLUTION_REMOVE_OUTCOMES:
+        return "remove"
+    return "pending"
+
+
+def candidate_survives_resolution(
+    outcome: Optional[str],
+    *,
+    on_main: bool,
+) -> bool:
+    return preference_resolution_action(outcome, on_main=on_main) == "pending"
+
+
+def reconcile_preference_candidates(
+    candidates: Sequence[PreferenceCandidate],
+    resolutions: Sequence[PreferenceResolution],
+    *,
+    on_main: bool,
+) -> List[PreferenceCandidate]:
+    return list(
+        reconcile_preference_inbox(
+            pending=candidates,
+            resolutions=resolutions,
+            on_main=on_main,
+        ).pending
+    )
+
+
+@dataclass(frozen=True)
+class PreferenceInbox:
+    pending: Tuple[PreferenceCandidate, ...]
+    keep_local: Tuple[PreferenceCandidate, ...]
+
+
+def reconcile_preference_inbox(
+    *,
+    pending: Sequence[PreferenceCandidate],
+    resolutions: Sequence[PreferenceResolution],
+    on_main: bool,
+    keep_local: Sequence[PreferenceCandidate] = (),
+) -> PreferenceInbox:
+    latest: Dict[str, PreferenceResolution] = {}
+    for row in resolutions:
+        latest[row.candidate_id] = row
+    next_pending: List[PreferenceCandidate] = []
+    next_keep: List[PreferenceCandidate] = []
+    seen_keep = set()
+    for item in keep_local:
+        next_keep.append(item)
+        seen_keep.add(item.candidate_id)
+    for item in pending:
+        row = latest.get(item.candidate_id)
+        action = preference_resolution_action(
+            row.outcome if row else None,
+            on_main=on_main,
+        )
+        if action == "pending":
+            next_pending.append(item)
+        elif action == "keep_local" and item.candidate_id not in seen_keep:
+            next_keep.append(item)
+            seen_keep.add(item.candidate_id)
+    return PreferenceInbox(
+        pending=tuple(next_pending),
+        keep_local=tuple(next_keep),
+    )
