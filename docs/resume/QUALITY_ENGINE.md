@@ -189,13 +189,18 @@ This PR must not overwrite `knowledge/evidence_bank.yaml` or `resumes/base/JZ_re
 - Policy-pack keys for `ai_infra` and for `data` as a router alias.
 - Git base of `#121` onto landed `main`.
 
-## What this correction does not change yet
+## First BUILD
 
-- No `build` or `route` implementation.
-- No Polar runtime rewrite.
-- No catalog semantic gate beyond the existing number check.
-- No deletion of `plan.py` priors in this pass. They are marked for removal before BUILD.
-- No new family TeX under `resumes/`.
+`ai_infra_v1` is the first frozen family one-pager.
+
+- Path. `resumes/families/ai_infra/ai_infra_v1.tex`
+- Skills. `.cursor/skills/resume-stack-build/` and the four Resume Stack skills
+- Gate. `python3 scripts/resume_quality.py build --family ai_infra --compile`
+- Artifacts. `docs/resume/builds/ai_infra_v1/`
+
+`swe`, `ml_ai`, and `health_ai` are not built. `route` is not implemented. Polar is unchanged.
+
+`plan.py` `fallback_order` is still in the VIP matcher. BUILD does not call it. The selector of record for `ai_infra_v1` is `docs/resume/builds/ai_infra_v1/selection.md`.
 
 ## Later BUILD predicate
 

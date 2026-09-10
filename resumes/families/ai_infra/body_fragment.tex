@@ -1,0 +1,58 @@
+% Technical Skills
+\section{Technical Skills}
+\resumeSubHeadingListStart
+  \resumeItem{Languages}{Python, C++, SQL, R}
+  \resumeItem{ML systems}{PyTorch, TensorFlow, scanpy, AnnData, YAML experiment specs}
+  \resumeItem{Cluster and agents}{SLURM, FASRC Cannon, job arrays, checkpoint/resume, Polar runtime compiler}
+  \resumeItem{Verification}{unittest, pytest, policy.validate, decoded-frame metrics}
+  \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
+\resumeSubHeadingListEnd
+
+% Engineering Projects
+\section{Engineering Projects}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {Closed-Loop Cluster Autoresearch for scGen vs CellOT \href{https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Sole author | Harvard FASRC Cannon}{June 2026 -- Present}
+    \resumeItemListStart
+      \item Built a self-directed loop (submit $\rightarrow$ watch $\rightarrow$ triage $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ continue $\rightarrow$ synthesize) that ran \textbf{338} SLURM jobs (318 ok, 20 handled errors) over \textbf{79.3} hours on Cannon.
+      \item Split a deterministic one-delta proposer, gated by \texttt{policy.validate()}, from a checkpointed research agenda. Default planner is the rule reasoner. An optional LLM director with token and cost accounting exists and has not been used on recorded runs.
+      \item Routed tiny-MLP training to CPU partitions because GPU carries 200--500$\times$ fairshare cost, and resumed preempted jobs on \texttt{serial\_requeue} from \texttt{cache/last.pt}.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {Job Search OS. Human-supervised browser automation \href{https://github.com/JunyiZhou-Conny/job-search-2026-2027-starter}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Sole author}{July 2026 -- Present}
+    \resumeItemListStart
+      \item Built a job-search operating system that keeps GitHub as durable policy and evidence, a Google Sheet as Polar runtime state, and Simplify as the application ledger.
+      \item Compiled Polar workflows from repo YAML so the browser agent reads one runtime file. Polar may Submit only after listed identity and writing gates. Cloud Submit at G2 and G3 stays closed.
+      \item Kept Computer Use as hands-only on a compiled action sheet, and designed recovery for Mac shutdown, Wi-Fi loss, and browser restart. The system does not send messages or apply on its own.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {mixhvg-py. Validated Python port of an R HVG ensemble \href{https://github.com/JunyiZhou-Conny/mixhvg-py}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Sole author | Scientific software}{July 2026}
+    \resumeItemListStart
+      \item Ported mixhvg to an AnnData-native API (cells $\times$ genes) that combines methods by maximum rank rather than averaging.
+      \item Validated against R, scran, and Seurat. Seurat vst matches at Spearman \textbf{1.0000}. The recommended mixture agrees at Jaccard \textbf{0.980} at 500 genes. A weighted median, not a mean, matched R discarded-gene fraction (0.503 vs 0.499).
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+% Research Experience
+\section{Research Experience}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {speciesOT. Cross-species single-cell translation \href{https://github.com/JunyiZhou-Conny/speciesOT}{\normalfont\small [GitHub]}}{Boston, MA}
+    {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
+    \resumeItemListStart
+      \item Built a hub CLI that catalogs trained runs, ranks them on decoded-space gap-closed rather than raw $R^2$, and prints SLURM chains without submitting jobs. Fifteen YAML specs are the intent source of truth.
+      \item Engineered atlas-scale I/O. Backed AnnData prep so the documented \textbf{43 GB} Tabula files are not full-loaded on a login node, and baked gene-axis plus scGen-shift sidecars so a new mouse prediction does not reopen the training atlas.
+      \item On a paired held-out-species split (LPS / rat-in-train prior, not the Tabula atlas), scGen $R^2$ was \textbf{0.85--0.90} with the source species in training versus \textbf{0.65--0.67} when that species was held out. Gene-space ranking reversed with split (6619 orthologs vs 1000 HVGs).
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\end{document}
