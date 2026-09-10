@@ -197,6 +197,7 @@ This PR must not overwrite `knowledge/evidence_bank.yaml` or `resumes/base/JZ_re
 - Skills. `.cursor/skills/resume-stack-build/` and the four Resume Stack skills
 - Gate. `python3 scripts/resume_quality.py build --family ai_infra --compile`
 - Artifacts. `docs/resume/builds/ai_infra_v1/`
+- Page. Three projects after the cleanup pass. mixhvg-py was tested and dropped. See `docs/resume/builds/ai_infra_v1/selection.md`.
 
 `swe`, `ml_ai`, and `health_ai` are not built. `route` is not implemented. Polar is unchanged.
 

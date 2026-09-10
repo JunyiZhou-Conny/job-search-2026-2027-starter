@@ -9,16 +9,11 @@ projects:
       - control_logic
       - do_not_claim
   job_search_os:
+    recruiter_facing_title: Human-Supervised Browser Automation System
     fields:
       - architecture
       - software_engineering_evidence
       - strongest_accomplishments
-      - do_not_claim
-  mixhvg_py:
-    fields:
-      - architecture
-      - research_evidence
-      - measurable_results
       - do_not_claim
   cellot_wyss:
     fields:
@@ -27,3 +22,11 @@ projects:
       - measurable_results
       - do_not_claim
       - not_yet_built
+dropped_from_page:
+  mixhvg_py:
+    reason: Fourth project crowded the page and repeated speciesOT biology. See selection.md.
+    fields_reserved_for_later_family:
+      - architecture
+      - research_evidence
+      - measurable_results
+      - do_not_claim
