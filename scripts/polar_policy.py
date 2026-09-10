@@ -164,22 +164,8 @@ KEEP_LOCAL_LINE_RE = re.compile(
     r"^keep_local (pref_\d{8}_\d{3})\s*:\s*(.*)$"
 )
 
-LOCK_RESULTS = (
-    "ACQUIRED",
-    "REFRESHED",
-    "RELEASED",
-    "SKIPPED_LOCKED",
-    "NOT_REQUIRED",
-)
-
 REQUIRED_QUEUE_READBACK = ("job_key", "status", "last_stage", "claim_run_id")
 CLAIM_RUN_ID = "claim_run_id"
-WORK_CLAIM_RESULTS = (
-    "CLAIMED",
-    "ALREADY_CLAIMED",
-    "RECOVERED",
-    "INELIGIBLE",
-)
 CLAIM_REPEAT_ALREADY = "work_already_claimed"
 CLAIM_REPEAT_RECOVERED = "work_claim_recovered"
 REQUISITION_REPEAT = "requisition_suppressed"
@@ -412,31 +398,10 @@ def load_submit_gates(root: Optional[Path] = None) -> Dict[str, Any]:
     return data
 
 
-def lease_ttl_minutes(root: Optional[Path] = None) -> int:
-    raw = (load_operator(root).get("lease") or {}).get("ttl_minutes")
-    if raw is None:
-        raise ValueError("lease.ttl_minutes is missing from polar_operator.yaml")
-    return int(raw)
-
-
 def work_claim_ttl_minutes(root: Optional[Path] = None) -> int:
-    operator = load_operator(root)
-    raw = (operator.get("work_claim") or {}).get("ttl_minutes")
-    if raw is None:
-        raw = (operator.get("lease") or {}).get("ttl_minutes")
+    raw = (load_operator(root).get("work_claim") or {}).get("ttl_minutes")
     if raw is None:
         raise ValueError("work_claim.ttl_minutes is missing from polar_operator.yaml")
-    return int(raw)
-
-
-def lease_refresh_minutes(root: Optional[Path] = None) -> int:
-    raw = (load_operator(root).get("lease") or {}).get(
-        "refresh_if_remaining_below_minutes"
-    )
-    if raw is None:
-        raise ValueError(
-            "lease.refresh_if_remaining_below_minutes is missing from polar_operator.yaml"
-        )
     return int(raw)
 
 
@@ -529,49 +494,6 @@ def parse_timestamp(value: str) -> Optional[datetime]:
         return datetime.fromisoformat(text)
     except ValueError:
         return None
-
-
-@dataclass(frozen=True)
-class LeaseDecision:
-    action: str
-    lock_result: str
-    owner_run_id: str
-    workflow: str
-    expires_at: str
-    notes: str
-
-
-def decide_lease(
-    current: Optional[Mapping[str, str]],
-    *,
-    now: datetime,
-    run_id: str,
-    workflow: str,
-    needs_lock: bool,
-    ttl_minutes: Optional[int] = None,
-    refresh_below_minutes: Optional[int] = None,
-    key: str = LEASE_KEY,
-) -> LeaseDecision:
-    del current, now, run_id, needs_lock, ttl_minutes, refresh_below_minutes
-    return LeaseDecision(
-        action="skip",
-        lock_result="NOT_REQUIRED",
-        owner_run_id="",
-        workflow=workflow,
-        expires_at="",
-        notes=f"{key} is historical control state, not a production mutex",
-    )
-
-
-def release_lease(run_id: str, workflow: str, now: datetime) -> LeaseDecision:
-    return LeaseDecision(
-        action="release",
-        lock_result="RELEASED",
-        owner_run_id="",
-        workflow=workflow,
-        expires_at=now.isoformat(),
-        notes=f"released by {run_id}",
-    )
 
 
 def _attempt_count(row: Mapping[str, Any]) -> int:
@@ -738,17 +660,6 @@ def confirm_claim_readback(
     if owner == run_id:
         return "CLAIMED"
     return "ALREADY_CLAIMED"
-
-
-def apply_last_write_claim(
-    base: Mapping[str, Any],
-    first: WorkClaimDecision,
-    second: WorkClaimDecision,
-) -> Dict[str, str]:
-    row = {str(k): str(v) for k, v in base.items()}
-    row.update(first.fields)
-    row.update(second.fields)
-    return row
 
 
 def requisition_submit_blocked(
@@ -1881,11 +1792,6 @@ def document_availability(root: Optional[Path] = None) -> List[Dict[str, Any]]:
     return rows
 
 
-def needs_browser_lock(workflow: str) -> bool:
-    del workflow
-    return False
-
-
 def parse_contract_block(text: str, heading: str) -> Dict[str, str]:
     marker = f"## {heading}"
     if marker not in text:
@@ -1961,10 +1867,6 @@ def copilot_allows_apply(state: str) -> bool:
 
 def missing_copilot_run_result() -> str:
     return "OWNER_ACTION_REQUIRED"
-
-
-def missing_copilot_should_release_lease() -> bool:
-    return False
 
 
 def restore_queue_after_copilot_miss(

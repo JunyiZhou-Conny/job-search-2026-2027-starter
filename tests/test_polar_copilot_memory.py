@@ -31,7 +31,6 @@ from polar_policy import (  # noqa: E402
     format_env_simplify_notes,
     local_overrides_github,
     missing_copilot_run_result,
-    missing_copilot_should_release_lease,
     parse_env_simplify_notes,
     plan_control_write,
     preference_conflicts_github,
@@ -98,7 +97,6 @@ class TestCopilotPreflight(unittest.TestCase):
         self.assertFalse(restore.consume_job)
         self.assertEqual(missing_copilot_run_result(), "OWNER_ACTION_REQUIRED")
         self.assertIn("OWNER_ACTION_REQUIRED", RUN_LOG_RESULTS)
-        self.assertFalse(missing_copilot_should_release_lease())
         self.assertEqual(restore.claim_run_id, "")
         self.assertEqual(COPILOT_REPEAT_KEY, "simplify_copilot_missing")
 

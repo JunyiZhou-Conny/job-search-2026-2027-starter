@@ -12,14 +12,11 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from polar_policy import (  # noqa: E402
     QUEUE_COLUMNS,
-    apply_last_write_claim,
     attempt_claim_job,
     claim_is_abandoned,
     confirm_claim_readback,
-    decide_lease,
     discover_may_overwrite_execution_fields,
     ensure_claim_column,
-    needs_browser_lock,
     regular_submit_remaining,
     requisition_identity,
     requisition_submit_blocked,
@@ -32,6 +29,13 @@ from polar_workflows import render_workflow  # noqa: E402
 NOW = datetime.fromisoformat("2026-09-10T16:00:00")
 STALE = (NOW - timedelta(hours=4)).isoformat()
 FRESH = (NOW - timedelta(minutes=5)).isoformat()
+
+
+def _last_write(base, first, second):
+    row = dict(base)
+    row.update(first.fields)
+    row.update(second.fields)
+    return row
 
 
 def _ready(job_key: str, status: str = "READY_REGULAR", **extra):
@@ -49,53 +53,29 @@ def _ready(job_key: str, status: str = "READY_REGULAR", **extra):
 
 
 class TestGlobalBrowserLeaseIsGone(unittest.TestCase):
+    def setUp(self):
+        import yaml
+
+        self.operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+
     def test_discover_and_apply_ignore_stale_polar_browser(self):
-        held = {
-            "key": "polar_browser",
-            "owner_run_id": "R-20260909-0420",
-            "workflow": "apply-ready-jobs",
-            "expires_at": (NOW + timedelta(hours=2)).isoformat(),
-        }
-        for workflow in ("discover-jobs-hourly", "apply-ready-jobs"):
-            self.assertFalse(needs_browser_lock(workflow), workflow)
-            decision = decide_lease(
-                held,
-                now=NOW,
-                run_id="R-new",
-                workflow=workflow,
-                needs_lock=needs_browser_lock(workflow),
+        for name in ("discover-jobs-hourly", "apply-ready-jobs"):
+            text = render_workflow(name, self.operator)
+            self.assertIn("needs_browser_lock: false", text, name)
+            self.assertIn(
+                "A stale polar_browser owner_run_id must not stop this workflow.",
+                text,
+                name,
             )
-            self.assertEqual(decision.action, "skip", workflow)
-            self.assertEqual(decision.lock_result, "NOT_REQUIRED", workflow)
+            self.assertNotIn("Exit SKIPPED_LOCKED if blocked", text, name)
+            self.assertNotIn("If another non-expired production workflow owns it", text, name)
 
     def test_heartbeat_does_not_create_a_browser_mutex(self):
-        self.assertFalse(needs_browser_lock("polar-scheduler-heartbeat"))
-        decision = decide_lease(
-            {
-                "owner_run_id": "hb-1",
-                "expires_at": (NOW + timedelta(hours=2)).isoformat(),
-            },
-            now=NOW,
-            run_id="apply-1",
-            workflow="apply-ready-jobs",
-            needs_lock=needs_browser_lock("apply-ready-jobs"),
-        )
-        self.assertEqual(decision.lock_result, "NOT_REQUIRED")
-
-    def test_forced_old_lock_flag_still_cannot_abort(self):
-        decision = decide_lease(
-            {
-                "owner_run_id": "run-discover",
-                "workflow": "discover-jobs-hourly",
-                "expires_at": (NOW + timedelta(hours=2)).isoformat(),
-            },
-            now=NOW,
-            run_id="run-apply",
-            workflow="apply-ready-jobs",
-            needs_lock=True,
-        )
-        self.assertNotEqual(decision.action, "abort")
-        self.assertNotEqual(decision.lock_result, "SKIPPED_LOCKED")
+        text = render_workflow("polar-scheduler-heartbeat", self.operator)
+        self.assertIn("does not treat polar_browser as a mutex", text)
+        self.assertIn("needs_browser_lock: false", text)
 
 
 class TestWorkClaim(unittest.TestCase):
@@ -105,7 +85,7 @@ class TestWorkClaim(unittest.TestCase):
         second = attempt_claim_job(row, run_id="run-b", now=NOW)
         self.assertEqual(first.result, "CLAIMED")
         self.assertEqual(second.result, "CLAIMED")
-        after = apply_last_write_claim(row, first, second)
+        after = _last_write(row, first, second)
         self.assertEqual(confirm_claim_readback(after, run_id="run-a", job_key="job-x"), "ALREADY_CLAIMED")
         self.assertEqual(confirm_claim_readback(after, run_id="run-b", job_key="job-x"), "CLAIMED")
 
@@ -282,7 +262,6 @@ class TestWorkClaim(unittest.TestCase):
         )
         self.assertEqual(restore.status, "READY_REGULAR")
         self.assertEqual(restore.claim_run_id, "")
-        self.assertFalse(needs_browser_lock("apply-ready-jobs"))
 
 
 class TestCompiledConcurrencyContract(unittest.TestCase):

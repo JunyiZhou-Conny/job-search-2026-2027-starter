@@ -36,6 +36,7 @@ from polar_policy import (
     format_runtime_resolutions,
     load_preference_resolutions,
     raw_runtime_url,
+    work_claim_ttl_minutes,
 )
 from polar_workflows import write_schema_csvs, write_workflows
 
@@ -737,7 +738,6 @@ def compile_sections() -> Dict[str, str]:
     section_k = HistoricalGuard.compile().render()
 
     lease = operator.get("lease") or {}
-    claim = operator.get("work_claim") or {}
     section_l = "\n".join(
         [
             "Read the actual header row before every Sheet write.",
@@ -762,7 +762,7 @@ def compile_sections() -> Dict[str, str]:
             "Independent Polar workflows may use their own browser surfaces at the same time.",
             "Apply ownership is queue.claim_run_id on one job_key.",
             "The same employer requisition has one logical owner.",
-            f"Abandoned IN_PROGRESS claims older than {claim.get('ttl_minutes') or lease.get('ttl_minutes')} minutes may be recovered.",
+            f"Abandoned IN_PROGRESS claims older than {work_claim_ttl_minutes()} minutes may be recovered.",
             "Empty claim_run_id on IN_PROGRESS is abandoned.",
             "On start, upsert a run_log row for this run_id with result PARTIAL so a crash still leaves a row.",
             "After each job stage, write last_stage and updated_at on that queue row.",

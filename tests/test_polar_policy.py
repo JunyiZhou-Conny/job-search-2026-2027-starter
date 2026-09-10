@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import sys
 import unittest
-from datetime import datetime, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,7 +19,6 @@ from polar_policy import (  # noqa: E402
     closed_posting_action,
     control_row_is_writable,
     control_write_persisted,
-    decide_lease,
     degree_level_hard_skip,
     document_availability,
     header_map,
@@ -35,7 +33,6 @@ from polar_policy import (  # noqa: E402
     plan_run_log_write,
     priority_submit_permitted,
     readback_fields,
-    release_lease,
     requisition_identity,
     resolve_apply_run_caps,
     sanitize_learning_text,
@@ -103,45 +100,6 @@ class TestSheetNamedWrites(unittest.TestCase):
             REQUIRED_QUEUE_READBACK,
             ("job_key", "status", "last_stage", "claim_run_id"),
         )
-
-
-class TestLease(unittest.TestCase):
-    def setUp(self):
-        self.now = datetime.fromisoformat("2026-09-08T20:00:00")
-
-    def test_polar_browser_is_never_a_production_mutex(self):
-        decision = decide_lease(
-            {
-                "owner_run_id": "run-other",
-                "workflow": "discover-jobs-hourly",
-                "expires_at": (self.now + timedelta(hours=2)).isoformat(),
-            },
-            now=self.now,
-            run_id="run-2",
-            workflow="apply-ready-jobs",
-            needs_lock=True,
-        )
-        self.assertEqual(decision.lock_result, "NOT_REQUIRED")
-        self.assertEqual(decision.action, "skip")
-        self.assertEqual(decision.owner_run_id, "")
-
-    def test_summary_does_not_need_lock(self):
-        decision = decide_lease(
-            {
-                "owner_run_id": "run-apply",
-                "expires_at": (self.now + timedelta(hours=2)).isoformat(),
-            },
-            now=self.now,
-            run_id="run-summary",
-            workflow="daily-job-summary",
-            needs_lock=False,
-        )
-        self.assertEqual(decision.lock_result, "NOT_REQUIRED")
-
-    def test_release_clears_owner(self):
-        decision = release_lease("run-1", "apply-ready-jobs", self.now)
-        self.assertEqual(decision.lock_result, "RELEASED")
-        self.assertEqual(decision.owner_run_id, "")
 
 
 class TestApplyRunCaps(unittest.TestCase):

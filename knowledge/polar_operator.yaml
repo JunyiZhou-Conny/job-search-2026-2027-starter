@@ -19,7 +19,6 @@ lease:
   key: polar_browser
   ttl_minutes: 180
   refresh_if_remaining_below_minutes: 60
-  production_mutex: false
 
 work_claim:
   tab: queue

@@ -41,8 +41,8 @@ from polar_policy import (
     capability_preflight_block,
     csv_header,
     document_availability,
-    needs_browser_lock,
     raw_runtime_url,
+    work_claim_ttl_minutes,
     raw_workflow_url,
     workflow_version,
 )
@@ -76,7 +76,6 @@ def _header(name: str, operator: Dict[str, Any], version: str, status: str) -> s
     cron = schedule.get("cron_et") or "manual"
     tz = operator.get("timezone") or "America/New_York"
     enabled = schedule.get("enabled", True)
-    lock = "true" if needs_browser_lock(name) else "false"
     return _lines(
         [
             f"# {name}",
@@ -85,7 +84,7 @@ def _header(name: str, operator: Dict[str, Any], version: str, status: str) -> s
             f"workflow_version: {version}",
             f"status: {status}",
             f"enabled: {str(enabled).lower()}",
-            f"needs_browser_lock: {lock}",
+            "needs_browser_lock: false",
             f"schedule: {cron} {tz}",
             f"runtime_url: {raw_runtime_url()}",
             "COMPILED ARTIFACT. Not canonical.",
@@ -171,8 +170,8 @@ def _secrets_ban() -> str:
 
 
 def _lease_block(name: str, operator: Dict[str, Any]) -> str:
-    claim = operator.get("work_claim") or {}
-    ttl = int(claim.get("ttl_minutes") or 180)
+    del operator
+    ttl = work_claim_ttl_minutes()
     lines = [
         "## Browser lease",
         "",
@@ -865,7 +864,7 @@ def render_manifest(operator: Dict[str, Any], versions: Dict[str, str]) -> str:
     ]
     for name in WORKFLOW_RENDERERS:
         url = raw_workflow_url(name)
-        lock = "yes" if needs_browser_lock(name) else "no"
+        lock = "no"
         rows.append(f"| `{name}` | see file | {lock} | {url} |")
     rows.extend(
         [
