@@ -53,7 +53,7 @@ REQUIRED_MASTER_PHRASES = (
     "select_next_apply_job",
     "attempt_claim_job",
     "max_new_jobs",
-    "HistoricalGuard",
+    "Historical duplicate guard",
     "Copilot UI actually injected?",
     "env_simplify_copilot",
     "OWNER_ACTION_REQUIRED",

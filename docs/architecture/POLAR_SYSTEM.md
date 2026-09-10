@@ -133,7 +133,7 @@ Crash after confirmation and before persistence. The next run still verifies. Th
 
 | Store | Owns | Does not own |
 |---|---|---|
-| GitHub `main` | Policy, evidence, compilers, generated Polar English, HistoricalGuard keys | Hourly checkpoints, passwords, street address |
+| GitHub `main` | Policy, evidence, compilers, generated Polar English, section K historical keys | Hourly checkpoints, passwords, street address |
 | Polar bootstrap | Exact two-file load set for that Workflow | Strategy text, Sheet schema |
 | `PREFERENCES.md` | Local-only facts, pending learning ids | Canonical behavior after a GitHub conflict |
 | Google Sheet `queue` | Job lifecycle, `claim_run_id`, `last_stage` | Durable policy |
@@ -234,11 +234,14 @@ These are real disagreements found while drawing. The map follows the compiler a
 1. `docs/state/REALITY_MAP.md` still describes `main` at `28bd317` on 2026-09-03. It is archaeology. The current Polar map is this folder.
 2. `docs/apply/PRIORITY.md` still says Lila waits for a review packet since 2026-09-03. Polar Local policy since `prioritized_auto_submit: true` is Submit after `writing_log`. Cursor Cloud still uses a review packet.
 3. `knowledge/application_priority.yaml` Lila `hold_reason` still names that 2026-09-03 packet rule. That row is historical company notes. It does not override `polar_operator.yaml` canary or `SUBMIT_ROLLOUT.md`.
-4. `AGENTS.md` still says the broad future-sponsorship widget is No, dated 2026-09-03. Compiled `apply-ready-jobs` and `knowledge/form_strategy.yaml` dated 2026-09-10 say a required future-sponsorship widget is Yes. Polar execution follows the compiled workflow and `form_strategy.yaml`.
-5. `docs/automation/POLAR.md` still has a root loop line "submit or prepare for review". Polar Local prioritized rows no longer default to review. `REVIEW_READY` is only a missing owner fact or an explicit hold.
-6. `docs/automation/POLAR.md` still says do not build "parallel browser workers". That forbids a custom worker-fleet product. It does not forbid overlapping Polar Saved Workflows. Current production allows those overlaps.
+4. `docs/automation/POLAR.md` still has a root loop line "submit or prepare for review". Polar Local prioritized rows no longer default to review. `REVIEW_READY` is only a missing owner fact or an explicit hold.
+5. `docs/automation/POLAR.md` still says do not build "parallel browser workers". That forbids a custom worker-fleet product. It does not forbid overlapping Polar Saved Workflows. Current production allows those overlaps.
 
-None of these block using this folder as the canonical mental model for Polar Local on current `main`. They do mean you should not treat `REALITY_MAP.md` or the 2026-09-03 AGENTS sponsorship sentence as Polar execution policy.
+A Cloud Agent system prompt may still quote the 2026-09-03 "No" sponsorship sentence. The `AGENTS.md` file on this `main` says a required future-sponsorship widget is Yes. Polar execution follows that file plus `form_strategy.yaml`.
+
+None of these block using this folder as the canonical mental model for Polar Local on current `main`. They do mean you should not treat `REALITY_MAP.md` as current Polar architecture.
+
+The checker in `scripts/validate_polar_system_map.py` proves required names are present and disabled workflows stay dashed. It does not prove every edge matches `polar_policy.py`.
 
 ## Visual structure
 

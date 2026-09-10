@@ -44,7 +44,7 @@ flowchart LR
     DiscWF["discover-jobs-hourly<br/>每小时 :00 ET / 只入队不投"]
     NewRow["NEW<br/>已看见 / 还不能执行"]
     Dedupe["dedupe<br/>job_key → company+role+loc"]
-    HistK["HistoricalGuard K<br/>GitHub ledger 防空表重投"]
+    HistK["section K Historical duplicate guard<br/>GitHub ledger 防空表重投"]
     Triage["section C triage"]
     Weight{"strong priority signal?<br/>强信号才标重点"}
     ReadyR["READY_REGULAR<br/>普通岗 / 快且真实"]
