@@ -9,7 +9,7 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Distinguish verified facts from inference and unknowns.
 - Preserve existing IDs and append history rather than rewriting it.
 - Every active record should have one concrete `next_action` and, where useful, a `next_action_date`.
-- Prefer a few role-cluster resumes plus targeted bullet edits over creating a completely new resume for every job.
+- Prefer the approved base resume plus targeted bullet edits over creating a completely new resume for every job.
 - Submit is governed by `docs/policy/SUBMIT_ROLLOUT.md`. Regular rows may be submitted autonomously once that ATS gate is open. Polar Local may also Submit prioritized rows after mandatory writing_log. Cursor Cloud prioritized rows still stop for a review packet. Never send a message on Junyi's behalf or claim an action was completed without evidence.
 
 ## Eligibility and sponsorship

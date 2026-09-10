@@ -11,7 +11,7 @@ letter `priority` (A / B / C / D).
 
 | Weight | What changes |
 |---|---|
-| `regular` | Mass autofill. Cluster resume. Free response answers the prompt and stops. |
+| `regular` | Mass autofill. Simplify resume already attached. Empty widget blocks for human review. Free response answers the prompt and stops. |
 | `prioritized` | More judgment. JD-tuned resume from the evidence bank only. Why-us actually answers the prompt. Full form prep, mandatory writing_log, then Polar Local may Submit (`docs/policy/SUBMIT_ROLLOUT.md`). Daily digest is post-submit oversight. Do not wait for a referral / insider page. Coffee-chat drafts only, never sent without confirm. |
 
 ## Subfields under prioritized

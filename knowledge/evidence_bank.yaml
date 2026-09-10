@@ -583,7 +583,6 @@ tailoring_policy:
     - "Surface real work the resume currently hides. The strongest example: JavaScript/React was
        always true of airway_chatbot but was de-emphasized because AI/ML postings care about RAG
        and LLM APIs instead. When a JD names JavaScript/TypeScript/React, promote it."
-    - "Reorder sections and entries so the most relevant cluster leads (scripts/build_clusters.py)."
     - "Re-describe real work in the JD's vocabulary — e.g. the same SLURM orchestrator is
        'distributed scheduling', 'resource-efficiency optimization', or 'experiment infrastructure'
        depending on who is reading."

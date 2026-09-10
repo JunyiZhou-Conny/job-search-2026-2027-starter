@@ -1,6 +1,6 @@
 # Master evidence bank
 
-Source of truth for cluster resumes. Do not invent beyond what is listed here.
+Source of truth for the base resume. Do not invent beyond what is listed here.
 Last reviewed: 2026-08-24 from `resumes/base/JZ_resume.tex`.
 
 ## Target ambition (user-stated)

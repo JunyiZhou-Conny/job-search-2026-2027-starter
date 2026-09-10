@@ -13,21 +13,18 @@ fi
 usage() {
   cat <<'EOF'
 Usage:
-  scripts/compile_resume.sh                       # compile all cluster .tex
-  scripts/compile_resume.sh resumes/data_ml/*.tex # compile specific files
-  scripts/compile_resume.sh data_ml               # compile one cluster folder
+  scripts/compile_resume.sh                         # compile resumes/base
+  scripts/compile_resume.sh resumes/base/JZ_resume.tex
+  scripts/compile_resume.sh base                    # compile one folder under resumes/
 
 Options:
   --allow-overflow   compile even if a resume exceeds its page limit
 
-Page limits: cluster resumes 1 page, resumes/base/ 2 pages (deliberate superset).
-Override with RESUME_MAX_PAGES / RESUME_BASE_MAX_PAGES.
+Page limit: resumes/base/ is 2 pages (deliberate superset).
+Override with RESUME_BASE_MAX_PAGES.
 EOF
 }
 
-# A cluster resume that spills onto a second page still compiles and still looks
-# fine locally, so it gets uploaded as a "one-pager". That is the failure this
-# gate exists to catch.
 page_limit_for() {
   case "$1" in
     resumes/base/*) echo "${RESUME_BASE_MAX_PAGES:-2}" ;;
@@ -66,7 +63,7 @@ targets=()
 if [[ $# -eq 0 ]]; then
   while IFS= read -r f; do
     targets+=("$f")
-  done < <(find resumes/base resumes/cloud_swe resumes/data_ml resumes/health_ai -name '*.tex' 2>/dev/null | sort)
+  done < <(find resumes/base -name '*.tex' 2>/dev/null | sort)
 elif [[ $# -eq 1 && -d "resumes/$1" ]]; then
   while IFS= read -r f; do
     targets+=("$f")
@@ -138,8 +135,8 @@ if [[ "$overflow_n" -gt 0 ]]; then
   else
     echo "PAGE-COUNT GATE FAILED — do not upload:" >&2
     printf '%s' "$overflow_list" >&2
-    echo "Trim bullets in resumes/base/JZ_resume.tex, rerun scripts/build_clusters.py," >&2
-    echo "then recompile. Use --allow-overflow only when a longer PDF is intended." >&2
+    echo "Trim bullets in resumes/base/JZ_resume.tex, then recompile." >&2
+    echo "Use --allow-overflow only when a longer PDF is intended." >&2
     exit 1
   fi
 fi

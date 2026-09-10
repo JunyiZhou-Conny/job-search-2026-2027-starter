@@ -1,6 +1,6 @@
-# Tailor a cluster resume
+# Tailor the approved base resume
 
-Compare the target job dossier with the nearest cluster resume.
+Compare the target job dossier with `resumes/base/JZ_resume.tex`.
 
 - Preserve factual accuracy and interview defensibility.
 - Propose the smallest set of high-impact edits.

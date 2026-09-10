@@ -66,12 +66,6 @@ PIPELINE_ACTIVE = {
     "accepted",
 }
 
-FALLBACK_CLUSTER_RESUME = {
-    "cloud_swe": "2026-07-20_cloud-swe_v1.1",
-    "data_ml": "2026-07-20_data-ml_v1.1",
-    "health_ai": "2026-07-20_health-ai_v1.1",
-}
-
 LANE_PRIORITY = {"core": "A", "broad": "B", "practice": "C"}
 
 
@@ -80,21 +74,19 @@ def canon(url: str) -> str:
     return canonical_url(url)
 
 
-def default_resume_for_cluster(cluster: str) -> str:
-    """Newest active resume registered for this cluster, else a known fallback."""
-    cluster = (cluster or "").strip()
-    if not cluster:
-        return ""
+def active_base_resume() -> str:
     candidates = [
         r
         for r in read_rows(RESUME_VERSIONS)
-        if (r.get("cluster") or "").strip() == cluster
+        if (r.get("cluster") or "").strip() == "base"
         and (r.get("active") or "").strip().lower() in {"true", "1", "yes"}
     ]
     if candidates:
         candidates.sort(key=lambda r: r.get("created_date") or "", reverse=True)
-        return candidates[0].get("resume_version") or ""
-    return FALLBACK_CLUSTER_RESUME.get(cluster, "")
+        version = (candidates[0].get("resume_version") or "").strip()
+        if version:
+            return version
+    return "JZ_resume"
 
 
 def _index(apps: list[dict]) -> tuple[dict, dict]:
@@ -286,7 +278,7 @@ def record_applied(rows: list[dict], follow_up_days: int = 7) -> dict:
         resume = (
             (row.get("resume_version") or "").strip()
             or (app.get("resume_version") or "").strip()
-            or default_resume_for_cluster(cluster)
+            or active_base_resume()
         )
 
         _journal_push(

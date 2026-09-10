@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from js_lib import (  # noqa: E402
     APPLICATIONS, TERMINAL, log, parse_iso, read_rows, sync_app_aliases, today_iso,
 )
+from queue_writeback import active_base_resume  # noqa: E402
 
 OUT_DIR = ROOT / "generated" / "daily"
 
@@ -51,13 +52,6 @@ def main() -> int:
         if d and d < today:
             overdue.append(a)
 
-    resume_default = {
-        "cloud_swe": "2026-07-20_cloud-swe_v1.1",
-        "general_swe": "2026-07-20_cloud-swe_v1.1",
-        "data_ml": "2026-07-20_data-ml_v1.1",
-        "health_ai": "2026-07-20_health-ai_v1.1",
-    }
-
     lines = [
         f"# Daily plan — {args.date}\n\n",
         "_Auto-generated caps: ≤3 must-do, ≤5 apps, ≤3 outreach, ≤2 follow-ups, 1 prep block._\n\n",
@@ -72,7 +66,7 @@ def main() -> int:
     if not apply_q:
         lines.append("- No queued discoveries. Find 3 roles (Jobright/LinkedIn) and ingest.\n")
     for a in apply_q:
-        rv = a.get("resume_version") or resume_default.get(a.get("role_cluster", ""), "2026-07-20_data-ml_v1.1")
+        rv = a.get("resume_version") or active_base_resume()
         lane = a.get("pursuit_lane") or "broad"
         tailor = "light" if lane == "core" else "none"
         minutes = {"none": 15, "light": 35, "deep": 75}.get(tailor, 20)

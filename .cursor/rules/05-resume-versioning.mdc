@@ -1,13 +1,16 @@
 ---
-description: Cluster resumes and experiment tracking
+description: Approved base resume and experiment tracking
 globs: "{resumes/**,data/resume_versions.csv}"
 alwaysApply: false
 ---
 
 # Resume versioning
 
-- Quality baseline is `resumes/base/JZ_resume.tex` — do not dilute specificity.
-- Active clusters are `*_v1.1` under `cloud_swe` / `data_ml` / `health_ai` (also linked from `resumes/clusters/`).
+- Quality baseline is `resumes/base/JZ_resume.tex`. Do not dilute specificity.
+- One active resume. `JZ_resume` at `resumes/base/JZ_resume.tex` and `resumes/base/JZ_resume.pdf`.
+- `role_cluster` / `resume_cluster` are job taxonomy only (`cloud_swe` | `data_ml` | `health_ai`).
+- Prefer the Simplify resume already attached. Do not upload the two-page master. Empty widget → REVIEW_READY / `missing_production_resume`.
+- Historical `resume_version` strings on applied rows stay. Inactive registry rows stay.
 - Record exact `resume_version` after every apply.
-- Broad: cluster resume; Core: light tailor; deep tailor rare.
+- Broad: approved base resume. Core: light tailor. Deep tailor rare.
 - Every version change needs a hypothesis in `data/resume_versions.csv`.

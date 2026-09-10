@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.pref-reconcile+77699f609893
+workflow_version: 2026-09-10.pref-reconcile+7a0fedb370c6
 status: production
 enabled: true
 needs_browser_lock: true
@@ -245,7 +245,9 @@ For each selected job:
    If Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.
    Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Release the lease. Exit the run.
 8. Authenticate with ordinary browser flows when asked. Account creation is normal work.
-9. Attach the resume_cluster from the row. If Copilot is PRESENT, Autofill once. Then read the visible widgets.
+9. Prefer the Simplify resume already attached. If Copilot is PRESENT, Autofill once. Use Simplify at most once.
+   Do not upload `resumes/base/JZ_resume.pdf`. That file is the two-page master, not a production attach.
+   If the widget is empty, mark REVIEW_READY with blocker missing_production_resume and continue the batch.
 10. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.
    Authorization and identity widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.
