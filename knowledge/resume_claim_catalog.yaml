@@ -1,0 +1,512 @@
+version: 1
+updated: '2026-09-10'
+note: Display aliases only. Facts stay in knowledge/evidence_bank.yaml. Numeric
+  grounding is required and not sufficient. A row that adds ownership, architecture,
+  impact, responsibility, or a technology without those words in the cited bank
+  fields is an overclaim. BUILD and VIP should prefer the synthesized bank sentence
+  until a semantic gate exists. Do not treat this file as a second evidence store.
+claims:
+- id: airway.fullstack_deploy
+  claim: HIPAA-conscious Flask/React/Auth0/MongoDB app deployed on AWS Elastic Beanstalk
+    and CloudFront
+  evidence:
+  - software_engineering_evidence
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - architecture
+  - apis
+  - deployment
+  - ownership
+  relevant_role_families:
+  - swe
+  - ml_ai
+  - data
+  allowed_wording:
+    swe: Architected a HIPAA-conscious full-stack platform (Python/Flask REST API,
+      React, MongoDB, Auth0) and deployed it on AWS Elastic Beanstalk and CloudFront.
+    ml_ai: Shipped the clinical simulation as a Flask REST service with React and
+      Auth0, then deployed the stack on AWS Elastic Beanstalk and CloudFront.
+    data: Persisted application state in MongoDB and delivered the HIPAA-conscious
+      demo through AWS Elastic Beanstalk and CloudFront.
+    health_ai: Shipped a HIPAA-conscious clinical simulation platform used with a
+      clinician feedback loop.
+  forbidden_claims:
+  - Pinecone
+  - Kubernetes
+  project_id: airway_chatbot
+  evidence_fields:
+  - software_engineering_evidence
+  - measurable_results
+- id: airway.rag_llm
+  claim: RAG over MongoDB Atlas Vector Search with OpenAI models and prompt/context-window
+    control
+  evidence:
+  - software_engineering_evidence
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - llm
+  - agents
+  - inference
+  relevant_role_families:
+  - ml_ai
+  - swe
+  - health_ai
+  allowed_wording:
+    swe: Built the retrieval layer on MongoDB Atlas Vector Search in the same datastore
+      as application persistence.
+    ml_ai: Architected an agentic LLM pipeline pairing RAG on MongoDB Atlas Vector
+      Search with prompt engineering and context-window management over OpenAI models.
+    data: Used one MongoDB datastore for application persistence and Atlas Vector
+      Search retrieval.
+    health_ai: Generated multi-turn airway-management scenarios from OpenAI models
+      grounded by RAG over MongoDB Atlas Vector Search.
+  forbidden_claims:
+  - Pinecone
+  project_id: airway_chatbot
+  evidence_fields:
+  - software_engineering_evidence
+- id: airway.team
+  claim: Agile team of 6 with code reviews and clinician feedback
+  evidence:
+  - software_engineering_evidence
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: moderate
+  signals:
+  - ownership
+  relevant_role_families:
+  - swe
+  - health_ai
+  allowed_wording:
+    swe: Led an Agile team of 6, running code reviews and folding clinician feedback
+      into successive releases.
+    default: Led an Agile team of 6 with code reviews and a clinician feedback loop.
+  project_id: airway_chatbot
+  evidence_fields:
+  - software_engineering_evidence
+- id: transformer.from_scratch
+  claim: Transformer implemented in PyTorch and validated against nn.Transformer
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - model
+  - training
+  - evaluation
+  relevant_role_families:
+  - ml_ai
+  - swe
+  allowed_wording:
+    swe: Implemented Multi-Head Self-Attention, positional encodings, and layer normalization
+      in PyTorch and checked the architecture against nn.Transformer.
+    ml_ai: Reimplemented a Transformer in PyTorch from scratch and validated architectural
+      correctness against nn.Transformer.
+    default: Implemented a Transformer in PyTorch from scratch and validated it against
+      nn.Transformer.
+  project_id: transformer_reimpl
+  evidence_fields:
+  - measurable_results
+- id: transformer.bleu
+  claim: 9.38 BLEU on EN→DE
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - evaluation
+  - training
+  relevant_role_families:
+  - ml_ai
+  - swe
+  allowed_wording:
+    default: Tuned hyperparameters and the cross-entropy objective to 9.38 BLEU on
+      English-to-German translation.
+  metrics:
+  - raw: '9.38'
+    source: measurable_results
+  project_id: transformer_reimpl
+  evidence_fields:
+  - measurable_results
+- id: wyss.ood_r2
+  claim: 0.85-0.90 R^2 in-distribution versus 0.65-0.67 on the held-out-species split
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: moderate
+  signals:
+  - evaluation
+  - generalization
+  - experimentation
+  relevant_role_families:
+  - ml_ai
+  - data
+  - health_ai
+  allowed_wording:
+    ml_ai: Benchmarked CellOT against scGen and measured 0.85-0.90 R^2 with the source
+      species in training versus 0.65-0.67 on the held-out-species split.
+    data: 'Quantified the out-of-distribution gap: 0.85-0.90 R^2 in-distribution versus
+      0.65-0.67 on the held-out-species split.'
+    health_ai: Predicted animal-to-human trial translation and reported the OOD gap
+      (0.85-0.90 vs 0.65-0.67 R^2).
+  metrics:
+  - raw: 0.85-0.90
+    source: measurable_results
+  - raw: 0.65-0.67
+    source: measurable_results
+  project_id: cellot_wyss
+  evidence_fields:
+  - measurable_results
+- id: wyss.gene_space
+  claim: Gene-space choice reverses with split (6,619 orthologs vs 1k HVG)
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: moderate
+  signals:
+  - ablations
+  - analysis
+  - reproducibility
+  relevant_role_families:
+  - data
+  - ml_ai
+  allowed_wording:
+    data: 'Paired single-factor ablations showed gene-space choice reverses with split:
+      6,619 orthologs wins in-distribution while 1k HVG wins on every OOD metric.'
+    ml_ai: Ablations ruled out a split-independent gene-space default (6,619 orthologs
+      vs 1k HVG).
+  project_id: cellot_wyss
+  evidence_fields:
+  - measurable_results
+- id: alphafold.slurm
+  claim: SLURM-scheduled high-throughput AlphaFold inference with batch-size GPU tuning
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: moderate
+  signals:
+  - distributed
+  - automation
+  - inference
+  relevant_role_families:
+  - swe
+  - data
+  - health_ai
+  allowed_wording:
+    swe: Automated high-throughput AlphaFold inference across GPU nodes with SLURM
+      and tuned batch size to raise GPU utilization.
+    data: Ran parallel structure-prediction jobs on shared HPC and filtered outputs
+      by pLDDT and PAE.
+    health_ai: Predicted protein-nucleic acid interactions with AlphaFold-Multimer
+      and AlphaFold3 for a biochemistry lab.
+  project_id: alphafold_pipeline
+  evidence_fields:
+  - measurable_results
+- id: alphafold.cli
+  claim: Documented Python CLI so non-ML users could run inference and triage structures
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: moderate
+  signals:
+  - apis
+  - ownership
+  relevant_role_families:
+  - swe
+  - data
+  allowed_wording:
+    swe: Shipped a documented Python CLI (PyMOL, ChimeraX ranking) so non-ML researchers
+      could run inference and triage structures.
+    data: Ranked predicted structures by pLDDT and PAE and packaged the triage path
+      as a CLI.
+  project_id: alphafold_pipeline
+  evidence_fields:
+  - measurable_results
+- id: auto.harness
+  claim: Self-directed SLURM harness with checkpoint/resume and capped job arrays
+  evidence:
+  - software_engineering_evidence
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - automation
+  - reliability
+  - distributed
+  - architecture
+  relevant_role_families:
+  - swe
+  - ml_ai
+  - data
+  allowed_wording:
+    swe: Built a self-directed SLURM harness (submit, watch, reflect, decide, synthesize)
+      with checkpoint/resume on serial_requeue and capped job arrays.
+    ml_ai: Ran unattended ablation studies on FASRC Cannon through a closed-loop submit/watch/reflect/decide
+      harness.
+    data: Checkpointed each agenda to disk so the cluster keeps executing the last
+      plan if the planner is offline.
+  project_id: autoresearch_cellot
+  evidence_fields:
+  - software_engineering_evidence
+- id: auto.counts
+  claim: 338 experiments, 318 ok, 79.3 hours wall-clock
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - experimentation
+  - data_scale
+  - evaluation
+  relevant_role_families:
+  - ml_ai
+  - data
+  - swe
+  allowed_wording:
+    swe: Executed 338 cluster runs (318 clean, 20 handled errors) over 79.3 hours
+      of wall-clock compute.
+    ml_ai: Ran 338 paired single-factor ablations (318 clean) over 79.3 hours, changing
+      one field from a frozen baseline each run.
+    data: Logged 338 runs (318 clean, 20 errors) over 79.3 hours of wall-clock compute.
+  metrics:
+  - raw: '338'
+    source: measurable_results
+  - raw: '318'
+    source: measurable_results
+  - raw: '79.3'
+    source: measurable_results
+  project_id: autoresearch_cellot
+  evidence_fields:
+  - measurable_results
+- id: auto.llm_unused
+  claim: Optional LLM planner with cost ceiling; deterministic planner drove every
+    run
+  evidence:
+  - control_logic
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - llm
+  - agents
+  - reliability
+  relevant_role_families:
+  - ml_ai
+  - swe
+  allowed_wording:
+    swe: Wired an optional LLM planner behind a spend ceiling that falls back to the
+      deterministic planner. The rule reasoner drove every run to date.
+    ml_ai: Built an optional LLM planner with token and cost accounting. It has never
+      been invoked on a real run.
+  forbidden_claims:
+  - an LLM directed the experiments
+  - agentic LLM in the loop on Cannon runs
+  project_id: autoresearch_cellot
+  evidence_fields:
+  - software_engineering_evidence
+  - measurable_results
+  - verified_now
+- id: auto.fairshare
+  claim: Routed small MLPs to CPU because GPU carries 200-500x fairshare cost
+  evidence:
+  - claim_guidance
+  - software_engineering_evidence
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - distributed
+  - ownership
+  relevant_role_families:
+  - swe
+  - ml_ai
+  allowed_wording:
+    swe: Routed small-MLP training to CPU partitions, where GPU carries 200-500x the
+      fairshare cost.
+    default: Designed a fairshare-aware scheduler that prefers CPU for small MLPs
+      because GPU carries 200-500x fairshare cost.
+  notes: Design rationale, not a measured savings.
+  project_id: autoresearch_cellot
+  evidence_fields:
+  - software_engineering_evidence
+- id: textvqa.lora
+  claim: LoRA fine-tune of BLIP-2 lifted TextVQA from 0.078 to 0.213
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - training
+  - evaluation
+  - llm
+  - model
+  relevant_role_families:
+  - ml_ai
+  - data
+  allowed_wording:
+    ml_ai: Fine-tuned BLIP-2 OPT-2.7B with LoRA on TextVQA, lifting accuracy from
+      0.078 zero-shot to 0.213 while training 2.62M parameters (0.07% of the model)
+      in 8 minutes on one A100.
+    data: Recorded a TextVQA ladder from 0.078 zero-shot to 0.213 after LoRA r=8,
+      training 2.62M parameters.
+  metrics:
+  - raw: '0.078'
+    source: measurable_results
+  - raw: '0.213'
+    source: measurable_results
+  - raw: 2.62M
+    source: measurable_results
+  project_id: vlm_textvqa_lora
+  evidence_fields:
+  - measurable_results
+- id: textvqa.prompt
+  claim: OCR-augmented prompting alone raised zero-shot accuracy to 0.106
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - llm
+  - evaluation
+  - ablations
+  relevant_role_families:
+  - ml_ai
+  allowed_wording:
+    ml_ai: Isolated prompt engineering across four templates. OCR-augmented prompting
+      alone raised zero-shot accuracy to 0.106 before any weight updates.
+  metrics:
+  - raw: '0.106'
+    source: measurable_results
+  project_id: vlm_textvqa_lora
+  evidence_fields:
+  - measurable_results
+- id: compleg.etl
+  claim: Scrapers and ETL over 12 UK Parliament entity families into a schema designed
+    first
+  evidence:
+  - software_engineering_evidence
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - etl
+  - pipelines
+  - data_scale
+  relevant_role_families:
+  - data
+  - swe
+  allowed_wording:
+    data: Built Python scrapers and ETL across 12 UK Parliament entity families and
+      stored them in a relational schema designed first (ER diagram).
+    swe: Designed the relational schema first, then built scrapers that filled 10
+      normalized member tables plus bills, divisions, and Hansard.
+  project_id: compleg_uk_nz
+  evidence_fields:
+  - software_engineering_evidence
+- id: compleg.counts
+  claim: 22,606 division votes, 4,791 MPs, 4,108 bills, 3,875 constituencies from
+    committed CSVs
+  evidence:
+  - measurable_results
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - data_scale
+  - analysis
+  - reproducibility
+  relevant_role_families:
+  - data
+  - swe
+  allowed_wording:
+    data: Counted 22,606 member-level division votes, 4,791 MPs, 4,108 bills, and
+      3,875 constituencies from committed CSVs. Nothing here is estimated.
+    swe: Normalized parliamentary records covering 22,606 division votes and 4,791
+      MPs.
+  metrics:
+  - raw: 22,606
+    source: measurable_results
+  - raw: 4,791
+    source: measurable_results
+  - raw: 4,108
+    source: measurable_results
+  - raw: 3,875
+    source: measurable_results
+  project_id: compleg_uk_nz
+  evidence_fields:
+  - measurable_results
+- id: compleg.cloudflare
+  claim: Diagnosed Cloudflare 403 challenges and restored collection with curl_cffi
+    and Selenium
+  evidence:
+  - software_engineering_evidence
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: strong
+  signals:
+  - analysis
+  - reliability
+  relevant_role_families:
+  - swe
+  - data
+  allowed_wording:
+    swe: Diagnosed Cloudflare bot mitigation from cf-mitigated challenge 403 headers
+      and restored collection with curl_cffi TLS impersonation and Selenium.
+    data: Unblocked a 403-challenged source so the ETL path could finish.
+  project_id: compleg_uk_nz
+  evidence_fields:
+  - software_engineering_evidence
+- id: compleg.cluster
+  claim: QTM cluster batch jobs and AWS S3/EC2 staging
+  evidence:
+  - software_engineering_evidence
+  verification_status: verified
+  confidence: high
+  resume_eligible: true
+  interview_defensibility: moderate
+  signals:
+  - distributed
+  - deployment
+  - pipelines
+  relevant_role_families:
+  - swe
+  - data
+  allowed_wording:
+    swe: Ran long scrapes as batch jobs on Emory's QTM cluster and staged data through
+      AWS S3/EC2.
+    data: Staged parliamentary tables through AWS S3/EC2 after cluster batch collection.
+  project_id: compleg_uk_nz
+  evidence_fields:
+  - software_engineering_evidence

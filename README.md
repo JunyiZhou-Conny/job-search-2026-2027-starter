@@ -77,8 +77,10 @@ python3 scripts/jobsearch.py dashboard
 
 ## Resumes
 
-- Master source: `resumes/base/JZ_resume.tex`. Evidence lives in `knowledge/evidence_bank.yaml`.
+- Master inventory: `resumes/base/JZ_resume.tex`. Evidence lives in `knowledge/evidence_bank.yaml`.
 - Polar prefers the Simplify-attached resume. If that widget is empty, do not upload the two-page master. Mark REVIEW_READY.
+- After BUILD exists, disk attach is the routed family one-pager, not the two-page master.
+- Apply time: route to a frozen family variant. VIP tailor is `python3 scripts/resume_quality.py run --jd` only for exceptional rows. See `docs/resume/QUALITY_ENGINE.md`.
 - `role_cluster` values (`cloud_swe`, `data_ml`, `health_ai`) are job taxonomy, not resume folders.
 - Default resume line is **December 2026 program completion**; use the dual-date line
   (March 2027 commencement + December 2026 completion) only when a posting demands

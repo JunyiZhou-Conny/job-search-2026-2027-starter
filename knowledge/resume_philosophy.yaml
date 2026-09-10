@@ -1,0 +1,129 @@
+version: 1
+updated: "2026-09-10"
+
+role_families:
+  swe:
+    production: true
+    historical_baseline: cloud_swe
+    narrative: "Software engineer who has shipped full-stack systems and cluster automation"
+    lead_signals: [architecture, apis, deployment, reliability, automation, distributed, ownership, migration]
+    de_emphasize: [clinical, medical_ai]
+    section_titles: ["Engineering Projects", "Research Experience"]
+  ml_ai:
+    production: true
+    historical_baseline: data_ml
+    narrative: "ML engineer with strong experimentation and research engineering"
+    lead_signals: [model, training, evaluation, ablations, generalization, inference, llm, agents]
+    de_emphasize: []
+    section_titles: ["Machine Learning Projects", "Research Experience"]
+  ai_infra:
+    production: true
+    historical_baseline: cloud_swe
+    narrative: "Engineer who builds cluster automation, agent loops, and evaluation harnesses"
+    lead_signals: [automation, distributed, agents, reliability, architecture, llm]
+    de_emphasize: [clinical]
+    section_titles: ["Engineering Projects", "Research Experience"]
+  data:
+    production: false
+    routes_to: [swe, ml_ai]
+    historical_baseline: data_ml
+    narrative: "Data scientist who turns messy sources into measured, reproducible tables"
+    lead_signals: [etl, analysis, experimentation, statistics, pipelines, reproducibility, data_scale]
+    de_emphasize: [clinical]
+    section_titles: ["Data Experience", "Engineering Projects"]
+  health_ai:
+    production: true
+    historical_baseline: health_ai
+    narrative: "Health-data scientist applying ML to clinical and biological questions"
+    lead_signals: [clinical, translational, medical_ai, evaluation, model]
+    de_emphasize: []
+    section_titles: ["Clinical AI Experience", "Machine Learning Projects"]
+
+signals:
+  - architecture
+  - migration
+  - apis
+  - reliability
+  - automation
+  - deployment
+  - distributed
+  - ownership
+  - model
+  - training
+  - evaluation
+  - ablations
+  - generalization
+  - inference
+  - llm
+  - agents
+  - etl
+  - analysis
+  - experimentation
+  - statistics
+  - pipelines
+  - reproducibility
+  - data_scale
+  - clinical
+  - translational
+  - medical_ai
+
+requirement_kinds:
+  - required
+  - preferred
+  - responsibility
+  - stack
+  - seniority
+  - domain
+  - engineering
+  - research
+  - product
+
+match_strengths:
+  - strong_direct
+  - transferable
+  - weak_adjacent
+  - unsupported
+
+candidate_strategies:
+  - recruiter
+  - hiring_manager
+  - impact
+  - narrative
+
+guidance:
+  - id: harvard_mcs_one_page
+    source: "https://careerservices.fas.harvard.edu/resources/create-a-strong-resume/"
+    class: authoritative
+    keep: "One page. Fact-based. Tailor to the skills the employer would value. Express, do not impress."
+    drop: "Harvard MCS also pushes leadership/activities sections that this candidate does not need on a tech one-pager."
+  - id: harvard_mcs_ai_not_author
+    source: "https://careerservices.fas.harvard.edu/resources/create-a-strong-resume/"
+    class: authoritative
+    keep: "Generative AI may edit. It must not be the primary author."
+  - id: phd_to_industry_selection
+    source: "Common PhD-to-industry advice (TailorCV, RenderCV, Awesome-PhD-CV guidelines)"
+    class: industry_heuristic
+    keep: "A resume is an argument, not a complete record. Cut work that does not support the argument."
+    drop: "Do not invent business-impact percentages when the lab never measured them."
+  - id: grounded_export_gate
+    source: "Resume-talos / ResumeProof / CareerProof public designs"
+    class: industry_heuristic
+    keep: "A groundedness gate that blocks export when a claim has no fact id."
+    drop: "ATS vendor scores and dual-model QC theater without a measured basis."
+  - id: keyword_stuffing
+    source: "Common ATS blog advice"
+    class: unsupported_convention
+    keep: null
+    drop: "Do not add tools the candidate has not used so a parser lights up."
+  - id: outcome_learning
+    source: "data/resume_versions.csv in this repo"
+    class: empirical_later
+    keep: "Record parent, hypothesis, strategy, and funnel counts. Do not claim a model while counts are near zero."
+
+max_projects: 4
+max_bullets_per_project: 3
+
+global_forbidden_tokens:
+  - pinecone
+  - kubernetes
+  - k8s

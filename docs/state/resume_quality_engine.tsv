@@ -1,0 +1,18 @@
+ts	phase	decision	why	evidence	result
+2026-09-10T03:50:25Z	frame	defined done as three fixtures plus validator veto plus a one-page variant	need a falsifiable predicate before a long run	docs/resume/QUALITY_ENGINE.md	open
+2026-09-10T03:57:00Z	design	keep facts in evidence_bank.yaml and put family wording in a derived catalog	another agent owns the bank schema and the master TeX	knowledge/resume_claim_catalog.yaml	picked derived catalog
+2026-09-10T03:57:00Z	design	do not restore build_clusters.py	cluster tree was removed on purpose	PR 120 / PR 117	accepted
+2026-09-10T03:57:00Z	design	v0 is deterministic with no model call	tests cannot trust a hidden LLM rewrite	scripts/rqe/judge.py validate_tex	open
+2026-09-10T03:57:00Z	design	master TeX is inventory, generated tex is the one-page product	2-page master is not a Polar attach	docs/resume/QUALITY_ENGINE.md	accepted
+2026-09-10T03:53:11Z	harness	validator rejects planted 40% Kubernetes and completed GRPO	truth gate must fail a lie before we trust ranking	tests/test_resume_quality.py TestValidator	tests green
+2026-09-10T03:53:11Z	loop	stopped treating and/for as match evidence	CUDA kernels were scoring as strong_direct against AlphaFold	scripts/rqe/plan.py STOPWORDS SPECIFIC_TECH	tests green
+2026-09-10T03:57:40Z	loop	arena baseline is a copied historical one-pager	live cluster paths will disappear	tests/fixtures/resume_quality/baselines	open
+2026-09-10T04:02:00Z	verify	catalog number check uses extracted cores not substring	40 hid inside 2024 and the planted-metric test passed	scripts/rqe/load.py _number_cores	tests green
+2026-09-10T04:02:00Z	verify	three fixtures compiled to 1 page	compile_resume.sh on generated tex	generated/resume_quality/*/compile.log	1 page each
+2026-09-10T04:02:00Z	verify	Citadel leads Compleg 22606 and Twitch keeps Compleg plus Airway	selection changed versus historical one-pagers	generated/resume_quality/*/strategy.md	done
+2026-09-10T04:25:00Z	design	per-JD engine is VIP only. Apply path is BUILD then ROUTE	Polar cannot afford a JD compile on every row	docs/resume/QUALITY_ENGINE.md	accepted
+2026-09-10T04:25:00Z	design	four production families. data routes to swe or ml_ai	no evidence a fifth frozen one-pager is needed	knowledge/resume_philosophy.yaml	accepted
+2026-09-10T04:25:00Z	design	stack #121 onto #120 instead of main	avoid a second evidence author and a stale cluster checkout	PR 120 branch cursor/evidence-master-resume-98c7	open
+2026-09-10T04:32:00Z	integrate	rebased seven RQE commits onto cursor/evidence-master-resume-98c7	main-based rebase would have replayed Polar #116 into #120	git log --oneline	done
+2026-09-10T04:32:00Z	integrate	catalog drops the 2018 CellOT port line; loader reads #120 text/resume_ok dicts	#120 bank no longer states 2018 in measured fields	knowledge/resume_claim_catalog.yaml scripts/rqe/load.py	tests green
+
