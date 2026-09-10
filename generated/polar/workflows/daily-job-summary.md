@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-10.work-level-concurrency+d5ead7c7d1da
+workflow_version: 2026-09-10.work-level-concurrency+74acad475253
 status: production
 enabled: true
 needs_browser_lock: false
@@ -71,7 +71,8 @@ never_omit: apply_url_confidence
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
 6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
-7. If those four fields do not match what you meant, repair the row before the next job.
+7. If job_key, status, or last_stage do not match what you meant, repair those fields.
+8. If claim_run_id is another run_id, do not overwrite it. Skip that job.
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.

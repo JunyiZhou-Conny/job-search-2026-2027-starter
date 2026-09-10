@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.work-level-concurrency+5c3ff6b61344
+workflow_version: 2026-09-10.work-level-concurrency+daa835fdbae0
 status: production
 enabled: true
 needs_browser_lock: false
@@ -86,6 +86,8 @@ Before substantial apply work, claim the queue row.
 Remember the current READY_REGULAR or READY_PRIORITY status and attempt_count.
 Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, and updated_at now.
 Read back job_key, status, last_stage, and claim_run_id.
+If the queue header has no claim_run_id, append that header at the far right first.
+Do not insert a column in the middle of existing queue data.
 If claim_run_id is not this run_id, the write lost. Note already_claimed. Incident repeat_key work_already_claimed.
 Do not write SKIPPED_LOCKED. Continue the batch with the next selected job.
 If you resume an abandoned IN_PROGRESS row, restamp claim_run_id and note recovered_claim. Incident repeat_key work_claim_recovered. Do not bump attempt_count again.
@@ -110,7 +112,8 @@ never_omit: apply_url_confidence
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
 6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
-7. If those four fields do not match what you meant, repair the row before the next job.
+7. If job_key, status, or last_stage do not match what you meant, repair those fields.
+8. If claim_run_id is another run_id, do not overwrite it. Skip that job.
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
@@ -310,10 +313,12 @@ For each selected job:
    A blocked authorization field must not stop the rest of the batch.
 11. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
 12. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
-13. Regular row. Before Submit, reread the queue and use polar_policy.regular_submit_remaining.
-    If remaining is 0, do not Submit. Leave the job IN_PROGRESS or REVIEW_READY and continue.
+13. Regular row. Before Submit, reread this queue row and the day counts.
+    If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.
+    Then use polar_policy.regular_submit_remaining. If remaining is 0, do not Submit.
     Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
 14. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.
+    Before Submit, reread this row. If polar_policy.submit_claim_still_held is false, skip.
     Apply polar_policy.priority_submit_permitted before Submit.
     If any meaningful custom question is unanswered in writing_log, do not Submit. Mark BLOCKED.
     A logged question with a blank answer or a blank evidence_note is a Submit blocker.

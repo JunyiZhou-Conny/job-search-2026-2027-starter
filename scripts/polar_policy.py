@@ -467,6 +467,46 @@ def named_row(headers: Sequence[str], fields: Mapping[str, Any]) -> List[str]:
     return row
 
 
+def ensure_claim_column(headers: Sequence[str]) -> Tuple[str, ...]:
+    names = [str(h or "").strip() for h in headers]
+    if CLAIM_RUN_ID in header_map(names):
+        return tuple(str(h) for h in headers)
+    return tuple(str(h) for h in headers) + (CLAIM_RUN_ID,)
+
+
+DISCOVER_PROTECTED_STATUSES = frozenset(
+    {
+        "IN_PROGRESS",
+        "SUBMITTED",
+        "SUBMISSION_UNKNOWN",
+        "REVIEW_READY",
+        "BLOCKED",
+    }
+)
+DISCOVER_PROTECTED_FIELDS = (
+    "status",
+    CLAIM_RUN_ID,
+    "last_stage",
+    "attempt_count",
+    "submitted_at",
+    "confirmation",
+    "blocker",
+    "writing_summary",
+)
+
+
+def discover_may_overwrite_execution_fields(status: str) -> bool:
+    return str(status or "").strip() not in DISCOVER_PROTECTED_STATUSES
+
+
+def submit_claim_still_held(row: Mapping[str, Any], run_id: str) -> bool:
+    return (
+        str(row.get("status") or "") == "IN_PROGRESS"
+        and str(row.get(CLAIM_RUN_ID) or "").strip() == str(run_id or "").strip()
+        and bool(str(row.get("job_key") or "").strip())
+    )
+
+
 def readback_fields(headers: Sequence[str], row: Sequence[str]) -> Dict[str, str]:
     mapping = header_map(headers)
     out: Dict[str, str] = {}

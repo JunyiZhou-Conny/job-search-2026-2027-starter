@@ -90,7 +90,11 @@ Read the live header row. Map field names to columns. Write by name. Write expli
 
 ## Work claim
 
-`apply-ready-jobs` claims one `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`. Read those fields back. If another run owns the row, skip that job and continue. Do not write `SKIPPED_LOCKED`.
+If the live queue header has no `claim_run_id`, append that header at the far right. Do not insert a column in the middle.
+
+`apply-ready-jobs` claims one `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`. Read those fields back. If another run owns the row, skip that job and continue. Do not write `SKIPPED_LOCKED`. Before Submit, reread `claim_run_id`. If it is not this run, do not Submit.
+
+`discover-jobs-hourly` must not overwrite `status`, `claim_run_id`, or other execution fields on `IN_PROGRESS`, `SUBMITTED`, `SUBMISSION_UNKNOWN`, `REVIEW_READY`, or `BLOCKED` rows.
 
 Recover `IN_PROGRESS` only when `claim_run_id` is empty, the owner run_log is no longer `PARTIAL`, or `updated_at` is older than `work_claim.ttl_minutes`.
 

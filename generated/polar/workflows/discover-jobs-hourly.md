@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-10.work-level-concurrency+f602acea1fdd
+workflow_version: 2026-09-10.work-level-concurrency+f242e69fb125
 status: production
 enabled: true
 needs_browser_lock: false
@@ -98,7 +98,8 @@ never_omit: apply_url_confidence
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
 6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
-7. If those four fields do not match what you meant, repair the row before the next job.
+7. If job_key, status, or last_stage do not match what you meant, repair those fields.
+8. If claim_run_id is another run_id, do not overwrite it. Skip that job.
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
@@ -151,6 +152,10 @@ This run must finish quickly. Checkpoint the Sheet after every new or updated jo
 3. Inspect Matches at https://jobright.ai/jobs/recommend.
 4. Inspect the intern and newgrad minisite boards listed in POLAR_RUNTIME section B.
 5. For each unseen card, write or update one queue row using named header mapping.
+   If the live header has no claim_run_id, append that header at the far right first.
+   If the existing row is IN_PROGRESS, SUBMITTED, SUBMISSION_UNKNOWN, REVIEW_READY, or BLOCKED,
+   do not overwrite status, claim_run_id, last_stage, attempt_count, submitted_at, confirmation,
+   blocker, or writing_summary. polar_policy.discover_may_overwrite_execution_fields is the check.
 6. job_key is the Jobright job id when the URL is https://jobright.ai/jobs/info/<id>.
 7. Deduplicate by job_key first, then company + role + location, then section K.
 8. Triage with section C. Hard skips become status SKIP.

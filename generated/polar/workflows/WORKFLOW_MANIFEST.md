@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the trust-delegation bootstrap from docs/automation/POLAR_WORKFLOWS.md.
 They load the two owner-designated raw main files on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-10.work-level-concurrency+f602acea1fdd`
-- `apply-ready-jobs` workflow_version `2026-09-10.work-level-concurrency+5c3ff6b61344`
-- `daily-job-summary` workflow_version `2026-09-10.work-level-concurrency+d5ead7c7d1da`
-- `production-learning-daily` workflow_version `2026-09-10.work-level-concurrency+c866410d344b`
+- `discover-jobs-hourly` workflow_version `2026-09-10.work-level-concurrency+f242e69fb125`
+- `apply-ready-jobs` workflow_version `2026-09-10.work-level-concurrency+daa835fdbae0`
+- `daily-job-summary` workflow_version `2026-09-10.work-level-concurrency+74acad475253`
+- `production-learning-daily` workflow_version `2026-09-10.work-level-concurrency+370305f5fe16`
 - `polar-scheduler-heartbeat` workflow_version `2026-09-10.work-level-concurrency+b53185a9688a`
-- `polar-github-write-canary` workflow_version `2026-09-10.work-level-concurrency+02b7400b6f77`
+- `polar-github-write-canary` workflow_version `2026-09-10.work-level-concurrency+8f2e742cf94e`
 - `chatgpt-production-review` workflow_version `2026-09-10.work-level-concurrency+66960ba532f6`
 - `cursor-production-maintenance` workflow_version `2026-09-10.work-level-concurrency+465201631783`
-- `polar-sheet-migration` workflow_version `2026-09-10.work-level-concurrency+8e2ff241ed23`
+- `polar-sheet-migration` workflow_version `2026-09-10.work-level-concurrency+54819c369fa5`

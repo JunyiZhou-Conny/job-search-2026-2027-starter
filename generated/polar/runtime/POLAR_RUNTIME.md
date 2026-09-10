@@ -574,7 +574,9 @@ Build a field-name to column mapping from those headers.
 Write by header name. Write explicit blanks. Do not shorten a positional row.
 apply_url_confidence must stay in its named column even when the value is none or blank.
 After an important queue write, read back job_key, status, last_stage, and claim_run_id.
-If those fields do not match, repair the row before the next job.
+If job_key, status, or last_stage do not match, repair those fields.
+If claim_run_id is another run_id, do not overwrite it.
+If the queue header has no claim_run_id, append that header at the far right.
 Control writes locate the row by key. Never pick a visually empty row.
 If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.
 After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.

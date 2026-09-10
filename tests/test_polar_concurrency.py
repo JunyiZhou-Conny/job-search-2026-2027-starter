@@ -11,17 +11,21 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from polar_policy import (  # noqa: E402
+    QUEUE_COLUMNS,
     apply_last_write_claim,
     attempt_claim_job,
     claim_is_abandoned,
     confirm_claim_readback,
     decide_lease,
+    discover_may_overwrite_execution_fields,
+    ensure_claim_column,
     needs_browser_lock,
     regular_submit_remaining,
     requisition_identity,
     requisition_submit_blocked,
     restore_queue_after_copilot_miss,
     select_apply_batch,
+    submit_claim_still_held,
 )
 from polar_workflows import render_workflow  # noqa: E402
 
@@ -241,6 +245,36 @@ class TestWorkClaim(unittest.TestCase):
         ]
         self.assertEqual(regular_submit_remaining(rows, "2026-09-10", cap=10), 8)
 
+    def test_missing_claim_header_is_appended_not_inserted(self):
+        headers = [name for name in QUEUE_COLUMNS if name != "claim_run_id"]
+        self.assertNotIn("claim_run_id", headers)
+        self.assertEqual(ensure_claim_column(headers)[-1], "claim_run_id")
+        self.assertEqual(ensure_claim_column(QUEUE_COLUMNS), tuple(QUEUE_COLUMNS))
+
+    def test_discover_does_not_clobber_live_execution_rows(self):
+        for status in (
+            "IN_PROGRESS",
+            "SUBMITTED",
+            "SUBMISSION_UNKNOWN",
+            "REVIEW_READY",
+            "BLOCKED",
+        ):
+            self.assertFalse(discover_may_overwrite_execution_fields(status), status)
+        self.assertTrue(discover_may_overwrite_execution_fields("READY_REGULAR"))
+        self.assertTrue(discover_may_overwrite_execution_fields("NEW"))
+
+    def test_submit_requires_this_run_to_still_own_the_row(self):
+        row = {
+            "job_key": "job-x",
+            "status": "IN_PROGRESS",
+            "claim_run_id": "run-a",
+        }
+        self.assertTrue(submit_claim_still_held(row, "run-a"))
+        self.assertFalse(submit_claim_still_held(row, "run-b"))
+        self.assertFalse(
+            submit_claim_still_held({**row, "status": "READY_REGULAR"}, "run-a")
+        )
+
     def test_copilot_miss_clears_claim_and_not_a_browser_lock(self):
         restore = restore_queue_after_copilot_miss(
             ready_status="READY_REGULAR",
@@ -276,6 +310,9 @@ class TestCompiledConcurrencyContract(unittest.TestCase):
         self.assertIn("recovered_claim", apply)
         self.assertIn("requisition_suppressed", apply)
         self.assertIn("regular_submit_remaining", apply)
+        self.assertIn("submit_claim_still_held", apply)
+        self.assertIn("append that header at the far right", apply)
+        self.assertIn("discover_may_overwrite_execution_fields", discover)
         self.assertIn("Do not write SKIPPED_LOCKED", apply)
         self.assertIn("claim_run_id", apply)
         self.assertNotIn("Release the polar_browser lease", apply)
