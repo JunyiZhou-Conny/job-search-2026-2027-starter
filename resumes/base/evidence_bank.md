@@ -45,7 +45,11 @@ Use `VERIFIED_MEASURED`, `VERIFIED_IMPLEMENTED`, `USER_REPORTED`, or `PLANNED`.
 PLANNED items are not accomplishments.
 
 Do not claim DatasetHandle, FrozenAE, JobPlan, CellOTModel, or ReferenceBundle
-as shipped on speciesOT `main`. Those live on stacked PRs.
+as shipped on speciesOT `main`. GitHub lists PRs 1-7 as MERGED. Those merge
+commits are not on live `origin/main` `109bf12`. PRs 8-10 stay open.
+
+A-D $R^2$ 0.85-0.90 / 0.65-0.67 is the AutoResearch LPS / rat-in-train prior.
+It is not a Tabula atlas result.
 
 Do not claim that an LLM directed AutoResearch runs.
 

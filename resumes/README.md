@@ -26,7 +26,9 @@ Do not invent a new resume for every job.
 ./scripts/compile_resume.sh resumes/base/JZ_resume.tex
 ```
 
-The page limit for `resumes/base/` is 2. The script fails if the PDF is longer, unless you pass `--allow-overflow`.
+The page limit for `resumes/base/` is 2. That gate is for the master resume.
+It is not a claim that Polar must upload this PDF. The script fails if the PDF
+is longer, unless you pass `--allow-overflow`.
 
 Upload the `.pdf` next to the `.tex`. Do not upload the `.tex` to an ATS.
 

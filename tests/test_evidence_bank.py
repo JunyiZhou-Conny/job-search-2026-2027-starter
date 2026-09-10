@@ -80,11 +80,29 @@ class EvidenceBankTests(unittest.TestCase):
             "79.3",
             "1.0000",
             "0.980",
-            "220",
             "43 GB",
         ):
             self.assertIn(token, tex, f"resume missing {token}")
             self.assertIn(token, blob, f"evidence bank missing {token}")
+        self.assertIn("rat-in-train", tex)
+        self.assertIn("not the Tabula atlas", tex)
+        job_os = yaml.dump(self.projects["job_search_os"])
+        self.assertIn("228", job_os)
+        self.assertNotIn("220 tests", tex)
+
+    def test_autoresearch_measurable_results_are_structured(self) -> None:
+        rows = self.projects["autoresearch_cellot"]["measurable_results"]
+        self.assertTrue(rows)
+        for row in rows:
+            self.assertIsInstance(row, dict, row)
+            self.assertIn(row.get("class"), {
+                "VERIFIED_MEASURED",
+                "VERIFIED_IMPLEMENTED",
+                "USER_REPORTED",
+                "PLANNED",
+            })
+            self.assertTrue(row.get("text"))
+            self.assertTrue(row.get("source"))
 
 
 if __name__ == "__main__":

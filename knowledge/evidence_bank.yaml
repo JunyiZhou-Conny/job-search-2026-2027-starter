@@ -58,9 +58,13 @@ projects:
     resume_eligible: true
     current_status: >-
       Mature hub + experiment/eval/inference path on main (commit 109bf12,
-      2026-09-08, Implemented R2Evaluation). A later public-package stack
-      (DatasetHandle, FrozenAE, JobPlan, CellOTModel, decoded-eval wrap,
-      ReferenceBundle) exists as PRs 2-10. Those classes are not on current main.
+      2026-09-08, Implemented R2Evaluation). GitHub shows PRs 1-7 MERGED on
+      2026-09-08. Those merge commits are not in a fresh clone of origin/main
+      and are not ancestors of 109bf12. Inferred, not measured: the default
+      branch was rewritten after those merges. DatasetHandle, FrozenAE,
+      JobPlan, CellOTModel, decoded-eval wrap, and ReferenceBundle are
+      therefore not on current main. PRs 8-10 remain OPEN (PR 10 is marked
+      do-not-merge).
     technologies:
       ["PyTorch", "TensorFlow", "ICNN", "scGen autoencoder", "CellOT / IMPACT_CellOT",
        "Optimal Transport", "unbalanced Optimal Transport", "scanpy", "AnnData",
@@ -96,11 +100,12 @@ projects:
         source: "src/speciesot/speciesot_core.py at 109bf12"
     research_evidence:
       - class: VERIFIED_MEASURED
-        text: "Frozen A-D ablation (Mac Stage 1): scGen split R2-all 0.85-0.90 (Arm A 0.897 / Arm B 0.846); Bunne OOD 0.65-0.67 (Arm C 0.654 / Arm D 0.669)."
+        text: "Frozen A-D ablation (Mac Stage 1 LPS / rat-in-train prior, not Tabula atlas OOD): scGen split R2-all 0.85-0.90 (Arm A 0.897 / Arm B 0.846); Bunne OOD 0.65-0.67 (Arm C 0.654 / Arm D 0.669)."
         source: "scgen-cellot-autoresearch/results/insights.md and priorities.md (public)"
         resume_ok: true
+        placement: "Master resume may use the ranges under speciesOT only if the bullet names this AutoResearch prior and says it is not the Tabula atlas."
       - class: VERIFIED_MEASURED
-        text: "Gene-space sign flip: 6,619 orthologs wins R2-all on the scGen split; 1k HVG wins every reported metric under Bunne OOD."
+        text: "Gene-space sign flip on that same prior: 6,619 orthologs wins R2-all on the scGen split; 1k HVG wins every reported metric under Bunne OOD."
         source: "same insights.md / priorities.md"
         resume_ok: true
       - class: VERIFIED_MEASURED
@@ -154,7 +159,8 @@ projects:
     notes: >-
       2026-09-10 audit: the strongest description today is the hub + decoded-space
       eval + inference path, not "ported TF CellOT to PyTorch." The A-D R^2 numbers
-      live in the sister autoresearch repo and are already public. mixhvg-py is a
+      live in the sister autoresearch repo (Mac Stage 1 LPS / rat-in-train prior)
+      and are already public. They are not Tabula atlas OOD results. mixhvg-py is a
       dependency (hvg_method: mixhvg) kept in its own GPL-3 repo; do not absorb it.
 
   alphafold_pipeline:
@@ -279,13 +285,35 @@ projects:
       - "Paired single-factor ablations on the L1 ladder; gene-count sweep and ae_study bypass that ladder and policy.validate gene_space guard"
       - "Idempotent run_one_experiment (skip if exp_id already ok) + schema.ensure_csv 26→33 column migrate"
     measurable_results:
-      - "USER_REPORTED (Cannon 2026-07-29, not in public CSV): 338 experiments; 318 ok; 20 error:CalledProcessError; 79.3 h wall-clock"
-      - "USER_REPORTED (same count): 12 unique tier labels, 2 splits (scgen 202 / bunne_ood 136), 7 gene_space strings"
-      - "VERIFIED_IMPLEMENTED: search_space.yaml ladder is 8 named tiers (16 planned paired/grid runs), not 12"
-      - "VERIFIED_IMPLEMENTED: gene-count generator uses 6 HVG sizes {250,500,1000,2000,4000,6619} × 2 splits × 8 variants = 96 planned; '1k' alias can make 7 distinct CSV strings"
-      - "VERIFIED_IMPLEMENTED: schema.CSV_FIELDS has 33 columns (7 honest-metric fields). Public header is still the 26-col pre-honest schema; ensure_csv() migrates in place"
-      - "USER_REPORTED (Cannon, files withheld): 1 director episode tagged reasoner=rule; 21 proposals.jsonl rows"
-      - "VERIFIED_IMPLEMENTED + offline selftest PASS (2026-09-10): policy, proposer, director, explore, llm_client (unconfigured→None), honest_metrics"
+      - class: USER_REPORTED
+        text: "338 experiments; 318 ok; 20 error:CalledProcessError; 79.3 h wall-clock"
+        source: "README Status and 2026-07-29 Cannon working-tree count. Public results/experiments.csv is header-only (0 data rows)."
+        resume_ok: true
+        resume_note: "The resume must say the public ledger is a header only."
+      - class: USER_REPORTED
+        text: "12 unique tier labels, 2 splits (scgen 202 / bunne_ood 136), 7 gene_space strings"
+        source: "Same Cannon count and README. Not re-countable from public git."
+        resume_ok: false
+      - class: VERIFIED_IMPLEMENTED
+        text: "search_space.yaml ladder is 8 named tiers (16 planned paired/grid runs), not 12"
+        source: "search_space.yaml at 5d1a7d9"
+        resume_ok: true
+      - class: VERIFIED_IMPLEMENTED
+        text: "gene-count generator uses 6 HVG sizes {250,500,1000,2000,4000,6619} x 2 splits x 8 variants = 96 planned; a 1k alias can make 7 distinct CSV strings"
+        source: "public clone 5d1a7d9"
+        resume_ok: false
+      - class: VERIFIED_IMPLEMENTED
+        text: "schema.CSV_FIELDS has 33 columns (7 honest-metric fields). Public header is still the 26-col pre-honest schema; ensure_csv() migrates in place."
+        source: "schema.py versus results/experiments.csv header"
+        resume_ok: false
+      - class: USER_REPORTED
+        text: "1 director episode tagged reasoner=rule; 21 proposals.jsonl rows"
+        source: "Cannon working tree 2026-07-29. Those files are not in the public clone."
+        resume_ok: false
+      - class: VERIFIED_IMPLEMENTED
+        text: "Offline selftest PASS (2026-09-10) for policy, proposer, director, explore, llm_client (unconfigured returns None), and honest_metrics"
+        source: "public clone selftest on this machine"
+        resume_ok: false
     execution_status: >-
       2026-09-10 PUBLIC-CLONE RE-AUDIT of 5d1a7d9.
       Public results/: experiments.csv (header only, 26 cols, 0 rows) and insights.md
@@ -457,8 +485,10 @@ projects:
         source: "docs/automation/COMPUTER_USE_PROMPT.md; scripts/compile_cu_task.py"
     measurable_results:
       - class: VERIFIED_MEASURED
-        text: "20 unittest files, 220 test_ functions (AST count 2026-09-10)."
+        text: "21 unittest files, 228 test_ functions (AST recount 2026-09-10 after tests/test_evidence_bank.py)."
         source: "tests/test_*.py"
+        resume_ok: false
+        resume_note: "Do not lock a live test count on the master resume. It rots when the next test lands."
       - class: VERIFIED_MEASURED
         text: "16 knowledge YAML files; 39 Python scripts under scripts/; 10 Polar workflow markdown files; 17 Cursor commands; 63 docs/*.md."
         source: "find counts 2026-09-10"
@@ -633,7 +663,7 @@ skills:
       - project_id: job_search_os
         description: "Policy compilers, Polar runtime, unittest suite"
         technologies: ["Python", "YAML"]
-        measurable_result: "220 unittest functions across 20 files"
+        measurable_result: "228 unittest functions across 21 files (2026-09-10)"
         source_file: "resumes/base/JZ_resume.tex"
 
   pytorch:

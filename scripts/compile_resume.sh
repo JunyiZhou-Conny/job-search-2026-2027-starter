@@ -20,8 +20,8 @@ Usage:
 Options:
   --allow-overflow   compile even if a resume exceeds its page limit
 
-Page limit: resumes/base/ is 2 pages (deliberate superset).
-Override with RESUME_BASE_MAX_PAGES.
+Page limit: resumes/base/ is 2 pages (master resume, not Polar's required attach).
+Override with RESUME_BASE_MAX_PAGES. Use --allow-overflow if the master grows.
 EOF
 }
 
