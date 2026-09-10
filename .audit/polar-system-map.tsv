@@ -8,3 +8,4 @@ ts	phase	decision	why	evidence	result
 2026-09-10T21:07:00Z	docs	banner REALITY_MAP and fix PRIORITY Lila line	stale packet language would fight the map	docs/state/REALITY_MAP.md, docs/apply/PRIORITY.md	recorded, not a behavior change
 2026-09-10T21:11:00Z	verify	validator plus unittest plus four SVG/PNG renders	prove the maps against main, then prove they draw	scripts/validate_polar_system_map.py, tests/test_polar_system_map.py	checks passed, renders written
 2026-09-10T21:14:00Z	correct	drop the false AGENTS.md No contradiction	tree AGENTS.md at 8c54413 already says future-sponsorship Yes	AGENTS.md:22	companion now points at the Cloud prompt lag, not a repo fight
+2026-09-10T21:25:00Z	cleanup	strip mermaid header narration and fix flowchart head check	Comment Sicko owed those 10 %% lines. The old check skipped any file that started with %%	scripts/validate_polar_system_map.py _mermaid_balance	validator still empty

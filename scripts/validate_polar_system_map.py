@@ -140,7 +140,8 @@ def _errors_for_missing(label: str, haystack: str, needles: Iterable[str]) -> Li
 
 def _mermaid_balance(path: Path, text: str) -> List[str]:
     errors: List[str] = []
-    if not text.lstrip().startswith("%%") and "flowchart" not in text.splitlines()[0:12]:
+    head = "\n".join(text.splitlines()[:12])
+    if "flowchart" not in head:
         errors.append(f"{path.name} has no flowchart declaration near the top")
     opens = len(re.findall(r"\bsubgraph\b", text))
     closes = len(re.findall(r"(?m)^[ \t]*end\b", text))
