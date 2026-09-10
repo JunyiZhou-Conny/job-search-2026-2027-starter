@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import generate_apply_queue as gaq  # noqa: E402
+from queue_writeback import default_resume_for_cluster  # noqa: E402
 from js_lib import (
     DATA,  # noqa: E402
     ACTIVITY,
@@ -67,11 +68,10 @@ def log_event(job_id: str, event_type: str, to_status: str = "", note: str = "")
 
 GEN = ROOT / "generated"
 
-CLUSTER_RESUME = {
-    "cloud_swe": "2026-07-20_cloud-swe_v1.1",
-    "data_ml": "2026-07-20_data-ml_v1.1",
-    "health_ai": "2026-07-20_health-ai_v1.1",
-}
+
+def cluster_resume_version(cluster: str) -> str:
+    return default_resume_for_cluster(cluster)
+
 
 LANE_PRIORITY = {"core": "A", "broad": "B", "practice": "C"}
 
@@ -199,7 +199,7 @@ def main() -> int:
                 "date_found": discovered,
                 "status": "discovered",
                 "application_status": "discovered",
-                "resume_version": CLUSTER_RESUME.get(cluster, ""),
+                "resume_version": cluster_resume_version(cluster),
                 "pursuit_lane": lane,
                 "priority": priority,
                 "eligibility": "unclear",
@@ -211,7 +211,7 @@ def main() -> int:
                 "label_reason": (r.get("reason") or "")[:500],
                 "needs_review": "false",
                 "next_action": (
-                    f"Open posting → Simplify autofill with {CLUSTER_RESUME.get(cluster, 'cluster resume')} → submit if still open"
+                    f"Open posting → Prefer Simplify or compiled base {cluster_resume_version(cluster)} → submit if still open"
                 ),
                 "next_action_date": today,
                 "notes": f"[triage:{day} decision=keep] {r.get('reason', '')}".strip(),
