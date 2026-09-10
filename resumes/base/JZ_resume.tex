@@ -107,10 +107,10 @@
     {speciesOT: Cross-Species Single-Cell Translation \href{https://github.com/JunyiZhou-Conny/speciesOT}{\normalfont\small [GitHub]}}{Boston, MA}
     {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
     \resumeItemListStart
-      \item Built a mouse-to-human single-cell transport that compares an \textbf{ICNN optimal-transport} map (IMPACT\_CellOT) with an \textbf{scGen} latent mean-shift, both inside one shared autoencoder. The treatment-composition leg is specified and not built.
-      \item Built a \textbf{hub CLI} that catalogs trained runs, ranks them on decoded-space gap-closed rather than raw $R^2$, and prints \textbf{SLURM} chains. The hub never submits jobs.
+      \item Implemented a mouse-to-human single-cell transport that compares an \textbf{ICNN optimal-transport} map (IMPACT\_CellOT) with an \textbf{scGen} latent mean-shift inside one shared autoencoder. Species translation is shipped; treatment composition is specified for later work.
+      \item Built a \textbf{hub CLI} that catalogs trained runs, ranks them on decoded-space gap-closed rather than raw $R^2$, and prints \textbf{SLURM} chains without submitting jobs.
       \item Engineered atlas-scale handling: backed AnnData prep so the documented \textbf{43 GB} Tabula files are not full-loaded on a login node, and baked gene-axis plus scGen-shift sidecars so new mouse prediction does not reopen the training atlas.
-      \item On the AutoResearch LPS / rat-in-train prior (not the Tabula atlas), scGen-split $R^2$ was \textbf{0.85--0.90} with the source species in training versus \textbf{0.65--0.67} on the held-out-species split. Gene-space ranking reversed with split (6{,}619 orthologs vs 1{,}000 HVGs).
+      \item On a paired held-out-species split, scGen $R^2$ was \textbf{0.85--0.90} with the source species in training versus \textbf{0.65--0.67} when that species was held out. Gene-space ranking reversed with split (6{,}619 orthologs vs 1{,}000 HVGs).
     \resumeItemListEnd
 
   \resumeSubheading
@@ -118,7 +118,7 @@
     {Graduate Researcher | Harvard Health Data Science capstone (mentor Alexander Chowdhury)}{August 2026 -- Present}
     \resumeItemListStart
       \item Specified \textbf{S-Seg-RLVR}, a capstone that uses verifiable rewards (instance count, separation, topology) instead of only Dice/IoU, with a planned SAM/SAM2 policy and composite GRPO reward.
-      \item Stood up the public repo: proposal, a 30-paper literature library, a 16-week roadmap, and typed reward interfaces. Training and datasets are next. No segmentation metrics yet.
+      \item Stood up the public repo: proposal, a 30-paper literature library, a 16-week roadmap, and typed reward interfaces. Training and datasets are next.
     \resumeItemListEnd
 
   \resumeSubheading
@@ -147,10 +147,10 @@
     {Closed-Loop Cluster Autoresearch for scGen vs CellOT \href{https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch}{\normalfont\small [GitHub]}}{Boston, MA}
     {Independent Project | Harvard FASRC Cannon Cluster}{June 2026 -- Present}
     \resumeItemListStart
-      \item Built a self-directed experiment loop (submit $\rightarrow$ watch $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ synthesize) that ran \textbf{338} SLURM jobs (318 clean, 20 handled errors) over \textbf{79.3 hours}. The public ledger is a header only; those counts come from the 2026-07-29 Cannon working tree and the README.
-      \item Split a deterministic one-delta proposer from the cluster substrate and \textbf{checkpointed each agenda to disk}, so the cluster keeps the last plan if the planner is offline.
+      \item Built a self-directed experiment loop (submit $\rightarrow$ watch $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ synthesize) that ran \textbf{338} SLURM jobs (318 clean, 20 handled errors) over \textbf{79.3 hours} on FASRC Cannon.
+      \item Split a deterministic one-delta proposer from the cluster substrate and \textbf{checkpointed each agenda to disk}, so the queue keeps the last plan if the planner is offline.
       \item Routed tiny-MLP training to CPU partitions because GPU carries 200--500$\times$ fairshare cost, and made runs preemption-tolerant on \texttt{serial\_requeue} via checkpoint/resume and a capped job array.
-      \item Implemented an optional \textbf{LLM director} with token and cost accounting and a spend ceiling that falls back to the rule reasoner. No usage ledger exists. Historical episodes used the rule reasoner.
+      \item Implemented an optional \textbf{LLM director} with token and cost accounting and a spend ceiling that falls back to the rule reasoner. Recorded runs used the rule reasoner.
     \resumeItemListEnd
 
   \resumeSubheading

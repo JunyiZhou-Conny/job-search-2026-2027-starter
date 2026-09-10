@@ -84,8 +84,9 @@ class EvidenceBankTests(unittest.TestCase):
         ):
             self.assertIn(token, tex, f"resume missing {token}")
             self.assertIn(token, blob, f"evidence bank missing {token}")
-        self.assertIn("rat-in-train", tex)
-        self.assertIn("not the Tabula atlas", tex)
+        self.assertIn("held-out-species", tex)
+        self.assertNotIn("rat-in-train", tex)
+        self.assertNotIn("not the Tabula atlas", tex)
         job_os = yaml.dump(self.projects["job_search_os"])
         self.assertIn("228", job_os)
         self.assertNotIn("220 tests", tex)

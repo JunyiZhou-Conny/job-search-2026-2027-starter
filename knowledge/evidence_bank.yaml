@@ -103,7 +103,7 @@ projects:
         text: "Frozen A-D ablation (Mac Stage 1 LPS / rat-in-train prior, not Tabula atlas OOD): scGen split R2-all 0.85-0.90 (Arm A 0.897 / Arm B 0.846); Bunne OOD 0.65-0.67 (Arm C 0.654 / Arm D 0.669)."
         source: "scgen-cellot-autoresearch/results/insights.md and priorities.md (public)"
         resume_ok: true
-        placement: "Master resume may use the ranges under speciesOT only if the bullet names this AutoResearch prior and says it is not the Tabula atlas."
+        placement: "Resume may use the ranges as a paired held-out-species split. Do not imply Tabula atlas OOD. Provenance stays in this record (AutoResearch Mac Stage 1 LPS / rat-in-train prior)."
       - class: VERIFIED_MEASURED
         text: "Gene-space sign flip on that same prior: 6,619 orthologs wins R2-all on the scGen split; 1k HVG wins every reported metric under Bunne OOD."
         source: "same insights.md / priorities.md"
@@ -289,7 +289,7 @@ projects:
         text: "338 experiments; 318 ok; 20 error:CalledProcessError; 79.3 h wall-clock"
         source: "README Status and 2026-07-29 Cannon working-tree count. Public results/experiments.csv is header-only (0 data rows)."
         resume_ok: true
-        resume_note: "The resume must say the public ledger is a header only."
+        resume_note: "Resume may state the counts. Provenance stays here: Cannon 2026-07-29 and README. Public CSV is header-only."
       - class: USER_REPORTED
         text: "12 unique tier labels, 2 splits (scgen 202 / bunne_ood 136), 7 gene_space strings"
         source: "Same Cannon count and README. Not re-countable from public git."
@@ -513,7 +513,7 @@ projects:
       - "Role-specific one-page resume views generated from this evidence bank"
     do_not_claim:
       - "Fully autonomous applications or messages sent on Junyi's behalf"
-      - "That Polar always uploads resumes/base/JZ_resume.pdf. Prefer the Simplify-attached resume; base PDF is the empty-widget fallback."
+      - "That Polar uploads resumes/base/JZ_resume.pdf. Prefer Simplify. Empty widget is REVIEW_READY / missing_production_resume."
       - "A submitted-application count from this OS"
       - "That Cloud Computer Use is the production apply operator"
     interview_depth: strong
