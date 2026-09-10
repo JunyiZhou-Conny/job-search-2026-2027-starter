@@ -11,6 +11,8 @@ MASTER = ROOT / "resumes" / "base" / "JZ_resume.tex"
 BEGIN = "\\begin{document}"
 EDUCATION = "% Education"
 SKILLS = "% Technical Skills"
+HYPERREF = "\\usepackage[pdftex]{hyperref}"
+HYPERREF_HIDELINKS = "\\usepackage[pdftex,hidelinks]{hyperref}"
 FAMILIES = {
     "ai_infra": (
         ROOT / "resumes" / "families" / "ai_infra" / "body_fragment.tex",
@@ -26,6 +28,14 @@ def require_sentinel(text: str, needle: str) -> int:
     return idx
 
 
+def with_hidelinks(tex: str) -> str:
+    if "hidelinks" in tex:
+        return tex
+    if HYPERREF not in tex:
+        raise SystemExit(f"master resume is missing {HYPERREF!r}")
+    return tex.replace(HYPERREF, HYPERREF_HIDELINKS, 1)
+
+
 def assemble(master: str, fragment: str) -> str:
     begin = require_sentinel(master, BEGIN)
     education = require_sentinel(master, EDUCATION)
@@ -35,7 +45,7 @@ def assemble(master: str, fragment: str) -> str:
             "master resume sentinels are out of order: "
             f"{BEGIN}@{begin}, {EDUCATION}@{education}, {SKILLS}@{skills}"
         )
-    return master[:begin] + master[begin:education] + master[education:skills] + fragment
+    return with_hidelinks(master[:begin] + master[begin:education] + master[education:skills] + fragment)
 
 
 def stitch(family: str) -> Path:

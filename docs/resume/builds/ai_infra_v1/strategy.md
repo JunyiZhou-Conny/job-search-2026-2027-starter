@@ -39,7 +39,7 @@ Follow-ups. See `interview_defense.md`. The unused-LLM boundary lives there.
 
 Role. Agent-systems story with human gates.
 
-Recruiter-facing title. `Human-Supervised Browser Automation System`. Bank title stays Job Search OS. Do not invent a different domain. First bullet names job applications.
+Recruiter-facing title. `Human-Supervised Browser Automation System`. Bank title stays Job Search OS. Do not invent a different domain. First bullet names job applications. Project titles use a colon and Title Case descriptors. Brand spellings stay (`speciesOT`, `scGen`, `CellOT`). The title itself is the GitHub link. No `[GitHub]` label.
 
 Dimensions. Plane split. Compiled runtime. HITL Submit. Compiled action sheets. Failure recovery.
 
@@ -52,6 +52,8 @@ Verbs. Sole author. Built. Compiles. Designed recovery. Do not write architected
 ### cellot_wyss
 
 Role. Research-infra story. Hub and honest eval.
+
+Recruiter-facing title. `speciesOT: Cross-Species Single-Cell Translation`. Brand stays `speciesOT`.
 
 Dimensions. No-auto-submit hub. Atlas-scale I/O. Paired held-out-species R^2 ranges with the gene-space flip.
 
