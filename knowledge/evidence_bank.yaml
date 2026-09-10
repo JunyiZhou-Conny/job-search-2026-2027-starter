@@ -3,10 +3,10 @@
 #
 # Claim classes (use on measurable_results / software_engineering_evidence when a
 # number or strong verb is involved):
-#   VERIFIED_MEASURED     — code, logs, tests, or committed artifacts support it
-#   VERIFIED_IMPLEMENTED  — code exists and can be inspected; no measured outcome
-#   USER_REPORTED         — canonical personal / README record, not re-countable here
-#   PLANNED               — design, stub, or open PR. Almost never a resume bullet.
+#   VERIFIED_MEASURED     : code, logs, tests, or committed artifacts support it
+#   VERIFIED_IMPLEMENTED  : code exists and can be inspected; no measured outcome
+#   USER_REPORTED         : canonical personal or README record, not re-countable here
+#   PLANNED               : design, stub, or open PR. Almost never a resume bullet.
 #
 # Future role views (SWE / ML / AI infra / Health AI) should select from these
 # records and rewrite bullets. Do not mint a second project key for the same repo.
@@ -343,7 +343,7 @@ projects:
 
   mixhvg_py:
     canonical_name: "mixhvg-py"
-    title: "mixhvg-py — Validated Python Port of an R Bioinformatics Method"
+    title: "mixhvg-py. Validated Python port of an R bioinformatics method"
     org: "Personal (used by speciesOT; kept separate because of GPL-3)"
     role: "Sole author"
     dates: "2026-07"
@@ -421,7 +421,7 @@ projects:
 
   job_search_os:
     canonical_name: "job-search-2026-2027-starter"
-    title: "Job Search OS — Human-Supervised Agentic Browser Automation"
+    title: "Job Search OS. Human-supervised agentic browser automation"
     org: "Personal"
     role: "Sole author"
     dates: "2026-07 — present"
