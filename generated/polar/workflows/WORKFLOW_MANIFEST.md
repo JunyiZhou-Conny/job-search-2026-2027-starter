@@ -21,7 +21,7 @@ Saved Polar Workflows store only the bootstrap prompt from docs/automation/POLAR
 They open the raw main URL on each run.
 
 - `discover-jobs-hourly` workflow_version `2026-09-10.pref-reconcile+dc16d067a14e`
-- `apply-ready-jobs` workflow_version `2026-09-10.pref-reconcile+77699f609893`
+- `apply-ready-jobs` workflow_version `2026-09-10.pref-reconcile+7a0fedb370c6`
 - `daily-job-summary` workflow_version `2026-09-10.pref-reconcile+bcb93109c0c9`
 - `production-learning-daily` workflow_version `2026-09-10.pref-reconcile+b16ca3614159`
 - `polar-scheduler-heartbeat` workflow_version `2026-09-10.pref-reconcile+d99af025ea26`

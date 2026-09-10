@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.pref-reconcile+77699f609893
+workflow_version: 2026-09-10.pref-reconcile+7a0fedb370c6
 status: production
 enabled: true
 needs_browser_lock: true
