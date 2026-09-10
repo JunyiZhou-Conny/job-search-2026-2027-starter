@@ -1,7 +1,7 @@
 # polar-sheet-migration
 
 workflow: polar-sheet-migration
-workflow_version: 2026-09-10.copilot-memory+44ede66d90fc
+workflow_version: 2026-09-10.pref-reconcile+44ede66d90fc
 status: manual_once
 enabled: false
 needs_browser_lock: false

@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.copilot-memory+cb32f4de3f2f
+workflow_version: 2026-09-10.pref-reconcile+073325e8a42c
 status: production
 enabled: true
 needs_browser_lock: true
@@ -16,6 +16,17 @@ COMPILED ARTIFACT. Not canonical.
 
 Read both fully before clicking employer pages.
 Do not browse the rest of GitHub.
+
+## Preferences reconcile
+
+After POLAR_RUNTIME is open, reconcile /home/polar/PREFERENCES.md against section P preference_resolutions.
+Those rows come from main. An open Cursor PR is not canonical.
+Match candidate_id only. Do not compare wording.
+Remove a pending id whose main outcome is DROP_ONE_OFF, DROP_REDUNDANT, PROMOTE, STALE.
+Keep KEEP_LOCAL, NEEDS_MORE_EVIDENCE, OWNER_DECISION, and keep any id with no main row.
+Keep LOCAL_PRIVATE values.
+If there are no pending ids or no new main rows, write nothing.
+The rewrite is idempotent. Do not create a preferences-cleanup workflow.
 
 ## Secrets ban
 
@@ -176,6 +187,7 @@ Do not copy POLAR_RUNTIME or form strategy into PREFERENCES.
 An old PREFERENCES strategy line must not override newer GitHub behavior.
 LOCAL_PRIVATE values may stay local. SECRET_OR_CREDENTIAL must not be promoted.
 If a local learning candidate conflicts with GitHub strategy, follow GitHub and report the conflict.
+Export assigns or preserves pref_YYYYMMDD_NNN ids. Reconcile only after a resolution row is on main.
 
 ## Apply-time hard eligibility
 

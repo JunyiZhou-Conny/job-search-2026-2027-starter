@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-10.copilot-memory+dee8966e3d77
+workflow_version: 2026-09-10.pref-reconcile+0a0ac3c1b667
 status: production
 enabled: true
 needs_browser_lock: true
@@ -16,6 +16,17 @@ COMPILED ARTIFACT. Not canonical.
 
 Read both fully before clicking employer pages.
 Do not browse the rest of GitHub.
+
+## Preferences reconcile
+
+After POLAR_RUNTIME is open, reconcile /home/polar/PREFERENCES.md against section P preference_resolutions.
+Those rows come from main. An open Cursor PR is not canonical.
+Match candidate_id only. Do not compare wording.
+Remove a pending id whose main outcome is DROP_ONE_OFF, DROP_REDUNDANT, PROMOTE, STALE.
+Keep KEEP_LOCAL, NEEDS_MORE_EVIDENCE, OWNER_DECISION, and keep any id with no main row.
+Keep LOCAL_PRIVATE values.
+If there are no pending ids or no new main rows, write nothing.
+The rewrite is idempotent. Do not create a preferences-cleanup workflow.
 
 ## Secrets ban
 

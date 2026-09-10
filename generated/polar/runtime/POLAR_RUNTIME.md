@@ -10,6 +10,7 @@ Canonical sources:
 - `config/profile.yaml`
 - `config/submit_gates.yaml`
 - `knowledge/polar_operator.yaml`
+- `knowledge/preference_resolutions.yaml`
 - `knowledge/polar_documents.yaml`
 - `knowledge/work_authorization.yaml`
 - `knowledge/form_strategy.yaml`
@@ -619,8 +620,11 @@ precedence: owner_instruction > canonical_github > local_private > learning_cand
 preference_classes: CANONICAL_GITHUB, LOCAL_PRIVATE, LEARNING_CANDIDATE, REDUNDANT, EPHEMERAL, SECRET_OR_CREDENTIAL, STALE, ONE_OFF.
 An old PREFERENCES strategy line must not override newer GitHub behavior.
 LOCAL_PRIVATE values stay local. SECRET_OR_CREDENTIAL is never exported.
-production-learning-daily emits a sanitized Polar Preferences Delta and then compacts the local file.
-Cursor promotes generalized candidates into the matching canonical GitHub source. STOP BEFORE MERGE.
+Export assigns pref_YYYYMMDD_NNN and emits Polar Preferences Delta. Unresolved ids stay pending.
+An open Cursor PR is not canonical. Polar reconciles only after a resolution row is on main.
+Match candidate_id only. Do not compare wording.
+preference_resolutions: none
+Cursor writes generalized lessons and knowledge/preference_resolutions.yaml. STOP BEFORE MERGE.
 
 Simplify Copilot is a required apply precondition.
 proof: Copilot UI on the employer ATS page.

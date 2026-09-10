@@ -2,7 +2,7 @@
 
 COMPILED ARTIFACT. Not canonical.
 
-policy_revision: 2026-09-10.copilot-memory
+policy_revision: 2026-09-10.pref-reconcile
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 | Workflow | Status | Lock | Raw URL |
@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the bootstrap prompt from docs/automation/POLAR_WORKFLOWS.md.
 They open the raw main URL on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-10.copilot-memory+dee8966e3d77`
-- `apply-ready-jobs` workflow_version `2026-09-10.copilot-memory+cb32f4de3f2f`
-- `daily-job-summary` workflow_version `2026-09-10.copilot-memory+bcb93109c0c9`
-- `production-learning-daily` workflow_version `2026-09-10.copilot-memory+804198ac3075`
-- `polar-scheduler-heartbeat` workflow_version `2026-09-10.copilot-memory+d99af025ea26`
-- `polar-github-write-canary` workflow_version `2026-09-10.copilot-memory+853be3086a51`
-- `chatgpt-production-review` workflow_version `2026-09-10.copilot-memory+1689f8dc545a`
-- `cursor-production-maintenance` workflow_version `2026-09-10.copilot-memory+9cda3ab075dc`
-- `polar-sheet-migration` workflow_version `2026-09-10.copilot-memory+44ede66d90fc`
+- `discover-jobs-hourly` workflow_version `2026-09-10.pref-reconcile+0a0ac3c1b667`
+- `apply-ready-jobs` workflow_version `2026-09-10.pref-reconcile+073325e8a42c`
+- `daily-job-summary` workflow_version `2026-09-10.pref-reconcile+bcb93109c0c9`
+- `production-learning-daily` workflow_version `2026-09-10.pref-reconcile+108e4c5e5d54`
+- `polar-scheduler-heartbeat` workflow_version `2026-09-10.pref-reconcile+d99af025ea26`
+- `polar-github-write-canary` workflow_version `2026-09-10.pref-reconcile+853be3086a51`
+- `chatgpt-production-review` workflow_version `2026-09-10.pref-reconcile+1689f8dc545a`
+- `cursor-production-maintenance` workflow_version `2026-09-10.pref-reconcile+2956131b4e14`
+- `polar-sheet-migration` workflow_version `2026-09-10.pref-reconcile+44ede66d90fc`

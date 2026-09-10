@@ -15,6 +15,8 @@ from polar_policy import (  # noqa: E402
     LEASE_KEY,
     LOCAL_PREFERENCES_PATH,
     RUN_LOG_RESULTS,
+    assign_preference_ids,
+    candidate_survives_resolution,
     classify_preference_entry,
     compact_preferences_markdown,
     control_write_persisted,
@@ -30,8 +32,13 @@ from polar_policy import (  # noqa: E402
     plan_control_write,
     preference_conflicts_github,
     preference_export_mode,
+    PreferenceCandidate,
     PreferenceDeltaRow,
+    PreferenceResolution,
+    export_retains_candidate,
+    parse_pending_candidates,
     proposed_github_destination,
+    reconcile_preference_candidates,
     render_preferences_delta,
     restore_queue_after_copilot_miss,
     simplify_jobs_session_is_copilot_proof,
@@ -254,6 +261,7 @@ class TestPreferencesMemory(unittest.TestCase):
         self.assertIn("## Polar Preferences Delta", delta)
         self.assertIn("class LEARNING_CANDIDATE", delta)
         self.assertIn("already_in_github no", delta)
+        self.assertIn("unassigned", delta)
 
     def test_github_wins_strategy_conflict(self):
         body = "standing form answer is No for future sponsorship"
@@ -281,9 +289,12 @@ class TestPreferencesMemory(unittest.TestCase):
     def test_compact_preferences_stays_thin(self):
         text = compact_preferences_markdown(
             local_private=[("street", "kept locally")],
-            candidates=[("copilot address", "re-read after autofill")],
-            reviewed_at="2026-09-10T22:00:00-04:00",
+            candidates=[
+                PreferenceCandidate("pref_20260910_001", "re-read after autofill")
+            ],
+            last_reconciled="2026-09-10T22:00:00-04:00",
             github_runtime_url="https://example.invalid/POLAR_RUNTIME.md",
+            main_revision="2026-09-10.pref-reconcile",
         )
         self.assertIn("# Polar Preferences", text)
         self.assertIn("## Canonical behavior", text)
@@ -291,9 +302,207 @@ class TestPreferencesMemory(unittest.TestCase):
         self.assertIn("## Pending learning candidates", text)
         self.assertIn("## Sync state", text)
         self.assertIn("kept locally", text)
+        self.assertIn("pref_20260910_001", text)
+        self.assertIn("last_reconciled:", text)
         self.assertNotIn("optional_accelerator", text)
-        self.assertLess(len(text.splitlines()), 24)
+        self.assertLess(len(text.splitlines()), 26)
         self.assertEqual(LOCAL_PREFERENCES_PATH, "/home/polar/PREFERENCES.md")
+
+
+class TestPreferenceLifecycle(unittest.TestCase):
+    def test_export_assigns_id_and_retains_unresolved(self):
+        assigned = assign_preference_ids(
+            ["Copilot filled the wrong address on PayPal"],
+            day="2026-09-10",
+        )
+        self.assertEqual(assigned[0].candidate_id, "pref_20260910_001")
+        self.assertTrue(export_retains_candidate("LEARNING_CANDIDATE"))
+        self.assertFalse(export_retains_candidate("EPHEMERAL"))
+        delta = render_preferences_delta(
+            [
+                PreferenceDeltaRow(
+                    title="copilot address",
+                    cls="LEARNING_CANDIDATE",
+                    evidence="wrong street after Autofill This Page",
+                    proposed_destination="knowledge/form_strategy.yaml",
+                    already_in_github=False,
+                    candidate_id=assigned[0].candidate_id,
+                )
+            ]
+        )
+        self.assertIn("pref_20260910_001", delta)
+        compact = compact_preferences_markdown(
+            local_private=[],
+            candidates=assigned,
+            last_reconciled="2026-09-10T22:00:00-04:00",
+            github_runtime_url="https://example.invalid/POLAR_RUNTIME.md",
+        )
+        self.assertIn("pref_20260910_001", compact)
+        self.assertEqual(parse_pending_candidates(compact), assigned)
+
+    def test_promote_in_open_pr_is_retained(self):
+        candidate = PreferenceCandidate(
+            "pref_20260910_001",
+            "Copilot filled the wrong address on PayPal",
+        )
+        resolution = PreferenceResolution(
+            candidate_id="pref_20260910_001",
+            outcome="PROMOTE",
+            canonical_destination="knowledge/form_strategy.yaml",
+            resolved_revision="open-pr",
+        )
+        kept = reconcile_preference_candidates(
+            [candidate],
+            [resolution],
+            on_main=False,
+        )
+        self.assertEqual(kept, [candidate])
+
+    def test_promote_on_main_is_removed(self):
+        candidate = PreferenceCandidate(
+            "pref_20260910_001",
+            "Verify address fields after Copilot autofill.",
+        )
+        resolution = PreferenceResolution(
+            candidate_id="pref_20260910_001",
+            outcome="PROMOTE",
+            canonical_destination="knowledge/form_strategy.yaml",
+            resolved_revision="64c558f",
+        )
+        kept = reconcile_preference_candidates(
+            [candidate],
+            [resolution],
+            on_main=True,
+        )
+        self.assertEqual(kept, [])
+
+    def test_drop_one_off_on_main_is_removed(self):
+        candidate = PreferenceCandidate("pref_20260910_002", "PayPal duplicate draft")
+        kept = reconcile_preference_candidates(
+            [candidate],
+            [
+                PreferenceResolution(
+                    candidate_id="pref_20260910_002",
+                    outcome="DROP_ONE_OFF",
+                )
+            ],
+            on_main=True,
+        )
+        self.assertEqual(kept, [])
+
+    def test_keep_local_is_retained(self):
+        candidate = PreferenceCandidate("pref_20260910_005", "consent prompt choice")
+        kept = reconcile_preference_candidates(
+            [candidate],
+            [
+                PreferenceResolution(
+                    candidate_id="pref_20260910_005",
+                    outcome="KEEP_LOCAL",
+                )
+            ],
+            on_main=True,
+        )
+        self.assertEqual(kept, [candidate])
+
+    def test_needs_more_evidence_is_retained(self):
+        candidate = PreferenceCandidate("pref_20260910_003", "Workday date widget")
+        kept = reconcile_preference_candidates(
+            [candidate],
+            [
+                PreferenceResolution(
+                    candidate_id="pref_20260910_003",
+                    outcome="NEEDS_MORE_EVIDENCE",
+                )
+            ],
+            on_main=True,
+        )
+        self.assertEqual(kept, [candidate])
+
+    def test_owner_decision_is_retained(self):
+        candidate = PreferenceCandidate("pref_20260910_004", "consent prompt")
+        kept = reconcile_preference_candidates(
+            [candidate],
+            [
+                PreferenceResolution(
+                    candidate_id="pref_20260910_004",
+                    outcome="OWNER_DECISION",
+                )
+            ],
+            on_main=True,
+        )
+        self.assertEqual(kept, [candidate])
+
+    def test_local_private_stays_in_compact(self):
+        compact = compact_preferences_markdown(
+            local_private=[("street", "kept locally")],
+            candidates=[],
+            last_reconciled="2026-09-10T22:00:00-04:00",
+            github_runtime_url="https://example.invalid/POLAR_RUNTIME.md",
+        )
+        self.assertIn("kept locally", compact)
+        self.assertEqual(parse_pending_candidates(compact), [])
+
+    def test_reconcile_twice_is_noop(self):
+        candidate = PreferenceCandidate("pref_20260910_001", "address after autofill")
+        resolution = PreferenceResolution(
+            candidate_id="pref_20260910_001",
+            outcome="PROMOTE",
+            canonical_destination="knowledge/form_strategy.yaml",
+        )
+        first = reconcile_preference_candidates(
+            [candidate],
+            [resolution],
+            on_main=True,
+        )
+        second = reconcile_preference_candidates(
+            first,
+            [resolution],
+            on_main=True,
+        )
+        self.assertEqual(first, [])
+        self.assertEqual(second, first)
+
+    def test_same_id_different_wording_is_deterministic(self):
+        observed = PreferenceCandidate(
+            "pref_20260910_001",
+            "Copilot filled the wrong address on PayPal",
+        )
+        generalized = PreferenceCandidate(
+            "pref_20260910_001",
+            "Verify address fields after Copilot autofill.",
+        )
+        resolution = PreferenceResolution(
+            candidate_id="pref_20260910_001",
+            outcome="PROMOTE",
+            canonical_destination="knowledge/form_strategy.yaml",
+        )
+        self.assertEqual(
+            reconcile_preference_candidates([observed], [resolution], on_main=True),
+            [],
+        )
+        self.assertEqual(
+            reconcile_preference_candidates([generalized], [resolution], on_main=True),
+            [],
+        )
+
+    def test_no_resolution_is_not_destructive(self):
+        candidate = PreferenceCandidate("pref_20260910_001", "address after autofill")
+        self.assertTrue(candidate_survives_resolution(None, on_main=True))
+        self.assertEqual(
+            reconcile_preference_candidates([candidate], [], on_main=True),
+            [candidate],
+        )
+        self.assertTrue(export_retains_candidate("ONE_OFF"))
+        self.assertTrue(export_retains_candidate("STALE"))
+
+    def test_assign_preserves_existing_id(self):
+        existing = PreferenceCandidate("pref_20260910_001", "old summary")
+        assigned = assign_preference_ids(
+            [existing, "new observation"],
+            day="2026-09-10",
+        )
+        self.assertEqual(assigned[0].candidate_id, "pref_20260910_001")
+        self.assertEqual(assigned[1].candidate_id, "pref_20260910_002")
 
 
 if __name__ == "__main__":

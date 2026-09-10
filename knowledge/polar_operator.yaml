@@ -1,6 +1,6 @@
 last_updated: "2026-09-10"
-policy_revision: "2026-09-10.copilot-memory"
-source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin."
+policy_revision: "2026-09-10.pref-reconcile"
+source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Export does not compact unresolved candidates."
 timezone: "America/New_York"
 
 writing_observation_mode: true
@@ -40,6 +40,12 @@ memory:
   canonical: github
   local_inbox: /home/polar/PREFERENCES.md
   local_inbox_is_not_strategy: true
+  resolution_file: knowledge/preference_resolutions.yaml
+  candidate_id: pref_YYYYMMDD_NNN
+  export: production-learning-daily
+  decide: cursor-production-maintenance
+  canonical_gate: github_main
+  reconcile: next_polar_invocation
   precedence:
     - owner_instruction
     - canonical_github

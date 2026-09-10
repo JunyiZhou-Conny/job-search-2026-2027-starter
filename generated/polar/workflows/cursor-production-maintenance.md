@@ -1,7 +1,7 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-10.copilot-memory+9cda3ab075dc
+workflow_version: 2026-09-10.pref-reconcile+2956131b4e14
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
@@ -39,10 +39,13 @@ Do not run it until the ChatGPT review path and Cursor browser handoff are prove
 5. Cursor must inspect current main, verify each claimed issue, change only durable lessons,
    regenerate runtime and workflow artifacts, run tests, and open a PR.
 6. Classify each Preferences Delta candidate as PROMOTE, KEEP_LOCAL, DROP_REDUNDANT, DROP_ONE_OFF, STALE, NEEDS_MORE_EVIDENCE, OWNER_DECISION.
-   PROMOTE writes the generalized lesson into the matching canonical GitHub source.
+   Use the candidate_id from the Delta. Do not match on wording.
+   Append one row to knowledge/preference_resolutions.yaml in the same PR.
+   PROMOTE also writes the generalized lesson into the matching canonical GitHub source.
    Application strategy goes to knowledge/form_strategy.yaml.
    Operator behavior goes to knowledge/polar_operator.yaml or the workflow compiler.
-   KEEP_LOCAL stays out of git. DROP_REDUNDANT and DROP_ONE_OFF are not promoted.
+   KEEP_LOCAL stays out of policy files. DROP_REDUNDANT and DROP_ONE_OFF still get a resolution row.
+   An open PR is not canonical. Polar deletes a removed outcome only after that row is on main.
 7. STOP BEFORE MERGE.
 
 No autonomous merge.

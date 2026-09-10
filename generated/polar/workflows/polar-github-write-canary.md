@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-10.copilot-memory+853be3086a51
+workflow_version: 2026-09-10.pref-reconcile+853be3086a51
 status: manual_canary
 enabled: false
 needs_browser_lock: false

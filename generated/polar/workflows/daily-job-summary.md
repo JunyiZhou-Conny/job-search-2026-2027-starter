@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-10.copilot-memory+bcb93109c0c9
+workflow_version: 2026-09-10.pref-reconcile+bcb93109c0c9
 status: production
 enabled: true
 needs_browser_lock: false

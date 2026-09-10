@@ -33,6 +33,8 @@ from polar_policy import (
     WRITING_LOG_COLUMNS,
     apply_run_caps,
     document_availability,
+    format_runtime_resolutions,
+    load_preference_resolutions,
     raw_runtime_url,
 )
 from polar_workflows import write_schema_csvs, write_workflows
@@ -327,6 +329,9 @@ def compile_sections() -> Dict[str, str]:
     roles = load_yaml(ROOT / "knowledge" / "role_families.yaml")
     operator = load_yaml(ROOT / "knowledge" / "polar_operator.yaml")
     gates = load_yaml(ROOT / "config" / "submit_gates.yaml")
+    preference_resolutions = load_preference_resolutions(
+        load_yaml(ROOT / "knowledge" / "preference_resolutions.yaml")
+    )
     assert_operator_columns(operator)
 
     always = form.get("always") or {}
@@ -794,8 +799,11 @@ def compile_sections() -> Dict[str, str]:
             "preference_classes: " + ", ".join(PREFERENCE_CLASSES) + ".",
             "An old PREFERENCES strategy line must not override newer GitHub behavior.",
             "LOCAL_PRIVATE values stay local. SECRET_OR_CREDENTIAL is never exported.",
-            "production-learning-daily emits a sanitized Polar Preferences Delta and then compacts the local file.",
-            "Cursor promotes generalized candidates into the matching canonical GitHub source. STOP BEFORE MERGE.",
+            "Export assigns pref_YYYYMMDD_NNN and emits Polar Preferences Delta. Unresolved ids stay pending.",
+            "An open Cursor PR is not canonical. Polar reconciles only after a resolution row is on main.",
+            "Match candidate_id only. Do not compare wording.",
+            format_runtime_resolutions(preference_resolutions),
+            "Cursor writes generalized lessons and knowledge/preference_resolutions.yaml. STOP BEFORE MERGE.",
             "",
             "Simplify Copilot is a required apply precondition.",
             "proof: Copilot UI on the employer ATS page.",
@@ -869,6 +877,7 @@ def render(parts: Dict[str, str]) -> str:
         "- `config/profile.yaml`",
         "- `config/submit_gates.yaml`",
         "- `knowledge/polar_operator.yaml`",
+        "- `knowledge/preference_resolutions.yaml`",
         "- `knowledge/polar_documents.yaml`",
         "- `knowledge/work_authorization.yaml`",
         "- `knowledge/form_strategy.yaml`",

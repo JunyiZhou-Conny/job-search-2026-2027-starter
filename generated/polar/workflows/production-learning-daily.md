@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-10.copilot-memory+804198ac3075
+workflow_version: 2026-09-10.pref-reconcile+108e4c5e5d54
 status: production
 enabled: true
 needs_browser_lock: false
@@ -16,6 +16,17 @@ COMPILED ARTIFACT. Not canonical.
 
 Read both fully before clicking employer pages.
 Do not browse the rest of GitHub.
+
+## Preferences reconcile
+
+After POLAR_RUNTIME is open, reconcile /home/polar/PREFERENCES.md against section P preference_resolutions.
+Those rows come from main. An open Cursor PR is not canonical.
+Match candidate_id only. Do not compare wording.
+Remove a pending id whose main outcome is DROP_ONE_OFF, DROP_REDUNDANT, PROMOTE, STALE.
+Keep KEEP_LOCAL, NEEDS_MORE_EVIDENCE, OWNER_DECISION, and keep any id with no main row.
+Keep LOCAL_PRIVATE values.
+If there are no pending ids or no new main rows, write nothing.
+The rewrite is idempotent. Do not create a preferences-cleanup workflow.
 
 ## Secrets ban
 
@@ -107,18 +118,20 @@ Read /home/polar/PREFERENCES.md if this Polar environment has that file.
 GitHub cannot mutate that file. This Polar workflow can read and rewrite it.
 Do not upload the raw file. Do not paste it into git, Issues, email, or the Sheet.
 Classify each entry as CANONICAL_GITHUB, LOCAL_PRIVATE, LEARNING_CANDIDATE, REDUNDANT, EPHEMERAL, SECRET_OR_CREDENTIAL, STALE, ONE_OFF.
+Assign or preserve a stable candidate_id pref_YYYYMMDD_NNN on every pending learning.
 For LEARNING_CANDIDATE, REDUNDANT, STALE, ONE_OFF, EPHEMERAL, and CANONICAL_GITHUB pointers,
-emit a sanitized bullet with class, evidence, proposed destination, and already_in_github.
+emit a sanitized bullet with candidate_id, class, evidence, proposed destination, and already_in_github.
 For LOCAL_PRIVATE, report only a count. Never report the value.
 For SECRET_OR_CREDENTIAL, report nothing about the contents.
 If a local strategy line conflicts with POLAR_RUNTIME or the workflow, say so.
 GitHub wins for behavior. LOCAL_PRIVATE values stay local.
-After the report is sanitized, compact PREFERENCES to four sections only:
+After the report is sanitized, rewrite PREFERENCES to four sections only:
 Canonical behavior (GitHub pointer), Local-only facts, Pending learning candidates, Sync state.
 Keep LOCAL_PRIVATE values in the local file only.
-Keep LEARNING_CANDIDATE stubs until Cursor names PROMOTE, DROP_REDUNDANT, DROP_ONE_OFF, or STALE.
+Keep every unresolved candidate_id. Emitting the report does not resolve it.
 Delete SECRET_OR_CREDENTIAL. Delete an exact GitHub duplicate marked REDUNDANT.
-Delete EPHEMERAL session notes. Do not delete a candidate only because the text says no longer.
+Delete EPHEMERAL session notes. Do not delete ONE_OFF or STALE here.
+Do not delete a candidate because Cursor opened a PR.
 
 Sanitize before you persist. The report must never contain street address, private application email,
 phone, OTP, password, cookie, session token, transcript contents, or private auth material.

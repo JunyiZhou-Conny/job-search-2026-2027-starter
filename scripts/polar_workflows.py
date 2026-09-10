@@ -20,6 +20,8 @@ from polar_policy import (
     LEASE_KEY,
     LOCAL_PREFERENCES_PATH,
     MEMORY_PRECEDENCE,
+    RESOLUTION_REMOVE_OUTCOMES,
+    RESOLUTION_RETAIN_OUTCOMES,
     PREFERENCE_CLASSES,
     PROMOTION_OUTCOMES,
     QUEUE_COLUMNS,
@@ -96,6 +98,26 @@ def _open_files() -> str:
             "",
             "Read both fully before clicking employer pages.",
             "Do not browse the rest of GitHub.",
+            "",
+        ]
+    )
+
+
+def _preferences_reconcile_block() -> str:
+    remove = ", ".join(sorted(RESOLUTION_REMOVE_OUTCOMES))
+    retain = ", ".join(sorted(RESOLUTION_RETAIN_OUTCOMES))
+    return _lines(
+        [
+            "## Preferences reconcile",
+            "",
+            "After POLAR_RUNTIME is open, reconcile /home/polar/PREFERENCES.md against section P preference_resolutions.",
+            "Those rows come from main. An open Cursor PR is not canonical.",
+            "Match candidate_id only. Do not compare wording.",
+            f"Remove a pending id whose main outcome is {remove}.",
+            f"Keep {retain}, and keep any id with no main row.",
+            "Keep LOCAL_PRIVATE values.",
+            "If there are no pending ids or no new main rows, write nothing.",
+            "The rewrite is idempotent. Do not create a preferences-cleanup workflow.",
             "",
         ]
     )
@@ -264,6 +286,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
     return _lines(
         [
             _open_files(),
+            _preferences_reconcile_block(),
             _secrets_ban(),
             _lease_block("discover-jobs-hourly", operator),
             _sheet_write_contract(),
@@ -305,6 +328,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
     return _lines(
         [
             _open_files(),
+            _preferences_reconcile_block(),
             _secrets_ban(),
             _lease_block("apply-ready-jobs", operator),
             _sheet_write_contract(),
@@ -375,6 +399,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "An old PREFERENCES strategy line must not override newer GitHub behavior.",
             "LOCAL_PRIVATE values may stay local. SECRET_OR_CREDENTIAL must not be promoted.",
             "If a local learning candidate conflicts with GitHub strategy, follow GitHub and report the conflict.",
+            "Export assigns or preserves pref_YYYYMMDD_NNN ids. Reconcile only after a resolution row is on main.",
             "",
             "## Apply-time hard eligibility",
             "",
@@ -515,6 +540,7 @@ def render_learning(operator: Dict[str, Any]) -> str:
     return _lines(
         [
             _open_files(),
+            _preferences_reconcile_block(),
             _secrets_ban(),
             _lease_block("production-learning-daily", operator),
             _sheet_write_contract(),
@@ -543,18 +569,20 @@ def render_learning(operator: Dict[str, Any]) -> str:
             "GitHub cannot mutate that file. This Polar workflow can read and rewrite it.",
             "Do not upload the raw file. Do not paste it into git, Issues, email, or the Sheet.",
             "Classify each entry as " + ", ".join(PREFERENCE_CLASSES) + ".",
+            "Assign or preserve a stable candidate_id pref_YYYYMMDD_NNN on every pending learning.",
             "For LEARNING_CANDIDATE, REDUNDANT, STALE, ONE_OFF, EPHEMERAL, and CANONICAL_GITHUB pointers,",
-            "emit a sanitized bullet with class, evidence, proposed destination, and already_in_github.",
+            "emit a sanitized bullet with candidate_id, class, evidence, proposed destination, and already_in_github.",
             "For LOCAL_PRIVATE, report only a count. Never report the value.",
             "For SECRET_OR_CREDENTIAL, report nothing about the contents.",
             "If a local strategy line conflicts with POLAR_RUNTIME or the workflow, say so.",
             "GitHub wins for behavior. LOCAL_PRIVATE values stay local.",
-            "After the report is sanitized, compact PREFERENCES to four sections only:",
+            "After the report is sanitized, rewrite PREFERENCES to four sections only:",
             "Canonical behavior (GitHub pointer), Local-only facts, Pending learning candidates, Sync state.",
             "Keep LOCAL_PRIVATE values in the local file only.",
-            "Keep LEARNING_CANDIDATE stubs until Cursor names PROMOTE, DROP_REDUNDANT, DROP_ONE_OFF, or STALE.",
+            "Keep every unresolved candidate_id. Emitting the report does not resolve it.",
             "Delete SECRET_OR_CREDENTIAL. Delete an exact GitHub duplicate marked REDUNDANT.",
-            "Delete EPHEMERAL session notes. Do not delete a candidate only because the text says no longer.",
+            "Delete EPHEMERAL session notes. Do not delete ONE_OFF or STALE here.",
+            "Do not delete a candidate because Cursor opened a PR.",
             "",
             "Sanitize before you persist. The report must never contain street address, private application email,",
             "phone, OTP, password, cookie, session token, transcript contents, or private auth material.",
@@ -678,10 +706,13 @@ def render_cursor(operator: Dict[str, Any]) -> str:
             "6. Classify each Preferences Delta candidate as "
             + ", ".join(PROMOTION_OUTCOMES)
             + ".",
-            "   PROMOTE writes the generalized lesson into the matching canonical GitHub source.",
+            "   Use the candidate_id from the Delta. Do not match on wording.",
+            "   Append one row to knowledge/preference_resolutions.yaml in the same PR.",
+            "   PROMOTE also writes the generalized lesson into the matching canonical GitHub source.",
             "   Application strategy goes to knowledge/form_strategy.yaml.",
             "   Operator behavior goes to knowledge/polar_operator.yaml or the workflow compiler.",
-            "   KEEP_LOCAL stays out of git. DROP_REDUNDANT and DROP_ONE_OFF are not promoted.",
+            "   KEEP_LOCAL stays out of policy files. DROP_REDUNDANT and DROP_ONE_OFF still get a resolution row.",
+            "   An open PR is not canonical. Polar deletes a removed outcome only after that row is on main.",
             "7. STOP BEFORE MERGE.",
             "",
             "No autonomous merge.",

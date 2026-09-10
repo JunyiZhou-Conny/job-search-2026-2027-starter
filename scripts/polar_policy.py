@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 LEASE_KEY = "polar_browser"
 ENV_SIMPLIFY_KEY = "env_simplify_copilot"
 LOCAL_PREFERENCES_PATH = "/home/polar/PREFERENCES.md"
+PREFERENCE_RESOLUTIONS_PATH = ROOT / "knowledge" / "preference_resolutions.yaml"
 
 GITHUB_RAW_BASE = (
     "https://raw.githubusercontent.com/JunyiZhou-Conny/"
@@ -129,6 +130,17 @@ MEMORY_PRECEDENCE = (
 
 COPILOT_REPEAT_KEY = "simplify_copilot_missing"
 READY_STATUSES = ("READY_REGULAR", "READY_PRIORITY")
+PREF_ID_RE = re.compile(r"^pref_(\d{8})_(\d{3})$")
+PREF_LINE_RE = re.compile(r"^(pref_\d{8}_\d{3})\s*:\s*(.*)$")
+RESOLUTION_REMOVE_OUTCOMES = frozenset(
+    {"PROMOTE", "DROP_REDUNDANT", "DROP_ONE_OFF", "STALE"}
+)
+RESOLUTION_RETAIN_OUTCOMES = frozenset(
+    {"KEEP_LOCAL", "NEEDS_MORE_EVIDENCE", "OWNER_DECISION"}
+)
+EXPORT_RETAINS_CLASSES = frozenset(
+    {"LEARNING_CANDIDATE", "ONE_OFF", "STALE"}
+)
 
 LOCK_RESULTS = (
     "ACQUIRED",
@@ -1414,6 +1426,21 @@ class PreferenceDeltaRow:
     proposed_destination: str
     already_in_github: bool
     body: str = ""
+    candidate_id: str = ""
+
+
+@dataclass(frozen=True)
+class PreferenceCandidate:
+    candidate_id: str
+    summary: str
+
+
+@dataclass(frozen=True)
+class PreferenceResolution:
+    candidate_id: str
+    outcome: str
+    canonical_destination: str = ""
+    resolved_revision: str = ""
 
 
 def copilot_state(obs: CopilotObservation) -> str:
@@ -1577,8 +1604,9 @@ def render_preferences_delta(
         title = sanitize_learning_text(row.title)
         evidence = sanitize_learning_text(row.evidence)
         already = "yes" if row.already_in_github else "no"
+        pref_id = (row.candidate_id or "").strip() or "unassigned"
         lines.append(
-            f"- {title} | class {row.cls} | already_in_github {already} | "
+            f"- {pref_id} | {title} | class {row.cls} | already_in_github {already} | "
             f"destination {row.proposed_destination} | evidence {evidence}"
         )
     lines.append("")
@@ -1591,20 +1619,26 @@ def render_preferences_delta(
 def compact_preferences_markdown(
     *,
     local_private: Sequence[Tuple[str, str]],
-    candidates: Sequence[Tuple[str, str]],
-    reviewed_at: str,
+    candidates: Sequence[PreferenceCandidate],
+    last_reconciled: str,
     github_runtime_url: str,
+    main_revision: str = "",
 ) -> str:
     private_lines = []
     for title, value in local_private:
         private_lines.append(f"- {title}: {value}")
     candidate_lines = []
-    for title, body in candidates:
-        candidate_lines.append(f"- {title}: {sanitize_learning_text(body)}")
+    for item in candidates:
+        candidate_lines.append(
+            f"- {item.candidate_id}: {sanitize_learning_text(item.summary)}"
+        )
     if not private_lines:
         private_lines = ["- none"]
     if not candidate_lines:
         candidate_lines = ["- none"]
+    sync = [f"last_reconciled: {last_reconciled}"]
+    if main_revision:
+        sync.append(f"main_revision: {main_revision}")
     return "\n".join(
         [
             "# Polar Preferences",
@@ -1620,7 +1654,7 @@ def compact_preferences_markdown(
             *candidate_lines,
             "",
             "## Sync state",
-            f"last_reviewed: {reviewed_at}",
+            *sync,
             "",
         ]
     )
@@ -1642,3 +1676,180 @@ def preference_conflicts_github(body: str, github_corpus: str) -> bool:
     return (_mentions_form_yes(blob) and _mentions_form_no(corpus)) or (
         _mentions_form_no(blob) and _mentions_form_yes(corpus)
     )
+
+
+def parse_preference_id(value: str) -> Optional[Tuple[str, int]]:
+    match = PREF_ID_RE.match((value or "").strip())
+    if not match:
+        return None
+    return match.group(1), int(match.group(2))
+
+
+def next_preference_id(existing: Sequence[str], day: str) -> str:
+    compact = (day or "").replace("-", "")
+    if len(compact) != 8 or not compact.isdigit():
+        raise ValueError("preference day must be YYYY-MM-DD or YYYYMMDD")
+    used = {
+        number
+        for parsed in (parse_preference_id(raw) for raw in existing)
+        if parsed and parsed[0] == compact
+        for number in (parsed[1],)
+    }
+    next_number = max(used) + 1 if used else 1
+    return f"pref_{compact}_{next_number:03d}"
+
+
+def export_retains_candidate(cls: str) -> bool:
+    return cls in EXPORT_RETAINS_CLASSES
+
+
+def assign_preference_ids(
+    items: Sequence[PreferenceCandidate | str],
+    *,
+    day: str,
+) -> List[PreferenceCandidate]:
+    assigned: List[PreferenceCandidate] = []
+    seen: List[str] = []
+    for item in items:
+        if isinstance(item, PreferenceCandidate) and parse_preference_id(item.candidate_id):
+            assigned.append(
+                PreferenceCandidate(
+                    candidate_id=item.candidate_id,
+                    summary=item.summary,
+                )
+            )
+            seen.append(item.candidate_id)
+            continue
+        text = item.summary if isinstance(item, PreferenceCandidate) else str(item)
+        match = PREF_LINE_RE.match(text.strip())
+        if match and parse_preference_id(match.group(1)):
+            assigned.append(
+                PreferenceCandidate(
+                    candidate_id=match.group(1),
+                    summary=match.group(2),
+                )
+            )
+            seen.append(match.group(1))
+            continue
+        new_id = next_preference_id(seen, day)
+        assigned.append(PreferenceCandidate(candidate_id=new_id, summary=text.strip()))
+        seen.append(new_id)
+    return assigned
+
+
+def parse_pending_candidates(markdown: str) -> List[PreferenceCandidate]:
+    found: List[PreferenceCandidate] = []
+    in_pending = False
+    for line in (markdown or "").splitlines():
+        if line.strip() == "## Pending learning candidates":
+            in_pending = True
+            continue
+        if in_pending and line.startswith("## "):
+            break
+        if not in_pending or not line.startswith("- "):
+            continue
+        body = line[2:].strip()
+        if body == "none":
+            continue
+        match = PREF_LINE_RE.match(body)
+        if match:
+            found.append(
+                PreferenceCandidate(candidate_id=match.group(1), summary=match.group(2))
+            )
+    return found
+
+
+def load_preference_resolutions(raw: Any) -> List[PreferenceResolution]:
+    rows = []
+    if isinstance(raw, dict):
+        items = raw.get("resolutions") or []
+    elif isinstance(raw, list):
+        items = raw
+    else:
+        items = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        candidate_id = str(item.get("candidate_id") or "").strip()
+        outcome = str(item.get("outcome") or "").strip()
+        if not parse_preference_id(candidate_id):
+            raise ValueError(f"invalid preference candidate_id {candidate_id}")
+        if outcome not in PROMOTION_OUTCOMES:
+            raise ValueError(f"unknown preference outcome {outcome}")
+        rows.append(
+            PreferenceResolution(
+                candidate_id=candidate_id,
+                outcome=outcome,
+                canonical_destination=str(item.get("canonical_destination") or "").strip(),
+                resolved_revision=str(item.get("resolved_revision") or "").strip(),
+            )
+        )
+    return rows
+
+
+def format_runtime_resolutions(rows: Sequence[PreferenceResolution]) -> str:
+    if not rows:
+        return "preference_resolutions: none"
+    lines = ["preference_resolutions:"]
+    for row in rows:
+        dest = row.canonical_destination or "none"
+        rev = row.resolved_revision or "none"
+        lines.append(f"- {row.candidate_id} | {row.outcome} | {dest} | {rev}")
+    return "\n".join(lines)
+
+
+def parse_runtime_resolutions(text: str) -> List[PreferenceResolution]:
+    rows: List[PreferenceResolution] = []
+    for line in (text or "").splitlines():
+        if not line.startswith("- pref_"):
+            continue
+        parts = [part.strip() for part in line[2:].split("|")]
+        if len(parts) < 2:
+            continue
+        rows.append(
+            PreferenceResolution(
+                candidate_id=parts[0],
+                outcome=parts[1],
+                canonical_destination="" if parts[2:3] == ["none"] else (parts[2] if len(parts) > 2 else ""),
+                resolved_revision="" if parts[3:4] == ["none"] else (parts[3] if len(parts) > 3 else ""),
+            )
+        )
+    return rows
+
+
+def resolution_is_canonical(*, on_main: bool) -> bool:
+    return on_main
+
+
+def candidate_survives_resolution(
+    outcome: Optional[str],
+    *,
+    on_main: bool,
+) -> bool:
+    if not outcome:
+        return True
+    if not resolution_is_canonical(on_main=on_main):
+        return True
+    if outcome in RESOLUTION_RETAIN_OUTCOMES:
+        return True
+    if outcome in RESOLUTION_REMOVE_OUTCOMES:
+        return False
+    return True
+
+
+def reconcile_preference_candidates(
+    candidates: Sequence[PreferenceCandidate],
+    resolutions: Sequence[PreferenceResolution],
+    *,
+    on_main: bool,
+) -> List[PreferenceCandidate]:
+    latest: Dict[str, PreferenceResolution] = {}
+    for row in resolutions:
+        latest[row.candidate_id] = row
+    kept: List[PreferenceCandidate] = []
+    for item in candidates:
+        row = latest.get(item.candidate_id)
+        outcome = row.outcome if row else None
+        if candidate_survives_resolution(outcome, on_main=on_main):
+            kept.append(item)
+    return kept

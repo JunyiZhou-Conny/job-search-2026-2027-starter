@@ -120,10 +120,18 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("local_private", learning.lower())
         self.assertIn("SECRET_OR_CREDENTIAL", learning)
         self.assertNotIn("preferences-learning-daily", learning)
+        self.assertIn("Do not create a preferences-cleanup workflow.", learning)
+        self.assertIn("Emitting the report does not resolve it.", learning)
+        self.assertIn("candidate_id", learning)
+        self.assertIn("An open Cursor PR is not canonical.", learning)
+        self.assertIn("## Preferences reconcile", read_workflow("discover-jobs-hourly"))
+        self.assertIn("## Preferences reconcile", text)
         cursor = read_workflow("cursor-production-maintenance")
         for outcome in PROMOTION_OUTCOMES:
             self.assertIn(outcome, cursor, outcome)
         self.assertIn("Do not treat PREFERENCES.md as the Cursor target list.", cursor)
+        self.assertIn("knowledge/preference_resolutions.yaml", cursor)
+        self.assertIn("An open PR is not canonical.", cursor)
 
     def test_generated_workflows_match_compiler(self):
         import yaml

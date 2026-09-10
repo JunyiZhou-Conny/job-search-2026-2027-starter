@@ -125,6 +125,9 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("OWNER_ACTION_REQUIRED", text)
         self.assertNotIn("optional_accelerator", text)
         self.assertIn("PREFERENCES.md is not a second strategy database.", text)
+        self.assertIn("preference_resolutions: none", text)
+        self.assertIn("An open Cursor PR is not canonical.", text)
+        self.assertIn("Match candidate_id only.", text)
 
     def test_committed_file_matches_compiler(self):
         generated = compile_text()
