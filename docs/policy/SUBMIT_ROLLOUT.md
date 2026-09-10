@@ -48,10 +48,11 @@ Polar Local may click Submit on a regular or prioritized job only when every ite
 
 Never blindly resubmit a `SUBMISSION_UNKNOWN` row.
 
-Initial canary caps, also in `knowledge/polar_operator.yaml`:
+Polar Local worker budget lives in `knowledge/polar_operator.yaml`
+`apply_worker`:
 
-- max 3 new jobs per `apply-ready-jobs` run. That is one worker budget.
-  A READY_PRIORITY reservation is taken from the pool, not added to it.
+- `max_new_jobs_per_run` is 3. That is one worker budget.
+  `reserved_priority_slots` is 1 and is taken from the pool, not added to it.
   Another apply run has its own budget.
 - No shared daily regular submission pool.
 

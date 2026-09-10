@@ -63,6 +63,6 @@ Do not retire Cloud from preference. Do not retire it because Polar exists.
 ## What this does not prove
 
 Locked-screen apply-ready-jobs.
-Overnight regular Submit inside the canary caps.
+Overnight regular Submit inside the apply-worker budget.
 Polar writing quality on prioritized rows.
 Sheet writes during sleep, lid close, or Wi-Fi loss, unless those events happened in the window.

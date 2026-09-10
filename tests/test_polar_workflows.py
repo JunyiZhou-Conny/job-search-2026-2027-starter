@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import copy
 import re
 import sys
 import unittest
 from pathlib import Path
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -91,6 +94,11 @@ class TestGeneratedWorkflows(unittest.TestCase):
             priority.get("priority_submit_gate"),
             "polar_policy.priority_submit_permitted",
         )
+        live = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(live["apply_worker"]["max_new_jobs_per_run"], 3)
+        self.assertEqual(live["apply_worker"]["reserved_priority_slots"], 1)
         simplify = parse_contract_block(text, "Simplify contract")
         self.assertEqual(simplify.get("role"), "required_precondition")
         self.assertEqual(simplify.get("max_attempts_per_application"), "1")
@@ -136,6 +144,30 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("Do not treat PREFERENCES.md as the Cursor target list.", cursor)
         self.assertIn("knowledge/preference_resolutions.yaml", cursor)
         self.assertIn("An open PR is not canonical.", cursor)
+
+    def test_fixture_apply_worker_budget_compiles_without_submit_gates_edit(self):
+        operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        fixture = copy.deepcopy(operator)
+        fixture["apply_worker"] = {
+            **fixture["apply_worker"],
+            "max_new_jobs_per_run": 5,
+            "reserved_priority_slots": 2,
+        }
+        text = render_workflow("apply-ready-jobs", fixture)
+        priority = parse_contract_block(text, "Priority contract")
+        self.assertEqual(priority.get("max_new_jobs"), "5")
+        self.assertEqual(priority.get("reserved_priority_slots"), "2")
+        live_gates = yaml.safe_load(
+            (ROOT / "config" / "submit_gates.yaml").read_text(encoding="utf-8")
+        )
+        self.assertNotIn("regular_submit_cap_per_run", live_gates["polar_local"])
+        self.assertEqual(live_gates["cursor_cloud"]["regular_submit_cap_per_run"], 3)
+        live_priority = parse_contract_block(
+            read_workflow("apply-ready-jobs"), "Priority contract"
+        )
+        self.assertEqual(live_priority.get("max_new_jobs"), "3")
 
     def test_generated_workflows_match_compiler(self):
         import yaml

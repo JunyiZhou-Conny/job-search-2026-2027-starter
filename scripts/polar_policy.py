@@ -1268,53 +1268,68 @@ def _positive_int(value: Any, label: str) -> int:
     return number
 
 
-def resolve_apply_run_caps(
-    canary: Mapping[str, Any],
+_STALE_CANARY_WORKER_KEYS = (
+    "max_jobs_per_run",
+    "reserved_priority_slots_per_run",
+    "prioritized_auto_submit",
+)
+
+
+def reject_stale_polar_worker_budget(
+    operator: Mapping[str, Any],
     polar_local: Mapping[str, Any],
-) -> ApplyRunCaps:
-    max_jobs = _positive_int(canary.get("max_jobs_per_run"), "canary.max_jobs_per_run")
-    gate_cap = _positive_int(
-        polar_local.get("regular_submit_cap_per_run"),
-        "polar_local.regular_submit_cap_per_run",
-    )
-    if max_jobs != gate_cap:
+) -> None:
+    canary = operator.get("canary") or {}
+    if isinstance(canary, Mapping):
+        for key in _STALE_CANARY_WORKER_KEYS:
+            if key in canary:
+                raise ValueError(
+                    f"stale Polar worker budget key canary.{key}; "
+                    "use apply_worker in polar_operator.yaml"
+                )
+    if "regular_submit_cap_per_run" in polar_local:
         raise ValueError(
-            "apply run cap mismatch: canary.max_jobs_per_run and "
-            "polar_local.regular_submit_cap_per_run must be the same "
-            "per-run worker budget"
+            "stale Polar worker budget key polar_local.regular_submit_cap_per_run; "
+            "use apply_worker.max_new_jobs_per_run"
         )
-    reserved = canary.get("reserved_priority_slots_per_run")
+    if "prioritized_auto_submit" in polar_local:
+        raise ValueError(
+            "stale Polar worker policy key polar_local.prioritized_auto_submit; "
+            "use apply_worker.prioritized_auto_submit"
+        )
+
+
+def resolve_apply_run_caps(apply_worker: Mapping[str, Any]) -> ApplyRunCaps:
+    max_jobs = _positive_int(
+        apply_worker.get("max_new_jobs_per_run"),
+        "apply_worker.max_new_jobs_per_run",
+    )
+    reserved = apply_worker.get("reserved_priority_slots")
     try:
         reserved_slots = int(reserved)
     except (TypeError, ValueError) as exc:
         raise ValueError(
-            "canary.reserved_priority_slots_per_run must be an integer"
+            "apply_worker.reserved_priority_slots must be an integer"
         ) from exc
     if reserved_slots < 0 or reserved_slots > max_jobs:
         raise ValueError(
-            "reserved_priority_slots_per_run must be between 0 and max_jobs_per_run"
+            "apply_worker.reserved_priority_slots must be between 0 and "
+            "apply_worker.max_new_jobs_per_run"
         )
-    auto = canary.get("prioritized_auto_submit")
-    gate_auto = polar_local.get("prioritized_auto_submit")
-    if bool(auto) != bool(gate_auto):
-        raise ValueError(
-            "prioritized_auto_submit mismatch between polar_operator canary "
-            "and submit_gates polar_local"
-        )
+    if "prioritized_auto_submit" not in apply_worker:
+        raise ValueError("apply_worker.prioritized_auto_submit is required")
     return ApplyRunCaps(
         max_new_jobs=max_jobs,
         reserved_priority_slots=reserved_slots,
-        prioritized_auto_submit=bool(auto),
+        prioritized_auto_submit=bool(apply_worker.get("prioritized_auto_submit")),
     )
 
 
 def apply_run_caps(root: Optional[Path] = None) -> ApplyRunCaps:
     operator = load_operator(root)
     gates = load_submit_gates(root)
-    return resolve_apply_run_caps(
-        operator.get("canary") or {},
-        gates.get("polar_local") or {},
-    )
+    reject_stale_polar_worker_budget(operator, gates.get("polar_local") or {})
+    return resolve_apply_run_caps(operator.get("apply_worker") or {})
 
 
 def writing_row_is_complete(row: Mapping[str, Any]) -> bool:
