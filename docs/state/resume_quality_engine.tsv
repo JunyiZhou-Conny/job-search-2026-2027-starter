@@ -1,0 +1,10 @@
+ts	phase	decision	why	evidence	result
+2026-09-10T03:50:25Z	frame	defined done as three fixtures plus validator veto plus a one-page variant	need a falsifiable predicate before a long run	docs/resume/QUALITY_ENGINE.md	open
+2026-09-10T03:57:00Z	design	keep facts in evidence_bank.yaml and put family wording in a derived catalog	another agent owns the bank schema and the master TeX	knowledge/resume_claim_catalog.yaml	picked derived catalog
+2026-09-10T03:57:00Z	design	do not restore build_clusters.py	cluster tree was removed on purpose	PR 120 / PR 117	accepted
+2026-09-10T03:57:00Z	design	v0 is deterministic with no model call	tests cannot trust a hidden LLM rewrite	scripts/rqe/judge.py validate_tex	open
+2026-09-10T03:57:00Z	design	master TeX is inventory, generated tex is the one-page product	2-page master is not a Polar attach	docs/resume/QUALITY_ENGINE.md	accepted
+2026-09-10T03:53:11Z	harness	validator rejects planted 40% Kubernetes and completed GRPO	truth gate must fail a lie before we trust ranking	tests/test_resume_quality.py TestValidator	tests green
+2026-09-10T03:53:11Z	loop	stopped treating and/for as match evidence	CUDA kernels were scoring as strong_direct against AlphaFold	scripts/rqe/plan.py STOPWORDS SPECIFIC_TECH	tests green
+2026-09-10T03:57:40Z	loop	arena baseline is a copied historical one-pager	live cluster paths will disappear	tests/fixtures/resume_quality/baselines	open
+
