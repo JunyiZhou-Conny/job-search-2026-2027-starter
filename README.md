@@ -63,7 +63,7 @@ python3 scripts/jobsearch.py dashboard
 | `data/applications.csv` | The ledger |
 | `data/job_decisions.csv` | Passed roles (URL archive, prevents resurfacing) |
 | `generated/` | Machine output — triage packs, apply queue, dashboards |
-| `resumes/` | Base + cluster resumes; registry in `data/resume_versions.csv` |
+| `resumes/` | One active resume in `resumes/base/`. Registry in `data/resume_versions.csv` |
 | `docs/` | Current policy; `docs/archive/` is history, not current state |
 | `docs/collaborators/` | Friend / future-collaborator setup runbook + identity templates |
 

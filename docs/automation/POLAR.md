@@ -140,7 +140,7 @@ See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery ord
 
 `application_weight` stays. It is production policy, not a pilot leftover.
 
-Regular work is fast and truthful. Use the cluster resume. Use Simplify once when it helps. Correct visible fields. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist.
+Regular work is fast and truthful. Prefer the Simplify resume already attached. If the widget is empty, upload the compiled base `JZ_resume` PDF. Use Simplify once when it helps. Correct visible fields. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist.
 
 Prioritized work gets more care. Signals include startup or scale-up Junyi values, Fortune 500 or major companies, NVIDIA GTC, prestige, biotech or health AI, strong biostatistics or bio data-science fit, FDE, and unusually strong personal fit. Do not mark a generic analyst or data role prioritized only because the title contains "data".
 

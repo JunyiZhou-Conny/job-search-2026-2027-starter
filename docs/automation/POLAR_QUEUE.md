@@ -44,7 +44,7 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `weight` | `regular` or `prioritized`. |
 | `priority_reason` | Short signal list, such as `fde` or `gtc_2026`. Blank on regular rows. |
 | `lane` | `core`, `broad`, or `practice`. Suggestion until Junyi confirms. |
-| `resume_cluster` | `cloud_swe`, `data_ml`, or `health_ai`. |
+| `resume_cluster` | Job taxonomy only. `cloud_swe`, `data_ml`, or `health_ai`. Not a resume file. |
 | `status` | One value from the status table below. |
 | `last_stage` | Coarse checkpoint. Not a second status machine. |
 | `attempt_count` | How many times Polar opened this job for execution. Start at 0. |

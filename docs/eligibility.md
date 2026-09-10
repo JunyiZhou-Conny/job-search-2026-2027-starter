@@ -33,7 +33,7 @@ Values: `verified` | `likely` | `unclear` | `no`
 | Lane | When | Effort |
 |---|---|---|
 | `core` | Strong fit; sponsor verified/likely/unclear but company plausibly sponsors | Tailor, network, dossier if A |
-| `broad` | Strong tech fit; sponsor `no` or weak; still may yield OA/interview | Nearest cluster resume; 1–2 bullets max |
+| `broad` | Strong tech fit; sponsor `no` or weak; still may yield OA/interview | Approved base resume. 1–2 bullets max |
 | `practice` | Low conversion expected; used for interview reps | Cap at ~15–25% of applied volume |
 
 ## `application_weight` (separate filter)

@@ -11,7 +11,7 @@ source: "Junyi Charta FDE notes plus Lila / Hayden reviews; Polar local owner de
 # Two chunks
 application_weight:
   regular:
-    meaning: "Fast truthful autonomous execution on Polar Local once polar_local caps allow it. Cluster resume. Short, prompt-faithful free response."
+    meaning: "Fast truthful autonomous execution on Polar Local once polar_local caps allow it. Approved base or the Simplify resume already attached. Short, prompt-faithful free response."
   prioritized:
     meaning: >
       Extra judgment. Tailor resume toward the JD using only evidence-bank
@@ -76,7 +76,7 @@ confirmed_prioritized:
       insider / referral URL. Since 2026-09-03 prioritized rows stop
       before Submit for a review packet, not for a referral check.
     written_answer: "docs/apply/written_answers/2026-08-23_lila-swe-i-instrument.md"
-    resume: "cluster resume is not enough; tailor toward instrument / scientific software using only evidence-bank facts. Do not invent lab-hardware experience."
+    resume: "approved base is not enough; tailor toward instrument / scientific software using only evidence-bank facts. Do not invent lab-hardware experience."
 
   - company: "Charta Health"
     role: "Forward Deployed AI Engineer"
@@ -91,7 +91,7 @@ confirmed_prioritized:
       Junyi submitted from his laptop 2026-08-24 after Cloud Chrome
       spam-blocked. Public-Submit hold is retired the same day.
     written_answer: "docs/apply/written_answers/2026-08-23_charta-forward-deployed-ai.md"
-    resume: "health_ai cluster plus FDE last-mile wording from evidence bank only. Do not invent customer-on-site FDE."
+    resume: "approved base plus FDE last-mile wording from evidence bank only. Do not invent customer-on-site FDE."
 
 # Suggested only (GTC hit on the round-two set). Do not treat as confirmed.
 suggested_gtc_on_round_two:
@@ -108,7 +108,7 @@ do_not_conflate:
 
 apply_behavior:
   regular:
-    - Cluster resume
+    - Approved base or Simplify resume
     - Simplify once when useful, then read the visible widgets
     - Standing form_strategy answers
     - Free response answers the prompt; no project dump
