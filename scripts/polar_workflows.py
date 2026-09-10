@@ -337,7 +337,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "4. Capture employer identity and run requisition dedupe before extensive fill.",
             "5. Re-check hard eligibility on the full posting before extensive fill.",
             "6. Authenticate with ordinary browser flows when asked. Account creation is normal work.",
-            "7. Attach the resume_cluster from the row. Use Simplify at most once. Then read the visible widgets.",
+            "7. Prefer the Simplify resume already attached. If the widget is empty, upload the compiled base resume. Use Simplify at most once. Then read the visible widgets.",
             "8. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.",
             "9. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.",
             "10. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.",

@@ -523,14 +523,15 @@ def compile_sections() -> Dict[str, str]:
         if not isinstance(body, dict):
             continue
         titles = ", ".join(str(x) for x in body.get("titles") or [])
-        cluster_lines.append(
-            f"{name}: resume `{body.get('default_resume')}`. Titles: {titles}"
-        )
+        cluster_lines.append(f"{name}: {titles}")
     section_e = "\n".join(
         [
-            "Pick one existing cluster resume. Do not invent a new resume for every job.",
-            "Prefer the Simplify resume that matches the cluster file below.",
+            "One active resume: `JZ_resume`.",
+            "Prefer the Simplify resume already attached.",
+            "If the widget is empty, upload `resumes/base/JZ_resume.pdf` only.",
+            "Do not invent a new resume for every job.",
             "",
+            "Title families are job taxonomy only. resume_cluster is not a file.",
             bullet(cluster_lines),
             "",
             "Prioritized rows may tailor from the evidence bank only when the JD justifies it.",
@@ -617,7 +618,7 @@ def compile_sections() -> Dict[str, str]:
                 [
                     "Duplicate check passes against the Sheet and section K.",
                     "Company and title on the page match the queue row.",
-                    "Correct cluster resume is attached.",
+                    "Approved resume is attached (Simplify or compiled base `JZ_resume`).",
                     "Identity fields are correct after a visible read-back.",
                     "Required factual fields are resolved from this runtime or left for Junyi.",
                     "No unsupported claim was invented.",
