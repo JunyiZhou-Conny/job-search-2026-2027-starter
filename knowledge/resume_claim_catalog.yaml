@@ -140,32 +140,6 @@ claims:
   project_id: transformer_reimpl
   evidence_fields:
   - measurable_results
-- id: wyss.tf_to_pytorch
-  claim: Ported 2018 CPU-only TensorFlow CellOT reference to PyTorch ICNNs on GPU
-  evidence:
-  - measurable_results
-  verification_status: verified
-  confidence: high
-  resume_eligible: true
-  interview_defensibility: moderate
-  signals:
-  - migration
-  - model
-  - training
-  - distributed
-  relevant_role_families:
-  - swe
-  - ml_ai
-  allowed_wording:
-    swe: Ported a 2018 CPU-only TensorFlow reference implementation to PyTorch, reimplementing
-      the Input Convex Neural Networks and enabling GPU training on FASRC Cannon.
-    ml_ai: Reimplemented CellOT's Input Convex Neural Networks in PyTorch and moved
-      training from a CPU TensorFlow reference onto GPU nodes.
-    default: Ported a 2018 CPU-only TensorFlow CellOT reference to PyTorch with GPU
-      training on FASRC Cannon.
-  project_id: cellot_wyss
-  evidence_fields:
-  - measurable_results
 - id: wyss.ood_r2
   claim: 0.85-0.90 R^2 in-distribution versus 0.65-0.67 on the held-out-species split
   evidence:
@@ -316,8 +290,7 @@ claims:
       of wall-clock compute.
     ml_ai: Ran 338 paired single-factor ablations (318 clean) over 79.3 hours, changing
       one field from a frozen baseline each run.
-    data: Logged 338 runs across 12 tiers, 2 data splits, and 7 gene-space settings
-      from 250 to 6,619 genes.
+    data: Logged 338 runs (318 clean, 20 errors) over 79.3 hours of wall-clock compute.
   metrics:
   - raw: '338'
     source: measurable_results

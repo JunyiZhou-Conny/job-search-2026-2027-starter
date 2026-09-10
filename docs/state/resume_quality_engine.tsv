@@ -13,4 +13,6 @@ ts	phase	decision	why	evidence	result
 2026-09-10T04:25:00Z	design	per-JD engine is VIP only. Apply path is BUILD then ROUTE	Polar cannot afford a JD compile on every row	docs/resume/QUALITY_ENGINE.md	accepted
 2026-09-10T04:25:00Z	design	four production families. data routes to swe or ml_ai	no evidence a fifth frozen one-pager is needed	knowledge/resume_philosophy.yaml	accepted
 2026-09-10T04:25:00Z	design	stack #121 onto #120 instead of main	avoid a second evidence author and a stale cluster checkout	PR 120 branch cursor/evidence-master-resume-98c7	open
+2026-09-10T04:32:00Z	integrate	rebased seven RQE commits onto cursor/evidence-master-resume-98c7	main-based rebase would have replayed Polar #116 into #120	git log --oneline	done
+2026-09-10T04:32:00Z	integrate	catalog drops the 2018 CellOT port line; loader reads #120 text/resume_ok dicts	#120 bank no longer states 2018 in measured fields	knowledge/resume_claim_catalog.yaml scripts/rqe/load.py	tests green
 

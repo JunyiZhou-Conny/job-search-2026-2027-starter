@@ -184,7 +184,19 @@ def _norm_fact(text: str) -> str:
     )
 
 
-def fact_blob(body: dict[str, Any]) -> str:
+def evidence_text(item: Any) -> str:
+    if isinstance(item, dict):
+        return str(item.get("text") or item.get("claim") or "")
+    return str(item)
+
+
+def evidence_resume_ok(item: Any) -> bool:
+    if isinstance(item, dict) and "resume_ok" in item:
+        return bool(item.get("resume_ok"))
+    return True
+
+
+def fact_texts(body: dict[str, Any]) -> list[str]:
     parts = [
         str(body.get("title") or ""),
         str(body.get("org") or ""),
@@ -195,11 +207,16 @@ def fact_blob(body: dict[str, Any]) -> str:
         "software_engineering_evidence",
         "measurable_results",
         "verified_now",
+        "research_evidence",
         "technologies",
     ):
         for item in body.get(field) or []:
-            parts.append(str(item))
-    return _norm_fact(" ".join(parts))
+            parts.append(evidence_text(item))
+    return [p for p in parts if p]
+
+
+def fact_blob(body: dict[str, Any]) -> str:
+    return _norm_fact(" ".join(fact_texts(body)))
 
 
 def _number_cores(text: str) -> set[str]:
@@ -212,7 +229,7 @@ def _number_cores(text: str) -> set[str]:
 
 
 def assert_catalog_grounded(raw: dict[str, Any], body: dict[str, Any]) -> None:
-    allowed = _number_cores(fact_blob(body))
+    allowed = _number_cores(" ".join(fact_texts(body)))
     wording = raw.get("allowed_wording") or {}
     if not isinstance(wording, dict):
         wording = {}
@@ -252,14 +269,17 @@ def _project_claims(project_id: str, body: dict[str, Any], philosophy: dict[str,
             defense = depth
         for field in ("software_engineering_evidence", "measurable_results", "verified_now"):
             for item in body.get(field) or []:
+                text = evidence_text(item)
+                if not text:
+                    continue
                 n += 1
                 claims.append(
                     _synth(
                         project_id,
                         n,
-                        str(item),
+                        text,
                         "verified",
-                        True,
+                        evidence_resume_ok(item),
                         defense,
                         "high" if field != "verified_now" else "medium",
                         f"{project_id}.{field}",
