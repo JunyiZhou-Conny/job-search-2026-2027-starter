@@ -8,7 +8,7 @@ alwaysApply: false
 
 - Preserve factual accuracy. Never invent tools, ownership, scale, users, publications, employment, or metrics.
 - Use the evidence bank and the approved base resume, then small job-specific edits.
-- `regular` weight: approved base or the Simplify resume already attached is enough. `prioritized` weight: more
+- `regular` weight: the Simplify resume already attached is enough. Do not upload the two-page master. `prioritized` weight: more
   JD-specific bullet edits from the evidence bank only
   (`knowledge/application_priority.yaml`). Do not invent domain experience.
 - Prioritize demonstrated outcomes and technical decisions over keyword stuffing.

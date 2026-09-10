@@ -165,7 +165,7 @@ Do not reopen Original Job Post during hourly discovery to catch them.
 
 ## D. Regular vs prioritized policy
 
-Regular: Fast truthful autonomous execution on Polar Local once polar_local caps allow it. Approved base or the Simplify resume already attached. Short, prompt-faithful free response.
+Regular: Fast truthful autonomous execution on Polar Local once polar_local caps allow it. Simplify resume already attached. Do not upload the two-page master. Short, prompt-faithful free response.
 Prioritized: Extra judgment. Tailor resume toward the JD using only evidence-bank facts. Free-response gets a real answer to the prompt, not a project dump. Full form prep, mandatory writing_log of every meaningful custom question, then Polar Local may Submit when final validation passes (docs/policy/SUBMIT_ROLLOUT.md). Daily digest gives Junyi post-submit oversight. Do not wait for a referral / insider-page check. Junyi 2026-08-24: those pages are rare; the public pool is closer to FIFO, so waiting costs more than it saves.
 
 Prioritized signals, only when strongly applicable:
