@@ -302,22 +302,26 @@ def _project_claims(project_id: str, body: dict[str, Any], philosophy: dict[str,
                 philosophy=philosophy,
             )
         )
-    for item in body.get("do_not") or []:
-        n += 1
-        claims.append(
-            _synth(
-                project_id,
-                n,
-                str(item),
-                "forbidden",
-                False,
-                "weak",
-                "high",
-                f"{project_id}.do_not",
-                extra_forbidden=(str(item),),
-                philosophy=philosophy,
+    for field in ("do_not", "do_not_claim"):
+        for item in body.get(field) or []:
+            text = evidence_text(item)
+            if not text:
+                continue
+            n += 1
+            claims.append(
+                _synth(
+                    project_id,
+                    n,
+                    text,
+                    "forbidden",
+                    False,
+                    "weak",
+                    "high",
+                    f"{project_id}.{field}",
+                    extra_forbidden=(text,),
+                    philosophy=philosophy,
+                )
             )
-        )
     return claims
 
 

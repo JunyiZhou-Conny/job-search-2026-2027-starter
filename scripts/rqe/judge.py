@@ -96,27 +96,27 @@ def validate_tex(bank: Bank, tex: str, used_claim_ids: tuple[str, ...] = ()) -> 
                 ValidationIssue("fail", "planned_as_done", f"planned work written as completed ({pat})")
             )
 
-    if used_claim_ids:
-        allowed = _allowed_numbers(bank, used_claim_ids)
-        for item in _item_texts(tex):
-            if re.match(r"^(Languages|ML|LLM|Backend|Data|Cloud|Certifications)\b", item):
+    ids = used_claim_ids or infer_used_claims(bank, tex)
+    allowed = _allowed_numbers(bank, ids)
+    for item in _item_texts(tex):
+        if re.match(r"^(Languages|ML|LLM|Backend|Data|Cloud|Certifications)\b", item):
+            continue
+        if "program requirements complete" in item.lower() or "coursework:" in item.lower():
+            continue
+        for m in _NUM.finditer(item):
+            keys = _number_keys(m.group(0))
+            if keys & allowed:
                 continue
-            if "program requirements complete" in item.lower() or "coursework:" in item.lower():
+            raw = re.sub(r"\s+", "", m.group(0).lower())
+            if raw.isdigit() and int(raw) <= 31:
                 continue
-            for m in _NUM.finditer(item):
-                keys = _number_keys(m.group(0))
-                if keys & allowed:
-                    continue
-                raw = re.sub(r"\s+", "", m.group(0).lower())
-                if raw.isdigit() and int(raw) <= 31:
-                    continue
-                report.issues.append(
-                    ValidationIssue(
-                        "fail",
-                        "unsupported_metric",
-                        f"number {m.group(0)!r} in bullet {item!r} is not in the evidence bank",
-                    )
+            report.issues.append(
+                ValidationIssue(
+                    "fail",
+                    "unsupported_metric",
+                    f"number {m.group(0)!r} in bullet {item!r} is not in the evidence bank",
                 )
+            )
 
     if "\\end{document}" not in tex:
         report.issues.append(ValidationIssue("fail", "malformed_tex", "missing \\end{document}"))
@@ -158,9 +158,6 @@ def infer_used_claims(bank: Bank, tex: str) -> tuple[str, ...]:
             needles.extend(w.lower()[:32] for w in claim.allowed_wording.values() if w)
             needles.extend(m.raw.lower() for m in claim.metrics if len(m.raw) >= 3)
             if any(n and n in plain for n in needles):
-                used.append(claim.id)
-                continue
-            if claim.metrics:
                 used.append(claim.id)
     return tuple(used)
 

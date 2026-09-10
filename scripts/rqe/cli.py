@@ -9,7 +9,14 @@ from pathlib import Path
 
 import yaml
 
-from rqe.judge import arena, arena_markdown, validate_pdf_pages, validate_tex, validation_markdown
+from rqe.judge import (
+    arena,
+    arena_markdown,
+    infer_used_claims,
+    validate_pdf_pages,
+    validate_tex,
+    validation_markdown,
+)
 from rqe.jd import parse_jd_file
 from rqe.load import BANK_PATH, PHILOSOPHY_PATH, ROOT, load_bank
 from rqe.plan import all_strategies, match_job
@@ -156,8 +163,11 @@ def run_job(jd_path: Path, out_dir: Path, *, compile_pdf: bool, strategy_name: s
             return proc.returncode
         pdf_report = validate_pdf_pages(out_dir / "resume.pdf")
         if pdf_report.issues:
-            _write(out_dir / "validation_report.md", validation_markdown(pdf_report))
-            if not pdf_report.ok:
+            combined = ValidationReport(
+                issues=[*validations[winner_name].issues, *pdf_report.issues]
+            )
+            _write(out_dir / "validation_report.md", validation_markdown(combined))
+            if not combined.ok:
                 return 1
     print(f"wrote {out_dir} winner={winner_name} family={job.family}")
     return 0 if validations[winner_name].ok else 1
@@ -165,7 +175,8 @@ def run_job(jd_path: Path, out_dir: Path, *, compile_pdf: bool, strategy_name: s
 
 def cmd_validate(tex_path: Path) -> int:
     bank = load_bank()
-    report = validate_tex(bank, tex_path.read_text())
+    text = tex_path.read_text()
+    report = validate_tex(bank, text, infer_used_claims(bank, text))
     print(validation_markdown(report), end="")
     return 0 if report.ok else 1
 
