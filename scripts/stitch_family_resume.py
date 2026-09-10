@@ -8,6 +8,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MASTER = ROOT / "resumes" / "base" / "JZ_resume.tex"
+BEGIN = "\\begin{document}"
+EDUCATION = "% Education"
+SKILLS = "% Technical Skills"
 FAMILIES = {
     "ai_infra": (
         ROOT / "resumes" / "families" / "ai_infra" / "body_fragment.tex",
@@ -16,16 +19,30 @@ FAMILIES = {
 }
 
 
+def require_sentinel(text: str, needle: str) -> int:
+    idx = text.find(needle)
+    if idx < 0:
+        raise SystemExit(f"master resume is missing required sentinel {needle!r}")
+    return idx
+
+
+def assemble(master: str, fragment: str) -> str:
+    begin = require_sentinel(master, BEGIN)
+    education = require_sentinel(master, EDUCATION)
+    skills = require_sentinel(master, SKILLS)
+    if not begin < education < skills:
+        raise SystemExit(
+            "master resume sentinels are out of order: "
+            f"{BEGIN}@{begin}, {EDUCATION}@{education}, {SKILLS}@{skills}"
+        )
+    return master[:begin] + master[begin:education] + master[education:skills] + fragment
+
+
 def stitch(family: str) -> Path:
     if family not in FAMILIES:
         raise SystemExit(f"family {family!r} has no fragment")
     fragment_path, dest = FAMILIES[family]
-    master = MASTER.read_text()
-    fragment = fragment_path.read_text()
-    preamble = master[: master.index("\\begin{document}")]
-    header = master[master.index("\\begin{document}") : master.index("% Education")]
-    education = master[master.index("% Education") : master.index("% Technical Skills")]
-    dest.write_text(preamble + header + education + fragment)
+    dest.write_text(assemble(MASTER.read_text(), fragment_path.read_text()))
     return dest
 
 

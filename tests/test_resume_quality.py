@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from rqe.cli import _emit_validation  # noqa: E402
 from rqe.judge import validate_tex  # noqa: E402
 from rqe.jd import parse_jd  # noqa: E402
 from rqe.load import (  # noqa: E402
@@ -18,6 +19,7 @@ from rqe.load import (  # noqa: E402
     load_bank,
     load_yaml,
 )
+from rqe.models import ValidationIssue, ValidationReport  # noqa: E402
 from rqe.plan import build_strategy, match_job  # noqa: E402
 from rqe.render import BaseDoc, build_candidate  # noqa: E402
 from resume_quality import main as rqe_main  # noqa: E402
@@ -256,6 +258,18 @@ class TestCliBuild(unittest.TestCase):
         report = ROOT / "docs" / "resume" / "builds" / "ai_infra_v1" / "validation_report.md"
         self.assertTrue(report.is_file())
         self.assertIn("No hard failures", report.read_text())
+
+    def test_emit_validation_writes_joined_reports_once(self) -> None:
+        clean = ValidationReport()
+        pages = ValidationReport()
+        pages.issues.append(ValidationIssue("fail", "page_overflow", "2 pages"))
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "validation_report.md"
+            text = _emit_validation(path, clean, pages)
+            self.assertEqual(path.read_text(), text)
+            self.assertEqual(text.count("# Validation report"), 2)
+            self.assertIn("No hard failures", text)
+            self.assertIn("page_overflow", text)
 
 
 if __name__ == "__main__":

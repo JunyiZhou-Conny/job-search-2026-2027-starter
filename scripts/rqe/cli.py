@@ -43,6 +43,12 @@ def _write(path: Path, text: str) -> None:
     path.write_text(text if text.endswith("\n") else text + "\n")
 
 
+def _emit_validation(path: Path, *reports: ValidationReport) -> str:
+    text = "".join(validation_markdown(report) for report in reports)
+    _write(path, text)
+    return text
+
+
 def _dump_yaml(path: Path, data: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True))
@@ -195,10 +201,10 @@ def cmd_build(family: str, *, compile_pdf: bool) -> int:
     bank = load_bank()
     tex_report = validate_tex(bank, tex_path.read_text())
     artifact = FAMILY_ARTIFACT[family]
-    fact_md = validation_markdown(tex_report)
-    _write(artifact / "validation_report.md", fact_md)
-    print(fact_md, end="")
+    reports = [tex_report]
+    print(validation_markdown(tex_report), end="")
 
+    compile_rc = 0
     if compile_pdf:
         script = ROOT / "scripts" / "compile_resume.sh"
         proc = subprocess.run(
@@ -211,14 +217,16 @@ def cmd_build(family: str, *, compile_pdf: bool) -> int:
         if proc.returncode != 0:
             print(proc.stdout)
             print(proc.stderr, file=sys.stderr)
-            return proc.returncode
-        pdf_report = validate_pdf_pages(tex_path.with_suffix(".pdf"), limit=1)
-        # Compile appends. Replacing the file would drop factual issues.
-        pdf_md = validation_markdown(pdf_report)
-        _write(artifact / "validation_report.md", fact_md.rstrip() + "\n" + pdf_md)
-        print(pdf_md, end="")
-        return 0 if tex_report.ok and pdf_report.ok else 1
-    return 0 if tex_report.ok else 1
+            compile_rc = proc.returncode
+        else:
+            pdf_report = validate_pdf_pages(tex_path.with_suffix(".pdf"), limit=1)
+            reports.append(pdf_report)
+            print(validation_markdown(pdf_report), end="")
+
+    _emit_validation(artifact / "validation_report.md", *reports)
+    if compile_rc:
+        return compile_rc
+    return 0 if all(report.ok for report in reports) else 1
 
 
 def cmd_benchmark(out_root: Path, *, compile_pdf: bool) -> int:
