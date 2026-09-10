@@ -18,6 +18,7 @@ greenhouse:
   Axon: axon  # verified 2026-09-05; AI Scientist I Seattle 7746492003
   CoreWeave: coreweave  # verified 2026-09-06; Software Engineer, Inference AI/ML 4609928006
   Datadog: datadog  # verified 2026-09-08; generic Software Engineering Intern is location-split (Paris 8114186 / Madrid 8114161 / US Summer 8052118 / US Winter 8052095) — leave title-only KEEP unresolved
+  "DV Trading LLC": dvtrading  # verified 2026-09-10; AI Engineer Intern Summer 2027 Chicago 4732429005
   Formlabs: formlabs  # verified 2026-09-08; AI Software Intern (Winter/Spring 2027) 8174874 Somerville
   Gallup: gallup  # verified 2026-09-08; Summer 2027 intern titles unique (AI/ML 4395921009 / DS 4395491009 / SWE 4395897009 SF)
   Gemini: gemini
@@ -62,7 +63,8 @@ ashby:
   WHOOP: whoop  # verified 2026-09-06; Software Engineer I (Backend) Boston OnSite 0623a9e9
 
 # Lever (api.lever.co/v0/postings/{slug})
-lever: {}
+lever:
+  "Shield AI": shieldai  # verified 2026-09-10; Summer 2027 Software Engineer Intern 8c850c75 (San Diego + DC/Dallas/Seattle)
 
 # Workday CXS — verified hosts only.
 # apply URL = https://{host}.myworkdayjobs.com/{site}{externalPath}
