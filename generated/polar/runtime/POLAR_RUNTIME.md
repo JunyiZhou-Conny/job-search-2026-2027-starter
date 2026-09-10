@@ -323,10 +323,10 @@ Cloud G2 remains closed. Polar Local does not inherit those ATS gates.
 
 polar_local uses capability and policy checks, not ATS family.
 Gate model: capability_policy.
-Shared new-execution pool per apply-ready-jobs run: 3.
+Per-run worker budget on apply-ready-jobs: 3 new jobs.
 READY_PRIORITY reservation: 1 slot taken from that pool, not added to it.
 If no READY_PRIORITY exists, READY_REGULAR may use the whole pool.
-Regular submissions per local calendar day (America/New_York): 10.
+Another apply-ready-jobs run has its own budget. There is no shared daily regular submission pool.
 Prioritized auto-submit: True.
 
 A regular job may be submitted once only when every item holds:
@@ -576,7 +576,8 @@ apply_url_confidence must stay in its named column even when the value is none o
 After an important queue write, read back job_key, status, last_stage, and claim_run_id.
 If job_key, status, or last_stage do not match, repair those fields.
 If claim_run_id is another run_id, do not overwrite it.
-If the queue header has no claim_run_id, append that header at the far right.
+If the queue header has no claim_run_id, do not append it from apply or discover.
+polar-sheet-migration is the only schema mutator for that column.
 Control writes locate the row by key. Never pick a visually empty row.
 If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.
 After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
@@ -589,7 +590,9 @@ polar_browser is not a production mutex. Do not acquire it.
 Do not write run_log result SKIPPED_LOCKED because that row looks held.
 Independent Polar workflows may use their own browser surfaces at the same time.
 Apply ownership is queue.claim_run_id on one job_key.
-The same employer requisition has one logical owner.
+Each apply-ready-jobs run claims one job at a time until its per-run budget is used.
+The same employer requisition has one canonical owner via pick_canonical_requisition_row.
+Two live sibling claims do not both back off.
 Abandoned IN_PROGRESS claims older than 180 minutes may be recovered.
 Empty claim_run_id on IN_PROGRESS is abandoned.
 On start, upsert a run_log row for this run_id with result PARTIAL so a crash still leaves a row.
@@ -614,6 +617,7 @@ Do not put secrets in telemetry.
 After Original Job Post or the employer application is resolved, capture employer_requisition_id,
 canonical employer apply_url, and ats_job_id.
 If multiple Jobright rows point at the same employer requisition, keep one canonical row.
+pick_canonical_requisition_row ranks SUBMITTED, SUBMISSION_UNKNOWN, live IN_PROGRESS, earlier discovered_at, then job_key.
 Mark siblings SKIP with the canonical job_key.
 Do not submit the same employer requisition twice.
 Jobright ids and company+role+location remain useful. They are not enough once the employer identity is known.

@@ -183,10 +183,10 @@ Polar Local uses capability and policy checks. A regular job may be submitted on
 
 Initial canary caps live in `knowledge/polar_operator.yaml` and `config/submit_gates.yaml` `polar_local`:
 
-- 3 new jobs per `apply-ready-jobs` run (shared pool; priority reservation is taken from it)
-- 10 regular submissions per local calendar day in America/New_York
+- 3 new jobs per `apply-ready-jobs` run (one worker budget; priority reservation is taken from it)
+- No shared daily regular submission pool. Overlapping apply runs each get their own budget.
 
-Junyi can raise those caps after production evidence is good.
+Junyi can raise the per-run budget after production evidence is good.
 
 ## Workflows
 

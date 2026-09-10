@@ -12,5 +12,4 @@ polar_local:
   writing_observation_mode: true
   prioritized_auto_submit: true
   regular_submit_cap_per_run: 3
-  regular_submit_cap_per_local_day: 10
   timezone: America/New_York

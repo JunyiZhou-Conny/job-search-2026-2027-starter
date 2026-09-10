@@ -107,7 +107,7 @@ class TestApplyRunCaps(unittest.TestCase):
         caps = apply_run_caps(ROOT)
         self.assertEqual(caps.max_new_jobs, 3)
         self.assertEqual(caps.reserved_priority_slots, 1)
-        self.assertEqual(caps.max_regular_submissions_per_local_day, 10)
+        self.assertFalse(hasattr(caps, "max_regular_submissions_per_local_day"))
         self.assertTrue(caps.prioritized_auto_submit)
         batch = select_apply_batch(
             [
@@ -127,12 +127,10 @@ class TestApplyRunCaps(unittest.TestCase):
             "max_jobs_per_run": 3,
             "max_regular_jobs_per_run": 3,
             "reserved_priority_slots_per_run": 1,
-            "max_regular_submissions_per_local_day": 10,
             "prioritized_auto_submit": True,
         }
         polar_local = {
             "regular_submit_cap_per_run": 3,
-            "regular_submit_cap_per_local_day": 10,
             "prioritized_auto_submit": True,
         }
         with self.assertRaises(ValueError):

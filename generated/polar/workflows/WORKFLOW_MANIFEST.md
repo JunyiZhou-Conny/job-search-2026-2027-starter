@@ -2,7 +2,7 @@
 
 COMPILED ARTIFACT. Not canonical.
 
-policy_revision: 2026-09-10.work-level-concurrency
+policy_revision: 2026-09-10.worker-pool
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 | Workflow | Status | Lock | Raw URL |
@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the trust-delegation bootstrap from docs/automation/POLAR_WORKFLOWS.md.
 They load the two owner-designated raw main files on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-10.work-level-concurrency+f242e69fb125`
-- `apply-ready-jobs` workflow_version `2026-09-10.work-level-concurrency+daa835fdbae0`
-- `daily-job-summary` workflow_version `2026-09-10.work-level-concurrency+74acad475253`
-- `production-learning-daily` workflow_version `2026-09-10.work-level-concurrency+370305f5fe16`
-- `polar-scheduler-heartbeat` workflow_version `2026-09-10.work-level-concurrency+b53185a9688a`
-- `polar-github-write-canary` workflow_version `2026-09-10.work-level-concurrency+8f2e742cf94e`
-- `chatgpt-production-review` workflow_version `2026-09-10.work-level-concurrency+66960ba532f6`
-- `cursor-production-maintenance` workflow_version `2026-09-10.work-level-concurrency+465201631783`
-- `polar-sheet-migration` workflow_version `2026-09-10.work-level-concurrency+54819c369fa5`
+- `discover-jobs-hourly` workflow_version `2026-09-10.worker-pool+b480b4cc8d73`
+- `apply-ready-jobs` workflow_version `2026-09-10.worker-pool+49e2117cb550`
+- `daily-job-summary` workflow_version `2026-09-10.worker-pool+74acad475253`
+- `production-learning-daily` workflow_version `2026-09-10.worker-pool+370305f5fe16`
+- `polar-scheduler-heartbeat` workflow_version `2026-09-10.worker-pool+b53185a9688a`
+- `polar-github-write-canary` workflow_version `2026-09-10.worker-pool+8f2e742cf94e`
+- `chatgpt-production-review` workflow_version `2026-09-10.worker-pool+66960ba532f6`
+- `cursor-production-maintenance` workflow_version `2026-09-10.worker-pool+465201631783`
+- `polar-sheet-migration` workflow_version `2026-09-10.worker-pool+400cbb985cc0`

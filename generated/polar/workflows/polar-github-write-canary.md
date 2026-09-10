@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-10.work-level-concurrency+8f2e742cf94e
+workflow_version: 2026-09-10.worker-pool+8f2e742cf94e
 status: manual_canary
 enabled: false
 needs_browser_lock: false

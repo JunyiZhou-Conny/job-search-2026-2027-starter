@@ -80,6 +80,8 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertEqual(priority.get("max_new_jobs"), "3")
         self.assertEqual(priority.get("shared_pool"), "true")
         self.assertEqual(priority.get("reservation_is_from_pool"), "true")
+        self.assertEqual(priority.get("worker_budget"), "per_run")
+        self.assertEqual(priority.get("daily_regular_cap"), "none")
         self.assertEqual(priority.get("prioritized_auto_submit"), "true")
         self.assertEqual(
             priority.get("writing_log_required_before_priority_submit"),

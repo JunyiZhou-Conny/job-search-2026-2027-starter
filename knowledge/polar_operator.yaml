@@ -1,17 +1,16 @@
 last_updated: "2026-09-10"
-policy_revision: "2026-09-10.work-level-concurrency"
-source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Ownership is per job and requisition, not a global browser lease."
+policy_revision: "2026-09-10.worker-pool"
+source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Each apply-ready-jobs run is one worker with its own per-run new-job budget. There is no shared daily regular submission pool. Ownership is per job and requisition, not a global browser lease."
 timezone: "America/New_York"
 
 writing_observation_mode: true
 
 canary:
-  # Shared new-execution pool. These two numbers must stay equal.
+  # Per-run worker budget. These two numbers must stay equal.
   # READY_PRIORITY reservation is taken from this pool, not added to it.
   max_jobs_per_run: 3
   max_regular_jobs_per_run: 3
   reserved_priority_slots_per_run: 1
-  max_regular_submissions_per_local_day: 10
   prioritized_auto_submit: true
 
 lease:

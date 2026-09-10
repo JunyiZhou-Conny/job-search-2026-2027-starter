@@ -13,15 +13,17 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from polar_policy import (  # noqa: E402
     QUEUE_COLUMNS,
     attempt_claim_job,
+    claim_header_state,
     claim_is_abandoned,
     confirm_claim_readback,
     discover_may_overwrite_execution_fields,
     ensure_claim_column,
-    regular_submit_remaining,
+    plan_claim_header_migration,
     requisition_identity,
     requisition_submit_blocked,
     restore_queue_after_copilot_miss,
     select_apply_batch,
+    select_next_apply_job,
     submit_claim_still_held,
 )
 from polar_workflows import render_workflow  # noqa: E402
@@ -47,6 +49,7 @@ def _ready(job_key: str, status: str = "READY_REGULAR", **extra):
         "claim_run_id": "",
         "weight": "regular",
         "updated_at": FRESH,
+        "discovered_at": FRESH,
     }
     row.update(extra)
     return row
@@ -139,7 +142,7 @@ class TestWorkClaim(unittest.TestCase):
         logs = [{"run_id": "run-dead", "result": "FAILED"}]
         self.assertTrue(claim_is_abandoned(row, now=NOW, run_logs=logs))
 
-    def test_same_requisition_cannot_be_submitted_twice(self):
+    def test_submitted_sibling_still_blocks_submit(self):
         rows = [
             {
                 "job_key": "jr-1",
@@ -160,22 +163,79 @@ class TestWorkClaim(unittest.TestCase):
             "jr-2",
         )
 
-    def test_live_sibling_in_progress_blocks_submit(self):
+    def test_same_requisition_has_one_canonical_survivor(self):
         rows = [
-            _ready("jr-1", employer_requisition_id="EPIC-1"),
-            {
-                "job_key": "jr-2",
-                "status": "IN_PROGRESS",
-                "claim_run_id": "run-a",
-                "employer_requisition_id": "EPIC-1",
-                "updated_at": FRESH,
-            },
+            _ready(
+                "jr-early",
+                status="IN_PROGRESS",
+                claim_run_id="run-a",
+                employer_requisition_id="EPIC-1",
+                discovered_at="2026-09-08T10:00:00",
+                updated_at=FRESH,
+            ),
+            _ready(
+                "jr-late",
+                status="IN_PROGRESS",
+                claim_run_id="run-b",
+                employer_requisition_id="EPIC-1",
+                discovered_at="2026-09-08T11:00:00",
+                updated_at=FRESH,
+            ),
         ]
         identity = requisition_identity(employer_requisition_id="EPIC-1")
+        self.assertIsNone(requisition_submit_blocked(rows, identity, "jr-early", now=NOW))
         self.assertEqual(
-            requisition_submit_blocked(rows, identity, "jr-1", now=NOW),
-            "jr-2",
+            requisition_submit_blocked(rows, identity, "jr-late", now=NOW),
+            "jr-early",
         )
+
+    def test_same_requisition_job_key_breaks_discovered_at_ties(self):
+        rows = [
+            _ready(
+                "jr-b",
+                status="IN_PROGRESS",
+                claim_run_id="run-b",
+                employer_requisition_id="EPIC-1",
+                discovered_at="2026-09-08T10:00:00",
+                updated_at=FRESH,
+            ),
+            _ready(
+                "jr-a",
+                status="IN_PROGRESS",
+                claim_run_id="run-a",
+                employer_requisition_id="EPIC-1",
+                discovered_at="2026-09-08T10:00:00",
+                updated_at=FRESH,
+            ),
+        ]
+        identity = requisition_identity(employer_requisition_id="EPIC-1")
+        self.assertIsNone(requisition_submit_blocked(rows, identity, "jr-a", now=NOW))
+        self.assertEqual(
+            requisition_submit_blocked(rows, identity, "jr-b", now=NOW),
+            "jr-a",
+        )
+
+    def test_abandoned_sibling_does_not_block_canonical_submit(self):
+        rows = [
+            _ready(
+                "jr-live",
+                status="IN_PROGRESS",
+                claim_run_id="run-a",
+                employer_requisition_id="EPIC-1",
+                discovered_at="2026-09-08T12:00:00",
+                updated_at=FRESH,
+            ),
+            _ready(
+                "jr-dead",
+                status="IN_PROGRESS",
+                claim_run_id="run-dead",
+                employer_requisition_id="EPIC-1",
+                discovered_at="2026-09-08T10:00:00",
+                updated_at=STALE,
+            ),
+        ]
+        identity = requisition_identity(employer_requisition_id="EPIC-1")
+        self.assertIsNone(requisition_submit_blocked(rows, identity, "jr-live", now=NOW))
 
     def test_select_skips_live_foreign_claims_and_keeps_caps(self):
         rows = [
@@ -201,35 +261,119 @@ class TestWorkClaim(unittest.TestCase):
         self.assertEqual(batch.priority, ("p1",))
         self.assertEqual(batch.regular, ("r1", "r2"))
 
-    def test_daily_cap_counts_submitted_and_clicked_regulars(self):
-        rows = [
-            {
-                "job_key": "s1",
-                "status": "SUBMITTED",
-                "weight": "regular",
-                "submitted_at": "2026-09-10T09:00:00",
-            },
-            {
-                "job_key": "s2",
-                "status": "IN_PROGRESS",
-                "weight": "regular",
-                "last_stage": "submit_clicked",
-                "submitted_at": "2026-09-10T10:00:00",
-            },
-            {
-                "job_key": "p1",
-                "status": "SUBMITTED",
-                "weight": "prioritized",
-                "submitted_at": "2026-09-10T11:00:00",
-            },
+    def test_two_workers_each_get_a_full_per_run_budget(self):
+        rows = [_ready(f"r{i}") for i in range(1, 8)]
+        first = select_apply_batch(
+            rows,
+            max_new_jobs=3,
+            reserved_priority_slots=1,
+            run_id="run-a",
+            now=NOW,
+        )
+        claimed = set(first.regular)
+        leftover = [
+            row
+            if row["job_key"] not in claimed
+            else _ready(
+                row["job_key"],
+                status="IN_PROGRESS",
+                claim_run_id="run-a",
+                updated_at=FRESH,
+            )
+            for row in rows
         ]
-        self.assertEqual(regular_submit_remaining(rows, "2026-09-10", cap=10), 8)
+        second = select_apply_batch(
+            leftover,
+            max_new_jobs=3,
+            reserved_priority_slots=1,
+            run_id="run-b",
+            now=NOW,
+        )
+        self.assertEqual(first.regular, ("r1", "r2", "r3"))
+        self.assertEqual(second.regular, ("r4", "r5", "r6"))
+        self.assertFalse(set(first.regular) & set(second.regular))
 
-    def test_missing_claim_header_is_appended_not_inserted(self):
+    def test_lost_claim_does_not_consume_the_run_budget(self):
+        rows = [_ready("taken"), _ready("open-1"), _ready("open-2"), _ready("open-3")]
+        nxt = select_next_apply_job(
+            rows,
+            max_new_jobs=3,
+            reserved_priority_slots=1,
+            exclude_keys=("taken",),
+            new_jobs_already_claimed=0,
+            run_id="run-b",
+            now=NOW,
+        )
+        self.assertEqual(nxt, "open-1")
+        later = select_apply_batch(
+            rows,
+            max_new_jobs=3,
+            reserved_priority_slots=1,
+            exclude_keys=("taken", "open-1"),
+            new_jobs_already_claimed=1,
+            run_id="run-b",
+            now=NOW,
+        )
+        self.assertEqual(later.regular, ("open-2", "open-3"))
+
+    def test_after_one_priority_claim_later_selects_are_regular(self):
+        rows = [
+            _ready("p1", "READY_PRIORITY"),
+            _ready("p2", "READY_PRIORITY"),
+            _ready("r1"),
+            _ready("r2"),
+        ]
+        first = select_next_apply_job(
+            rows,
+            max_new_jobs=3,
+            reserved_priority_slots=1,
+            run_id="run-a",
+            now=NOW,
+        )
+        self.assertEqual(first, "p1")
+        nxt = select_next_apply_job(
+            rows,
+            max_new_jobs=3,
+            reserved_priority_slots=1,
+            exclude_keys=("p1",),
+            new_jobs_already_claimed=1,
+            priority_already_claimed=1,
+            run_id="run-a",
+            now=NOW,
+        )
+        self.assertEqual(nxt, "r1")
+
+    def test_shared_daily_regular_cap_is_absent(self):
+        import yaml
+
+        operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        gates = yaml.safe_load(
+            (ROOT / "config" / "submit_gates.yaml").read_text(encoding="utf-8")
+        )
+        self.assertNotIn("max_regular_submissions_per_local_day", operator["canary"])
+        self.assertNotIn("regular_submit_cap_per_local_day", gates["polar_local"])
+
+    def test_claim_header_migration_is_idempotent(self):
         headers = [name for name in QUEUE_COLUMNS if name != "claim_run_id"]
-        self.assertNotIn("claim_run_id", headers)
-        self.assertEqual(ensure_claim_column(headers)[-1], "claim_run_id")
+        self.assertEqual(claim_header_state(headers), "missing")
+        action, once = plan_claim_header_migration(headers)
+        self.assertEqual(action, "append")
+        self.assertEqual(once[-1], "claim_run_id")
+        self.assertEqual(once.count("claim_run_id"), 1)
+        action, twice = plan_claim_header_migration(once)
+        self.assertEqual(action, "unchanged")
+        self.assertEqual(twice, once)
         self.assertEqual(ensure_claim_column(QUEUE_COLUMNS), tuple(QUEUE_COLUMNS))
+
+    def test_duplicate_claim_header_is_not_appended(self):
+        headers = list(QUEUE_COLUMNS) + ["claim_run_id"]
+        self.assertEqual(claim_header_state(headers), "duplicate")
+        action, same = plan_claim_header_migration(headers)
+        self.assertEqual(action, "duplicate")
+        self.assertEqual(same, tuple(headers))
+        self.assertEqual(ensure_claim_column(headers), tuple(headers))
 
     def test_discover_does_not_clobber_live_execution_rows(self):
         for status in (
@@ -276,6 +420,7 @@ class TestCompiledConcurrencyContract(unittest.TestCase):
         discover = render_workflow("discover-jobs-hourly", self.operator)
         apply = render_workflow("apply-ready-jobs", self.operator)
         heartbeat = render_workflow("polar-scheduler-heartbeat", self.operator)
+        migration = render_workflow("polar-sheet-migration", self.operator)
         for text, name in (
             (discover, "discover-jobs-hourly"),
             (apply, "apply-ready-jobs"),
@@ -288,14 +433,22 @@ class TestCompiledConcurrencyContract(unittest.TestCase):
         self.assertIn("already_claimed", apply)
         self.assertIn("recovered_claim", apply)
         self.assertIn("requisition_suppressed", apply)
-        self.assertIn("regular_submit_remaining", apply)
+        self.assertIn("select_next_apply_job", apply)
+        self.assertIn("daily_regular_cap: none", apply)
+        self.assertNotIn("regular_submit_remaining", apply)
+        self.assertNotIn("max_regular_submissions_per_local_day", apply)
         self.assertIn("submit_claim_still_held", apply)
-        self.assertIn("append that header at the far right", apply)
+        self.assertIn("do not append it from this workflow", apply)
         self.assertIn("discover_may_overwrite_execution_fields", discover)
+        self.assertIn("do not append it", discover)
         self.assertIn("Do not write SKIPPED_LOCKED", apply)
         self.assertIn("claim_run_id", apply)
         self.assertNotIn("Release the polar_browser lease", apply)
         self.assertIn("does not treat polar_browser as a mutex", heartbeat)
+        self.assertIn("plan_claim_header_migration", migration)
+        self.assertIn("only schema mutator for claim_run_id", migration)
+        self.assertIn("pick_canonical_requisition_row", apply)
+        self.assertIn("Do not have both workers back off", apply)
 
 
 if __name__ == "__main__":

@@ -168,6 +168,10 @@ REQUIRED_QUEUE_READBACK = ("job_key", "status", "last_stage", "claim_run_id")
 CLAIM_RUN_ID = "claim_run_id"
 CLAIM_REPEAT_ALREADY = "work_already_claimed"
 CLAIM_REPEAT_RECOVERED = "work_claim_recovered"
+CLAIM_REPEAT_MISSING_COLUMN = "missing_claim_column"
+CLAIM_HEADER_READY = "ready"
+CLAIM_HEADER_MISSING = "missing"
+CLAIM_HEADER_DUPLICATE = "duplicate"
 REQUISITION_REPEAT = "requisition_suppressed"
 CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
 CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
@@ -432,11 +436,31 @@ def named_row(headers: Sequence[str], fields: Mapping[str, Any]) -> List[str]:
     return row
 
 
+def claim_header_state(headers: Sequence[str]) -> str:
+    count = sum(1 for header in headers if str(header or "").strip() == CLAIM_RUN_ID)
+    if count == 0:
+        return CLAIM_HEADER_MISSING
+    if count == 1:
+        return CLAIM_HEADER_READY
+    return CLAIM_HEADER_DUPLICATE
+
+
 def ensure_claim_column(headers: Sequence[str]) -> Tuple[str, ...]:
-    names = [str(h or "").strip() for h in headers]
-    if CLAIM_RUN_ID in header_map(names):
-        return tuple(str(h) for h in headers)
-    return tuple(str(h) for h in headers) + (CLAIM_RUN_ID,)
+    if claim_header_state(headers) != CLAIM_HEADER_MISSING:
+        return tuple(str(header) for header in headers)
+    return tuple(str(header) for header in headers) + (CLAIM_RUN_ID,)
+
+
+def plan_claim_header_migration(
+    headers: Sequence[str],
+) -> Tuple[str, Tuple[str, ...]]:
+    state = claim_header_state(headers)
+    current = tuple(str(header) for header in headers)
+    if state == CLAIM_HEADER_READY:
+        return "unchanged", current
+    if state == CLAIM_HEADER_MISSING:
+        return "append", ensure_claim_column(headers)
+    return "duplicate", current
 
 
 DISCOVER_PROTECTED_STATUSES = frozenset(
@@ -674,9 +698,10 @@ def requisition_submit_blocked(
 ) -> Optional[str]:
     if identity is None:
         return None
+    peers: List[Mapping[str, Any]] = []
     for row in rows:
         other = str(row.get("job_key") or "")
-        if not other or other == job_key:
+        if not other:
             continue
         other_id = requisition_identity(
             employer_requisition_id=str(row.get("employer_requisition_id") or ""),
@@ -686,56 +711,21 @@ def requisition_submit_blocked(
         if other_id != identity:
             continue
         status = str(row.get("status") or "")
-        if status in {"SUBMITTED", "SUBMISSION_UNKNOWN"}:
-            return other
-        if status == "IN_PROGRESS" and not claim_is_abandoned(
+        if status == "SKIP":
+            continue
+        if status == "IN_PROGRESS" and claim_is_abandoned(
             row,
             now=now,
             ttl_minutes=ttl_minutes,
             run_logs=run_logs,
             root=root,
         ):
-            return other
+            continue
+        peers.append(row)
+    canonical = pick_canonical_requisition_row(peers, identity)
+    if canonical and canonical != job_key:
+        return canonical
     return None
-
-
-def _local_day(value: str) -> str:
-    stamped = parse_timestamp(value)
-    if stamped is not None:
-        return stamped.date().isoformat()
-    text = (value or "").strip()
-    return text[:10] if len(text) >= 10 else ""
-
-
-def regular_submissions_on_local_day(
-    rows: Sequence[Mapping[str, Any]],
-    day: str,
-) -> int:
-    count = 0
-    for row in rows:
-        if normalize_text(str(row.get("weight") or "regular")) == "prioritized":
-            continue
-        status = str(row.get("status") or "")
-        stage = str(row.get("last_stage") or "")
-        submitted_day = _local_day(str(row.get("submitted_at") or ""))
-        if submitted_day != day:
-            continue
-        if status in {"SUBMITTED", "SUBMISSION_UNKNOWN"}:
-            count += 1
-        elif status == "IN_PROGRESS" and stage == "submit_clicked":
-            count += 1
-    return count
-
-
-def regular_submit_remaining(
-    rows: Sequence[Mapping[str, Any]],
-    day: str,
-    *,
-    cap: Optional[int] = None,
-    root: Optional[Path] = None,
-) -> int:
-    limit = apply_run_caps(root).max_regular_submissions_per_local_day if cap is None else cap
-    return max(0, limit - regular_submissions_on_local_day(rows, day))
 
 
 @dataclass(frozen=True)
@@ -1285,7 +1275,6 @@ class ApplyBatch:
 class ApplyRunCaps:
     max_new_jobs: int
     reserved_priority_slots: int
-    max_regular_submissions_per_local_day: int
     prioritized_auto_submit: bool
 
 
@@ -1323,20 +1312,7 @@ def resolve_apply_run_caps(
             "apply run cap mismatch: canary.max_jobs_per_run, "
             "canary.max_regular_jobs_per_run, and "
             "polar_local.regular_submit_cap_per_run must be the same "
-            "shared new-execution pool, not additive numbers"
-        )
-    day_canary = _positive_int(
-        canary.get("max_regular_submissions_per_local_day"),
-        "canary.max_regular_submissions_per_local_day",
-    )
-    day_gate = _positive_int(
-        polar_local.get("regular_submit_cap_per_local_day"),
-        "polar_local.regular_submit_cap_per_local_day",
-    )
-    if day_canary != day_gate:
-        raise ValueError(
-            "regular day cap mismatch between polar_operator canary "
-            "and submit_gates polar_local"
+            "per-run worker budget, not additive numbers"
         )
     reserved = canary.get("reserved_priority_slots_per_run")
     try:
@@ -1359,7 +1335,6 @@ def resolve_apply_run_caps(
     return ApplyRunCaps(
         max_new_jobs=max_jobs,
         reserved_priority_slots=reserved_slots,
-        max_regular_submissions_per_local_day=day_canary,
         prioritized_auto_submit=bool(auto),
     )
 
@@ -1459,6 +1434,9 @@ def select_apply_batch(
     now: Optional[datetime] = None,
     ttl_minutes: Optional[int] = None,
     run_logs: Sequence[Mapping[str, Any]] = (),
+    exclude_keys: Sequence[str] = (),
+    new_jobs_already_claimed: int = 0,
+    priority_already_claimed: int = 0,
 ) -> ApplyBatch:
     if max_new_jobs is None or reserved_priority_slots is None:
         caps = apply_run_caps(root)
@@ -1466,9 +1444,15 @@ def select_apply_batch(
             max_new_jobs = caps.max_new_jobs
         if reserved_priority_slots is None:
             reserved_priority_slots = caps.reserved_priority_slots
-    unknown = [r for r in rows if r.get("status") == "SUBMISSION_UNKNOWN"]
+    skipped = {normalize_text(key) for key in exclude_keys if str(key or "").strip()}
+    visible = [
+        row
+        for row in rows
+        if normalize_text(str(row.get("job_key") or "")) not in skipped
+    ]
+    unknown = [r for r in visible if r.get("status") == "SUBMISSION_UNKNOWN"]
     recoverable: List[Mapping[str, str]] = []
-    for row in rows:
+    for row in visible:
         if row.get("status") != "IN_PROGRESS":
             continue
         owner = str(row.get(CLAIM_RUN_ID) or "").strip()
@@ -1484,13 +1468,14 @@ def select_apply_batch(
         ):
             recoverable.append(row)
     in_progress = sorted(recoverable, key=_sort_key)
-    priority = [r for r in rows if r.get("status") == "READY_PRIORITY"]
-    regular = [r for r in rows if r.get("status") == "READY_REGULAR"]
+    priority = [r for r in visible if r.get("status") == "READY_PRIORITY"]
+    regular = [r for r in visible if r.get("status") == "READY_REGULAR"]
     recovery = [str(r.get("job_key") or "") for r in unknown + in_progress]
     chosen_priority: List[str] = []
-    remaining = max_new_jobs
-    if reserved_priority_slots > 0 and priority and remaining > 0:
-        take = min(reserved_priority_slots, remaining, len(priority))
+    remaining = max(0, max_new_jobs - max(0, new_jobs_already_claimed))
+    reserved_left = max(0, reserved_priority_slots - max(0, priority_already_claimed))
+    if reserved_left > 0 and priority and remaining > 0:
+        take = min(reserved_left, remaining, len(priority))
         chosen_priority = [str(r.get("job_key") or "") for r in priority[:take]]
         remaining -= take
     chosen_regular = [str(r.get("job_key") or "") for r in regular[:remaining]]
@@ -1499,6 +1484,14 @@ def select_apply_batch(
         priority=tuple(k for k in chosen_priority if k),
         regular=tuple(k for k in chosen_regular if k),
     )
+
+
+def select_next_apply_job(
+    rows: Sequence[Mapping[str, str]],
+    **kwargs: Any,
+) -> Optional[str]:
+    keys = select_apply_batch(rows, **kwargs).job_keys
+    return keys[0] if keys else None
 
 
 def requisition_identity(

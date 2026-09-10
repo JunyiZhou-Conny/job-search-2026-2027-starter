@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-10.work-level-concurrency+f242e69fb125
+workflow_version: 2026-09-10.worker-pool+b480b4cc8d73
 status: production
 enabled: true
 needs_browser_lock: false
@@ -152,7 +152,8 @@ This run must finish quickly. Checkpoint the Sheet after every new or updated jo
 3. Inspect Matches at https://jobright.ai/jobs/recommend.
 4. Inspect the intern and newgrad minisite boards listed in POLAR_RUNTIME section B.
 5. For each unseen card, write or update one queue row using named header mapping.
-   If the live header has no claim_run_id, append that header at the far right first.
+   If the live header has no claim_run_id, do not append it. Note missing_claim_column.
+   Continue discovery writes on the existing headers. polar-sheet-migration is the schema mutator.
    If the existing row is IN_PROGRESS, SUBMITTED, SUBMISSION_UNKNOWN, REVIEW_READY, or BLOCKED,
    do not overwrite status, claim_run_id, last_stage, attempt_count, submitted_at, confirmation,
    blocker, or writing_summary. polar_policy.discover_may_overwrite_execution_fields is the check.

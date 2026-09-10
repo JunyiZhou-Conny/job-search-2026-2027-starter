@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.work-level-concurrency+daa835fdbae0
+workflow_version: 2026-09-10.worker-pool+49e2117cb550
 status: production
 enabled: true
 needs_browser_lock: false
@@ -82,14 +82,19 @@ unit: one job_key
 same_requisition: one logical owner
 ttl_minutes: 180
 
-Before substantial apply work, claim the queue row.
+claim_one_at_a_time: true
+schema_mutator: polar-sheet-migration
+
+This run is one worker. Claim one job close to execution. Do not pre-claim a list.
+If the live queue header has no claim_run_id, do not append it from this workflow.
+Note missing_claim_column. Incident repeat_key missing_claim_column.
+Write OWNER_ACTION_REQUIRED. Exit. Run polar-sheet-migration once after merge.
+If claim_run_id appears more than once, abort. Do not guess which column.
 Remember the current READY_REGULAR or READY_PRIORITY status and attempt_count.
 Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, and updated_at now.
 Read back job_key, status, last_stage, and claim_run_id.
-If the queue header has no claim_run_id, append that header at the far right first.
-Do not insert a column in the middle of existing queue data.
 If claim_run_id is not this run_id, the write lost. Note already_claimed. Incident repeat_key work_already_claimed.
-Do not write SKIPPED_LOCKED. Continue the batch with the next selected job.
+Do not write SKIPPED_LOCKED. Do not consume the per-run budget. Select the next job.
 If you resume an abandoned IN_PROGRESS row, restamp claim_run_id and note recovered_claim. Incident repeat_key work_claim_recovered. Do not bump attempt_count again.
 Do not recover a live IN_PROGRESS row owned by another run_id.
 Empty claim_run_id on IN_PROGRESS is abandoned.
@@ -177,18 +182,32 @@ max_new_jobs: 3
 reserved_priority_slots: 1
 shared_pool: true
 reservation_is_from_pool: true
+worker_budget: per_run
+daily_regular_cap: none
 prioritized_auto_submit: true
 writing_log_required_before_priority_submit: true
 priority_submit_gate: polar_policy.priority_submit_permitted
-max_regular_submissions_per_local_day: 10
 
+This invocation is one worker. Its new-work budget is max_new_jobs.
+Another apply-ready-jobs run has its own budget. Do not subtract that worker's jobs from this one.
+There is no shared daily regular submission pool.
+The hourly schedule plus this per-run budget is the limiter.
 Recovery first. Inspect every SUBMISSION_UNKNOWN row. Verify. Never blindly resubmit.
 Then resume abandoned or self-owned IN_PROGRESS rows from last_stage.
 Do not steal a live claim owned by another run_id.
+Select the next job with polar_policy.select_next_apply_job.
+Do not pre-claim the selected list.
+Claim one job, process it, then select again.
+Exclude keys this run already claimed, recovered, or skipped.
+already_claimed and a lost readback do not consume the new-job budget.
+Recovery of SUBMISSION_UNKNOWN and abandoned or self-owned IN_PROGRESS does not consume the new-job budget.
+Stop new claims when this run has claimed max_new_jobs new jobs, or the next select is empty.
+Another live worker is not a stop condition.
 If READY_PRIORITY exists, reserve 1 new-execution slot for one priority job.
 Use remaining new-execution slots for READY_REGULAR.
 If no READY_PRIORITY exists, regular may use every configured new-execution slot.
 Do not let a READY_REGULAR backlog starve READY_PRIORITY.
+After this run claims one READY_PRIORITY, later selects in the same run take regulars.
 
 ## Simplify contract
 
@@ -270,9 +289,14 @@ employer_requisition_id, canonical employer apply_url, and ats_job_id.
 Write those named fields. Keep apply_url_confidence.
 Compare against the Sheet and section K.
 If another row already points at the same employer requisition, keep one canonical row.
-Mark siblings SKIP with blocker duplicate employer requisition and the canonical job_key.
+The winner is polar_policy.pick_canonical_requisition_row.
+That helper ranks SUBMITTED, then SUBMISSION_UNKNOWN, then live IN_PROGRESS,
+then earlier discovered_at, then job_key.
+Only that canonical job_key may continue toward Submit.
+The other worker marks this row SKIP with blocker duplicate employer requisition and the canonical job_key.
+Do not have both workers back off.
 Do not submit the same employer requisition twice.
-If a sibling is SUBMITTED, SUBMISSION_UNKNOWN, or live IN_PROGRESS, skip this job.
+If polar_policy.requisition_submit_blocked returns a sibling, skip this job.
 Note requisition_suppressed. Incident repeat_key requisition_suppressed.
 Do not create a second ledger.
 
@@ -280,11 +304,21 @@ Do not create a second ledger.
 
 Never click Jobright APPLY WITH AUTOFILL.
 Never invent facts. If a required fact is missing, leave the widget and mark BLOCKED.
-A blocked job must not stall the batch.
+A blocked job must not stall the worker.
 
-For each selected job:
+claimed_new starts at 0. priority_claimed starts at 0. seen starts empty.
+Loop until select_next_apply_job returns empty or Copilot stops the run.
+Read the live queue each time. Pass exclude_keys=seen, new_jobs_already_claimed=claimed_new,
+and priority_already_claimed=priority_claimed.
+If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.
+If it is duplicate, abort.
+Process only the next_key. After that job finishes, add it to seen and loop.
+
+For the current job:
 1. Claim the row with polar_policy.attempt_claim_job. Read back job_key, status, last_stage, and claim_run_id.
-   If confirm_claim_readback is not CLAIMED, skip this job and continue.
+   If confirm_claim_readback is not CLAIMED, add the key to seen and continue. Do not increment claimed_new.
+   If prior_status was READY_REGULAR or READY_PRIORITY, increment claimed_new after a successful claim.
+   If prior_status was READY_PRIORITY, also increment priority_claimed.
 2. Open apply_url when confidence is exact or strong. Otherwise open source_url and use Original Job Post.
 3. Confirm company and title match the queue row. If they do not match, BLOCKED or SKIP.
 4. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
@@ -313,9 +347,9 @@ For each selected job:
    A blocked authorization field must not stop the rest of the batch.
 11. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
 12. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
-13. Regular row. Before Submit, reread this queue row and the day counts.
+13. Regular row. Before Submit, reread this queue row.
     If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.
-    Then use polar_policy.regular_submit_remaining. If remaining is 0, do not Submit.
+    Do not consult a shared daily remaining count. This worker's budget is max_new_jobs.
     Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
 14. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.
     Before Submit, reread this row. If polar_policy.submit_claim_still_held is false, skip.

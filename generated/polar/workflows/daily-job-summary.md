@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-10.work-level-concurrency+74acad475253
+workflow_version: 2026-09-10.worker-pool+74acad475253
 status: production
 enabled: true
 needs_browser_lock: false

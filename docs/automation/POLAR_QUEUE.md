@@ -90,9 +90,11 @@ Read the live header row. Map field names to columns. Write by name. Write expli
 
 ## Work claim
 
-If the live queue header has no `claim_run_id`, append that header at the far right. Do not insert a column in the middle.
+If the live queue header has no `claim_run_id`, do not append it from apply or discover. Run `polar-sheet-migration` once. That workflow appends the header at the far right when it is missing and leaves it unchanged when it already exists exactly once.
 
-`apply-ready-jobs` claims one `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`. Read those fields back. If another run owns the row, skip that job and continue. Do not write `SKIPPED_LOCKED`. Before Submit, reread `claim_run_id`. If it is not this run, do not Submit.
+`apply-ready-jobs` is one worker. It selects the next job, claims that `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`, then processes it. A lost claim does not consume the per-run budget. The worker then selects another READY job. Do not write `SKIPPED_LOCKED`. Before Submit, reread `claim_run_id`. If it is not this run, do not Submit.
+
+Same employer requisition uses `pick_canonical_requisition_row`. Only that survivor continues toward Submit. The other sibling is `SKIP`.
 
 `discover-jobs-hourly` must not overwrite `status`, `claim_run_id`, or other execution fields on `IN_PROGRESS`, `SUBMITTED`, `SUBMISSION_UNKNOWN`, `REVIEW_READY`, or `BLOCKED` rows.
 
