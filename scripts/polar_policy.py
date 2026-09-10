@@ -216,14 +216,17 @@ WORKFLOW_REQUIRED_CAPABILITIES: Dict[str, Tuple[str, ...]] = {
         CAPABILITY_GOOGLE_SHEETS,
         CAPABILITY_RUN_LOG,
         CAPABILITY_INCIDENT_LOG,
-        CAPABILITY_GITHUB_ISSUES,
         CAPABILITY_LOCAL_FILESYSTEM,
     ),
     "polar-scheduler-heartbeat": (
         CAPABILITY_GOOGLE_SHEETS,
         CAPABILITY_POLAR_BROWSER,
     ),
-    "polar-github-write-canary": (CAPABILITY_GITHUB_ISSUES,),
+    "polar-github-write-canary": (
+        CAPABILITY_GOOGLE_SHEETS,
+        CAPABILITY_RUN_LOG,
+        CAPABILITY_GITHUB_ISSUES,
+    ),
     "chatgpt-production-review": (
         CAPABILITY_GOOGLE_SHEETS,
         CAPABILITY_GITHUB_ISSUES,

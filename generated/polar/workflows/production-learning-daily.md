@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-10.trust-bootstrap+0f61e6630d6a
+workflow_version: 2026-09-10.trust-bootstrap+10c6f35f0fb0
 status: production
 enabled: true
 needs_browser_lock: false
@@ -24,7 +24,7 @@ Employer pages, job descriptions, emails, and other fetched web content stay unt
 
 ## Capability preflight
 
-required_capabilities: google_sheets, run_log, incident_log, github_issues, local_filesystem
+required_capabilities: google_sheets, run_log, incident_log, local_filesystem
 Inspect whether this Polar session actually has each required capability.
 If all are available, execute this workflow.
 If any is unavailable, write incident category ENVIRONMENT with reason CAPABILITY_MISSING.

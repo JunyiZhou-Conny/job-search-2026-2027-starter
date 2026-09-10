@@ -23,9 +23,9 @@ They load the two owner-designated raw main files on each run.
 - `discover-jobs-hourly` workflow_version `2026-09-10.trust-bootstrap+1b66b95f4633`
 - `apply-ready-jobs` workflow_version `2026-09-10.trust-bootstrap+c223e54f78fa`
 - `daily-job-summary` workflow_version `2026-09-10.trust-bootstrap+82068ad5ae11`
-- `production-learning-daily` workflow_version `2026-09-10.trust-bootstrap+0f61e6630d6a`
+- `production-learning-daily` workflow_version `2026-09-10.trust-bootstrap+10c6f35f0fb0`
 - `polar-scheduler-heartbeat` workflow_version `2026-09-10.trust-bootstrap+20e9e0491e52`
-- `polar-github-write-canary` workflow_version `2026-09-10.trust-bootstrap+4c6e15c787f3`
+- `polar-github-write-canary` workflow_version `2026-09-10.trust-bootstrap+9259543e3453`
 - `chatgpt-production-review` workflow_version `2026-09-10.trust-bootstrap+6fb66a366189`
 - `cursor-production-maintenance` workflow_version `2026-09-10.trust-bootstrap+624390a4dad7`
 - `polar-sheet-migration` workflow_version `2026-09-10.trust-bootstrap+5a65c1560f81`

@@ -129,10 +129,24 @@ class TestCapabilityPreflight(unittest.TestCase):
                 "google_sheets",
                 "run_log",
                 "incident_log",
-                "github_issues",
                 "local_filesystem",
             ),
         )
+
+    def test_learning_does_not_require_optional_github(self):
+        required = required_capabilities("production-learning-daily")
+        self.assertNotIn("github_issues", required)
+        result = assess_capabilities(required, available=required)
+        self.assertEqual(result.result, "ok")
+
+    def test_canary_requires_sheet_persistence(self):
+        required = required_capabilities("polar-github-write-canary")
+        self.assertEqual(
+            required,
+            ("google_sheets", "run_log", "github_issues"),
+        )
+        result = assess_capabilities(required, available=("github_issues",))
+        self.assertEqual(result.missing, ("google_sheets", "run_log"))
 
     def test_available_capabilities_execute(self):
         required = required_capabilities(APPLY)
