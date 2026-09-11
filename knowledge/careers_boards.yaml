@@ -28,6 +28,7 @@ greenhouse:
   Inversion: inversionspace  # verified 2026-09-06; slug guess inversion 404s; Autonomy Engineer I, Arc Vehicle 4705511005 Playa Vista
   Kodiak: kodiak  # verified 2026-09-04; Winter 2027 Intern, Data Engineering 4396622009
   "Lila Sciences": lilasciences  # verified 2026-08-23
+  Lyft: lyft  # verified 2026-09-11; Summer 2027 intern titles are location-split (DS Algorithms Toronto 8767697002 / SF 8767723002 / NY 8796124002; SWE Backend SF 8767726002 vs Mexico/Montreal/Toronto; Fullstack Toronto 8797859002 / NY 8797837002) — leave title-only unresolved unless city-exact
   Neuralink: neuralink
   Nirmata: nirmata
   "Oscar Health": oscar  # verified 2026-09-08; oscarhealth/hioscar 404; Data Scientist I is unique NY 7592274 (LA/Tempe cards are DS II)
@@ -39,6 +40,7 @@ greenhouse:
   SpaceX: spacex
   "The Nuclear Company": thenuclearcompany  # verified 2026-09-05; slug guess `nuclear` 404s; Spring/Summer 2027 AI Applied Research 5391888008 / 5391923008
   "Together AI": togetherai
+  "Veeam Software": veeamsoftware  # verified 2026-09-11; AI/ML Intern Summer 2027 4971207101 San Jose unique; Platform, Security & AI Engineering Intern 4952609101 San Jose unique; AI & Automation Engineering Intern 4955296101 is Remote Georgia
   Waymo: waymo  # verified 2026-09-04; two generic Data Scientist reqs (7455592 / 8177515) — leave title-only KEEP unresolved
   Workato: workato  # verified 2026-09-08; Intern, AI Engineering 8492935002 San Francisco
 
