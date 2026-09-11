@@ -8,7 +8,7 @@ This folder starts fresh with one active resume.
 - `base/JZ_resume.pdf` is the compiled two-page master. It is not a Polar attach.
 - `base/evidence_bank.md` lists what the base resume may claim.
 
-`role_cluster` and `resume_cluster` stay job taxonomy (`cloud_swe`, `data_ml`, `health_ai`). They are not files here.
+`role_cluster` and `resume_cluster` stay historical job taxonomy (`cloud_swe`, `data_ml`, `health_ai`). They are not files here. Production attach family is `resume_family`. See `docs/resume/ROUTING.md`.
 
 ## How Polar attaches a resume
 

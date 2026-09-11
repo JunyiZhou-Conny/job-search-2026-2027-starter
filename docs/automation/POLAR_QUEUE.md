@@ -44,7 +44,7 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `weight` | `regular` or `prioritized`. |
 | `priority_reason` | Short signal list, such as `fde` or `gtc_2026`. Blank on regular rows. |
 | `lane` | `core`, `broad`, or `practice`. Suggestion until Junyi confirms. |
-| `resume_cluster` | Job taxonomy only. `cloud_swe`, `data_ml`, or `health_ai`. Not a resume file. |
+| `resume_cluster` | Historical title-family label only. `cloud_swe`, `data_ml`, or `health_ai`. Not a resume file and not the production router. Do not overwrite existing values. |
 | `status` | One value from the status table below. |
 | `last_stage` | Coarse checkpoint. Not a second status machine. |
 | `attempt_count` | How many times Polar opened this job for execution. Start at 0. |
@@ -56,6 +56,10 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 | `employer_requisition_id` | Employer requisition id when known. Blank until apply-ready-jobs resolves it. |
 | `ats_job_id` | ATS job id when known. Blank until apply-ready-jobs resolves it. |
 | `claim_run_id` | The apply run that currently owns an `IN_PROGRESS` row. Blank when the row is not claimed. |
+| `resume_family` | Production family from `scripts/resume_route.py`. `swe`, `ml_ai`, `ai_infra`, `health_ai`, or `REVIEW`. |
+| `route_confidence` | `high`, `medium`, or `review`. |
+| `route_reason` | Short deterministic reason from the router. |
+| `resume_variant` | Approved active family variant id, or blank when none is registered. |
 
 ## Status values
 

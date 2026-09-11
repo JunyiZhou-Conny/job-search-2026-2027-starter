@@ -190,8 +190,10 @@ posted_relative, location, work_model, notes
 (and board extras if available)
 
 `category` is the board slug the row came from. Use it as a prior for
-`suggested_cluster` during triage, not as the answer — an `ml_ai` board carries
-plenty of rows that belong in `cloud_swe`.
+`suggested_cluster` during triage, not as the answer. An `ml_ai` board carries
+plenty of rows that belong in `cloud_swe`. `suggested_cluster` stays the
+legacy title family (`cloud_swe` | `data_ml` | `health_ai`). It is not
+`resume_family`.
 
 If Jobright Matches fails due to login/session:
 - Continue with board tables B+C
@@ -266,7 +268,7 @@ For each row assign exactly one: keep | later | skip
    Prefer keep: cloud_swe / data_ml / AI infra / agents / inference / strong new-grad SWE.
    Use later: generic front-end, QA automation, light analytics.
    suggested_lane: core | broad | practice
-   suggested_cluster: cloud_swe | data_ml | health_ai
+   suggested_cluster: cloud_swe | data_ml | health_ai  (legacy label only)
 
 ### Evidence policy
 - Prefer board CSV fields only
@@ -282,6 +284,17 @@ For each row assign exactly one: keep | later | skip
   confidence, reason, evidence_basis, grad_display_hint, user_confirm
 - generated/discovery_triage_${RUN}.md
   Counts + KEEP list with links + grad_display_hint + short SKIP themes
+
+After the triage CSV exists, classify the production resume family from the
+same board fields. Do not open Original Job Post to classify.
+
+```bash
+python3 scripts/resume_route.py --csv generated/discovery_triage_${RUN}.csv --out generated/discovery_triage_${RUN}.routed.csv
+```
+
+The CLI writes `resume_family`, `route_confidence`, `route_reason`, and
+`resume_variant`. Leave `suggested_cluster` as the legacy label. If the
+card is too thin, the family is `REVIEW`. See `docs/resume/ROUTING.md`.
 
 Optional:
 .venv/bin/python scripts/triage_discovery.py --date "$RUN"

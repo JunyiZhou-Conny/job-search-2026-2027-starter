@@ -5,8 +5,8 @@
 # Decisions: keep | later | skip
 # Only user-confirmed keep rows should be ingested into data/applications.csv.
 
-version: 6
-updated: "2026-09-10"
+version: 7
+updated: "2026-09-11"
 
 profile_anchors:
   # On a personal fork, rewrite these anchors to match config/profile.yaml.
@@ -30,6 +30,7 @@ data_policy:
   # Optional: open a Jobright/company URL only when board text is ambiguous
   # AND the row would otherwise be keep/borderline — note if unread.
   do_not_fabricate: true
+  do_not_open_posting_to_route_resume: true
   sponsorship_unknown_is_not_skip: true
   sponsorship_unavailable_is_not_skip: true
   visa_or_opt_mention_is_not_skip: true
@@ -56,6 +57,14 @@ outputs:
     - evidence_basis   # board_fields | board_plus_url_skim | unknown
     - grad_display_hint  # program_end | dual_date | either | n/a
     - user_confirm     # leave blank for human
+  # suggested_cluster stays the legacy title family.
+  # After triage, run python3 scripts/resume_route.py --csv <triage.csv>.
+  # That CLI adds resume_family, route_confidence, route_reason, resume_variant.
+  route_columns:
+    - resume_family
+    - route_confidence
+    - route_reason
+    - resume_variant
 
 decision_meanings:
   keep: "Worth user review and likely ingest → applications; prepare Simplify apply."

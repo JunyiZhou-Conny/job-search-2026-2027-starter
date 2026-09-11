@@ -10,7 +10,8 @@ alwaysApply: false
   required attach.
 - One active master on disk. `JZ_resume` at `resumes/base/JZ_resume.tex`
   and `resumes/base/JZ_resume.pdf`.
-- `role_cluster` / `resume_cluster` are job taxonomy only (`cloud_swe` | `data_ml` | `health_ai`).
+- `role_cluster` / `resume_cluster` are historical job taxonomy only (`cloud_swe` | `data_ml` | `health_ai`). They are not the production router.
+- `resume_family` is the discovery-time route (`swe` | `ml_ai` | `ai_infra` | `health_ai` | `REVIEW`). Policy: `knowledge/resume_routing.yaml`. Docs: `docs/resume/ROUTING.md`.
 - Prefer the Simplify resume already attached. Do not upload the two-page
   master. Empty widget → REVIEW_READY / `missing_production_resume`.
 - After BUILD exists, production disk attach is a frozen family one-pager
