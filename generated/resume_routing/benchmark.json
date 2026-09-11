@@ -1,0 +1,243 @@
+{
+  "total_rows": 2739,
+  "routable_rows": 1335,
+  "review_rows": 1404,
+  "families": {
+    "REVIEW": 1404,
+    "swe": 553,
+    "ai_infra": 69,
+    "ml_ai": 639,
+    "health_ai": 74
+  },
+  "confidence": {
+    "review": 1404,
+    "medium": 551,
+    "high": 784
+  },
+  "legacy_comparable_rows": 1185,
+  "legacy_agreement": 1015,
+  "legacy_agreement_rate": 0.8565400843881856,
+  "elapsed_ms": 458.122,
+  "ms_per_row": 0.1673,
+  "disagreement_groups": {
+    "cloud_swe->ai_infra": 27,
+    "cloud_swe->health_ai": 1,
+    "cloud_swe->ml_ai": 43,
+    "data_ml->ai_infra": 35,
+    "data_ml->health_ai": 5,
+    "data_ml->swe": 63,
+    "health_ai->ai_infra": 2,
+    "health_ai->ml_ai": 37,
+    "health_ai->swe": 21
+  },
+  "examples": {
+    "cloud_swe->ai_infra": [
+      {
+        "company": "SPREEAI",
+        "role": "Software Engineer Intern (AI Infrastructure / Training / Inference)",
+        "reason": "exclusive ai_infra pattern"
+      },
+      {
+        "company": "TikTok",
+        "role": "Software Engineer Intern (Recommendation Infrastructure) - 2026 Fall (BS/MS)",
+        "reason": "exclusive ai_infra pattern"
+      },
+      {
+        "company": "Nordstrom",
+        "role": "Engineer 1: AI Agentic Solutions (Hybrid - Seattle, WA)",
+        "reason": "ai_infra led by 5"
+      },
+      {
+        "company": "New York Life",
+        "role": "2027 Technology, Data, AI & Ventures Summer Internship Program - AI Engineer (MLOps) Intern",
+        "reason": "exclusive ai_infra pattern"
+      },
+      {
+        "company": "Nuro",
+        "role": "Software Engineer, AI Platform - Intern",
+        "reason": "exclusive ai_infra pattern"
+      }
+    ],
+    "cloud_swe->health_ai": [
+      {
+        "company": "AccessHealth",
+        "role": "Remote Healthcare Data & AI Finance Strategy Intern",
+        "reason": "health_ai led by 9"
+      }
+    ],
+    "cloud_swe->ml_ai": [
+      {
+        "company": "PODS",
+        "role": "Data Scientist III",
+        "reason": "exclusive ml_ai pattern"
+      },
+      {
+        "company": "BOLAND",
+        "role": "IT Intern \u2013 AI/Software (Fall Semester)",
+        "reason": "ml_ai led by 4"
+      },
+      {
+        "company": "BOLAND",
+        "role": "IT Intern \u2013 AI/Software (Fall Semester)",
+        "reason": "ml_ai led by 4"
+      },
+      {
+        "company": "BOLAND",
+        "role": "IT Intern \u2013 AI/Software (Fall Semester)",
+        "reason": "ml_ai led by 4"
+      },
+      {
+        "company": "TetraMem - Accelerate The World",
+        "role": "US 2026 Software - Machine Learning Intern",
+        "reason": "ml_ai led by 8"
+      }
+    ],
+    "data_ml->ai_infra": [
+      {
+        "company": "Etched",
+        "role": "Inference Intern",
+        "reason": "exclusive ai_infra pattern"
+      },
+      {
+        "company": "Exowatt",
+        "role": "Software Engineering Intern - Agent Platform (AI)",
+        "reason": "exclusive ai_infra pattern"
+      },
+      {
+        "company": "Traba",
+        "role": "Software Engineer (AI Agents)",
+        "reason": "ai_infra led by 2"
+      },
+      {
+        "company": "Apptronik",
+        "role": "Software Engineer Intern - ML Systems",
+        "reason": "exclusive ai_infra pattern"
+      },
+      {
+        "company": "Nelnet",
+        "role": "Intern Program - Agentic AI",
+        "reason": "ai_infra led by 5"
+      }
+    ],
+    "data_ml->health_ai": [
+      {
+        "company": "CVS Health",
+        "role": "Machine Learning Engineer",
+        "reason": "health_ai led by 2"
+      },
+      {
+        "company": "CVS Health",
+        "role": "Data Scientist",
+        "reason": "health_ai led by 2"
+      },
+      {
+        "company": "Lila Sciences",
+        "role": "ML Scientist I / II, Foundation Models for Life Sciences",
+        "reason": "health_ai led by 5"
+      },
+      {
+        "company": "UPSIDE Foods",
+        "role": "AI Intern - PhD, High Throughput Biology",
+        "reason": "health_ai led by 9"
+      },
+      {
+        "company": "The Global Institute for Health and Human Rights",
+        "role": "GTG Intern - Data Science",
+        "reason": "health_ai led by 2"
+      }
+    ],
+    "data_ml->swe": [
+      {
+        "company": "PlusAI",
+        "role": "Software Engineer Intern - Data",
+        "reason": "swe led by 3"
+      },
+      {
+        "company": "Rivian and Volkswagen Group Technologies",
+        "role": "Data Engineering Intern - AI & Analytics (Fall 2026)",
+        "reason": "exclusive swe pattern"
+      },
+      {
+        "company": "TDK SensEI",
+        "role": "Data Engineering Intern",
+        "reason": "exclusive swe pattern"
+      },
+      {
+        "company": "Plymouth Rock Assurance",
+        "role": "Data Engineer Intern/Co-op",
+        "reason": "exclusive swe pattern"
+      },
+      {
+        "company": "MatX",
+        "role": "Software Engineer - Kernels",
+        "reason": "swe led by 3"
+      }
+    ],
+    "health_ai->ai_infra": [
+      {
+        "company": "Cotiviti",
+        "role": "Intern - Generative AI/Agentic AI/Research",
+        "reason": "ai_infra led by 5"
+      },
+      {
+        "company": "Exelixis",
+        "role": "AI and Agentic Engineer I",
+        "reason": "ai_infra led by 5"
+      }
+    ],
+    "health_ai->ml_ai": [
+      {
+        "company": "Neuralink",
+        "role": "Machine Learning Engineer Intern",
+        "reason": "exclusive ml_ai pattern"
+      },
+      {
+        "company": "Neuralink",
+        "role": "Machine Learning Engineer Intern",
+        "reason": "exclusive ml_ai pattern"
+      },
+      {
+        "company": "Neuralink",
+        "role": "Machine Learning Engineer Intern",
+        "reason": "exclusive ml_ai pattern"
+      },
+      {
+        "company": "Cotiviti",
+        "role": "Intern - Generative AI Research Engineer",
+        "reason": "ml_ai led by 4"
+      },
+      {
+        "company": "Cotiviti",
+        "role": "Intern - Generative AI Research Engineer",
+        "reason": "ml_ai led by 4"
+      }
+    ],
+    "health_ai->swe": [
+      {
+        "company": "Neuralink",
+        "role": "Firmware Engineer Intern, Robotics and Surgery Engineering",
+        "reason": "exclusive swe pattern"
+      },
+      {
+        "company": "Neuralink",
+        "role": "Embedded Software Engineer, Implant Embedded Systems",
+        "reason": "exclusive swe pattern"
+      },
+      {
+        "company": "UST HealthProof",
+        "role": "Data Engineer",
+        "reason": "exclusive swe pattern"
+      },
+      {
+        "company": "Neuralink",
+        "role": "Software Engineer Intern, BCI Applications",
+        "reason": "swe led by 3"
+      },
+      {
+        "company": "Allergan Aesthetics, an AbbVie Company",
+        "role": "Associate Software Engineer I",
+        "reason": "swe led by 3"
+      }
+    ]
+  }
+}

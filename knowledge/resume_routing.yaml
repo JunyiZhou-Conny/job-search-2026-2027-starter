@@ -1,0 +1,312 @@
+# Deterministic resume ROUTE policy.
+# Operational projection of knowledge/resume_philosophy.yaml family semantics
+# onto discovery-card metadata. Not a copy of candidate lead_signals.
+# BUILD owns philosophy, TeX, and registry activation. This file owns routing.
+
+version: 1
+updated: "2026-09-11"
+
+production_families:
+  - swe
+  - ml_ai
+  - ai_infra
+  - health_ai
+
+unresolved_family: REVIEW
+confidence_values:
+  - high
+  - medium
+  - review
+
+input_fields:
+  required:
+    - role
+  optional:
+    - company
+    - source
+    - board_category
+    - track
+    - location
+    - short_text
+    - legacy_cluster
+
+# Token-boundary matching. "ai" does not match inside "training".
+# Punctuation becomes a break, so "AI/ML" and "(AI)" still match.
+
+exclusive_patterns:
+  - id: ai_infra.ai_infrastructure
+    family: ai_infra
+    phrases:
+      - ai infrastructure
+      - ai infra
+      - ml infrastructure
+      - ml platform
+      - model platform
+      - inference infrastructure
+      - model serving
+      - training infrastructure
+      - agent infrastructure
+      - agent platform
+      - llm infrastructure
+      - evaluation infrastructure
+      - mlops
+      - ml systems
+      - ml system
+      - ai ml infrastructure
+      - recommendation infrastructure
+  - id: ai_infra.inference_role
+    family: ai_infra
+    phrases:
+      - inference intern
+      - inference engineer
+      - ai inference
+      - inference ai
+      - software engineer inference
+  - id: ai_infra.ai_platform
+    family: ai_infra
+    phrases:
+      - ai platform
+      - cloud ai platform
+  - id: ml_ai.mle
+    family: ml_ai
+    phrases:
+      - machine learning engineer
+      - ml engineer
+      - applied ai
+      - applied machine learning
+      - applied ml
+  - id: ml_ai.modeling
+    family: ml_ai
+    phrases:
+      - data scientist
+      - data science
+      - computer vision
+      - deep learning
+      - foundation model
+      - foundation models
+      - multimodal
+      - nlp
+  - id: swe.core
+    family: swe
+    phrases:
+      - backend engineer
+      - backend software
+      - platform engineer
+      - cloud engineer
+      - site reliability
+      - sre
+      - full stack
+      - fullstack
+      - firmware
+      - embedded
+      - data engineer
+      - data engineering
+      - analytics engineer
+      - etl
+  - id: health_ai.named
+    family: health_ai
+    phrases:
+      - computational biology
+      - computational biolog
+      - bioinformatics
+      - medical ai
+      - clinical ai
+      - clinical ml
+      - healthcare ai
+      - digital health
+      - health informatics
+      - genomics
+      - genomic
+
+signals:
+  - id: swe.software
+    family: swe
+    weight: 3
+    phrases:
+      - software engineer
+      - software engineering
+      - software development engineer
+      - sde
+  - id: swe.systems
+    family: swe
+    weight: 2
+    phrases:
+      - backend
+      - distributed
+      - api
+      - apis
+      - infrastructure
+      - platform
+      - cloud
+      - devops
+  - id: swe.data_platform
+    family: swe
+    weight: 4
+    phrases:
+      - data engineer
+      - data engineering
+      - data platform
+      - pipelines
+      - etl
+      - analytics engineer
+  - id: ml_ai.core
+    family: ml_ai
+    weight: 4
+    phrases:
+      - machine learning
+      - ml engineer
+      - applied ai
+      - ai engineer
+      - ai software
+      - research engineer
+      - research scientist
+      - model training
+      - model evaluation
+      - llm
+  - id: ml_ai.science
+    family: ml_ai
+    weight: 4
+    phrases:
+      - data scientist
+      - data science
+      - experimentation
+      - statistic
+      - statistics
+  - id: ai_infra.core
+    family: ai_infra
+    weight: 5
+    phrases:
+      - ai infrastructure
+      - ml infrastructure
+      - inference
+      - serving
+      - mlops
+      - agent platform
+      - ai agents
+      - ai agent
+      - agentic
+      - gpu
+  - id: health_ai.domain
+    family: health_ai
+    weight: 3
+    phrases:
+      - clinical
+      - biomedical
+      - biology
+      - bioinformatics
+      - genomics
+      - healthcare
+      - health
+      - medical
+      - translational
+      - life science
+      - life sciences
+
+data_jobs:
+  toward_ml_ai:
+    - data scientist
+    - data science
+    - machine learning
+    - applied ai
+  toward_swe:
+    - data engineer
+    - data engineering
+    - data platform
+    - etl
+    - pipeline
+    - pipelines
+    - analytics engineer
+  review:
+    - data analyst
+    - data analysis
+    - business analyst
+    - data science data engineer
+    - data scientist data engineer
+
+health:
+  domain_phrases:
+    - health
+    - healthcare
+    - clinical
+    - biomedical
+    - biomed
+    - biology
+    - biological
+    - bioinformatics
+    - genomic
+    - genomics
+    - medical
+    - translational
+    - life science
+    - life sciences
+    - digital health
+    - pathology
+    - biotech
+  modeling_phrases:
+    - machine learning
+    - ml
+    - ai
+    - data scientist
+    - data science
+    - scientist
+    - model
+    - models
+    - foundation model
+    - bioinformatics
+    - computational
+  company_alone_is_not_enough: true
+
+# Bare gpu is SWE hardware unless an AI/ML token is also present.
+gpu_requires_ai: true
+
+board_category_prior:
+  swe:
+    family: swe
+    weight: 1
+  ml_ai:
+    family: ml_ai
+    weight: 1
+  data_science:
+    family: ml_ai
+    weight: 1
+  data_analysis:
+    family: REVIEW
+    weight: 0
+  healthcare:
+    family: health_ai
+    weight: 1
+
+thresholds:
+  min_score: 3
+  min_lead: 2
+  high_lead: 5
+
+legacy_cluster_map:
+  cloud_swe: swe
+  data_ml: ml_ai
+  health_ai: health_ai
+
+# Polar still writes resume_cluster from these title families on new rows.
+# Existing cells are never rewritten.
+legacy_title_families:
+  cloud_swe:
+    - software engineer
+    - backend engineer
+    - platform engineer
+    - cloud engineer
+    - infrastructure engineer
+    - new grad swe
+  data_ml:
+    - machine learning engineer
+    - applied ai
+    - ai engineer
+    - data scientist
+    - data engineer
+    - ml intern
+    - ml new grad
+  health_ai:
+    - healthcare ai
+    - clinical data
+    - digital health
+    - health informatics
+    - life science ml

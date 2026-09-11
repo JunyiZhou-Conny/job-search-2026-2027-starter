@@ -1,0 +1,140 @@
+# Behavior fixtures. Real historical titles where noted.
+cases:
+  - id: swe_google
+    role: Software Engineering Intern, MS, Summer 2027
+    company: Google
+    legacy_cluster: cloud_swe
+    family: swe
+    confidence: [high, medium]
+  - id: swe_backend
+    role: "All Levels: Backend Software Engineer"
+    company: Hadrian
+    legacy_cluster: cloud_swe
+    family: swe
+  - id: swe_twitch
+    role: Software Engineer I, Commerce Engineering
+    company: Twitch
+    legacy_cluster: cloud_swe
+    family: swe
+  - id: ml_mle
+    role: Machine Learning Engineer, E-commerce Feed Recommendation
+    company: TikTok
+    legacy_cluster: data_ml
+    family: ml_ai
+  - id: ml_applied
+    role: Applied AI Inference Engineer
+    company: Baseten
+    legacy_cluster: data_ml
+    family: ai_infra
+    note: inference engineer is infrastructure, not applied modeling
+  - id: ml_ds
+    role: Data Scientist Intern (Winter/January 2027, 4 Months)
+    company: Geotab
+    legacy_cluster: data_ml
+    family: ml_ai
+  - id: ai_infra_spree
+    role: "Software Engineer Intern (AI Infrastructure / Training / Inference)"
+    company: SPREEAI
+    legacy_cluster: cloud_swe
+    family: ai_infra
+    confidence: [high]
+  - id: ai_infra_meshy
+    role: AI Infrastructure Engineer
+    company: MeshyAI
+    legacy_cluster: cloud_swe
+    family: ai_infra
+  - id: ai_infra_applovin
+    role: ML Infrastructure Engineer
+    company: AppLovin
+    legacy_cluster: cloud_swe
+    family: ai_infra
+  - id: ai_infra_exowatt
+    role: Software Engineering Intern - Agent Platform (AI)
+    company: Exowatt
+    legacy_cluster: data_ml
+    family: ai_infra
+  - id: ai_infra_etched
+    role: Inference Intern
+    company: Etched
+    legacy_cluster: data_ml
+    family: ai_infra
+  - id: ai_infra_apptronik
+    role: Software Engineer Intern - ML Systems
+    company: Apptronik
+    legacy_cluster: data_ml
+    family: ai_infra
+  - id: health_lila
+    role: ML Scientist I / II, Foundation Models for Life Sciences
+    company: Lila Sciences
+    legacy_cluster: health_ai
+    family: health_ai
+  - id: health_oscar
+    role: Data Scientist I
+    company: Oscar Health
+    legacy_cluster: health_ai
+    family: health_ai
+  - id: data_to_swe
+    role: Data Engineering Intern
+    company: TDK SensEI
+    legacy_cluster: data_ml
+    family: swe
+  - id: data_to_ml
+    role: Jr. Data Scientist
+    company: Creative Artists Agency
+    legacy_cluster: data_ml
+    family: ml_ai
+  - id: health_company_generic_swe
+    role: Software Engineer - Early Career
+    company: Abridge
+    legacy_cluster: health_ai
+    family: swe
+  - id: health_company_data_engineer
+    role: Data Engineer
+    company: UST HealthProof
+    legacy_cluster: health_ai
+    family: swe
+  - id: ai_company_generic_swe
+    role: Software Engineer I
+    company: Chewy
+    family: swe
+  - id: mixed_data_title
+    role: Data Science/ Data Engineer Intern
+    company: Hadrian
+    family: REVIEW
+    confidence: [review]
+  - id: no_signal
+    role: Operations Associate
+    company: Acme
+    family: REVIEW
+    confidence: [review]
+  - id: empty_role
+    role: ""
+    company: Acme
+    family: REVIEW
+    confidence: [review]
+  - id: token_trap_training
+    role: Training Coordinator
+    company: Acme
+    family: REVIEW
+  - id: token_trap_html
+    role: HTML Email Developer
+    company: Acme
+    family: REVIEW
+  - id: token_trap_gpu_swe
+    role: GPU Software Engineer
+    company: Qualcomm
+    legacy_cluster: cloud_swe
+    family: swe
+  - id: analyst_review
+    role: Data Analyst Intern
+    company: Navy Federal Credit Union
+    family: REVIEW
+  - id: citadel_sds
+    role: Sector Data Scientist – 2027 Intern (US)
+    company: Citadel
+    legacy_cluster: data_ml
+    family: ml_ai
+  - id: health_company_security_not_health_ai
+    role: Intern - IT Security Co-Op Associate
+    company: Martin's Point Health Care
+    family: REVIEW
