@@ -8,6 +8,7 @@ This folder starts fresh with one active resume.
 - `base/JZ_resume.pdf` is the compiled two-page master. It is not a Polar attach.
 - `base/evidence_bank.md` lists what the base resume may claim.
 - `families/swe/swe_v1.tex`, `families/ml_ai/ml_ai_v1.tex`, `families/ai_infra/ai_infra_v1.tex`, and `families/health_ai/health_ai_v1.tex` are the frozen production one-pagers from Resume Stack BUILD. Polar is not wired to them yet. Registry rows stay inactive until an owner activates them. Do not put production Health AI under `resumes/health_ai/`. That path is a deleted cluster directory.
+- `Perfect Resume/perfect_resume.tex` is Junyi's supervised gold copy. Do not regenerate it from BUILD.
 
 `role_cluster` and `resume_cluster` stay job taxonomy (`cloud_swe`, `data_ml`, `health_ai`). They are not files here. Do not recreate those folders.
 
