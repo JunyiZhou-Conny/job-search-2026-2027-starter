@@ -63,6 +63,11 @@ cases:
     company: Apptronik
     legacy_cluster: data_ml
     family: ai_infra
+  - id: health_computational_biologist
+    role: Associate Computational Biologist (Polizzi Lab)
+    company: Dana-Farber Cancer Institute
+    legacy_cluster: health_ai
+    family: health_ai
   - id: health_lila
     role: ML Scientist I / II, Foundation Models for Life Sciences
     company: Lila Sciences

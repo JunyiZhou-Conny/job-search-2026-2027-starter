@@ -107,8 +107,11 @@ exclusive_patterns:
     family: health_ai
     phrases:
       - computational biology
-      - computational biolog
+      - computational biologist
+      - computational biologists
       - bioinformatics
+      - bioinformatician
+      - bioinformaticians
       - medical ai
       - clinical ai
       - clinical ml
@@ -233,6 +236,9 @@ health:
     - biology
     - biological
     - bioinformatics
+    - bioinformatician
+    - computational biology
+    - computational biologist
     - genomic
     - genomics
     - medical

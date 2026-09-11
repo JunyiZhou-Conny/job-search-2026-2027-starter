@@ -1,24 +1,24 @@
 {
   "total_rows": 2739,
-  "routable_rows": 1335,
-  "review_rows": 1404,
+  "routable_rows": 1344,
+  "review_rows": 1395,
   "families": {
-    "REVIEW": 1404,
+    "REVIEW": 1395,
     "swe": 553,
     "ai_infra": 69,
     "ml_ai": 639,
-    "health_ai": 74
+    "health_ai": 83
   },
   "confidence": {
-    "review": 1404,
+    "review": 1395,
     "medium": 551,
-    "high": 784
+    "high": 793
   },
-  "legacy_comparable_rows": 1185,
-  "legacy_agreement": 1015,
-  "legacy_agreement_rate": 0.8565400843881856,
-  "elapsed_ms": 458.122,
-  "ms_per_row": 0.1673,
+  "legacy_comparable_rows": 1194,
+  "legacy_agreement": 1024,
+  "legacy_agreement_rate": 0.8576214405360134,
+  "elapsed_ms": 469.291,
+  "ms_per_row": 0.1713,
   "disagreement_groups": {
     "cloud_swe->ai_infra": 27,
     "cloud_swe->health_ai": 1,
