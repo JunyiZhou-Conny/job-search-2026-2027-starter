@@ -10,7 +10,7 @@ Run this at BUILD time only. Application time routes to an existing variant id.
 ## Sequence
 
 1. Read `docs/resume/QUALITY_ENGINE.md` for the product boundary.
-2. Read `.cursor/skills/ai-infra-philosophy/SKILL.md` when the family is `ai_infra`. Stop if asked to BUILD `swe`, `ml_ai`, or `health_ai` and those skills do not exist yet.
+2. Read the family philosophy skill. `swe-philosophy`, `ml-ai-philosophy`, `ai-infra-philosophy`, or `health-ai-philosophy`. Do not BUILD `data_v1`. `data` is a router alias.
 3. Follow `.cursor/skills/resume-evidence-selection/SKILL.md`.
 4. Follow `.cursor/skills/resume-narrative-framing/SKILL.md`.
 5. Write TeX under `resumes/families/<family>/<variant>.tex`. Stitch identity and education from `resumes/base/JZ_resume.tex`. Do not edit the master.

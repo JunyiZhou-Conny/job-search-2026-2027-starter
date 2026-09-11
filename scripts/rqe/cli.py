@@ -24,6 +24,7 @@ from rqe.render import (
     strategy_markdown,
 )
 from rqe.models import Candidate, ValidationReport
+from stitch_family_resume import PRODUCTION_FAMILIES
 
 BASELINE_DIR = ROOT / "tests" / "fixtures" / "resume_quality" / "baselines"
 HISTORICAL_BASELINE = {
@@ -176,23 +177,16 @@ def cmd_validate(tex_path: Path) -> int:
     return 0 if report.ok else 1
 
 
-FAMILY_VARIANT = {
-    "ai_infra": ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex",
-}
-FAMILY_ARTIFACT = {
-    "ai_infra": ROOT / "docs" / "resume" / "builds" / "ai_infra_v1",
-}
-
-
 def cmd_build(family: str, *, compile_pdf: bool) -> int:
     spec = (load_philosophy().get("role_families") or {}).get(family)
     if not isinstance(spec, dict) or not spec.get("production"):
         print(f"unknown family {family!r}", file=sys.stderr)
         return 2
-    tex_path = FAMILY_VARIANT.get(family)
-    if tex_path is None:
+    build = PRODUCTION_FAMILIES.get(family)
+    if build is None:
         print(f"family {family!r} is not built yet", file=sys.stderr)
         return 2
+    tex_path = build.tex
     print(f"variant {tex_path.relative_to(ROOT)}")
     if not tex_path.is_file():
         print(f"missing frozen variant {tex_path}", file=sys.stderr)
@@ -200,7 +194,7 @@ def cmd_build(family: str, *, compile_pdf: bool) -> int:
 
     bank = load_bank()
     tex_report = validate_tex(bank, tex_path.read_text())
-    artifact = FAMILY_ARTIFACT[family]
+    artifact = build.artifact_dir
     reports = [tex_report]
     print(validation_markdown(tex_report), end="")
 
