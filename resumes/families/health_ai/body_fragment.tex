@@ -1,0 +1,50 @@
+% Technical Skills
+\section{Technical Skills}
+\resumeSubHeadingListStart
+  \resumeItem{Languages}{Python, R}
+  \resumeItem{ML}{PyTorch, scanpy, AnnData, RAG, OpenAI}
+  \resumeItem{Backend}{Flask, REST APIs, React, Auth0, MongoDB}
+  \resumeItem{Cloud}{AWS Elastic Beanstalk, CloudFront, Docker}
+  \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
+\resumeSubHeadingListEnd
+
+% Clinical AI Experience
+\section{Clinical AI Experience}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/Airway-Management-Assistant}{Airway Management Simulation Chatbot}}{Atlanta, GA}
+    {Full-Stack Engineer, Scrum Master | Emory Pediatric Hospital}{January 2024 -- August 2025}
+    \resumeItemListStart
+      \item Built a HIPAA-conscious clinical simulation platform with a Flask REST API, React, MongoDB, and Auth0, deployed on AWS Elastic Beanstalk and CloudFront.
+      \item Retrieval runs on MongoDB Atlas Vector Search in the same datastore as application persistence.
+      \item Worked on an Agile team of 6 with code reviews and a clinician feedback loop.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+% Machine Learning Projects
+\section{Machine Learning Projects}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/speciesOT}{speciesOT: Cross-Species Single-Cell Translation}}{Boston, MA}
+    {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
+    \resumeItemListStart
+      \item Built a mouse-to-human single-cell translation that compares an ICNN optimal-transport map with an scGen latent mean-shift.
+      \item On a paired held-out-species evaluation, scGen $R^2$ was \textbf{0.85--0.90} with the source species in training versus \textbf{0.65--0.67} when that species was held out.
+      \item Gene-space ranking reversed with the split (6619 orthologs vs 1000 HVGs), so the biologically convenient gene set is not automatically the better predictor.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/mixhvg-py}{mixhvg-py: Validated Python Port of an R HVG Ensemble}}{Boston, MA}
+    {Sole author}{July 2026}
+    \resumeItemListStart
+      \item Ported mixhvg, an ensemble highly variable gene selector, to an AnnData-native API used by speciesOT specs. Zhao et al. own the method.
+      \item Validated against R / scran / Seurat. Seurat methods match at Spearman \textbf{1.0000}. The paper-recommended mixture agrees at Jaccard \textbf{0.980}.
+      \item A weighted-mean log-space correction overshot scran and raised discarded genes from 0.499 to 0.719. A weighted median restored 0.503 vs R 0.499.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\end{document}

@@ -132,6 +132,25 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Never reuse. Never fill gaps.", text)
         self.assertIn("KEEP_LOCAL leaves pending", text)
 
+    def test_resume_ingest_is_perfect_resume(self):
+        text = compile_text()
+        self.assertIn("resumes/Perfect Resume/perfect_resume.pdf", text)
+        self.assertIn("Do not upload `resumes/base/JZ_resume.pdf`.", text)
+        self.assertIn(
+            "Do not mark REVIEW_READY only because the widget is empty", text
+        )
+        self.assertNotIn("missing_production_resume", text)
+        self.assertNotIn(
+            "mark REVIEW_READY with blocker missing_production_resume", text
+        )
+        workflow = workflow_prompt("apply-ready-jobs")
+        self.assertIn("resumes/Perfect Resume/perfect_resume.pdf", workflow)
+        self.assertNotIn("missing_production_resume", workflow)
+        self.assertNotIn(
+            "mark REVIEW_READY with blocker missing_production_resume",
+            workflow,
+        )
+
     def test_committed_file_matches_compiler(self):
         generated = compile_text()
         self.assertTrue(OUT_DEFAULT.is_file(), str(OUT_DEFAULT))

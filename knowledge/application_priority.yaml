@@ -11,7 +11,7 @@ source: "Junyi Charta FDE notes plus Lila / Hayden reviews; Polar local owner de
 # Two chunks
 application_weight:
   regular:
-    meaning: "Fast truthful autonomous execution on Polar Local once polar_local caps allow it. Simplify resume already attached. Do not upload the two-page master. Short, prompt-faithful free response."
+    meaning: "Fast truthful autonomous execution on Polar Local once polar_local caps allow it. If a resume file must be uploaded, use resumes/Perfect Resume/perfect_resume.pdf. Do not upload the two-page master. Short, prompt-faithful free response."
   prioritized:
     meaning: >
       Extra judgment. Tailor resume toward the JD using only evidence-bank
@@ -119,7 +119,7 @@ apply_behavior:
   prioritized:
     - Same standing yes/no rules (relocate, sponsorship, salary floor)
     - More time on Why-us / JD-specific writing
-    - Visually confirm phone, resume attachment, sponsorship. Do not trust Copilot Completed
+    - Visually confirm phone, resume attachment, sponsorship. Do not trust Copilot Completed. Empty or incompatible resume widget → upload resumes/Perfect Resume/perfect_resume.pdf
     - Default next_action: Submit on Polar Local after writing_log is complete; digest is post-submit oversight
     - Polar Local: Submit when prioritized_auto_submit is true and writing_log is complete
     - Draft coffee-chat / LinkedIn only; never send without Junyi confirm

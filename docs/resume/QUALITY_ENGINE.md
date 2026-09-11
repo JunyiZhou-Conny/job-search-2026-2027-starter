@@ -74,17 +74,21 @@ python3 scripts/resume_quality.py vip-tailor --jd <jd>
 
 `resume_quality.py run --jd` is the current VIP stand-in. Polar must not call it.
 
-`/tailor-resume` is VIP-only. Regular and most prioritized rows use ROUTE.
+`/tailor-resume` is VIP-only. Regular Polar ingest is the Perfect Resume until a later ROUTE owner says otherwise.
 
 ## What Polar may attach
 
-1. The Simplify resume already on the profile, when that widget is filled.
-2. After BUILD exists, the routed frozen family PDF.
+1. A resume already visible on the ATS widget.
+2. If Polar must ingest a file, `resumes/Perfect Resume/perfect_resume.pdf`.
 3. After a human accepts a VIP run, that one registered variant.
 
-The two-page master is inventory. It is not the production attach. Landed `main` marks an empty resume widget `REVIEW_READY` / `missing_production_resume` and does not upload `resumes/base/JZ_resume.pdf`. This stack will replace that gap with a routed family variant once BUILD writes one. This PR does not edit Polar runtime.
+The two-page master is inventory. Do not upload `resumes/base/JZ_resume.pdf`.
+Junyi 2026-09-11 made Perfect Resume the ingest file when Copilot cannot
+attach one or Polar would otherwise guess. Family one-pagers stay BUILD
+artifacts until a later ROUTE owner says otherwise.
 
-A missing production one-pager is an acceptable transitional state. Do not invent a cluster tree to fill the gap. Do not restore `scripts/build_clusters.py`.
+Do not invent a cluster tree. Do not restore `scripts/build_clusters.py`.
+See `knowledge/polar_resume_attach.yaml`.
 
 ## Skills versus deterministic code
 
@@ -189,20 +193,26 @@ This PR must not overwrite `knowledge/evidence_bank.yaml` or `resumes/base/JZ_re
 - Policy-pack keys for `ai_infra` and for `data` as a router alias.
 - Git base of `#121` onto landed `main`.
 
-## First BUILD
+## Frozen BUILD
 
-`ai_infra_v1` is the first frozen family one-pager.
+The four production one-pagers exist.
 
-- Path. `resumes/families/ai_infra/ai_infra_v1.tex`
-- Skills. `.cursor/skills/resume-stack-build/` and the four Resume Stack skills
-- Gate. `python3 scripts/resume_quality.py build --family ai_infra --compile`
-- Artifacts. `docs/resume/builds/ai_infra_v1/`
-- Page. Three projects after the cleanup pass. mixhvg-py was tested and dropped. See `docs/resume/builds/ai_infra_v1/selection.md`.
-- Contact. Source TeX keeps a sanitized email. Application PDF is `python3 scripts/export_resume.py --family ai_infra`.
+- `resumes/families/swe/swe_v1.tex`
+- `resumes/families/ml_ai/ml_ai_v1.tex`
+- `resumes/families/ai_infra/ai_infra_v1.tex`
+- `resumes/families/health_ai/health_ai_v1.tex`
 
-`swe`, `ml_ai`, and `health_ai` are not built. `route` is not implemented. Polar is unchanged.
+Gate. `python3 scripts/resume_quality.py build --family <family> --compile`.
 
-`plan.py` `fallback_order` is still in the VIP matcher. BUILD does not call it. The selector of record for `ai_infra_v1` is `docs/resume/builds/ai_infra_v1/selection.md`.
+Artifacts. `docs/resume/builds/<variant>/`.
+
+Contact. Source TeX keeps a sanitized email. Application PDF is `python3 scripts/export_resume.py --family <family>`.
+
+`route` is not implemented in this BUILD. Polar ingest is the Perfect Resume, not a routed family file. Registry rows for the four family variants stay inactive.
+
+`plan.py` `fallback_order` is still in the VIP matcher. BUILD does not call it. The selector of record is `docs/resume/builds/<variant>/selection.md`.
+
+`data` is not a production family. Do not BUILD `data_v1`.
 
 ## Later BUILD predicate
 

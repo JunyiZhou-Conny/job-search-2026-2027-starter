@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,12 +14,33 @@ EDUCATION = "% Education"
 SKILLS = "% Technical Skills"
 HYPERREF = "\\usepackage[pdftex]{hyperref}"
 HYPERREF_HIDELINKS = "\\usepackage[pdftex,hidelinks]{hyperref}"
-FAMILIES = {
-    "ai_infra": (
-        ROOT / "resumes" / "families" / "ai_infra" / "body_fragment.tex",
-        ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex",
+
+
+@dataclass(frozen=True)
+class FamilyBuild:
+    variant: str
+    fragment: Path
+    tex: Path
+    artifact_dir: Path
+
+
+def _family(name: str, variant: str) -> FamilyBuild:
+    folder = ROOT / "resumes" / "families" / name
+    return FamilyBuild(
+        variant=variant,
+        fragment=folder / "body_fragment.tex",
+        tex=folder / f"{variant}.tex",
+        artifact_dir=ROOT / "docs" / "resume" / "builds" / variant,
     )
+
+
+PRODUCTION_FAMILIES = {
+    "ai_infra": _family("ai_infra", "ai_infra_v1"),
+    "swe": _family("swe", "swe_v1"),
+    "ml_ai": _family("ml_ai", "ml_ai_v1"),
+    "health_ai": _family("health_ai", "health_ai_v1"),
 }
+FAMILIES = {name: (spec.fragment, spec.tex) for name, spec in PRODUCTION_FAMILIES.items()}
 
 
 def require_sentinel(text: str, needle: str) -> int:

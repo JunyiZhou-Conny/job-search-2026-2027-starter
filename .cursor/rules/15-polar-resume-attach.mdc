@@ -1,0 +1,19 @@
+---
+description: When an ATS needs a resume file, upload the Junyi-supervised Perfect Resume
+alwaysApply: true
+---
+
+# Polar resume ingest
+
+If an application needs a resume file, upload
+`resumes/Perfect Resume/perfect_resume.pdf`.
+
+Use that file when the widget is empty, Simplify Copilot leaves it empty,
+Copilot cannot drive the ATS resume control, or Polar would otherwise guess
+among family variants.
+
+A resume already visible on the widget may stay. Do not replace a filled
+widget unless it is wrong or empty after autofill.
+
+Do not upload `resumes/base/JZ_resume.pdf`. Do not generate a resume from a
+JD. Canonical policy: `knowledge/polar_resume_attach.yaml`.

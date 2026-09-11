@@ -39,6 +39,8 @@ from polar_policy import (
     raw_runtime_url,
     work_claim_ttl_minutes,
 )
+from polar_resume_attach import runtime_lines as attach_runtime_lines
+from polar_resume_attach import submit_check as attach_submit_check
 from polar_workflows import write_schema_csvs, write_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -560,11 +562,7 @@ def compile_sections() -> Dict[str, str]:
         cluster_lines.append(f"{name}: {titles}")
     section_e = "\n".join(
         [
-            "One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach.",
-            "Prefer the Simplify resume already attached.",
-            "If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.",
-            "Mark REVIEW_READY with blocker missing_production_resume and continue the worker.",
-            "Do not invent a new resume for every job.",
+            *attach_runtime_lines(),
             "",
             "Title families are job taxonomy only. resume_cluster is not a file.",
             bullet(cluster_lines),
@@ -652,7 +650,7 @@ def compile_sections() -> Dict[str, str]:
                 [
                     "Duplicate check passes against the Sheet and section K.",
                     "Company and title on the page match the queue row.",
-                    "Approved production resume is attached (Simplify). Do not upload the two-page master.",
+                    attach_submit_check(),
                     "Identity fields are correct after a visible read-back.",
                     "Required factual fields are resolved from this runtime or left for Junyi.",
                     "No unsupported claim was invented.",
@@ -896,6 +894,7 @@ def render(parts: Dict[str, str]) -> str:
         "- `knowledge/polar_documents.yaml`",
         "- `knowledge/work_authorization.yaml`",
         "- `knowledge/form_strategy.yaml`",
+        "- `knowledge/polar_resume_attach.yaml`",
         "- `knowledge/application_priority.yaml`",
         "- `knowledge/discovery_triage_rules.yaml`",
         "- `knowledge/target_roles.yaml`",

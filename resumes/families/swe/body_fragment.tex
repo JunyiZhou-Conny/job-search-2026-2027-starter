@@ -1,0 +1,50 @@
+% Technical Skills
+\section{Technical Skills}
+\resumeSubHeadingListStart
+  \resumeItem{Languages}{Python, SQL}
+  \resumeItem{Backend}{YAML policy compile, Selenium, relational schemas, unittest, pytest}
+  \resumeItem{Cloud}{AWS EC2, AWS S3, boto3}
+  \resumeItem{Data}{ETL, AnnData, PDF text extraction}
+  \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
+\resumeSubHeadingListEnd
+
+% Engineering Projects
+\section{Engineering Projects}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/job-search-2026-2027-starter}{Human-Supervised Browser Automation System}}{Boston, MA}
+    {Sole author}{July 2026 -- Present}
+    \resumeItemListStart
+      \item Built a job-application system that keeps GitHub as durable policy and evidence, a Google Sheet as live runtime state, and Simplify as the application ledger.
+      \item Compiles YAML policy into one runtime file the local browser operator reads. Submit is allowed only after listed identity and writing checks.
+      \item Tests refuse passwords, cookies, OTP, and leaked phone or email. Designed recovery for Mac shutdown, Wi-Fi loss, and browser restart.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/mixhvg-py}{mixhvg-py: AnnData API and Fidelity Tests}}{Boston, MA}
+    {Sole author}{July 2026}
+    \resumeItemListStart
+      \item Ported mixhvg to an AnnData-native API (cells $\times$ genes). Each method emits a score, scores become ranks, and each gene keeps its maximum rank.
+      \item Validated against R / scran / Seurat. Seurat vst and dispersion match at Spearman \textbf{1.0000}. The paper-recommended mixture agrees at Jaccard \textbf{0.980}.
+      \item Reproduced two degenerate upstream methods and a Seurat 5 silent-NULL vst bug in tests rather than silently fixing them. 68 pytest tests pass.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+% Research Experience
+\section{Research Experience}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/Comput-Leg-UK-NZ}{Computational Legislative Studies: UK and New Zealand Parliamentary Data}}{Atlanta, GA}
+    {Research Assistant | Emory University (Carrubba and Estrada)}{December 2023 -- May 2024}
+    \resumeItemListStart
+      \item Built scrapers and ETL over UK Parliament open data, with a relational schema designed up front. Normalized \textbf{22,606} member-level division votes, \textbf{4,791} MPs, \textbf{4,108} bills, and \textbf{3,875} constituencies.
+      \item Diagnosed Cloudflare 403 challenges and restored collection with TLS-impersonating requests and Selenium. Staged data on AWS EC2 and S3.
+      \item Wrote a UK-to-New-Zealand transition document for handoff.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\end{document}

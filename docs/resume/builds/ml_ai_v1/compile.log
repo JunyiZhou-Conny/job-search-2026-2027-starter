@@ -1,0 +1,5 @@
+→ Compiling /workspace/resumes/families/ml_ai/ml_ai_v1.tex
+  OK /workspace/resumes/families/ml_ai/ml_ai_v1.pdf (1 page(s), 80667 bytes)
+Compiled 1 PDF(s). Upload the .pdf next to each .tex when applying.
+
+  NOTE: sanitized source. Application export: python3 scripts/export_resume.py --family <family>

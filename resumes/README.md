@@ -7,18 +7,22 @@ This folder starts fresh with one active resume.
 - `base/JZ_resume.tex` is the source.
 - `base/JZ_resume.pdf` is the compiled two-page master. It is not a Polar attach.
 - `base/evidence_bank.md` lists what the base resume may claim.
-- `families/ai_infra/ai_infra_v1.tex` is the first frozen production one-pager from Resume Stack BUILD. Polar is not wired to it yet.
+- `families/swe/swe_v1.tex`, `families/ml_ai/ml_ai_v1.tex`, `families/ai_infra/ai_infra_v1.tex`, and `families/health_ai/health_ai_v1.tex` are the frozen production one-pagers from Resume Stack BUILD. Polar is not wired to them yet. Registry rows stay inactive until an owner activates them. Do not put production Health AI under `resumes/health_ai/`. That path is a deleted cluster directory.
+- `Perfect Resume/perfect_resume.tex` is Junyi's supervised gold copy. Do not regenerate it from BUILD.
 
 `role_cluster` and `resume_cluster` stay job taxonomy (`cloud_swe`, `data_ml`, `health_ai`). They are not files here. Do not recreate those folders.
 
 ## How Polar attaches a resume
 
-Prefer the Simplify resume already attached.
+If a resume is already visible on the widget, leave it.
 
-If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.
-Mark REVIEW_READY with blocker `missing_production_resume` and continue the batch.
+If Polar must upload a file, use `Perfect Resume/perfect_resume.pdf`.
+That includes an empty widget, Copilot leaving the widget empty, Copilot
+incompatible with the ATS resume control, or uncertainty about which
+family file to pick.
 
-Do not invent a new resume for every job.
+Do not upload `base/JZ_resume.pdf`. Do not invent a new resume for every job.
+Canonical rule: `knowledge/polar_resume_attach.yaml`.
 
 ## Compile
 
@@ -28,8 +32,8 @@ intentional. Do not commit the application mailbox.
 ```bash
 ./scripts/compile_resume.sh
 ./scripts/compile_resume.sh resumes/base/JZ_resume.tex
-./scripts/compile_resume.sh resumes/families/ai_infra/ai_infra_v1.tex
-python3 scripts/export_resume.py --family ai_infra
+./scripts/compile_resume.sh resumes/families/swe/swe_v1.tex
+python3 scripts/export_resume.py --family swe
 ```
 
 `export_resume.py` writes the application PDF under `generated/resumes/export/`

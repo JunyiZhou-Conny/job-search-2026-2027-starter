@@ -245,10 +245,9 @@ class TestCliBuild(unittest.TestCase):
         codes = [i.code for i in report.issues if i.severity == "fail"]
         self.assertIn("unsupported_metric", codes, report.issues)
 
-    def test_build_other_families_exit_2(self) -> None:
-        self.assertEqual(rqe_main(["build", "--family", "swe"]), 2)
-        self.assertEqual(rqe_main(["build", "--family", "ml_ai"]), 2)
-        self.assertEqual(rqe_main(["build", "--family", "health_ai"]), 2)
+    def test_build_data_family_exit_2(self) -> None:
+        self.assertEqual(rqe_main(["build", "--family", "data"]), 2)
+        self.assertEqual(rqe_main(["build", "--family", "not_a_family"]), 2)
 
     def test_build_ai_infra(self) -> None:
         tex = ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex"
@@ -265,6 +264,58 @@ class TestCliBuild(unittest.TestCase):
         rc = rqe_main(["build", "--family", "ai_infra"])
         self.assertEqual(rc, 0)
         report = ROOT / "docs" / "resume" / "builds" / "ai_infra_v1" / "validation_report.md"
+        self.assertTrue(report.is_file())
+        self.assertIn("No hard failures", report.read_text())
+
+    def test_build_swe(self) -> None:
+        tex = ROOT / "resumes" / "families" / "swe" / "swe_v1.tex"
+        self.assertTrue(tex.is_file(), tex)
+        source = tex.read_text()
+        self.assertIn("Human-Supervised Browser Automation System", source)
+        self.assertIn("mixhvg-py: AnnData API and Fidelity Tests", source)
+        self.assertIn("Computational Legislative Studies", source)
+        self.assertIn("hidelinks", source)
+        self.assertNotIn("[GitHub]", source)
+        self.assertNotIn("Architected", source)
+        self.assertIn(r"\href{mailto:[REDACTED]}{[REDACTED]}", source)
+        rc = rqe_main(["build", "--family", "swe"])
+        self.assertEqual(rc, 0)
+        report = ROOT / "docs" / "resume" / "builds" / "swe_v1" / "validation_report.md"
+        self.assertTrue(report.is_file())
+        self.assertIn("No hard failures", report.read_text())
+
+    def test_build_ml_ai(self) -> None:
+        tex = ROOT / "resumes" / "families" / "ml_ai" / "ml_ai_v1.tex"
+        self.assertTrue(tex.is_file(), tex)
+        source = tex.read_text()
+        self.assertIn("speciesOT: Cross-Species Single-Cell Translation", source)
+        self.assertIn("TextVQA: Zero-Shot, Prompts, and LoRA Fine-Tuning", source)
+        self.assertIn("Pneumonia Detection from Chest Radiographs", source)
+        self.assertNotIn("Human-Supervised Browser Automation System", source)
+        self.assertNotIn("nearly 3x", source)
+        self.assertNotIn("[GitHub]", source)
+        self.assertIn(r"\href{mailto:[REDACTED]}{[REDACTED]}", source)
+        rc = rqe_main(["build", "--family", "ml_ai"])
+        self.assertEqual(rc, 0)
+        report = ROOT / "docs" / "resume" / "builds" / "ml_ai_v1" / "validation_report.md"
+        self.assertTrue(report.is_file())
+        self.assertIn("No hard failures", report.read_text())
+
+    def test_build_health_ai(self) -> None:
+        tex = ROOT / "resumes" / "families" / "health_ai" / "health_ai_v1.tex"
+        self.assertTrue(tex.is_file(), tex)
+        source = tex.read_text()
+        self.assertIn("Airway Management Simulation Chatbot", source)
+        self.assertIn("speciesOT: Cross-Species Single-Cell Translation", source)
+        self.assertIn("mixhvg-py: Validated Python Port of an R HVG Ensemble", source)
+        self.assertNotIn("Architected", source)
+        self.assertNotIn("\\item Led", source)
+        self.assertNotIn("Job Search OS", source)
+        self.assertNotIn("[GitHub]", source)
+        self.assertIn(r"\href{mailto:[REDACTED]}{[REDACTED]}", source)
+        rc = rqe_main(["build", "--family", "health_ai"])
+        self.assertEqual(rc, 0)
+        report = ROOT / "docs" / "resume" / "builds" / "health_ai_v1" / "validation_report.md"
         self.assertTrue(report.is_file())
         self.assertIn("No hard failures", report.read_text())
 

@@ -1,5 +1,5 @@
 ---
-description: Resume Stack rules. Frozen family variants at apply time. VIP tailor is optional.
+description: Resume Stack rules. Polar ingest is Perfect Resume. VIP tailor is optional.
 globs: "resumes/**/*.{tex,md,txt}"
 alwaysApply: false
 ---
@@ -11,9 +11,10 @@ alwaysApply: false
   one-pagers from BUILD, then Polar ROUTE. VIP tailor is optional.
 - Do not restore `scripts/build_clusters.py`. Historical cluster files are
   benchmark artifacts only.
-- Regular rows attach the Simplify resume, or a routed frozen variant once
-  BUILD exists. Do not upload the two-page master. Do not generate a resume
-  from a JD at apply time.
+- Regular rows attach a resume already on the widget, or upload
+  `resumes/Perfect Resume/perfect_resume.pdf` when a file must be ingested.
+  Do not upload the two-page master. Do not generate a resume from a JD
+  at apply time. Do not guess among family variants.
 - VIP / exceptional prioritized rows may run
   `scripts/resume_quality.py run --jd` from the evidence bank only.
 - Prioritize demonstrated outcomes and technical decisions over keyword stuffing.

@@ -1,6 +1,6 @@
 ---
 name: resume-evidence-selection
-description: Inspectable project selection for Resume Stack BUILD. Use after ai-infra-philosophy and before narrative framing. Input is the evidence bank plus a family philosophy. Output is a selection report. Never use plan.py fallback_order as the selector.
+description: Inspectable project selection for Resume Stack BUILD. Use after the family philosophy skill and before narrative framing. Input is the evidence bank plus a family philosophy. Output is a selection report. Never use plan.py fallback_order as the selector.
 ---
 
 # Evidence selection
@@ -8,7 +8,7 @@ description: Inspectable project selection for Resume Stack BUILD. Use after ai-
 ## Input
 
 - `knowledge/evidence_bank.yaml`
-- The family philosophy skill (`ai-infra-philosophy` for this BUILD)
+- The family philosophy skill (`swe-philosophy`, `ml-ai-philosophy`, `ai-infra-philosophy`, or `health-ai-philosophy`)
 - `knowledge/resume_philosophy.yaml` lead signals and `max_projects`
 
 ## Output
@@ -49,14 +49,15 @@ Drop a project that only repeats a signal already paid for.
 
 ## Hypothesis, not order
 
-For `ai_infra`, test this slate rather than obeying it.
+Test the family slate. Do not obey it. Do not reuse the AI Infra slate for SWE or ML/AI.
 
-- `autoresearch_cellot`
-- `job_search_os`
-- `cellot_wyss` (speciesOT)
-- `mixhvg_py`
+`swe`. Job Search OS, Compleg, mixhvg-py. Alternates. AutoResearch, AlphaFold. Airway stays off.
 
-If mixhvg only adds biology already carried by speciesOT, replace it or drop it. AlphaFold is the thin HPC-inference alternate. Airway is the clinical-agent alternate and fails `de_emphasize: clinical` unless the report overturns that with a bank reason.
+`ml_ai`. speciesOT, TextVQA LoRA, pneumonia. Alternate. AutoResearch instead of pneumonia. Job Search OS and Airway stay off.
+
+`ai_infra`. AutoResearch, Job Search OS, speciesOT, mixhvg-py. If mixhvg only adds biology already carried by speciesOT, drop it. AlphaFold is the thin HPC alternate. Airway fails `de_emphasize: clinical` unless the report overturns that with a bank reason.
+
+`health_ai`. Airway, speciesOT, mixhvg-py. Alternates. pneumonia instead of mixhvg. S-Seg method-only. AlphaFold thin protein pipeline. Job Search OS stays off.
 
 ## Fences
 

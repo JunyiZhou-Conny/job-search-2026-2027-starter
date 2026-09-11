@@ -149,7 +149,7 @@ See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery ord
 
 `application_weight` stays. It is production policy, not a pilot leftover.
 
-Regular work is fast and truthful. Prefer the Simplify resume already attached. Require Simplify Copilot on the employer page, Autofill once, then correct visible fields. If the widget is empty, do not upload the two-page master `JZ_resume` PDF. Mark REVIEW_READY with blocker missing_production_resume and continue the worker. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. If Copilot is missing, stop the apply run for owner action. Do not consume the queue job.
+Regular work is fast and truthful. Require Simplify Copilot on the employer page, Autofill once, then correct visible fields. If a resume is already on the widget, leave it. If Polar must upload a file, including when Copilot cannot drive that ATS resume control, upload `resumes/Perfect Resume/perfect_resume.pdf`. Do not upload the two-page master `JZ_resume` PDF. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. If Copilot is missing, stop the apply run for owner action. Do not consume the queue job.
 
 Prioritized work gets more care. Signals include startup or scale-up Junyi values, Fortune 500 or major companies, NVIDIA GTC, prestige, biotech or health AI, strong biostatistics or bio data-science fit, FDE, and unusually strong personal fit. Do not mark a generic analyst or data role prioritized only because the title contains "data".
 
@@ -179,7 +179,7 @@ Escalate to `BLOCKED` only after this local environment cannot complete a requir
 
 Cloud Computer Use still uses ATS-family gates in `config/submit_gates.yaml`. Those gates stay because that is the evidence we have for cloud Chrome. G2 stays closed there.
 
-Polar Local uses capability and policy checks. A regular job may be submitted once when the duplicate check passes, company and title match, the correct resume is attached, identity is correct, required facts are resolved, no unsupported claim was invented, writing is evidence-grounded, weight is regular, final review passes, one Submit is used, and the result is verified or marked `SUBMISSION_UNKNOWN`.
+Polar Local uses capability and policy checks. A regular job may be submitted once when the duplicate check passes, company and title match, a resume is attached (visible widget, or `resumes/Perfect Resume/perfect_resume.pdf` if Polar had to upload), identity is correct, required facts are resolved, no unsupported claim was invented, writing is evidence-grounded, weight is regular, final review passes, one Submit is used, and the result is verified or marked `SUBMISSION_UNKNOWN`.
 
 Initial canary caps live in `knowledge/polar_operator.yaml` and `config/submit_gates.yaml` `polar_local`:
 
