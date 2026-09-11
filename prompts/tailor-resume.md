@@ -1,6 +1,6 @@
 # VIP-tailor a resume
 
-Use this only for an exceptional high-priority JD. Ordinary applications route to a frozen family variant.
+Use this only for an exceptional high-priority JD. Ordinary Polar ingest is `resumes/Perfect Resume/perfect_resume.pdf`.
 
 - Compare the JD to `knowledge/evidence_bank.yaml`.
 - Run `python3 scripts/resume_quality.py run --jd <file> --out generated/resume_quality/<slug>`.

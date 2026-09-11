@@ -45,9 +45,9 @@ AI Infra stays the systems page. Do not pull AutoResearch onto SWE or ML/AI to m
 
 ## Concerns for a human before activation
 
-1. Registry rows are inactive. Polar still prefers Simplify and will mark an empty widget `missing_production_resume`.
+1. Family registry rows stay inactive. Polar ingest is `resumes/Perfect Resume/perfect_resume.pdf` when a form needs a file.
 2. This VM has `SIMPLIFY_EMAIL=[REDACTED]`. A real apply export needs `RESUME_EMAIL` or a usable `SIMPLIFY_EMAIL`.
 3. speciesOT $R^2$ is a paired held-out-species prior, not Tabula atlas OOD. Interviewers will ask. Answers live in each family's `interview_defense.md`.
 4. Airway master verbs Architected and Led were not copied. Confirm that Scrum Master plus team of 6 is the intended public story.
 5. Two course projects on `ml_ai_v1` are labeled. Do not later strip the course labels to make the page look like internships.
-6. Do not activate until ROUTE exists or an owner picks a default attach by hand.
+6. Family ROUTE is still unbuilt. Polar ingest does not wait for it. Use Perfect Resume.

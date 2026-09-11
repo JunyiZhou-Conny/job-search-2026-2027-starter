@@ -9,7 +9,8 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Distinguish verified facts from inference and unknowns.
 - Preserve existing IDs and append history rather than rewriting it.
 - Every active record should have one concrete `next_action` and, where useful, a `next_action_date`.
-- Prefer the approved base resume plus targeted bullet edits over creating a completely new resume for every job.
+- Prefer the Junyi-supervised Perfect Resume for ATS ingest, plus a few frozen family variants, over creating a completely new resume for every job.
+- If an ATS widget needs a resume file, upload `resumes/Perfect Resume/perfect_resume.pdf`. See `knowledge/polar_resume_attach.yaml`.
 - Submit is governed by `docs/policy/SUBMIT_ROLLOUT.md`. Regular rows may be submitted autonomously once that ATS gate is open. Polar Local may also Submit prioritized rows after mandatory writing_log. Cursor Cloud prioritized rows still stop for a review packet. Never send a message on Junyi's behalf or claim an action was completed without evidence.
 
 ## Eligibility and sponsorship
@@ -127,6 +128,9 @@ week / meaning / culture questions only. A file there is not a submit.
 
 Copilot “Completed” on phone or resume is not proof the widget has a
 value. Look at the page. Especially on prioritized companies.
+If the resume widget is empty or Copilot cannot drive it, upload
+`resumes/Perfect Resume/perfect_resume.pdf`. Do not upload
+`resumes/base/JZ_resume.pdf`. Do not guess among family variants.
 
 Computer Use is hands only. The parent compiles an action sheet through
 `scripts/compile_cu_task.py` and `docs/automation/COMPUTER_USE_PROMPT.md`.

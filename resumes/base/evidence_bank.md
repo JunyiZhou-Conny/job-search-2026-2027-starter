@@ -16,9 +16,8 @@ GitHub + artifacts
   -> later role-specific one-page views
 ```
 
-`resumes/base/` is the master resume. Polar still prefers the Simplify-attached
-resume. The compiled `JZ_resume.pdf` is the empty-widget fallback, not proof that
-every application uses this file.
+`resumes/base/` is the master resume. It is inventory. Polar ingest is
+`resumes/Perfect Resume/perfect_resume.pdf`. Do not upload `JZ_resume.pdf`.
 
 ## Projects on the master resume
 
@@ -57,6 +56,6 @@ Do not quote new speciesOT scorecard decimals until Junyi clears them.
 
 ## Polar attach
 
-Prefer the Simplify resume already attached.
-If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.
-Mark REVIEW_READY with blocker `missing_production_resume`.
+See `knowledge/polar_resume_attach.yaml`.
+If a file must be uploaded, use `resumes/Perfect Resume/perfect_resume.pdf`.
+Do not upload `resumes/base/JZ_resume.pdf`.

@@ -1,0 +1,34 @@
+# Polar and Cloud attach contract. Junyi 2026-09-11.
+# When any apply path must put a resume file on an ATS widget, use this PDF.
+# Family one-pagers stay BUILD artifacts. They are not Polar's default ingest.
+# The two-page master stays inventory.
+
+version: 1
+updated: "2026-09-11"
+owner_decision: "Junyi 2026-09-11"
+
+ingest_version: perfect_resume
+ingest_pdf: "resumes/Perfect Resume/perfect_resume.pdf"
+ingest_tex: "resumes/Perfect Resume/perfect_resume.tex"
+master_tex: "resumes/base/JZ_resume.tex"
+master_pdf: "resumes/base/JZ_resume.pdf"
+
+never_upload:
+  - "resumes/base/JZ_resume.pdf"
+
+runtime_lines:
+  - "Junyi-supervised ingest file: `resumes/Perfect Resume/perfect_resume.pdf` (source `resumes/Perfect Resume/perfect_resume.tex`)."
+  - "If a resume must be uploaded or Polar is unsure which file to pick, upload that Perfect Resume PDF."
+  - "Use it when the widget is empty, Simplify Copilot leaves the widget empty, Copilot is incompatible with the ATS resume control, or family variants would force a guess."
+  - "A Simplify resume already visible on the widget may stay. Do not replace a filled widget unless it is the wrong file or empty after autofill."
+  - "Do not upload `resumes/base/JZ_resume.pdf`. That two-page master is inventory, not a production attach."
+  - "Do not pick a frozen family one-pager at apply time. Do not invent a new resume for every job."
+  - "Do not mark REVIEW_READY only because the widget is empty. The Perfect Resume is the production ingest."
+
+workflow_lines:
+  - "If Copilot is PRESENT, Autofill once. Use Simplify at most once."
+  - "Look at the resume widget. Copilot Completed is not proof it has a file."
+  - "If the widget is empty, Copilot did not attach a file, Copilot cannot drive that ATS resume control, or you are unsure which resume to upload, upload `resumes/Perfect Resume/perfect_resume.pdf`."
+  - "Do not upload `resumes/base/JZ_resume.pdf`. Do not choose a family variant. Do not generate a resume from the JD."
+
+submit_check: "Approved production resume is attached (visible widget, or `resumes/Perfect Resume/perfect_resume.pdf` if Polar had to upload). Do not upload the two-page master."

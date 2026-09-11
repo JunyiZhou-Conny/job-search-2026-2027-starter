@@ -6,4 +6,5 @@ Do not overwrite this folder from `knowledge/evidence_bank.yaml`, family philoso
 
 File: `perfect_resume.tex`
 
-Polar is not wired to this file unless an owner says so.
+Polar ingest file. If an ATS widget needs a resume, upload `perfect_resume.pdf`.
+See `knowledge/polar_resume_attach.yaml`.

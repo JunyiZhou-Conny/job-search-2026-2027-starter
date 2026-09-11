@@ -14,6 +14,7 @@ Canonical sources:
 - `knowledge/polar_documents.yaml`
 - `knowledge/work_authorization.yaml`
 - `knowledge/form_strategy.yaml`
+- `knowledge/polar_resume_attach.yaml`
 - `knowledge/application_priority.yaml`
 - `knowledge/discovery_triage_rules.yaml`
 - `knowledge/target_roles.yaml`
@@ -165,7 +166,7 @@ Do not reopen Original Job Post during hourly discovery to catch them.
 
 ## D. Regular vs prioritized policy
 
-Regular: Fast truthful autonomous execution on Polar Local once polar_local caps allow it. Simplify resume already attached. Do not upload the two-page master. Short, prompt-faithful free response.
+Regular: Fast truthful autonomous execution on Polar Local once polar_local caps allow it. If a resume file must be uploaded, use resumes/Perfect Resume/perfect_resume.pdf. Do not upload the two-page master. Short, prompt-faithful free response.
 Prioritized: Extra judgment. Tailor resume toward the JD using only evidence-bank facts. Free-response gets a real answer to the prompt, not a project dump. Full form prep, mandatory writing_log of every meaningful custom question, then Polar Local may Submit when final validation passes (docs/policy/SUBMIT_ROLLOUT.md). Daily digest gives Junyi post-submit oversight. Do not wait for a referral / insider-page check. Junyi 2026-08-24: those pages are rare; the public pool is closer to FIFO, so waiting costs more than it saves.
 
 Prioritized signals, only when strongly applicable:
@@ -209,11 +210,13 @@ Reserve up to 1 new-execution slot per apply-ready-jobs run for READY_PRIORITY w
 
 ## E. Resume-cluster selection
 
-One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach.
-Prefer the Simplify resume already attached.
-If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.
-Mark REVIEW_READY with blocker missing_production_resume and continue the worker.
-Do not invent a new resume for every job.
+Junyi-supervised ingest file: `resumes/Perfect Resume/perfect_resume.pdf` (source `resumes/Perfect Resume/perfect_resume.tex`).
+If a resume must be uploaded or Polar is unsure which file to pick, upload that Perfect Resume PDF.
+Use it when the widget is empty, Simplify Copilot leaves the widget empty, Copilot is incompatible with the ATS resume control, or family variants would force a guess.
+A Simplify resume already visible on the widget may stay. Do not replace a filled widget unless it is the wrong file or empty after autofill.
+Do not upload `resumes/base/JZ_resume.pdf`. That two-page master is inventory, not a production attach.
+Do not pick a frozen family one-pager at apply time. Do not invent a new resume for every job.
+Do not mark REVIEW_READY only because the widget is empty. The Perfect Resume is the production ingest.
 
 Title families are job taxonomy only. resume_cluster is not a file.
 - cloud_swe: Software Engineer, Backend Engineer, Platform Engineer, Cloud Engineer, Infrastructure Engineer, New Grad SWE
@@ -332,7 +335,7 @@ Prioritized auto-submit: True.
 A regular job may be submitted once only when every item holds:
 - Duplicate check passes against the Sheet and section K.
 - Company and title on the page match the queue row.
-- Approved production resume is attached (Simplify). Do not upload the two-page master.
+- Approved production resume is attached (visible widget, or `resumes/Perfect Resume/perfect_resume.pdf` if Polar had to upload). Do not upload the two-page master.
 - Identity fields are correct after a visible read-back.
 - Required factual fields are resolved from this runtime or left for Junyi.
 - No unsupported claim was invented.

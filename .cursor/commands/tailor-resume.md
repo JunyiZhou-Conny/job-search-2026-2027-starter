@@ -1,6 +1,6 @@
 # /tailor-resume
 
-VIP tailoring only. Regular Polar rows route to a frozen family one-pager. Do not generate a resume from a JD at apply time.
+VIP tailoring only. Regular Polar ingest is `resumes/Perfect Resume/perfect_resume.pdf` when a file must be uploaded. Do not generate a resume from a JD at apply time.
 
 ```bash
 python3 scripts/resume_quality.py run --jd <jd-file> --out generated/resume_quality/<slug>
@@ -13,7 +13,7 @@ That command is the current `vip-tailor` stand-in. See `docs/resume/QUALITY_ENGI
 3. Facts come from `knowledge/evidence_bank.yaml`. The wording catalog may not add ownership, architecture, impact, or technologies.
 4. Compile with `./scripts/compile_resume.sh generated/resume_quality/<slug>/resume.tex`.
 5. Register `data/resume_versions.csv` only after a human accepts the file.
-6. Leave Polar, form fill, and submit on the ROUTE path.
+6. Leave Polar, form fill, and submit on the ingest path in `knowledge/polar_resume_attach.yaml`.
 
 Do not invent skills, metrics, employers, or planned work written as done.
 Do not restore `scripts/build_clusters.py`.

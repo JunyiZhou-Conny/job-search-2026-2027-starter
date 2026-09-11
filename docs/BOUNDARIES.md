@@ -68,6 +68,10 @@ Polar runs hourly discovery and application execution on Junyi's Mac
 `generated/polar/runtime/POLAR_RUNTIME.md`, and checkpoints the Google
 Sheet. The Live Slot mailbox `generated/polar/LIVE.md` is pilot history.
 
+If Polar must upload a resume file, use
+`resumes/Perfect Resume/perfect_resume.pdf`
+(`knowledge/polar_resume_attach.yaml`).
+
 It must **not** own `data/applications.csv` or mint ledger ids.
 Cursor reconciles verified Sheet results into the ledger.
 Cloud discovery stays as shadow and fallback until the 48-hour

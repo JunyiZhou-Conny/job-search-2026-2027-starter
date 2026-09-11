@@ -14,12 +14,15 @@ This folder starts fresh with one active resume.
 
 ## How Polar attaches a resume
 
-Prefer the Simplify resume already attached.
+If a resume is already visible on the widget, leave it.
 
-If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.
-Mark REVIEW_READY with blocker `missing_production_resume` and continue the batch.
+If Polar must upload a file, use `Perfect Resume/perfect_resume.pdf`.
+That includes an empty widget, Copilot leaving the widget empty, Copilot
+incompatible with the ATS resume control, or uncertainty about which
+family file to pick.
 
-Do not invent a new resume for every job.
+Do not upload `base/JZ_resume.pdf`. Do not invent a new resume for every job.
+Canonical rule: `knowledge/polar_resume_attach.yaml`.
 
 ## Compile
 

@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Tuple
 
+from polar_resume_attach import workflow_lines as attach_workflow_lines
 from polar_policy import (
     APPLY_URL_CONFIDENCE,
     CLAIM_REPEAT_ALREADY,
@@ -549,9 +550,8 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "   If Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.",
             "   Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.",
             "8. Authenticate with ordinary browser flows when asked. Account creation is normal work.",
-            "9. Prefer the Simplify resume already attached. If Copilot is PRESENT, Autofill once. Use Simplify at most once.",
-            "   Do not upload `resumes/base/JZ_resume.pdf`. That file is the two-page master, not a production attach.",
-            "   If the widget is empty, mark REVIEW_READY with blocker missing_production_resume and continue the worker.",
+            "9. Resume ingest from knowledge/polar_resume_attach.yaml.",
+            *[f"   {line}" for line in attach_workflow_lines()],
             "10. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.",
             "   Authorization and identity widgets use polar_policy.auth_form_action.",
             "   Classify the exact question. Answer only that semantic. Do not copy one fact into another field.",

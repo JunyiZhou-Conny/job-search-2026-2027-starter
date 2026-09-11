@@ -33,6 +33,10 @@ This repository.
 
 Question answered: *Why apply, which resume, what auth answers, who was contacted, what did we learn, what is next?*
 
+If an ATS widget needs a resume file, the ingest is
+`resumes/Perfect Resume/perfect_resume.pdf`. See
+`knowledge/polar_resume_attach.yaml`.
+
 Owned here only:
 
 - `resume_version`
