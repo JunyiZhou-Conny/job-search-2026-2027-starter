@@ -1,0 +1,42 @@
+% Technical Skills
+\section{Technical Skills}
+\resumeSubHeadingListStart
+  \resumeItem{Languages}{Python}
+  \resumeItem{ML}{PyTorch, LoRA / PEFT, BLIP-2, DenseNet-121, scanpy, AnnData, Hugging Face}
+  \resumeItem{Data}{held-out evaluation, Kaggle leaderboard, prompt ablations}
+  \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
+\resumeSubHeadingListEnd
+
+% Machine Learning Projects
+\section{Machine Learning Projects}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/speciesOT}{speciesOT: Cross-Species Single-Cell Translation}}{Boston, MA}
+    {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
+    \resumeItemListStart
+      \item Compared an ICNN optimal-transport map (IMPACT\_CellOT) with an scGen latent mean-shift inside one shared autoencoder on a mouse-to-human single-cell task.
+      \item On a paired held-out-species evaluation, scGen $R^2$ was \textbf{0.85--0.90} with the source species in training versus \textbf{0.65--0.67} when that species was held out.
+      \item Gene-space ranking reversed with the split. 6619 orthologs won $R^2$ across genes on the in-train split. 1000 HVGs won the reported metrics when that species was held out.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/mini3}{TextVQA: Zero-Shot, Prompts, and LoRA Fine-Tuning}}{Boston, MA}
+    {Sole author | Harvard AI in Medicine}{May 2026}
+    \resumeItemListStart
+      \item Fine-tuned BLIP-2 with LoRA on TextVQA. Zero-shot accuracy was \textbf{0.078}. An InstructBLIP OCR-augmented prompt reached \textbf{0.106}. LoRA $r{=}8$ OCR-aware fine-tune reached \textbf{0.213}.
+      \item Ablated LoRA rank over $r$ in $\{4, 8, 16\}$. The adapter is a parameter-efficient fine-tune on one A100.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/BST-261-2026-Pneumonia-Chest-X-Ray-Classification}{Pneumonia Detection from Chest Radiographs}}{Boston, MA}
+    {Sole author | Harvard BST-261 Kaggle competition}{May 2026}
+    \resumeItemListStart
+      \item Reached a Kaggle public score of \textbf{0.959} after diagnosing a 14-point generalization gap (99\%+ validation versus 85\% leaderboard) on about 4,700 training images.
+      \item Domain-aware augmentation, with no vertical flips and rotation capped at 15 degrees, lifted the leaderboard from 85\% to about 96\%.
+      \item Freezing early layers versus full fine-tuning moved the leaderboard from 85\% to 95\%+ and mattered more than architecture choice. DenseNet-121 scored 95.6\%. ResNet-50 scored 93.8\%.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\end{document}
