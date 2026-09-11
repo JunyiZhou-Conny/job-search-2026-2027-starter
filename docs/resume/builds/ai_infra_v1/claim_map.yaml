@@ -1,0 +1,32 @@
+variant: ai_infra_v1
+selector: docs/resume/builds/ai_infra_v1/selection.md
+projects:
+  autoresearch_cellot:
+    fields:
+      - software_engineering_evidence
+      - measurable_results
+      - technologies
+      - control_logic
+      - do_not_claim
+  job_search_os:
+    recruiter_facing_title: Human-Supervised Browser Automation System
+    fields:
+      - architecture
+      - software_engineering_evidence
+      - strongest_accomplishments
+      - do_not_claim
+  cellot_wyss:
+    fields:
+      - software_engineering_evidence
+      - research_evidence
+      - measurable_results
+      - do_not_claim
+      - not_yet_built
+dropped_from_page:
+  mixhvg_py:
+    reason: Fourth project crowded the page and repeated speciesOT biology. See selection.md.
+    fields_reserved_for_later_family:
+      - architecture
+      - research_evidence
+      - measurable_results
+      - do_not_claim

@@ -11,7 +11,7 @@ import yaml
 
 from rqe.judge import arena, arena_markdown, validate_pdf_pages, validate_tex, validation_markdown
 from rqe.jd import parse_jd_file
-from rqe.load import BANK_PATH, PHILOSOPHY_PATH, ROOT, load_bank
+from rqe.load import BANK_PATH, PHILOSOPHY_PATH, ROOT, load_bank, load_philosophy
 from rqe.plan import all_strategies, match_job
 from rqe.render import (
     BaseDoc,
@@ -41,6 +41,12 @@ def _sha(path: Path) -> str:
 def _write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text if text.endswith("\n") else text + "\n")
+
+
+def _emit_validation(path: Path, *reports: ValidationReport) -> str:
+    text = "".join(validation_markdown(report) for report in reports)
+    _write(path, text)
+    return text
 
 
 def _dump_yaml(path: Path, data: object) -> None:
@@ -170,6 +176,59 @@ def cmd_validate(tex_path: Path) -> int:
     return 0 if report.ok else 1
 
 
+FAMILY_VARIANT = {
+    "ai_infra": ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex",
+}
+FAMILY_ARTIFACT = {
+    "ai_infra": ROOT / "docs" / "resume" / "builds" / "ai_infra_v1",
+}
+
+
+def cmd_build(family: str, *, compile_pdf: bool) -> int:
+    spec = (load_philosophy().get("role_families") or {}).get(family)
+    if not isinstance(spec, dict) or not spec.get("production"):
+        print(f"unknown family {family!r}", file=sys.stderr)
+        return 2
+    tex_path = FAMILY_VARIANT.get(family)
+    if tex_path is None:
+        print(f"family {family!r} is not built yet", file=sys.stderr)
+        return 2
+    print(f"variant {tex_path.relative_to(ROOT)}")
+    if not tex_path.is_file():
+        print(f"missing frozen variant {tex_path}", file=sys.stderr)
+        return 2
+
+    bank = load_bank()
+    tex_report = validate_tex(bank, tex_path.read_text())
+    artifact = FAMILY_ARTIFACT[family]
+    reports = [tex_report]
+    print(validation_markdown(tex_report), end="")
+
+    compile_rc = 0
+    if compile_pdf:
+        script = ROOT / "scripts" / "compile_resume.sh"
+        proc = subprocess.run(
+            [str(script), str(tex_path)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+        )
+        (artifact / "compile.log").write_text(proc.stdout + "\n" + proc.stderr)
+        if proc.returncode != 0:
+            print(proc.stdout)
+            print(proc.stderr, file=sys.stderr)
+            compile_rc = proc.returncode
+        else:
+            pdf_report = validate_pdf_pages(tex_path.with_suffix(".pdf"), limit=1)
+            reports.append(pdf_report)
+            print(validation_markdown(pdf_report), end="")
+
+    _emit_validation(artifact / "validation_report.md", *reports)
+    if compile_rc:
+        return compile_rc
+    return 0 if all(report.ok for report in reports) else 1
+
+
 def cmd_benchmark(out_root: Path, *, compile_pdf: bool) -> int:
     fixtures = sorted((ROOT / "tests" / "fixtures" / "resume_quality" / "jds").glob("*.md"))
     if not fixtures:
@@ -203,6 +262,10 @@ def main(argv: list[str] | None = None) -> int:
     bench_p.add_argument("--out", type=Path, default=ROOT / "generated" / "resume_quality")
     bench_p.add_argument("--compile", action="store_true")
 
+    build_p = sub.add_parser("build", help="validate a frozen family one-pager")
+    build_p.add_argument("--family", required=True)
+    build_p.add_argument("--compile", action="store_true")
+
     args = parser.parse_args(argv)
     if args.cmd == "run":
         return run_job(args.jd, args.out, compile_pdf=args.compile, strategy_name=args.strategy)
@@ -210,6 +273,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_validate(args.tex)
     if args.cmd == "benchmark":
         return cmd_benchmark(args.out, compile_pdf=args.compile)
+    if args.cmd == "build":
+        return cmd_build(args.family, compile_pdf=args.compile)
     return 2
 
 

@@ -123,6 +123,9 @@ for tex in "${targets[@]}"; do
     echo "  OK $pdf ($pages page(s), $bytes bytes)"
     ok=$((ok + 1))
   fi
+  if grep -q 'mailto:\[REDACTED\]' "$tex"; then
+    echo "  NOTE: sanitized source. Application export: python3 scripts/export_resume.py --family ai_infra" >&2
+  fi
   # Drop noisy latexmk auxiliaries; keep .pdf + .tex
   latexmk -c -outdir="$outdir" "$tex" >/dev/null 2>&1 || true
 done
