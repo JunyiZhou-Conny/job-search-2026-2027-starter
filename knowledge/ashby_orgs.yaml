@@ -16,6 +16,9 @@ orgs:
   baseten:
     company: Baseten
     source: "careers_boards.yaml ashby; live 2026-09-03"
+  bedrock-robotics:
+    company: Bedrock Robotics
+    source: "careers_boards.yaml ashby; verified 2026-09-11; Internship 2027 Onboard Infrastructure Engineer, ML Inference 0331551e SF unique"
   bild-ai:
     company: Bild AI
     source: "careers_boards.yaml ashby; live 2026-09-03"
