@@ -1,0 +1,50 @@
+% Technical Skills
+\section{Technical Skills}
+\resumeSubHeadingListStart
+  \resumeItem{Languages}{Python, C++, SQL, R}
+  \resumeItem{ML systems}{PyTorch, TensorFlow, scanpy, AnnData, YAML}
+  \resumeItem{Cluster and automation}{SLURM, FASRC Cannon, job arrays, checkpoint/resume}
+  \resumeItem{Verification}{unittest, pytest}
+  \resumeItem{Certifications}{AWS Certified Cloud Practitioner, AWS Certified AI Practitioner, AWS Machine Learning Associate}
+\resumeSubHeadingListEnd
+
+% Engineering Projects
+\section{Engineering Projects}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/scgen-cellot-autoresearch}{Closed-Loop Cluster Autoresearch: scGen vs CellOT}}{Boston, MA}
+    {Sole author | Harvard FASRC Cannon}{June 2026 -- Present}
+    \resumeItemListStart
+      \item Built a self-directed loop (submit $\rightarrow$ watch $\rightarrow$ triage $\rightarrow$ reflect $\rightarrow$ decide $\rightarrow$ continue $\rightarrow$ synthesize) that ran \textbf{338} SLURM jobs (318 ok, 20 handled errors) over \textbf{79.3} hours on Cannon.
+      \item Split a deterministic one-delta planner, gated by a validation policy, from a checkpointed research agenda. Optional LLM planner infrastructure includes token and cost accounting and a spend ceiling that falls back to the rule planner.
+      \item Routed tiny-MLP training to CPU partitions because GPU carries 200--500$\times$ fairshare cost, and resumed preempted jobs from the last checkpoint.
+    \resumeItemListEnd
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/job-search-2026-2027-starter}{Human-Supervised Browser Automation System}}{Boston, MA}
+    {Sole author}{July 2026 -- Present}
+    \resumeItemListStart
+      \item Built a human-supervised browser automation system for job applications that keeps GitHub as durable policy and evidence, a Google Sheet as live runtime state, and Simplify as the application ledger.
+      \item Compiles YAML policy into one runtime file the local browser operator reads. Submit is allowed only after listed identity and writing checks.
+      \item Browser steps follow a compiled action sheet rather than rediscovering the form. Designed recovery for Mac shutdown, Wi-Fi loss, and browser restart.
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+% Research Experience
+\section{Research Experience}
+\resumeSubHeadingListStart
+
+  \resumeSubheading
+    {\href{https://github.com/JunyiZhou-Conny/speciesOT}{speciesOT: Cross-Species Single-Cell Translation}}{Boston, MA}
+    {Graduate Researcher | Mooney Lab \& Alvarez-Melis Lab, Wyss Institute}{February 2026 -- Present}
+    \resumeItemListStart
+      \item Built a hub CLI that catalogs trained runs, ranks them on decoded-space gap-closed rather than raw $R^2$, and prints SLURM chains without submitting jobs. Fifteen YAML specs are the intent source of truth.
+      \item Engineered atlas-scale I/O so the documented \textbf{43 GB} Tabula files are not fully loaded on a login node, and baked gene-axis plus scGen-shift sidecars so a new mouse prediction does not reopen the training atlas.
+      \item On a paired held-out-species evaluation, scGen $R^2$ was \textbf{0.85--0.90} with the source species in training versus \textbf{0.65--0.67} when that species was held out. Gene-space ranking reversed with split (6619 orthologs vs 1000 HVGs).
+    \resumeItemListEnd
+
+\resumeSubHeadingListEnd
+
+\end{document}

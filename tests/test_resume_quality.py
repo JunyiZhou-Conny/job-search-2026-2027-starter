@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from rqe.cli import _emit_validation  # noqa: E402
 from rqe.judge import validate_tex  # noqa: E402
 from rqe.jd import parse_jd  # noqa: E402
 from rqe.load import (  # noqa: E402
@@ -18,6 +19,7 @@ from rqe.load import (  # noqa: E402
     load_bank,
     load_yaml,
 )
+from rqe.models import ValidationIssue, ValidationReport  # noqa: E402
 from rqe.plan import build_strategy, match_job  # noqa: E402
 from rqe.render import BaseDoc, build_candidate  # noqa: E402
 from resume_quality import main as rqe_main  # noqa: E402
@@ -47,6 +49,12 @@ class TestValidator(unittest.TestCase):
     def test_planted_latency_metric_fails(self) -> None:
         tex = self.shell.replace("PLACEHOLDER", "Cut inference latency 40% on a made-up serving stack.")
         report = validate_tex(self.bank, tex, (_usable_claim(self.bank, "airway_chatbot"),))
+        codes = [i.code for i in report.issues if i.severity == "fail"]
+        self.assertIn("unsupported_metric", codes, report.issues)
+
+    def test_empty_used_ids_rejects_planted_metric(self) -> None:
+        tex = self.shell.replace("PLACEHOLDER", "Cut inference latency 40% on a made-up serving stack.")
+        report = validate_tex(self.bank, tex, ())
         codes = [i.code for i in report.issues if i.severity == "fail"]
         self.assertIn("unsupported_metric", codes, report.issues)
 
@@ -95,6 +103,20 @@ class TestMatcher(unittest.TestCase):
         matches = match_job(bank, job)
         strong = [m for m in matches if m.strength == "strong_direct"]
         self.assertFalse(strong, strong)
+
+
+class TestForbiddenClaims(unittest.TestCase):
+    def test_autoresearch_do_not_claim_is_forbidden(self) -> None:
+        bank = load_bank()
+        forbidden = [
+            claim
+            for claim in bank.projects["autoresearch_cellot"].claims
+            if claim.verification_status == "forbidden"
+        ]
+        self.assertTrue(
+            any("LLM directed" in claim.claim for claim in forbidden),
+            [claim.claim for claim in forbidden],
+        )
 
 
 class TestCatalog(unittest.TestCase):
@@ -195,6 +217,68 @@ class TestCliValidate(unittest.TestCase):
         )
         rc = rqe_main(["validate", str(tex)])
         self.assertIn(rc, (0, 1))
+
+
+class TestCliBuild(unittest.TestCase):
+    def test_do_not_claim_is_loaded_as_forbidden(self) -> None:
+        bank = load_bank()
+        forbidden = [
+            claim.claim.lower()
+            for claim in bank.projects["autoresearch_cellot"].claims
+            if claim.verification_status == "forbidden"
+        ]
+        self.assertTrue(any("llm directed" in text for text in forbidden), forbidden)
+
+    def test_validate_without_claim_ids_rejects_invented_metric(self) -> None:
+        bank = load_bank()
+        tex = (ROOT / "resumes" / "base" / "JZ_resume.tex").read_text()
+        shell = tex.split("\\begin{document}")[0] + (
+            "\\begin{document}\n"
+            "Junyi (Conny) Zhou\n"
+            "\\section{Projects}\n"
+            "\\resumeItemListStart\n"
+            "      \\item Cut inference latency 40% on a made-up serving stack.\n"
+            "\\resumeItemListEnd\n"
+            "\\end{document}\n"
+        )
+        report = validate_tex(bank, shell)
+        codes = [i.code for i in report.issues if i.severity == "fail"]
+        self.assertIn("unsupported_metric", codes, report.issues)
+
+    def test_build_other_families_exit_2(self) -> None:
+        self.assertEqual(rqe_main(["build", "--family", "swe"]), 2)
+        self.assertEqual(rqe_main(["build", "--family", "ml_ai"]), 2)
+        self.assertEqual(rqe_main(["build", "--family", "health_ai"]), 2)
+
+    def test_build_ai_infra(self) -> None:
+        tex = ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex"
+        self.assertTrue(tex.is_file(), tex)
+        source = tex.read_text()
+        self.assertIn("Human-Supervised Browser Automation System", source)
+        self.assertIn("speciesOT: Cross-Species Single-Cell Translation", source)
+        self.assertIn("hidelinks", source)
+        self.assertNotIn("[GitHub]", source)
+        self.assertNotIn("mixhvg-py", source)
+        self.assertNotIn("policy.validate", source)
+        self.assertNotIn("has not been used on recorded runs", source)
+        self.assertIn(r"\href{mailto:[REDACTED]}{[REDACTED]}", source)
+        rc = rqe_main(["build", "--family", "ai_infra"])
+        self.assertEqual(rc, 0)
+        report = ROOT / "docs" / "resume" / "builds" / "ai_infra_v1" / "validation_report.md"
+        self.assertTrue(report.is_file())
+        self.assertIn("No hard failures", report.read_text())
+
+    def test_emit_validation_writes_joined_reports_once(self) -> None:
+        clean = ValidationReport()
+        pages = ValidationReport()
+        pages.issues.append(ValidationIssue("fail", "page_overflow", "2 pages"))
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "validation_report.md"
+            text = _emit_validation(path, clean, pages)
+            self.assertEqual(path.read_text(), text)
+            self.assertEqual(text.count("# Validation report"), 2)
+            self.assertIn("No hard failures", text)
+            self.assertIn("page_overflow", text)
 
 
 if __name__ == "__main__":

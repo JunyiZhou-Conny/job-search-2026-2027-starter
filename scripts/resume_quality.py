@@ -3,6 +3,7 @@
 
     python3 scripts/resume_quality.py run --jd tests/fixtures/resume_quality/jds/twitch-swe.md \\
         --out generated/resume_quality/twitch-swe
+    python3 scripts/resume_quality.py build --family ai_infra
     python3 scripts/resume_quality.py benchmark
     python3 scripts/resume_quality.py validate generated/resume_quality/twitch-swe/resume.tex
 """

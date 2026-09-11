@@ -96,27 +96,34 @@ def validate_tex(bank: Bank, tex: str, used_claim_ids: tuple[str, ...] = ()) -> 
                 ValidationIssue("fail", "planned_as_done", f"planned work written as completed ({pat})")
             )
 
-    if used_claim_ids:
-        allowed = _allowed_numbers(bank, used_claim_ids)
-        for item in _item_texts(tex):
-            if re.match(r"^(Languages|ML|LLM|Backend|Data|Cloud|Certifications)\b", item):
+    claim_ids = used_claim_ids
+    if not claim_ids:
+        claim_ids = tuple(
+            claim.id
+            for project in bank.projects.values()
+            for claim in project.claims
+            if claim.usable_on_resume
+        )
+    allowed = _allowed_numbers(bank, claim_ids)
+    for item in _item_texts(tex):
+        if re.match(r"^(Languages|ML|LLM|Backend|Data|Cloud|Certifications)\b", item):
+            continue
+        if "program requirements complete" in item.lower() or "coursework:" in item.lower():
+            continue
+        for m in _NUM.finditer(item):
+            keys = _number_keys(m.group(0))
+            if keys & allowed:
                 continue
-            if "program requirements complete" in item.lower() or "coursework:" in item.lower():
+            raw = re.sub(r"\s+", "", m.group(0).lower())
+            if raw.isdigit() and int(raw) <= 31:
                 continue
-            for m in _NUM.finditer(item):
-                keys = _number_keys(m.group(0))
-                if keys & allowed:
-                    continue
-                raw = re.sub(r"\s+", "", m.group(0).lower())
-                if raw.isdigit() and int(raw) <= 31:
-                    continue
-                report.issues.append(
-                    ValidationIssue(
-                        "fail",
-                        "unsupported_metric",
-                        f"number {m.group(0)!r} in bullet {item!r} is not in the evidence bank",
-                    )
+            report.issues.append(
+                ValidationIssue(
+                    "fail",
+                    "unsupported_metric",
+                    f"number {m.group(0)!r} in bullet {item!r} is not in the evidence bank",
                 )
+            )
 
     if "\\end{document}" not in tex:
         report.issues.append(ValidationIssue("fail", "malformed_tex", "missing \\end{document}"))
@@ -135,6 +142,22 @@ def validate_pdf_pages(pdf: Path, limit: int = 1) -> ValidationReport:
         report.issues.append(ValidationIssue("fail", "pdf_magic", f"{pdf} is not a PDF"))
         return report
     pages = len(re.findall(rb"/Type\s*/Page\b", data))
+    if pages == 0:
+        try:
+            import subprocess
+
+            info = subprocess.run(
+                ["pdfinfo", str(pdf)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            for line in info.stdout.splitlines():
+                if line.lower().startswith("pages:"):
+                    pages = int(line.split(":", 1)[1].strip())
+                    break
+        except (OSError, ValueError):
+            pages = 0
     if pages == 0:
         report.issues.append(ValidationIssue("warn", "pdf_pages_unknown", "could not count PDF pages"))
     elif pages > limit:
