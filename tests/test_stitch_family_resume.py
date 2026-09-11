@@ -13,6 +13,7 @@ from stitch_family_resume import (  # noqa: E402
     EDUCATION,
     HYPERREF_HIDELINKS,
     MASTER,
+    PRODUCTION_FAMILIES,
     SKILLS,
     assemble,
     require_sentinel,
@@ -21,6 +22,15 @@ from stitch_family_resume import (  # noqa: E402
 
 
 class TestStitchSentinels(unittest.TestCase):
+    def test_production_families_cover_the_stack(self) -> None:
+        self.assertEqual(
+            set(PRODUCTION_FAMILIES),
+            {"ai_infra", "swe", "ml_ai", "health_ai"},
+        )
+        for spec in PRODUCTION_FAMILIES.values():
+            self.assertTrue(spec.fragment.is_file(), spec.fragment)
+            self.assertTrue(spec.tex.is_file(), spec.tex)
+
     def test_real_master_has_ordered_sentinels(self) -> None:
         master = MASTER.read_text()
         begin = require_sentinel(master, BEGIN)

@@ -13,13 +13,16 @@ from export_resume import (  # noqa: E402
     application_email,
     apply_contact,
 )
+from stitch_family_resume import PRODUCTION_FAMILIES  # noqa: E402
 
 
 class TestExportResume(unittest.TestCase):
     def test_source_family_tex_stays_sanitized(self) -> None:
-        tex = (ROOT / "resumes" / "families" / "ai_infra" / "ai_infra_v1.tex").read_text()
-        self.assertIn(MAILTO_PLACEHOLDER, tex)
-        self.assertNotIn("[GitHub]", tex)
+        for name, spec in PRODUCTION_FAMILIES.items():
+            with self.subTest(family=name):
+                tex = spec.tex.read_text()
+                self.assertIn(MAILTO_PLACEHOLDER, tex)
+                self.assertNotIn("[GitHub]", tex)
 
     def test_apply_contact_replaces_placeholder(self) -> None:
         source = f"Email: {MAILTO_PLACEHOLDER}"
