@@ -172,6 +172,20 @@ CLAIM_REPEAT_MISSING_COLUMN = "missing_claim_column"
 CLAIM_HEADER_READY = "ready"
 CLAIM_HEADER_MISSING = "missing"
 CLAIM_HEADER_DUPLICATE = "duplicate"
+RESUME_FAMILY = "resume_family"
+ROUTE_CONFIDENCE = "route_confidence"
+ROUTE_REASON = "route_reason"
+RESUME_VARIANT = "resume_variant"
+ROUTE_COLUMNS = (
+    RESUME_FAMILY,
+    ROUTE_CONFIDENCE,
+    ROUTE_REASON,
+    RESUME_VARIANT,
+)
+ROUTE_HEADER_READY = "ready"
+ROUTE_HEADER_MISSING = "missing"
+ROUTE_HEADER_DUPLICATE = "duplicate"
+ROUTE_REPEAT_MISSING_COLUMN = "missing_route_columns"
 REQUISITION_REPEAT = "requisition_suppressed"
 CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
 CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
@@ -254,6 +268,7 @@ QUEUE_COLUMNS = [
     "employer_requisition_id",
     "ats_job_id",
     CLAIM_RUN_ID,
+    *ROUTE_COLUMNS,
 ]
 
 WRITING_LOG_COLUMNS = [
@@ -450,6 +465,30 @@ def plan_claim_header_migration(
     return state, current
 
 
+def route_header_state(headers: Sequence[str]) -> str:
+    counts = [
+        sum(1 for header in headers if str(header or "").strip() == name)
+        for name in ROUTE_COLUMNS
+    ]
+    if any(count > 1 for count in counts):
+        return ROUTE_HEADER_DUPLICATE
+    if all(count == 1 for count in counts):
+        return ROUTE_HEADER_READY
+    return ROUTE_HEADER_MISSING
+
+
+def plan_route_header_migration(
+    headers: Sequence[str],
+) -> Tuple[str, Tuple[str, ...]]:
+    state = route_header_state(headers)
+    current = tuple(str(header) for header in headers)
+    if state != ROUTE_HEADER_MISSING:
+        return state, current
+    have = {str(header or "").strip() for header in headers}
+    missing = tuple(name for name in ROUTE_COLUMNS if name not in have)
+    return state, current + missing
+
+
 DISCOVER_PROTECTED_STATUSES = frozenset(
     {
         "IN_PROGRESS",
@@ -468,6 +507,10 @@ DISCOVER_PROTECTED_FIELDS = (
     "confirmation",
     "blocker",
     "writing_summary",
+    RESUME_FAMILY,
+    ROUTE_CONFIDENCE,
+    ROUTE_REASON,
+    RESUME_VARIANT,
 )
 
 

@@ -242,10 +242,21 @@ class TestPolarRuntime(unittest.TestCase):
         discover = workflow_prompt("discover-jobs-hourly")
         apply = workflow_prompt("apply-ready-jobs")
         self.assertIn("Do not open Original Job Post in this Workflow.", discover)
+        self.assertIn("Do not open Original Job Post to classify", discover)
         self.assertNotIn("click Original Job Post", discover)
         self.assertIn("section K", discover)
         self.assertIn("Original Job Post", apply)
         self.assertIn("section K", apply)
+        self.assertIn("Do not rerun resume routing at apply time", apply)
+
+    def test_section_e_keeps_legacy_cluster_and_adds_family_route(self):
+        text = compile_text()
+        self.assertIn("## E. Resume-cluster selection", text)
+        self.assertIn("Title families are job taxonomy only. resume_cluster is not a file.", text)
+        self.assertIn("Production resume family is resume_family, not resume_cluster.", text)
+        self.assertIn("Do not open Original Job Post to classify.", text)
+        self.assertIn("python3 scripts/resume_route.py --role", text)
+        self.assertIn("VIP status does not change resume_family.", text)
 
     def test_ready_priority_auto_assign_without_label_gate(self):
         text = compile_text()

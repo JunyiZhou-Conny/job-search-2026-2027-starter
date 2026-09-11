@@ -1,7 +1,7 @@
 # polar-scheduler-heartbeat
 
 workflow: polar-scheduler-heartbeat
-workflow_version: 2026-09-10.worker-pool+b53185a9688a
+workflow_version: 2026-09-11.resume-route+b53185a9688a
 status: production
 enabled: true
 needs_browser_lock: false

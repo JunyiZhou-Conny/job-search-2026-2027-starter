@@ -216,9 +216,21 @@ Mark REVIEW_READY with blocker missing_production_resume and continue the worker
 Do not invent a new resume for every job.
 
 Title families are job taxonomy only. resume_cluster is not a file.
+Write resume_cluster from these title families on new rows only. Never overwrite an existing value.
 - cloud_swe: Software Engineer, Backend Engineer, Platform Engineer, Cloud Engineer, Infrastructure Engineer, New Grad SWE
 - data_ml: Machine Learning Engineer, Applied AI, AI Engineer, Data Scientist, Data Engineer, ML Intern/New Grad
 - health_ai: Healthcare AI, Clinical Data, Digital Health, Health Informatics, Life Science ML
+
+Production resume family is resume_family, not resume_cluster.
+Valid families: swe, ml_ai, ai_infra, health_ai. Unresolved: REVIEW.
+Classify from card metadata only. Do not open Original Job Post to classify.
+If local_filesystem is available, run `python3 scripts/resume_route.py --role "<role>" --company "<company>" --source "<board>" --track "<track>" --location "<location>"`.
+Write resume_family, route_confidence, route_reason, and resume_variant from that JSON.
+If the CLI is unavailable, write REVIEW / review / router_unavailable and leave resume_variant blank.
+If no approved active family variant exists, keep the family and leave resume_variant blank.
+Do not silently attach JZ_resume or another family's file.
+VIP status does not change resume_family. Prioritized is not VIP.
+Canonical routing policy: knowledge/resume_routing.yaml. See docs/resume/ROUTING.md.
 
 Prioritized rows may tailor from the evidence bank only when the JD justifies it.
 Do not invent lab hardware, customer on-site FDE, or technologies that are not resume-eligible.
@@ -387,7 +399,7 @@ Allowed last_stage values: discovered, source_resolved, application_open, authen
 Recovery order: SUBMISSION_UNKNOWN then IN_PROGRESS then READY_PRIORITY then READY_REGULAR.
 If the Mac slept during Job 6 IN_PROGRESS and the claim is abandoned or self-owned, resume Job 6. Do not restart Job 1.
 
-Queue columns: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id, claim_run_id
+Queue columns: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id, claim_run_id, resume_family, route_confidence, route_reason, resume_variant
 Prefer the Jobright job id when the source is Jobright (the last path segment of https://jobright.ai/jobs/info/<id>). Discovery stores the Jobright source_url. Do not require an employer URL during discovery. apply-ready-jobs fills apply_url later. Deduplicate again by normalized company + role + location when a Jobright id is missing. After Original Job Post is resolved, also deduplicate by employer requisition id, ATS job id, or canonical employer apply URL.
 
 Workflows never apply during discover-jobs-hourly.
@@ -577,7 +589,9 @@ After an important queue write, read back job_key, status, last_stage, and claim
 If job_key, status, or last_stage do not match, repair those fields.
 If claim_run_id is another run_id, do not overwrite it.
 If the queue header has no claim_run_id, do not append it from apply or discover.
-polar-sheet-migration is the only schema mutator for that column.
+If the queue header has no resume_family, do not append route columns from apply or discover.
+polar-sheet-migration is the only schema mutator for claim_run_id and the four route columns.
+Never rewrite resume_cluster.
 Control writes locate the row by key. Never pick a visually empty row.
 If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.
 After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.

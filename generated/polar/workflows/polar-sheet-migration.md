@@ -1,7 +1,7 @@
 # polar-sheet-migration
 
 workflow: polar-sheet-migration
-workflow_version: 2026-09-10.worker-pool+400cbb985cc0
+workflow_version: 2026-09-11.resume-route+43e70d95bf45
 status: manual_once
 enabled: false
 needs_browser_lock: false
@@ -90,7 +90,7 @@ Do not rewrite existing cells except to add missing headers.
 
 Create a tab only when it is missing. The required tabs and exact headers are:
 
-- queue: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id, claim_run_id
+- queue: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id, claim_run_id, resume_family, route_confidence, route_reason, resume_variant
 - writing_log: job_key, company, role, weight, exact_question, answer_used, evidence_note, recorded_at
 - heartbeat: recorded_at, workflow, result, page_opened, notes
 - run_log: run_id, workflow, workflow_version, started_at, ended_at, duration_minutes, result, lock_result, jobs_seen, jobs_attempted, submitted_regular, submitted_priority, blocked, skipped, submission_unknown, simplify_attempted, simplify_fallback_count, notes
@@ -99,14 +99,19 @@ Create a tab only when it is missing. The required tabs and exact headers are:
 - learning_reports: report_date, recorded_at, workflow_version, body_markdown, publish_status, github_url, notes
 
 If queue already has rows, keep them.
-Read the live queue header first. polar_policy.plan_claim_header_migration is the decision.
-If claim_run_id is already present exactly once, leave the header unchanged.
+Read the live queue header first. polar_policy.plan_claim_header_migration is the decision for claim_run_id.
+If claim_run_id is already present exactly once, leave that header unchanged.
 If it is missing, append it once at the far right. Also append employer_requisition_id or ats_job_id when missing.
 If claim_run_id appears more than once, stop and tell Junyi. Do not delete columns.
+Then run polar_policy.plan_route_header_migration.
+If resume_family, route_confidence, route_reason, and resume_variant are each present exactly once, leave them.
+If any of those names are missing, append the missing names once at the far right.
+If any of those names appear more than once, stop and tell Junyi. Do not delete columns.
+Never rewrite resume_cluster. That historical label stays.
 Do not insert a column in the middle of existing queue data.
-Existing rows keep their cells. New claim_run_id cells stay blank until apply-ready-jobs writes them.
-This workflow is the only schema mutator for claim_run_id.
-apply-ready-jobs and discover-jobs-hourly must not append the column.
+Existing rows keep their cells. New claim_run_id and route cells stay blank until the owning workflow writes them.
+This workflow is the only schema mutator for claim_run_id and the four route columns.
+apply-ready-jobs and discover-jobs-hourly must not append those columns.
 If apply_url_confidence is missing from the live header, stop and tell Junyi. Do not guess positions.
 
 Seed one control row with key polar_browser and empty owner_run_id if that key is missing.

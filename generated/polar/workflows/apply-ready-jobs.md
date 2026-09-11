@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-10.worker-pool+cb44991c4b4b
+workflow_version: 2026-09-11.resume-route+a8b57e4dd6ba
 status: production
 enabled: true
 needs_browser_lock: false
@@ -330,9 +330,12 @@ For the current job:
    If Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.
    Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.
 8. Authenticate with ordinary browser flows when asked. Account creation is normal work.
-9. Prefer the Simplify resume already attached. If Copilot is PRESENT, Autofill once. Use Simplify at most once.
+9. Read resume_family and resume_variant from this queue row. Do not rerun resume routing at apply time.
+   VIP status does not change resume_family. Prioritized is not VIP.
+   Prefer the Simplify resume already attached. If Copilot is PRESENT, Autofill once. Use Simplify at most once.
    Do not upload `resumes/base/JZ_resume.pdf`. That file is the two-page master, not a production attach.
-   If the widget is empty, mark REVIEW_READY with blocker missing_production_resume and continue the worker.
+   If resume_variant is empty or the widget is empty, mark REVIEW_READY with blocker missing_production_resume and continue the worker.
+   Do not invent a filename. Do not silently attach another family's resume.
 10. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.
    Authorization and identity widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.

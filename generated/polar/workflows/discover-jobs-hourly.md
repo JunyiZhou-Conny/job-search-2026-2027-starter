@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-10.worker-pool+b480b4cc8d73
+workflow_version: 2026-09-11.resume-route+9d3334f4c9ad
 status: production
 enabled: true
 needs_browser_lock: false
@@ -153,16 +153,26 @@ This run must finish quickly. Checkpoint the Sheet after every new or updated jo
 4. Inspect the intern and newgrad minisite boards listed in POLAR_RUNTIME section B.
 5. For each unseen card, write or update one queue row using named header mapping.
    If the live header has no claim_run_id, do not append it. Note missing_claim_column.
+   If the live header has no resume_family, do not append route columns. Note missing_route_columns.
    Continue discovery writes on the existing headers. polar-sheet-migration is the schema mutator.
    If the existing row is IN_PROGRESS, SUBMITTED, SUBMISSION_UNKNOWN, REVIEW_READY, or BLOCKED,
    do not overwrite status, claim_run_id, last_stage, attempt_count, submitted_at, confirmation,
-   blocker, or writing_summary. polar_policy.discover_may_overwrite_execution_fields is the check.
+   blocker, writing_summary, resume_family, route_confidence, route_reason, or resume_variant.
+   polar_policy.discover_may_overwrite_execution_fields is the check.
 6. job_key is the Jobright job id when the URL is https://jobright.ai/jobs/info/<id>.
 7. Deduplicate by job_key first, then company + role + location, then section K.
 8. Triage with section C. Hard skips become status SKIP.
 9. If a section K key matches, do not set READY_REGULAR or READY_PRIORITY.
 10. For KEEP rows that pass section K, set READY_REGULAR or READY_PRIORITY using section D.
-11. Set resume_cluster from section E.
+11. Set resume_cluster from section E on new rows only. Never overwrite an existing resume_cluster value. That column is the historical title-family label (cloud_swe / data_ml / health_ai). It is not the production resume family.
+11b. Route the production resume family from card metadata only.
+    Do not open Original Job Post to classify.
+    If resume_family is already filled, leave the four route fields unchanged.
+    If local_filesystem is available, run `python3 scripts/resume_route.py --role "<role>" --company "<company>" --source "<board>" --track "<track>" --location "<location>"`.
+    Write resume_family, route_confidence, route_reason, and resume_variant from the JSON.
+    If the CLI is unavailable, write resume_family=REVIEW, route_confidence=review, route_reason=router_unavailable, and leave resume_variant blank.
+    If the live header lacks resume_family, do not append it. Note missing_route_columns and continue.
+    Never default a weak card to swe.
 12. Keep Jobright source_url. last_stage stays discovered.
 13. Leave apply_url empty unless you already have a trusted employer URL.
 14. Always write apply_url_confidence. Use none when apply_url is empty.

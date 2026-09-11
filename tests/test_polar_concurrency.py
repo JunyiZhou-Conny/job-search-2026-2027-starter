@@ -18,6 +18,8 @@ from polar_policy import (  # noqa: E402
     confirm_claim_readback,
     discover_may_overwrite_execution_fields,
     plan_claim_header_migration,
+    plan_route_header_migration,
+    route_header_state,
     requisition_identity,
     requisition_submit_blocked,
     restore_queue_after_copilot_miss,
@@ -415,6 +417,41 @@ class TestWorkClaim(unittest.TestCase):
         self.assertEqual(action, "duplicate")
         self.assertEqual(same, tuple(headers))
 
+    def test_route_header_migration_appends_missing_names_at_the_end(self):
+        headers = [name for name in QUEUE_COLUMNS if name != "resume_variant"]
+        self.assertEqual(route_header_state(headers), "missing")
+        action, once = plan_route_header_migration(headers)
+        self.assertEqual(action, "missing")
+        self.assertEqual(once[-1], "resume_variant")
+        self.assertEqual(once.count("resume_family"), 1)
+        action, twice = plan_route_header_migration(once)
+        self.assertEqual(action, "ready")
+        self.assertEqual(twice, once)
+        self.assertEqual(plan_route_header_migration(QUEUE_COLUMNS), ("ready", tuple(QUEUE_COLUMNS)))
+
+    def test_duplicate_route_header_is_not_appended(self):
+        headers = list(QUEUE_COLUMNS) + ["resume_family"]
+        self.assertEqual(route_header_state(headers), "duplicate")
+        action, same = plan_route_header_migration(headers)
+        self.assertEqual(action, "duplicate")
+        self.assertEqual(same, tuple(headers))
+
+    def test_route_migration_never_rewrites_resume_cluster(self):
+        headers = [name for name in QUEUE_COLUMNS if name not in {
+            "resume_family",
+            "route_confidence",
+            "route_reason",
+            "resume_variant",
+        }]
+        self.assertIn("resume_cluster", headers)
+        action, planned = plan_route_header_migration(headers)
+        self.assertEqual(action, "missing")
+        self.assertEqual(planned.count("resume_cluster"), 1)
+        self.assertEqual(
+            planned[-4:],
+            ("resume_family", "route_confidence", "route_reason", "resume_variant"),
+        )
+
     def test_discover_does_not_clobber_live_execution_rows(self):
         for status in (
             "IN_PROGRESS",
@@ -490,7 +527,14 @@ class TestCompiledConcurrencyContract(unittest.TestCase):
         self.assertNotIn("Release the polar_browser lease", apply)
         self.assertIn("does not treat polar_browser as a mutex", heartbeat)
         self.assertIn("plan_claim_header_migration", migration)
-        self.assertIn("only schema mutator for claim_run_id", migration)
+        self.assertIn("plan_route_header_migration", migration)
+        self.assertIn("Never rewrite resume_cluster", migration)
+        self.assertIn("only schema mutator for claim_run_id and the four route columns", migration)
+        self.assertIn("Do not open Original Job Post to classify", discover)
+        self.assertIn("python3 scripts/resume_route.py --role", discover)
+        self.assertNotIn("resume_route.py --json --role", discover)
+        self.assertIn("Do not rerun resume routing at apply time", apply)
+        self.assertIn("VIP status does not change resume_family", apply)
         self.assertIn("pick_canonical_requisition_row", apply)
         self.assertIn("Do not have both workers back off", apply)
 

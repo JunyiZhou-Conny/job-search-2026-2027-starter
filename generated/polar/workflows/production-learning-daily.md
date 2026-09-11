@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-10.worker-pool+370305f5fe16
+workflow_version: 2026-09-11.resume-route+370305f5fe16
 status: production
 enabled: true
 needs_browser_lock: false

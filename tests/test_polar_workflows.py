@@ -221,6 +221,20 @@ class TestGeneratedWorkflows(unittest.TestCase):
         ).strip()
         self.assertEqual(header.split(","), QUEUE_COLUMNS)
         self.assertEqual(QUEUE_COLUMNS[8], APPLY_URL_CONFIDENCE)
+        self.assertIn("resume_cluster", QUEUE_COLUMNS)
+        self.assertEqual(
+            QUEUE_COLUMNS[-4:],
+            [
+                "resume_family",
+                "route_confidence",
+                "route_reason",
+                "resume_variant",
+            ],
+        )
+        self.assertLess(
+            QUEUE_COLUMNS.index("resume_cluster"),
+            QUEUE_COLUMNS.index("resume_family"),
+        )
 
 
 if __name__ == "__main__":

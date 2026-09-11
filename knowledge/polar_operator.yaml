@@ -1,5 +1,5 @@
-last_updated: "2026-09-10"
-policy_revision: "2026-09-10.worker-pool"
+last_updated: "2026-09-11"
+policy_revision: "2026-09-11.resume-route"
 source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Each apply-ready-jobs run is one worker with its own per-run new-job budget. There is no shared daily regular submission pool. Ownership is per job and requisition, not a global browser lease."
 timezone: "America/New_York"
 
@@ -181,6 +181,10 @@ queue_columns:
   - employer_requisition_id
   - ats_job_id
   - claim_run_id
+  - resume_family
+  - route_confidence
+  - route_reason
+  - resume_variant
 
 writing_log_columns:
   - job_key
