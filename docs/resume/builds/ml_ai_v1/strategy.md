@@ -56,9 +56,9 @@ Role. Generalization debug against an external leaderboard.
 
 Unique signal. 14-point val-to-leaderboard gap. Freeze vs full fine-tune beat architecture choice. Domain-aware augmentation.
 
-Page space. 0.959 public score. 85 percent to about 96 percent. DenseNet-121 95.6 percent. ResNet-50 93.8 percent. No vertical flips. 15-degree rotation cap.
+Page space. 0.959 public score. 85 percent to about 96 percent. Freeze versus full fine-tune. No vertical flips. 15-degree rotation cap.
 
-Deliberately omitted. Full architecture table (ConvNeXt, EfficientNet, ensemble). Dropout 0.3 and Mixup alpha 0.2 stack as a laundry list.
+Deliberately omitted. DenseNet-121 95.6 percent and ResNet-50 93.8 percent after the visual pass. Full architecture table. Dropout 0.3 and Mixup alpha 0.2 stack as a laundry list.
 
 Allowed verbs. Sole author. Reached. Diagnosing. Lifted.
 
