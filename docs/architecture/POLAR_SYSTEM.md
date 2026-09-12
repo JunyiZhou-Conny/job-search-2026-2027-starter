@@ -8,7 +8,7 @@ Canonical behavior lives in YAML, `scripts/polar_policy.py`, and the compilers. 
 
 ## How to read this map / 怎么看这张图
 
-Start with [`polar-system-map.mmd`](polar-system-map.mmd) or the poster at [`rendered/polar-system-map.svg`](rendered/polar-system-map.svg). Read the six bands from control plane through discovery, workers, ATS, persist, and the workflow inventory.
+Start with the localhost briefing at [`briefing/`](briefing/) when you are presenting. Run `python3 scripts/serve_polar_briefing.py` and open `http://127.0.0.1:8766/`. The mermaid sources stay the detailed posters. [`polar-system-map.mmd`](polar-system-map.mmd) and [`rendered/polar-system-map.svg`](rendered/polar-system-map.svg) are 14,000 pixels wide. Do not use them as the talk hero. Read the six bands from control plane through discovery, workers, ATS, persist, and the workflow inventory.
 
 English names on a node are the real symbols. `READY_PRIORITY`, `claim_run_id`, `apply-ready-jobs`. Chinese on the same node is meaning, why, or recovery. One diagram. Not two translations.
 

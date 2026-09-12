@@ -4,6 +4,14 @@ This folder is the current visual mental model of Polar production on `main`.
 
 Open [`POLAR_SYSTEM.md`](POLAR_SYSTEM.md) first. That page says how to read the maps.
 
+For a talk, run the localhost briefing instead of the 14,000-pixel poster:
+
+```bash
+python3 scripts/serve_polar_briefing.py
+```
+
+Then open `http://127.0.0.1:8766/`. See [`briefing/README.md`](briefing/README.md).
+
 Editable Mermaid sources:
 
 - [`polar-system-map.mmd`](polar-system-map.mmd) is the master lifecycle poster.
