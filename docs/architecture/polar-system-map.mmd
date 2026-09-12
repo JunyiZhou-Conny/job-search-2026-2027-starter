@@ -1,0 +1,165 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"WenQuanYi Micro Hei, WenQuanYi Zen Hei, Droid Sans Fallback, sans-serif","fontSize":"16px"}}}%%
+
+flowchart LR
+  classDef state fill:#E8F4FC,stroke:#1B4F72,color:#0B1F33
+  classDef process fill:#F7F7F2,stroke:#2C3E50,color:#1B2631
+  classDef decision fill:#FFF4D6,stroke:#8A6D1B,color:#5D4A12
+  classDef human fill:#FDECEC,stroke:#8B1E1E,color:#5B1111
+  classDef external fill:#F3E8FF,stroke:#5B2C6F,color:#2C1440
+  classDef disabled fill:#F4F6F7,stroke:#7F8C8D,stroke-dasharray: 5 5,color:#5D6D7E
+  classDef sheet fill:#E8F8F5,stroke:#0E6655,color:#0B3D32
+  classDef hist fill:#FBFCFC,stroke:#95A5A6,stroke-dasharray: 3 3,color:#5D6D7E
+
+  subgraph B1["1. CONTROL / 谁拥有什么"]
+    direction TB
+    Owner["Junyi / Owner"]
+    GH["GitHub main<br/>canonical durable memory<br/>权威策略 / 证据 / 编译产物"]
+    YAML["knowledge/*.yaml + polar_policy.py<br/>canonical compiler inputs"]
+    Compiler["build_polar_runtime.py + polar_workflows.py<br/>编译器 / YAML → generated"]
+    Generated["generated/polar/*<br/>COMPILED 非权威<br/>Polar 每轮只读 raw main"]
+    Bootstrap["Polar local bootstrap<br/>Owner 授权的 GitHub config?<br/>只加载两个 raw URL"]
+    Polar["Polar Local<br/>生产浏览器执行"]
+    Pref["PREFERENCES.md<br/>本地 inbox / 不是第二套策略库"]
+    Sheet[("Google Sheet<br/>runtime / checkpoint / 协调")]
+    Cursor["Cursor<br/>工程师 / 维护者 / Cloud shadow"]
+    Owner --> GH
+    Owner --> Bootstrap
+    YAML --> Compiler --> Generated
+    GH --> Generated
+    Bootstrap --> Generated
+    Polar --> Generated
+    Polar --> Sheet
+    Pref -.-> Polar
+    Cursor --> GH
+  end
+
+  subgraph B2["2. DISCOVERY / 发现 → READY"]
+    direction TB
+    JR["Jobright Matches + minisites<br/>已登录会话 / 不扫全网"]
+    CloudDisc["Cursor Cloud discovery<br/>shadow / fallback"]
+    DiscWF["discover-jobs-hourly<br/>每小时 :00 ET / 只入队不投"]
+    NewRow["NEW<br/>已看见 / 还不能执行"]
+    Dedupe["dedupe<br/>job_key → company+role+loc"]
+    HistK["section K Historical duplicate guard<br/>GitHub ledger 防空表重投"]
+    Triage["section C triage"]
+    Weight{"strong priority signal?<br/>强信号才标重点"}
+    ReadyR["READY_REGULAR<br/>普通岗 / 快且真实"]
+    ReadyP["READY_PRIORITY<br/>重点岗位 / deeper reasoning + writing_log"]
+    ResumeC["resume_cluster<br/>分类不是简历文件"]
+    SkipD["SKIP<br/>远程 / 非美 / 2026 start / PhD-only"]
+    JR --> DiscWF
+    CloudDisc -.-> DiscWF
+    DiscWF --> NewRow --> Dedupe --> HistK --> Triage
+    Triage --> Weight
+    Weight --> ReadyR --> ResumeC
+    Weight --> ReadyP --> ResumeC
+    Triage --> SkipD
+    HistK --> SkipD
+  end
+
+  subgraph B3["3. WORKERS / 无全局锁"]
+    direction TB
+    ApplyWF["apply-ready-jobs<br/>每次调用 = 一个 worker<br/>max_new_jobs = 3 / 无共享日配额"]
+    Trust["Trust bootstrap<br/>Owner 授权的 GitHub config?"]
+    Cap["Capability preflight / 能力检查"]
+    Schema{"Queue/schema preflight<br/>claim_run_id 是否存在且唯一?"}
+    MigrateNeed["OWNER_ACTION_REQUIRED<br/>跑 polar-sheet-migration<br/>apply 不得自补列"]
+    Recov["recovery-first<br/>UNKNOWN → IN_PROGRESS → READY"]
+    Select["select_next_apply_job<br/>一次只选下一个"]
+    Claim["attempt_claim_job<br/>IN_PROGRESS + claim_run_id + readback"]
+    Lost["already_claimed<br/>不消耗预算"]
+    WA["Worker A → Job X"]
+    WB["Worker B → Job Y"]
+    WC["Worker C → Job Z"]
+    HistLock["polar_browser<br/>historical only / 不是生产 mutex"]
+    ApplyWF --> Trust --> Cap --> Schema
+    Schema --> MigrateNeed
+    Schema --> Recov --> Select --> Claim
+    Claim --> Lost
+    Claim --> WA
+    Claim --> WB
+    Claim --> WC
+    HistLock -.-> ApplyWF
+  end
+
+  subgraph B4["4. ATS / 雇主申请页"]
+    direction TB
+    Open["resolve/open employer posting<br/>Original Job Post / 不用 AUTOFILL"]
+    Elig{"apply-time hard eligibility<br/>JD 可读后、登录前"}
+    Req{"same requisition?<br/>pick_canonical_requisition_row"}
+    Copilot{"Simplify preflight<br/>Copilot UI actually injected?"}
+    EnvBad["MISSING / UNKNOWN<br/>岗位仍有效 / 环境不健康<br/>restore READY + 清 claim_run_id<br/>env_simplify_copilot telemetry"]
+    OwnerCopilot["OWNER_ACTION_REQUIRED<br/>安装或恢复 Simplify Copilot"]
+    Autofill["Autofill once"]
+    Correct["inspect/correct visible widgets"]
+    Custom["custom questions<br/>evidence_bank 天花板"]
+    PrioExtra["READY_PRIORITY extra<br/>更深 JD + writing_log<br/>priority_submit_permitted"]
+    RegPath["READY_REGULAR<br/>短而忠实 / 仍可 Submit"]
+    Final{"ownership + requisition recheck<br/>submit_claim_still_held?"}
+    Click["Submit once / 只点一次"]
+    SkipA["SKIP<br/>关闭 / 非资格 / 非 canonical"]
+    Open --> Elig --> Req --> Copilot
+    Copilot --> Autofill --> Correct --> Custom
+    Custom --> PrioExtra --> Final
+    Custom --> RegPath --> Final
+    Copilot --> EnvBad --> OwnerCopilot
+    Elig --> SkipA
+    Req --> SkipA
+    Final --> SkipA
+    Final --> Click
+  end
+
+  subgraph B5["5. PERSIST + LEARN / 提交与改进"]
+    direction TB
+    Last["last_stage<br/>discovered → confirmation_seen"]
+    SubOK["SUBMITTED<br/>验证成功"]
+    SubUnk["SUBMISSION_UNKNOWN<br/>提交结果不确定 → 先验证，禁止盲投"]
+    Blocked["BLOCKED<br/>缺事实 / 工人继续"]
+    Review["REVIEW_READY<br/>缺主人事实 / 不是重点岗默认"]
+    Tele["run_log / incident_log / writing_log"]
+    LearnWF["production-learning-daily<br/>消毒报告 / 不改 GitHub 策略"]
+    Canary{"github_write_canary == success?"}
+    Issue["GitHub Issue<br/>可选持久证据"]
+    GPT["chatgpt-production-review<br/>disabled / 非必经 hop"]
+    Maint["Cursor reads evidence<br/>bug / policy / UX / one-off / env"]
+    PR["Cursor PR + tests"]
+    Merge["human merge<br/>唯一让行为进 main 的门"]
+    Next["next Polar invocation<br/>bootstrap 再拉 raw main"]
+    Last --> SubOK --> Tele
+    Last --> SubUnk --> Tele
+    Last -.-> Blocked
+    Last -.-> Review
+    Tele --> LearnWF --> Canary
+    Canary --> Issue
+    Issue -.-> GPT
+    Issue --> Maint --> PR --> Merge --> Next
+  end
+
+  subgraph B6["6. WORKFLOWS / 全部工作流"]
+    direction TB
+    W1["discover-jobs-hourly<br/>scheduled :00 / 发现"]
+    W2["apply-ready-jobs<br/>scheduled :20 / worker"]
+    W3["polar-scheduler-heartbeat<br/>scheduled :05 / 锁屏证明"]
+    W4["daily-job-summary<br/>scheduled 21:30 / 邮件摘要"]
+    W5["production-learning-daily<br/>scheduled 22:00 / 消毒学习"]
+    W6["polar-sheet-migration<br/>manual once / 唯一 schema mutator"]
+    W7["polar-github-write-canary<br/>manual / 证明能开 Issue"]
+    W8["chatgpt-production-review<br/>disabled / 非必经"]
+    W9["cursor-production-maintenance<br/>disabled / 停在 merge 前"]
+  end
+
+  class Owner,MigrateNeed,OwnerCopilot,Merge human
+  class GH,YAML,Compiler,Generated,Bootstrap,Polar,Cursor,DiscWF,Dedupe,HistK,Triage,ResumeC,ApplyWF,Trust,Cap,Recov,Select,Claim,Open,Autofill,Correct,Custom,PrioExtra,RegPath,Click,Last,Tele,LearnWF,Maint,PR,Next process
+  class Weight,Schema,Elig,Req,Copilot,Final,Canary decision
+  class NewRow,ReadyR,ReadyP,SkipD,SkipA,Lost,WA,WB,WC,EnvBad,SubOK,SubUnk,Blocked,Review state
+  class JR,CloudDisc,Pref,Issue external
+  class Sheet sheet
+  class HistLock hist
+  class W1,W2,W3,W4,W5 process
+  class W6,W7,W8,W9,GPT disabled
+
+  Generated --> DiscWF
+  ResumeC --> ApplyWF
+  WA --> Open
+  Click --> Last
+  Next --> Bootstrap

@@ -1,0 +1,90 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"WenQuanYi Micro Hei, WenQuanYi Zen Hei, Droid Sans Fallback, sans-serif","fontSize":"16px"}}}%%
+
+flowchart TB
+  classDef state fill:#E8F4FC,stroke:#1B4F72,color:#0B1F33
+  classDef process fill:#F7F7F2,stroke:#2C3E50,color:#1B2631
+  classDef hist fill:#FBFCFC,stroke:#95A5A6,stroke-dasharray: 3 3,color:#5D6D7E
+  classDef sheet fill:#E8F8F5,stroke:#0E6655,color:#0B3D32
+
+  subgraph S["STATUS MACHINE / 队列状态"]
+    direction LR
+    NEW["NEW<br/>已看见 / 还不能执行"]
+    RR["READY_REGULAR<br/>普通岗可执行"]
+    RP["READY_PRIORITY<br/>重点岗可执行"]
+    IP["IN_PROGRESS<br/>claim_run_id 拥有这一行"]
+    REV["REVIEW_READY<br/>缺主人事实或显式 hold"]
+    SUB["SUBMITTED<br/>点击且验证成功"]
+    UNK["SUBMISSION_UNKNOWN<br/>可能已投 / 先验证禁止盲投"]
+    BLK["BLOCKED<br/>这一岗做不完 / 队列继续"]
+    SK["SKIP<br/>硬跳过 / 关闭 / 重复招聘需求"]
+  end
+
+  subgraph C["CONCURRENCY / 工作级并发"]
+    direction LR
+    A["Worker A"]
+    B["Worker B"]
+    C2["Worker C"]
+    X["Job X"]
+    Y["Job Y"]
+    Z["Job Z"]
+    Race["A 与 B 同时写 Job X<br/>last write + readback<br/>Sheet 不是 CAS"]
+    Winner["只有当前 claim_run_id 继续"]
+    Loser["already_claimed / 选下一岗"]
+    Req["同一 employer requisition<br/>pick_canonical_requisition_row"]
+    Rank["SUBMITTED > SUBMISSION_UNKNOWN<br/>> live IN_PROGRESS<br/>> earlier discovered_at > job_key"]
+    Surv["只有 canonical 可 Submit<br/>另一行 SKIP duplicate"]
+    Abn["abandoned claim<br/>空 claim / TTL 180min / run_log 不是 PARTIAL"]
+    Rec["后来的 worker 可接管<br/>不冻无关 workflow"]
+    NoMutex["polar_browser<br/>historical only / 不是锁"]
+  end
+
+  subgraph T["SHEET TABS / 共享运行时"]
+    direction LR
+    Q["queue<br/>岗位生命周期 + claim_run_id"]
+    W["writing_log<br/>原题 / 原答 / 证据"]
+    H["heartbeat<br/>锁屏调度证明"]
+    R["run_log<br/>一次调用一行"]
+    I["incident_log<br/>可学习事件"]
+    Ctrl["control<br/>polar_browser 历史<br/>github_write_canary<br/>env_simplify_copilot"]
+    LR["learning_reports<br/>消毒后的日报告"]
+  end
+
+  subgraph L["last_stage / 粗检查点 不是第二套状态机"]
+    LS["discovered → source_resolved → application_open<br/>→ authenticated → form_filled → reviewed<br/>→ submit_clicked → confirmation_seen"]
+  end
+
+  subgraph CRASH["CRASH / 崩溃落点"]
+    direction LR
+    C1["崩溃在 ATS 前<br/>claim 可能已写 IN_PROGRESS"]
+    C2b["崩溃在填表中<br/>last_stage 停在 form_filled 前"]
+    C3["崩溃在 Submit 点击后、确认前<br/>必须 SUBMISSION_UNKNOWN"]
+    C4["崩溃在确认后、持久化前<br/>下一轮先验证再写 SUBMITTED"]
+  end
+
+  class NEW,RR,RP,IP,REV,SUB,UNK,BLK,SK,X,Y,Z,Winner,Loser,Surv,C1,C2b,C3,C4 state
+  class A,B,C2,Race,Req,Rank,Abn,Rec,LS process
+  class NoMutex hist
+  class Q,W,H,R,I,Ctrl,LR sheet
+
+  NEW --> RR --> IP
+  NEW --> RP --> IP
+  NEW --> SK
+  IP --> SUB
+  IP --> UNK
+  IP --> REV
+  IP --> BLK
+  IP --> SK
+    IP --> RR
+    IP --> RP
+    UNK --> SUB
+    UNK --> IP
+  A --> X
+  B --> Y
+  C2 --> Z
+  A -.-> Race
+  B -.-> Race
+  Race --> Winner
+  Race --> Loser
+  X --> Req --> Rank --> Surv
+  X --> Abn --> Rec
+  NoMutex -.-> A
