@@ -16,6 +16,7 @@ greenhouse:
   Appian: appian
   Apptronik: apptronik
   Axon: axon  # verified 2026-09-05; AI Scientist I Seattle 7746492003
+  Coinbase: coinbase  # verified 2026-09-12; Software Engineer Intern 8168315 unique Hybrid San Francisco
   CoreWeave: coreweave  # verified 2026-09-06; Software Engineer, Inference AI/ML 4609928006
   Datadog: datadog  # verified 2026-09-08; generic Software Engineering Intern is location-split (Paris 8114186 / Madrid 8114161 / US Summer 8052118 / US Winter 8052095) — leave title-only KEEP unresolved
   "DV Trading LLC": dvtrading  # verified 2026-09-10; AI Engineer Intern Summer 2027 Chicago 4732429005
@@ -36,6 +37,7 @@ greenhouse:
   Pipe17: pipe17  # verified 2026-09-06; Junior Software Engineer (SEATTLE ONLY) 4717950005
   Quantifind: quantifind  # verified 2026-09-04; Associate Data Scientist 7589899
   Relativity: relativity  # Relativity Space (Terran-R / vehicle), not e-discovery; verified 2026-08-23
+  Roblox: roblox  # verified 2026-09-12; [Summer 2027] Software Engineer Intern 8072713 unique San Mateo
   "Scale AI": scaleai  # verified 2026-08-23
   Schonfeld: schonfeld  # verified 2026-09-04; 2027 Data Science Intern 8171692
   SpaceX: spacex
@@ -47,6 +49,7 @@ greenhouse:
 
 # Ashby board slug (api.ashbyhq.com/posting-api/job-board/{slug})
 ashby:
+  Abridge: abridge  # verified 2026-09-12; Software Engineer, Intern 3f07a457 unique SF Office
   "Allen Control Systems": allen-control-systems  # verified 2026-09-09; CV/ML Intern 2027 a7831fef / SWE Intern 2027 ed5c58a7 Austin
   Anyscale: anyscale  # verified 2026-08-24; isolation Submit test (Ray Core SF Hybrid)
   Baseten: baseten
@@ -69,6 +72,7 @@ ashby:
 
 # Lever (api.lever.co/v0/postings/{slug})
 lever:
+  "Palantir Technologies": palantir  # verified 2026-09-12; Software Engineer, Internship - Defense Tech is location-split (NY 8bcf4f33 / Palo Alto a483f41b / DC f17e98d0) — leave title-only unresolved unless city-exact
   "Shield AI": shieldai  # verified 2026-09-10; Summer 2027 Software Engineer Intern 8c850c75 (San Diego + DC/Dallas/Seattle)
 
 # Workday CXS — verified hosts only.
