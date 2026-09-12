@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""Retarget Polar trusted-repo constants on a personal fork only.
-
-Must not be PR'd upstream as an identity rewrite.
+"""Retarget Polar trusted-repo constants and operator raw URLs on a personal fork.
 
     python3 scripts/set_polar_trusted_repo.py OWNER/REPO
     python3 scripts/set_polar_trusted_repo.py OWNER/REPO --write
@@ -21,6 +19,7 @@ from init_personal_copy import looks_like_upstream
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 POLICY_RELATIVE = Path("scripts") / "polar_policy.py"
+OPERATOR_RELATIVE = Path("knowledge") / "polar_operator.yaml"
 UPSTREAM_TEMPLATE = "JunyiZhou-Conny/job-search-2026-2027-starter"
 REPO_SPEC_RE = re.compile(r"^([A-Za-z0-9._-]+)/([A-Za-z0-9._-]+)$")
 OWNER_ASSIGN_RE = re.compile(r'^TRUSTED_REPO_OWNER = "([^"]*)"$', re.M)
@@ -57,6 +56,10 @@ def rewrite_trusted_repo(text: str, spec: RepoSpec) -> str:
     return NAME_ASSIGN_RE.sub(f'TRUSTED_REPO_NAME = "{spec.name}"', text, count=1)
 
 
+def rewrite_operator_urls(text: str, spec: RepoSpec) -> str:
+    return text.replace(UPSTREAM_TEMPLATE, str(spec))
+
+
 def rebuild_polar_runtime(root: Path) -> int:
     completed = subprocess.run(
         ["python3", "scripts/build_polar_runtime.py"],
@@ -71,7 +74,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--write",
         action="store_true",
-        help="Rewrite TRUSTED_REPO_* in scripts/polar_policy.py. Default is dry-run.",
+        help="Rewrite Polar trust URLs on this fork. Default is dry-run.",
     )
     parser.add_argument(
         "--rebuild",
@@ -117,6 +120,13 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     path.write_text(rewrite_trusted_repo(text, spec), encoding="utf-8")
     print(f"Wrote {POLICY_RELATIVE}")
+    operator_path = root / OPERATOR_RELATIVE
+    if operator_path.is_file():
+        operator_path.write_text(
+            rewrite_operator_urls(operator_path.read_text(encoding="utf-8"), spec),
+            encoding="utf-8",
+        )
+        print(f"Wrote {OPERATOR_RELATIVE}")
 
     if args.rebuild:
         code = rebuild_polar_runtime(root)

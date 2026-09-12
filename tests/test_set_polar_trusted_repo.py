@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Safety tests for Polar trusted-repo retarget on a personal fork."""
 
 from __future__ import annotations
 
@@ -20,27 +19,44 @@ UPSTREAM_ORIGIN = "https://github.com/JunyiZhou-Conny/job-search-2026-2027-start
 PERSONAL_REPO = "alice/job-search"
 
 
+OPERATOR_SNIPPET = (
+    'runtime_url:\n'
+    '  raw_main: "https://raw.githubusercontent.com/'
+    'JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md"\n'
+)
+
+
 def _seed_policy(dest: Path) -> Path:
     dest.mkdir(parents=True, exist_ok=True)
     path = dest / "scripts" / "polar_policy.py"
     path.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(POLICY_SRC, path)
+    operator = dest / "knowledge" / "polar_operator.yaml"
+    operator.parent.mkdir(parents=True, exist_ok=True)
+    operator.write_text(OPERATOR_SNIPPET, encoding="utf-8")
     return path
 
 
 class TestSetPolarTrustedRepo(unittest.TestCase):
-    def test_dry_run_does_not_change_policy(self):
+    def test_dry_run_does_not_change_files(self):
         with tempfile.TemporaryDirectory() as tmp:
             dest = Path(tmp) / "repo"
             path = _seed_policy(dest)
             before = path.read_text(encoding="utf-8")
+            operator_before = (dest / "knowledge" / "polar_operator.yaml").read_text(
+                encoding="utf-8"
+            )
             checkout_before = POLICY_SRC.read_text(encoding="utf-8")
             code = spr.main([PERSONAL_REPO, "--root", str(dest)])
             self.assertEqual(code, 0)
             self.assertEqual(path.read_text(encoding="utf-8"), before)
+            self.assertEqual(
+                (dest / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8"),
+                operator_before,
+            )
             self.assertEqual(POLICY_SRC.read_text(encoding="utf-8"), checkout_before)
 
-    def test_write_updates_only_the_two_constants(self):
+    def test_write_updates_policy_and_operator_urls(self):
         with tempfile.TemporaryDirectory() as tmp:
             dest = Path(tmp) / "repo"
             path = _seed_policy(dest)
@@ -62,6 +78,9 @@ class TestSetPolarTrustedRepo(unittest.TestCase):
             self.assertIn('TRUSTED_REPO_OWNER = "alice"', after)
             self.assertIn('TRUSTED_REPO_NAME = "job-search"', after)
             self.assertIn('TRUSTED_REPO = f"{TRUSTED_REPO_OWNER}/{TRUSTED_REPO_NAME}"', after)
+            operator = (dest / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+            self.assertIn("alice/job-search", operator)
+            self.assertNotIn("JunyiZhou-Conny/job-search-2026-2027-starter", operator)
             self.assertEqual(POLICY_SRC.read_text(encoding="utf-8"), checkout_before)
 
     def test_refuses_upstream_origin(self):
@@ -74,9 +93,16 @@ class TestSetPolarTrustedRepo(unittest.TestCase):
                 ["git", "remote", "add", "origin", UPSTREAM_ORIGIN],
                 cwd=dest,
             )
+            operator_before = (dest / "knowledge" / "polar_operator.yaml").read_text(
+                encoding="utf-8"
+            )
             code = spr.main([PERSONAL_REPO, "--write", "--root", str(dest)])
             self.assertEqual(code, 2)
             self.assertEqual(path.read_text(encoding="utf-8"), before)
+            self.assertEqual(
+                (dest / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8"),
+                operator_before,
+            )
 
     def test_refuses_rewriting_to_upstream_template(self):
         with tempfile.TemporaryDirectory() as tmp:
