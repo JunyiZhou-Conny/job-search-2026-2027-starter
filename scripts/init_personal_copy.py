@@ -195,18 +195,23 @@ Updated: {now}
 
 - [ ] Fill `config/profile.yaml` with confirmed facts only
 - [ ] Fill `knowledge/work_authorization.yaml` (non-sensitive only)
-- [ ] Fill `knowledge/evidence_bank.yaml` from resume / repos — invent nothing
+- [ ] Fill `knowledge/evidence_bank.yaml` from resume / repos. Invent nothing
 - [ ] Rewrite `profile_anchors` in `knowledge/discovery_triage_rules.yaml`
 - [ ] Rewrite the candidate block in `docs/automation/DAILY_JOB_DISCOVERY.md` (fork only; do not PR that rewrite upstream)
 - [ ] Replace `resumes/base/` with the collaborator's resume
 - [ ] Register resume versions in `data/resume_versions.csv`
 - [ ] Create Simplify account + fill profile from the evidence bank
 - [ ] Connect GitHub in Cursor and create a Cloud Agent environment on **this fork**
-- [ ] Create a private Daily Job Discovery automation pointing at **this fork**
+- [ ] Point Polar trust URLs at this fork with `python3 scripts/set_polar_trusted_repo.py <YOU>/<REPO> --write --rebuild`, then push `main`
+- [ ] Create your own Google Sheet and attach Polar `google_sheets`
+- [ ] Put the application mailbox in the local Polar profile and `secrets/.env`. Keep the school mailbox separate
+- [ ] Paste printed Polar Workflow prompts that name this fork, not `JunyiZhou-Conny/job-search-2026-2027-starter`
+- [ ] Run `polar-sheet-migration` once, then one locked-screen `polar-scheduler-heartbeat`
+- [ ] Optional. Create a private Daily Job Discovery automation pointing at **this fork**
 - [ ] Run `python3 scripts/init_personal_copy.py --check` until template-owner strings are gone from identity files
 - [ ] Run `python3 scripts/validate_data.py`
 
-See `docs/collaborators/SETUP.md`.
+See `README.md` and `docs/collaborators/SETUP.md`.
 """,
         encoding="utf-8",
     )
@@ -338,7 +343,7 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     backup_dir = apply_reset(root)
     print(f"Reset complete. Backup: {backup_dir}")
-    print("Next: fill the template files with the collaborator's confirmed facts. See docs/collaborators/SETUP.md.")
+    print("Next: fill the template files with the collaborator's confirmed facts. See README.md.")
     return 0
 
 

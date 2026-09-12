@@ -11,10 +11,13 @@ You are setting up a **personal copy** of the job-search toolkit in this reposit
 
 ## Read first, in this order
 
-1. `docs/collaborators/SETUP.md` — follow it as the runbook. Do not improvise a different workflow.
-2. `docs/FRIENDS_CANVAS.md` — shared vs personal files.
-3. `docs/CONTRIBUTING.md` — what may go upstream.
-4. `AGENTS.md` and `docs/BOUNDARIES.md` — truth, eligibility, no auto-submit.
+1. `README.md` — Polar, Google, application mailbox, Cursor, Sheets, and prompt paste. Follow that journey.
+2. `docs/collaborators/SETUP.md` — identity interview and `init_personal_copy.py` detail.
+3. `docs/FRIENDS_CANVAS.md` — shared vs personal files. Some progress notes are older than Polar production.
+4. `docs/CONTRIBUTING.md` — what may go upstream.
+5. `AGENTS.md` and `docs/BOUNDARIES.md` — truth, eligibility, no auto-submit.
+
+Do not paste template Polar prompts. Those URLs still name `JunyiZhou-Conny/job-search-2026-2027-starter` until the human's fork runs `scripts/set_polar_trusted_repo.py` and pushes `main`.
 
 ## Mode
 
