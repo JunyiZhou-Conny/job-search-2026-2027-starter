@@ -154,12 +154,27 @@ cp secrets/.env.example secrets/.env
 ```bash
 python3 scripts/set_polar_trusted_repo.py <YOU>/job-search-2026-2027-starter
 python3 scripts/set_polar_trusted_repo.py <YOU>/job-search-2026-2027-starter --write --rebuild
-git add scripts/polar_policy.py generated/polar
+git add scripts/polar_policy.py knowledge/polar_operator.yaml generated/polar
 git commit -m "chore(polar): point Polar trust URLs at this fork"
 git push origin main
 ```
 
 Polar 只从 `main` 上的 raw URL 拉配置。没推到 `main` 之前，不要贴提示词。
+
+Polar 拉的是 `raw.githubusercontent.com` 上那两个公开地址。私人 fork 可能让这两次 GET 失败。本仓库没有 Polar 读私有 raw URL 的证明。贴提示词之前，在未登录的浏览器里打开打印出来的两条 URL。若打不开，先让 Polar 能读到这两份文件，再继续。不要改用 Junyi 的地址当退路。
+
+身份重置不会清掉这些 Junyi 残留。在 fork 上改，不要开到上游。
+
+| 文件 | 为什么还在 |
+|---|---|
+| `scripts/polar_workflows.py` 里的 `Email Junyi one digest` | 不改的话，每日摘要仍写给 Junyi |
+| `docs/automation/POLAR_SKILL_BOOTSTRAP.md` 里的 Trusted repository | 本地 skill 的白名单仍是模板仓库 |
+| `knowledge/form_strategy.yaml`、`knowledge/written_response_bank.yaml`、`knowledge/polar_documents.yaml` | 仍是 Junyi 的答法、成绩和成绩单文件名 |
+| `AGENTS.md` 里的授权控件答案 | Cloud Agent 仍会读到中国、F-1、2026-12-18 |
+| `docs/apply/written_answers/` | Junyi 的申请短文 |
+| `data/apply_attempts.csv` | 身份重置不清这张表。里面仍是 Junyi 的投递尝试 |
+
+不要把 Junyi 的成绩单登记成你的。空成绩单清单比假文件好。
 
 然后打印一条，确认仓库名是你的。
 
@@ -176,7 +191,7 @@ Polar 的产品界面会变。按 Polar 当前 UI 做。缺连接器就停，并
 1. 打开 Polar。用一个**具名**本地浏览器配置。后面所有生产 Workflow 都用这一个。
 2. 在这个配置里登录 Google、Gmail、Jobright、Simplify。
 3. 在 Polar 里安装 Simplify Copilot。Polar 是 Chromium 分支。Copilot 必须出现在雇主申请页上。只登录 [simplify.jobs](https://simplify.jobs) 不够。
-4. 若 Polar 还有本地 `SKILL.md`，并且它仍写着去 GitHub 拉 workflow 再执行，用 [`docs/automation/POLAR_SKILL_BOOTSTRAP.md`](docs/automation/POLAR_SKILL_BOOTSTRAP.md) 里的那段替换。不要把 `POLAR_RUNTIME.md` 整份贴进 skill。
+4. 若 Polar 还有本地 `SKILL.md`，并且它仍写着去 GitHub 拉 workflow 再执行，用 [`docs/automation/POLAR_SKILL_BOOTSTRAP.md`](docs/automation/POLAR_SKILL_BOOTSTRAP.md) 里的那段替换，并把其中的 Trusted repository 改成你的 fork。不要把 `POLAR_RUNTIME.md` 整份贴进 skill。
 5. 按 [`docs/automation/POLAR_WORKFLOWS.md`](docs/automation/POLAR_WORKFLOWS.md) 为每个 Workflow 建一条**已保存**的 Polar Workflow。提示词用打印出来的文本，不要手抄模板里的 Junyi 地址。
 
 先建并跑一次手动的 `polar-sheet-migration`。它会加上这些页和表头。已有行要保留。
@@ -257,7 +272,7 @@ python3 scripts/serve_apply_queue.py --date $(date +%F)
 
 这些在 [`docs/automation/POLAR.md`](docs/automation/POLAR.md) 里标成未证明或仍在迁移。
 
-- Polar 无人值守地从 GitHub raw URL 拉 `POLAR_RUNTIME`，仍是推断。
+- Polar 无人值守地从 GitHub raw URL 拉 `POLAR_RUNTIME`，仍是推断。私人 fork 会不会挡住这次拉取，仓库里没有证明。
 - 锁屏时 Polar 写 Google Sheet，要等 heartbeat 证明。
 - Polar 小时发现是否赶上 Cloud 发现，要等 48 小时对照。
 - 不是每个 Original Job Post 都是雇主 ATS。
@@ -442,12 +457,27 @@ Do this on the fork. Do not send this rewrite upstream.
 ```bash
 python3 scripts/set_polar_trusted_repo.py <YOU>/job-search-2026-2027-starter
 python3 scripts/set_polar_trusted_repo.py <YOU>/job-search-2026-2027-starter --write --rebuild
-git add scripts/polar_policy.py generated/polar
+git add scripts/polar_policy.py knowledge/polar_operator.yaml generated/polar
 git commit -m "chore(polar): point Polar trust URLs at this fork"
 git push origin main
 ```
 
 Polar loads configuration from raw URLs on `main`. Do not paste prompts before that push.
+
+Polar fetches those two files from `raw.githubusercontent.com`. A private fork may make both GETs fail. This repo has no proof that Polar can read a private raw URL. Before you paste prompts, open the two printed URLs in a logged-out browser. If they do not load, give Polar a way to read those files first. Do not fall back to Junyi's URLs.
+
+The identity reset leaves these Junyi leftovers. Rewrite them on the fork. Do not send those rewrites upstream.
+
+| File | Why it still matters |
+|---|---|
+| `Email Junyi one digest` in `scripts/polar_workflows.py` | The daily digest still addresses Junyi until you change that line and rebuild |
+| Trusted repository in `docs/automation/POLAR_SKILL_BOOTSTRAP.md` | A pasted local skill still allowlists the template repo |
+| `knowledge/form_strategy.yaml`, `knowledge/written_response_bank.yaml`, `knowledge/polar_documents.yaml` | Standing answers, writing bank, and transcript filenames are still Junyi's |
+| Work-auth widget answers in `AGENTS.md` | A Cloud Agent still reads China, F-1, and 2026-12-18 |
+| `docs/apply/written_answers/` | Those drafts are Junyi's |
+| `data/apply_attempts.csv` | Identity reset does not wipe this table. The rows are still Junyi's attempts |
+
+Do not register Junyi's transcripts as yours. An empty document list is better than a fake file.
 
 Print one prompt and confirm the repository is yours.
 
@@ -464,7 +494,7 @@ Polar's product UI changes. Follow the screens Polar shows today. If a connector
 1. Open Polar. Use one **named** local browser profile. Every production Workflow uses that same profile.
 2. Sign into Google, Gmail, Jobright, and Simplify in that profile.
 3. Install Simplify Copilot in Polar. Polar is a Chromium fork. Copilot must appear on the employer application page. A login on [simplify.jobs](https://simplify.jobs) is not proof.
-4. If Polar still has a local `SKILL.md` that says fetch a GitHub workflow and follow it, replace that body with the block in [`docs/automation/POLAR_SKILL_BOOTSTRAP.md`](docs/automation/POLAR_SKILL_BOOTSTRAP.md). Do not paste all of `POLAR_RUNTIME.md` into the skill.
+4. If Polar still has a local `SKILL.md` that says fetch a GitHub workflow and follow it, replace that body with the block in [`docs/automation/POLAR_SKILL_BOOTSTRAP.md`](docs/automation/POLAR_SKILL_BOOTSTRAP.md), and change Trusted repository to your fork. Do not paste all of `POLAR_RUNTIME.md` into the skill.
 5. Create one **saved** Polar Workflow per name in [`docs/automation/POLAR_WORKFLOWS.md`](docs/automation/POLAR_WORKFLOWS.md). Paste the printed prompt. Do not hand-copy the template URLs that name Junyi's repo.
 
 Create and run `polar-sheet-migration` once by hand. It adds these tabs and headers. It keeps existing rows.
@@ -545,7 +575,7 @@ Open `http://127.0.0.1:8765/`. **Applied** writes the local ledger only. It does
 
 [`docs/automation/POLAR.md`](docs/automation/POLAR.md) marks these as unproven or still in migration.
 
-- Polar loading `POLAR_RUNTIME` from a GitHub raw URL with no human present is still an inference.
+- Polar loading `POLAR_RUNTIME` from a GitHub raw URL with no human present is still an inference. Whether a private fork blocks that fetch is unproven in this repo.
 - Polar writing the Google Sheet while the screen is locked waits on the heartbeat test.
 - Polar hourly discovery versus Cloud discovery waits on the 48-hour shadow.
 - Not every Original Job Post is an employer ATS.
