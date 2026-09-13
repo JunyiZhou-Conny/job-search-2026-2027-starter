@@ -15,6 +15,7 @@ from polar_policy import (
     COPILOT_REPEAT_KEY,
     COPILOT_STATES,
     DEGREE_LEVEL_REPEAT_KEY,
+    JOBRIGHT_ONBOARDING_REPEAT_KEY,
     ENV_SIMPLIFY_KEY,
     HEARTBEAT_COLUMNS,
     INCIDENT_CATEGORIES,
@@ -290,10 +291,11 @@ def _telemetry_block(include_incidents: bool = True) -> str:
                 ", ".join(INCIDENT_CATEGORIES) + ".",
                 "If minutes were lost, also set time_lost_category from:",
                 ", ".join(TIME_LOST_CATEGORIES) + ".",
-                "repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, "
-                + DEGREE_LEVEL_REPEAT_KEY
-                + ".",
-                "Degree-level hard gates that discovery missed use that one repeat_key. Do not invent phd_only_missed_at_discovery variants.",
+                "repeat_key groups recurrences. Write polar_policy.canonical_repeat_key(your_key).",
+                f"Jobright Matches onboarding uses {JOBRIGHT_ONBOARDING_REPEAT_KEY}. "
+                "Do not invent jobright_onboarding_* variants.",
+                f"Degree-level hard gates that discovery missed use {DEGREE_LEVEL_REPEAT_KEY}. "
+                "Do not invent phd_only_missed_at_discovery variants.",
                 "incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits.",
                 "The sequence is monotonic. Read existing values for that date. The next id is one more than the highest number.",
                 "If 001 and 003 exist, write 004. Do not fill gaps. Never reuse one. Do not write INC-YYYYMMDD-01.",

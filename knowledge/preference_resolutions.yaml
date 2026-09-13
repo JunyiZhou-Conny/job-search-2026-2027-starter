@@ -1,1 +1,10 @@
-resolutions: []
+# Polar reconciles /home/polar/PREFERENCES.md against these rows only after
+# they are on main. An open PR is not canonical. Match candidate_id only.
+resolutions:
+  - candidate_id: pref_20260911_005
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Polar Production #132. Jobright Matches onboarding was logged under
+    # four-plus repeat_key spellings, which defeated aggregation. Canonical
+    # key is jobright_matches_onboarding_gate via polar_policy.canonical_repeat_key.

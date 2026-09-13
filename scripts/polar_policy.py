@@ -176,6 +176,18 @@ REQUISITION_REPEAT = "requisition_suppressed"
 CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
 CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
 DEGREE_LEVEL_REPEAT_KEY = "degree_level_gate_missed_at_discovery"
+JOBRIGHT_ONBOARDING_REPEAT_KEY = "jobright_matches_onboarding_gate"
+REPEAT_KEY_ALIASES = {
+    "jobright_onboarding_required": JOBRIGHT_ONBOARDING_REPEAT_KEY,
+    "jobright_onboarding_gate": JOBRIGHT_ONBOARDING_REPEAT_KEY,
+    "jobright_onboarding_resume_upload_gate": JOBRIGHT_ONBOARDING_REPEAT_KEY,
+    "jobright_onboarding_resume_gate": JOBRIGHT_ONBOARDING_REPEAT_KEY,
+    "jobright_onboarding_resume_required": JOBRIGHT_ONBOARDING_REPEAT_KEY,
+    "jobright_onboarding_resume_upload": JOBRIGHT_ONBOARDING_REPEAT_KEY,
+    "phd_only_missed_at_discovery": DEGREE_LEVEL_REPEAT_KEY,
+    "phd_only_gate_missed_at_discovery": DEGREE_LEVEL_REPEAT_KEY,
+    "undergrad_only_gate_missed_at_discovery": DEGREE_LEVEL_REPEAT_KEY,
+}
 INCIDENT_ID_RE = re.compile(r"^INC-(\d{8})-(\d{1,3})$")
 
 TRUSTED_WORKFLOW_NAMES = (
@@ -846,6 +858,15 @@ def next_incident_id(existing: Sequence[str], day: str) -> str:
     }
     next_number = max(used) + 1 if used else 1
     return f"INC-{compact}-{next_number:03d}"
+
+
+def canonical_repeat_key(raw: str) -> str:
+    token = re.sub(r"[^a-z0-9]+", "_", normalize_text(raw)).strip("_")
+    if not token:
+        return ""
+    if token in {DEGREE_LEVEL_REPEAT_KEY, JOBRIGHT_ONBOARDING_REPEAT_KEY, COPILOT_REPEAT_KEY}:
+        return token
+    return REPEAT_KEY_ALIASES.get(token, token)
 
 
 def incident_ids_are_unique(existing: Sequence[str]) -> bool:

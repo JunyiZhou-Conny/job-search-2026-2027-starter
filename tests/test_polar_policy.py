@@ -6,16 +6,22 @@ import sys
 import unittest
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from polar_policy import (  # noqa: E402
     APPLY_URL_CONFIDENCE,
+    DEGREE_LEVEL_REPEAT_KEY,
     INCIDENT_CATEGORIES,
+    JOBRIGHT_ONBOARDING_REPEAT_KEY,
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     TIME_LOST_CATEGORIES,
+    PreferenceCandidate,
     apply_run_caps,
+    canonical_repeat_key,
     closed_posting_action,
     control_row_is_writable,
     control_write_persisted,
@@ -23,8 +29,11 @@ from polar_policy import (  # noqa: E402
     document_availability,
     header_map,
     incident_ids_are_unique,
+    load_preference_resolutions,
     inspect_visible_control_row,
     named_row,
+    preference_resolution_action,
+    reconcile_preference_candidates,
     next_incident_id,
     pick_canonical_requisition_row,
     plan_control_write,
@@ -529,6 +538,93 @@ class TestDegreeLevelGate(unittest.TestCase):
     def test_enrolled_in_a_degree_is_not_a_skip(self):
         self.assertIsNone(
             degree_level_hard_skip("Currently enrolled in an undergraduate program.")
+        )
+
+
+class TestCanonicalRepeatKey(unittest.TestCase):
+    def test_jobright_aliases_collapse(self):
+        aliases = (
+            "jobright_onboarding_required",
+            "jobright_onboarding_gate",
+            "jobright_onboarding_resume_upload_gate",
+            "jobright_onboarding_resume_gate",
+            "jobright_onboarding_resume_required",
+            "jobright_onboarding_resume_upload",
+            "Jobright Onboarding Gate",
+        )
+        for raw in aliases:
+            self.assertEqual(
+                canonical_repeat_key(raw),
+                JOBRIGHT_ONBOARDING_REPEAT_KEY,
+                raw,
+            )
+
+    def test_canonical_jobright_key_is_stable(self):
+        self.assertEqual(
+            canonical_repeat_key(JOBRIGHT_ONBOARDING_REPEAT_KEY),
+            JOBRIGHT_ONBOARDING_REPEAT_KEY,
+        )
+
+    def test_degree_aliases_collapse(self):
+        for raw in (
+            "phd_only_missed_at_discovery",
+            "phd_only_gate_missed_at_discovery",
+            "undergrad_only_gate_missed_at_discovery",
+        ):
+            self.assertEqual(canonical_repeat_key(raw), DEGREE_LEVEL_REPEAT_KEY, raw)
+
+    def test_unknown_mode_is_preserved(self):
+        self.assertEqual(
+            canonical_repeat_key("queue_append_race"),
+            "queue_append_race",
+        )
+
+    def test_blank_is_empty(self):
+        self.assertEqual(canonical_repeat_key("  "), "")
+
+
+class TestPref20260911005Resolution(unittest.TestCase):
+    def _row(self):
+        raw = yaml.safe_load(
+            (ROOT / "knowledge" / "preference_resolutions.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        rows = load_preference_resolutions(raw)
+        match = [row for row in rows if row.candidate_id == "pref_20260911_005"]
+        self.assertEqual(len(match), 1, rows)
+        return match[0]
+
+    def test_promote_stays_pending_until_main(self):
+        row = self._row()
+        self.assertEqual(row.outcome, "PROMOTE")
+        self.assertEqual(row.canonical_destination, "scripts/polar_policy.py")
+        candidate = PreferenceCandidate(
+            "pref_20260911_005",
+            "Jobright Matches onboarding repeat_key aliases",
+        )
+        self.assertEqual(
+            preference_resolution_action(row.outcome, on_main=False),
+            "pending",
+        )
+        self.assertEqual(
+            reconcile_preference_candidates([candidate], [row], on_main=False),
+            [candidate],
+        )
+
+    def test_promote_drops_pending_on_main(self):
+        row = self._row()
+        candidate = PreferenceCandidate(
+            "pref_20260911_005",
+            "Jobright Matches onboarding repeat_key aliases",
+        )
+        self.assertEqual(
+            preference_resolution_action(row.outcome, on_main=True),
+            "remove",
+        )
+        self.assertEqual(
+            reconcile_preference_candidates([candidate], [row], on_main=True),
+            [],
         )
 
 

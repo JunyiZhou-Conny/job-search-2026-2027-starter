@@ -2,7 +2,7 @@
 
 COMPILED ARTIFACT. Not canonical.
 
-policy_revision: 2026-09-10.worker-pool
+policy_revision: 2026-09-13.repeat-key-canon
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 | Workflow | Status | Lock | Raw URL |
@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the trust-delegation bootstrap from docs/automation/POLAR_WORKFLOWS.md.
 They load the two owner-designated raw main files on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-10.worker-pool+b480b4cc8d73`
-- `apply-ready-jobs` workflow_version `2026-09-10.worker-pool+cb44991c4b4b`
-- `daily-job-summary` workflow_version `2026-09-10.worker-pool+74acad475253`
-- `production-learning-daily` workflow_version `2026-09-10.worker-pool+370305f5fe16`
-- `polar-scheduler-heartbeat` workflow_version `2026-09-10.worker-pool+b53185a9688a`
-- `polar-github-write-canary` workflow_version `2026-09-10.worker-pool+8f2e742cf94e`
-- `chatgpt-production-review` workflow_version `2026-09-10.worker-pool+66960ba532f6`
-- `cursor-production-maintenance` workflow_version `2026-09-10.worker-pool+465201631783`
-- `polar-sheet-migration` workflow_version `2026-09-10.worker-pool+400cbb985cc0`
+- `discover-jobs-hourly` workflow_version `2026-09-13.repeat-key-canon+12e875827994`
+- `apply-ready-jobs` workflow_version `2026-09-13.repeat-key-canon+3832cd551b03`
+- `daily-job-summary` workflow_version `2026-09-13.repeat-key-canon+74acad475253`
+- `production-learning-daily` workflow_version `2026-09-13.repeat-key-canon+bb80439cd965`
+- `polar-scheduler-heartbeat` workflow_version `2026-09-13.repeat-key-canon+b53185a9688a`
+- `polar-github-write-canary` workflow_version `2026-09-13.repeat-key-canon+8f2e742cf94e`
+- `chatgpt-production-review` workflow_version `2026-09-13.repeat-key-canon+66960ba532f6`
+- `cursor-production-maintenance` workflow_version `2026-09-13.repeat-key-canon+465201631783`
+- `polar-sheet-migration` workflow_version `2026-09-13.repeat-key-canon+400cbb985cc0`
