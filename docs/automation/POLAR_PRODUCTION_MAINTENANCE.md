@@ -89,11 +89,12 @@ which rule fired. Do not open an empty PR.
    `WAITING_FOR_BACKGROUND_WORK`, same automation, not this run.
 5. **Packet missing.** No Issue and no usable Sheet row for a new date.
    Do not fall back to an older already-claimed packet.
-6. **Nothing implementable.** Every new `pref_*` / durable candidate
-   needs an owner fact, is already on `main`, or is `DROP_ONE_OFF` /
-   `KEEP_LOCAL` with no code change. Record `OWNER_DECISION` or
-   `DROP_*` rows only when that is the honest outcome; still open a PR
-   if you wrote resolution rows. If you would change nothing, `NO_WORK`.
+6. **Nothing to record.** There are no new `pref_*` / durable
+   candidates, or every new id already has a resolution row on
+   `main`. Owner-fact and no-code `DROP_*` / `KEEP_LOCAL` outcomes
+   are not this skip. Those packets stay eligible: record honest
+   `OWNER_DECISION` or `DROP_*` rows and open that PR. `NO_WORK`
+   here only if you would write no new resolution rows.
 
 If the newest packet is late (Polar’s 22:00 job has not written tonight’s
 row yet), `NO_WORK` with `packet_not_ready`. Do not invent work from
