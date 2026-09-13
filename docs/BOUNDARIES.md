@@ -50,6 +50,14 @@ Collaborators: scheduled discovery must be created on **their** Cursor account
 against **their** fork. Two Pro accounts do not share automations. See
 `docs/collaborators/SETUP.md`.
 
+A separate Cursor Automation (“Polar Production Maintenance”) is the
+intended consumer of Polar’s nightly `[Polar Production]` packet. It is
+**not** created from this repo. Cloud Agents can only read existing
+Automations. Junyi creates it once in the Cursor UI from
+`docs/automation/UI_POINTER.md`. Canonical rules:
+`docs/automation/POLAR_PRODUCTION_MAINTENANCE.md`. Do not enable Polar
+`cursor-production-maintenance` as a substitute.
+
 ## 4. Credentials never enter chat or git
 
 - Do **not** paste Jobright/Simplify/LinkedIn passwords, 2FA codes, or cookies into Cursor.
