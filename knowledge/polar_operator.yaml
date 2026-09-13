@@ -1,5 +1,5 @@
-last_updated: "2026-09-10"
-policy_revision: "2026-09-10.worker-pool"
+last_updated: "2026-09-13"
+policy_revision: "2026-09-13.repeat-key-canon"
 source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Each apply-ready-jobs run is one worker with its own per-run new-job budget. There is no shared daily regular submission pool. Ownership is per job and requisition, not a global browser lease."
 timezone: "America/New_York"
 
@@ -252,6 +252,26 @@ learning_reports_columns:
   - publish_status
   - github_url
   - notes
+
+# Polar writes incident_log.repeat_key through polar_policy.canonical_repeat_key.
+# New failure modes may introduce a new canonical key. Do not invent aliases
+# for a key that already exists.
+repeat_keys:
+  jobright_matches_onboarding_gate:
+    meaning: "Authenticated Jobright Matches (/jobs/recommend) mandatory resume-upload onboarding wall"
+    aliases:
+      - jobright_onboarding_required
+      - jobright_onboarding_gate
+      - jobright_onboarding_resume_upload_gate
+      - jobright_onboarding_resume_gate
+      - jobright_onboarding_resume_required
+      - jobright_onboarding_resume_upload
+  degree_level_gate_missed_at_discovery:
+    meaning: "Exclusive PhD-only or undergraduate-only gate visible on the full JD, missed at discovery"
+    aliases:
+      - phd_only_missed_at_discovery
+      - phd_only_gate_missed_at_discovery
+      - undergrad_only_gate_missed_at_discovery
 
 incident_categories:
   - UI_ONE_OFF

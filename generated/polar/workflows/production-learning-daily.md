@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-10.worker-pool+370305f5fe16
+workflow_version: 2026-09-13.repeat-key-canon+bb80439cd965
 status: production
 enabled: true
 needs_browser_lock: false
@@ -122,8 +122,9 @@ Use one category from this list:
 UI_ONE_OFF, LOCAL_PRIVATE_FACT, MISSING_DOCUMENT, MISSING_FACT, FACT_POLICY, TRIAGE, QUEUE_STATE, DEDUP, WRITING, AUTH, PERFORMANCE, ENVIRONMENT, NO_ACTION.
 If minutes were lost, also set time_lost_category from:
 AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPDOWN_UI, DUPLICATE, SUBMIT_VERIFY, OTHER.
-repeat_key groups recurrences. Examples: simplify_onboarding, queue_schema_shift, degree_level_gate_missed_at_discovery.
-Degree-level hard gates that discovery missed use that one repeat_key. Do not invent phd_only_missed_at_discovery variants.
+repeat_key groups recurrences. Write polar_policy.canonical_repeat_key(your_key).
+Jobright Matches onboarding uses jobright_matches_onboarding_gate. Do not invent jobright_onboarding_* variants.
+Degree-level hard gates that discovery missed use degree_level_gate_missed_at_discovery. Do not invent phd_only_missed_at_discovery variants.
 incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits.
 The sequence is monotonic. Read existing values for that date. The next id is one more than the highest number.
 If 001 and 003 exist, write 004. Do not fill gaps. Never reuse one. Do not write INC-YYYYMMDD-01.

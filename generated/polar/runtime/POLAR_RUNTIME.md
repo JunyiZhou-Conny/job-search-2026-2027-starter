@@ -605,6 +605,9 @@ Heartbeat, daily summary, and production-learning-daily do not claim queue jobs.
 One workflow invocation upserts one run_log row by run_id and copies workflow_version from the instruction file.
 Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.
 incident_id is INC-YYYYMMDD-NNN with three digits. The sequence is monotonic. The next id is one more than the highest number for that date. If 001 and 003 exist, write 004. 01 and 001 count as the same number.
+Write incident_log.repeat_key with polar_policy.canonical_repeat_key.
+Jobright Matches onboarding uses repeat_key jobright_matches_onboarding_gate.
+Do not invent jobright_onboarding_* variants.
 Degree-level apply-time skips share repeat_key degree_level_gate_missed_at_discovery.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
 Authorization telemetry uses auth_outcome answered, optional_left_blank, ambiguous_required_blocked, hard_eligibility_skip, or disclosure_prevented.
@@ -640,7 +643,8 @@ Mint the next id from pending ids, keep_local ids, and main preference_resolutio
 An open Cursor PR is not canonical. Polar reconciles only after a resolution row is on main.
 KEEP_LOCAL leaves pending and stays in Local-only facts. Do not re-export it.
 Match candidate_id only. Do not compare wording.
-preference_resolutions: none
+preference_resolutions:
+- pref_20260911_005 | PROMOTE | scripts/polar_policy.py | none
 Cursor writes generalized lessons and knowledge/preference_resolutions.yaml. STOP BEFORE MERGE.
 
 Simplify Copilot is a required apply precondition.

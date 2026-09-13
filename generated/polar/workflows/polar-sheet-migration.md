@@ -1,7 +1,7 @@
 # polar-sheet-migration
 
 workflow: polar-sheet-migration
-workflow_version: 2026-09-10.worker-pool+400cbb985cc0
+workflow_version: 2026-09-13.repeat-key-canon+400cbb985cc0
 status: manual_once
 enabled: false
 needs_browser_lock: false

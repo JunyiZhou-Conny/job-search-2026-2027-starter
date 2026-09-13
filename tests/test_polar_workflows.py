@@ -107,6 +107,8 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("Sponsorship unknown, unavailable, or generally not offered is not a skip.", text)
         self.assertIn("phd candidates only", text)
         self.assertIn("degree_level_gate_missed_at_discovery", text)
+        self.assertIn("jobright_matches_onboarding_gate", text)
+        self.assertIn("polar_policy.canonical_repeat_key", text)
         self.assertIn("before login or form work", text)
         self.assertIn("Do not pick a sibling from the employer's current openings.", text)
         self.assertIn("clearly says answer Yes or answer No", text)
