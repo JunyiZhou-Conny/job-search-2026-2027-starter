@@ -49,3 +49,51 @@ Follow the canonical instructions in this repo — do not improvise a different 
 6. If Copilot filled EEO, or work-auth/sponsorship looks wrong for an F-1 profile, block Submit and write the review row.
 7. If anything in chat memory conflicts with those files, the FILES win.
 ```
+
+## Polar production maintenance (separate Automation)
+
+Do **not** mix this with daily discovery or weekday apply. Create it only
+after `docs/automation/POLAR_PRODUCTION_MAINTENANCE.md` is on `main`.
+
+UI fields (match Daily Job Discovery, except the schedule and this
+pointer):
+
+| Field | Value |
+|---|---|
+| Name | `Polar Production Maintenance` |
+| Trigger | Scheduled. Custom cron `0 23 * * *`. Timezone **America/New_York** (same control the 09:00 / 18:00 discovery Automations already use). |
+| Repository | `JunyiZhou-Conny/job-search-2026-2027-starter` |
+| Branch | `main` |
+| Permission | **Private** |
+| Pull request creation | **On** (default). This Automation must open a PR. Do not reuse the discovery “turn PR creation off” setting. |
+| Computer use | Leave default. The instruction file forbids using it for Polar or Cursor Web. |
+| Memories | Leave on. The agent writes `last_processed_report_date`. |
+| MCP | Same GitHub connection already used by Daily Job Discovery. No Google Sheets MCP. |
+
+If the UI cron is UTC-only (no timezone dropdown), do **not** paste
+`0 23 * * *`. Use `0 3 * * *` while America/New_York is on EDT. After
+the 2026-11-01 fallback to EST, change that UTC cron to `0 4 * * *`.
+Prefer the timezone dropdown if it exists — discovery already fires at
+09:02 / 18:03 ET, so that control is the proven one.
+
+Agent Instructions — paste **only** this block, then the optional CSV
+line:
+
+```text
+Follow the canonical instructions in this repo — do not improvise a different workflow.
+
+1. Read and obey docs/automation/POLAR_PRODUCTION_MAINTENANCE.md.
+2. If anything in chat memory or an older pasted prompt conflicts with that file, the FILE wins.
+3. You were started by this Cursor Automation. Polar did not launch you. ChatGPT is not a gate.
+4. Process the latest Polar production packet that is not already claimed. Implement at most one durable lesson that does not need a personal-fact answer. Write preference_resolutions.yaml. Compile Polar runtime if you change compiler sources. Open one PR titled [Polar maintenance] YYYY-MM-DD. STOP BEFORE MERGE.
+5. If a [Polar maintenance] PR is already open, or the packet is missing, exit NO_WORK. Do not open an empty PR.
+6. Do not submit applications, send outreach, merge, or enable other workflows.
+```
+
+Optional last line (needed on `sheet_only` nights; do **not** commit this
+URL to git — the repo is public):
+
+```text
+POLAR_JOBS_LEARNING_CSV: <paste the public learning_reports gviz CSV URL Junyi already uses for Polar Jobs>
+```
+
