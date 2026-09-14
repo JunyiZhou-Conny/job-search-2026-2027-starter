@@ -92,6 +92,10 @@ class TestGeneratedWorkflows(unittest.TestCase):
             budget.get("priority_submit_gate"),
             "polar_policy.priority_submit_permitted",
         )
+        self.assertIn(
+            "If that gate is false, do not Submit. Mark BLOCKED. Continue.",
+            text,
+        )
         autofill = parse_contract_block(text, "Autofill")
         self.assertEqual(autofill.get("owner"), "jobright_extension")
         self.assertEqual(autofill.get("max_attempts_per_form"), "1")

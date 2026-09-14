@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-14.jobright-first+f0fb20a38f10
+workflow_version: 2026-09-14.jobright-first+ad7ee6f740ef
 status: production
 enabled: true
 needs_browser_lock: false
@@ -352,6 +352,7 @@ For each Jobright card:
 12. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
     For every nontrivial free-response question, append one writing_log row.
     If weight is prioritized, polar_policy.priority_submit_permitted must be true before Submit.
+    If that gate is false, do not Submit. Mark BLOCKED. Continue.
 13. Before Submit, reread this queue row and the live sibling rows.
     If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.
     If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.

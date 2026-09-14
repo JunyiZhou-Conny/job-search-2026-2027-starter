@@ -1067,7 +1067,7 @@ def consider_jobright_card(
         return ConsiderDecision("skip_duplicate", True, True, f"sheet status {sheet_status}")
     if hard_fact_conflict:
         return ConsiderDecision("skip_hard_fact", True, True, "hard fact conflict")
-    return ConsiderDecision("admit", True, True, "jobright recommendation")
+    return ConsiderDecision("admit", False, True, "jobright recommendation")
 
 
 def page_surface(page_kind: str) -> str:

@@ -94,6 +94,8 @@ class TestSkipAndContinue(unittest.TestCase):
 
         admit = consider_jobright_card()
         self.assertEqual(admit.action, "admit")
+        self.assertFalse(admit.consume_considered)
+        self.assertTrue(admit.continue_run)
         self.assertFalse(considered_budget_exhausted(2, max_considered=3))
         self.assertTrue(considered_budget_exhausted(3, max_considered=3))
 
