@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-13.repeat-key-canon+8f2e742cf94e
+workflow_version: 2026-09-14.visible-form-truth+e60ae9fe705a
 status: manual_canary
 enabled: false
 needs_browser_lock: false
@@ -76,9 +76,11 @@ never_omit: apply_url_confidence
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
+Reread every row with that key before write. polar_policy.plan_control_write is the engineer table.
 If the target key is missing, append a new row.
 If the visible row has a different key, or no key, abort. Do not write that row.
-If two rows share the same key, abort.
+If two rows share the same key, abort. Do not guess. Do not update either row.
+Incident repeat_key control_key_duplicate.
 Commit the edit. Then reread key, owner_run_id, notes.
 A cell that looked correct is not proof the write persisted. The reread is the proof.
 github_write_canary and env_simplify_copilot must never overwrite polar_browser.

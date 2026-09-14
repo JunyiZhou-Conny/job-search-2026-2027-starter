@@ -8,3 +8,78 @@ resolutions:
     # Polar Production #132. Jobright Matches onboarding was logged under
     # four-plus repeat_key spellings, which defeated aggregation. Canonical
     # key is jobright_matches_onboarding_gate via polar_policy.canonical_repeat_key.
+  - candidate_id: pref_20260910_012
+    outcome: DROP_REDUNDANT
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Same Jobright Matches onboarding mode as pref_20260911_005.
+  - candidate_id: pref_20260911_001
+    outcome: DROP_REDUNDANT
+    canonical_destination: generated/polar/runtime/POLAR_RUNTIME.md
+    resolved_revision: ""
+    # Copilot missing / activeTab already stops the apply run. Human toolbar click.
+  - candidate_id: pref_20260911_002
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Submit SUCCESS requires employer-page confirmation plus matching queue readback.
+  - candidate_id: pref_20260911_003
+    outcome: PROMOTE
+    canonical_destination: knowledge/polar_operator.yaml
+    resolved_revision: ""
+    # Queue appends already require named-header write plus immediate range readback.
+  - candidate_id: pref_20260911_004
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Duplicate control-tab keys abort. Aliases collapse to control_key_duplicate.
+  - candidate_id: pref_20260912_001
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Judge Copilot only on the real application form, not a login or signup page.
+  - candidate_id: pref_20260912_002
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Native resume widget is the source of truth. Attach the family export if present.
+  - candidate_id: pref_20260912_003
+    outcome: OWNER_DECISION
+    canonical_destination: ""
+    resolved_revision: ""
+    # Local DOB exists. Do not compile the value. Junyi must say apply may read it.
+  - candidate_id: pref_20260912_004
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Copilot filling the academic mailbox on a normal ATS account field is wrong.
+  - candidate_id: pref_20260910_024
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # incident_id date is America/New_York. Reread before write. Never reuse.
+  - candidate_id: pref_20260910_025
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # A run_log row is not final until required fields including ended_at are present.
+  - candidate_id: pref_20260913_001
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # run_id suffix uses the America/New_York wall clock, not UTC.
+  - candidate_id: pref_20260913_002
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Sheet timestamps are ISO-8601 with a numeric offset. EDT text is invalid.
+  - candidate_id: pref_20260913_003
+    outcome: DROP_REDUNDANT
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Same incomplete run_log stub as pref_20260910_025.
+  - candidate_id: pref_20260913_004
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Jobright job_key ignores query strings such as ?x.

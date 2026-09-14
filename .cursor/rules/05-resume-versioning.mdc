@@ -11,8 +11,10 @@ alwaysApply: false
 - One active master on disk. `JZ_resume` at `resumes/base/JZ_resume.tex`
   and `resumes/base/JZ_resume.pdf`.
 - `role_cluster` / `resume_cluster` are job taxonomy only (`cloud_swe` | `data_ml` | `health_ai`).
-- Prefer the Simplify resume already attached. Do not upload the two-page
-  master. Empty widget → REVIEW_READY / `missing_production_resume`.
+- Look at the native ATS resume widget. Copilot Completed is not proof.
+  Empty widget → attach `generated/resumes/export/ai_infra_v1.pdf` if
+  present. Never upload the two-page master. Still empty → REVIEW_READY /
+  `missing_production_resume`.
 - After BUILD exists, production disk attach is a frozen family one-pager
   or a human-accepted VIP file.
 - Register a `data/resume_versions.csv` row only after a human accepts the

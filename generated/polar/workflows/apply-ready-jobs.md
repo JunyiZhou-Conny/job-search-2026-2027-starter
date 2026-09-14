@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-13.repeat-key-canon+3832cd551b03
+workflow_version: 2026-09-14.visible-form-truth+11d932c44871
 status: production
 enabled: true
 needs_browser_lock: false
@@ -123,9 +123,11 @@ never_omit: apply_url_confidence
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
+Reread every row with that key before write. polar_policy.plan_control_write is the engineer table.
 If the target key is missing, append a new row.
 If the visible row has a different key, or no key, abort. Do not write that row.
-If two rows share the same key, abort.
+If two rows share the same key, abort. Do not guess. Do not update either row.
+Incident repeat_key control_key_duplicate.
 Commit the edit. Then reread key, owner_run_id, notes.
 A cell that looked correct is not proof the write persisted. The reread is the proof.
 github_write_canary and env_simplify_copilot must never overwrite polar_browser.
@@ -140,7 +142,10 @@ Named writes are the fix. Prose that says remember column I is not the fix.
 
 One workflow invocation writes one run_log row.
 Copy workflow_version from this file into that row.
+Mint run_id with polar_policy.mint_run_id on the America/New_York wall clock. Do not use UTC for the suffix.
 Record started_at when you acquire work. Record ended_at before you exit.
+Both timestamps use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset. Do not write EDT or EST.
+The row is not final until polar_policy.run_log_row_is_final is true.
 duration_minutes is coarse. Use whole minutes.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED.
 SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.
@@ -153,8 +158,8 @@ AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPD
 repeat_key groups recurrences. Write polar_policy.canonical_repeat_key(your_key).
 Jobright Matches onboarding uses jobright_matches_onboarding_gate. Do not invent jobright_onboarding_* variants.
 Degree-level hard gates that discovery missed use degree_level_gate_missed_at_discovery. Do not invent phd_only_missed_at_discovery variants.
-incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits.
-The sequence is monotonic. Read existing values for that date. The next id is one more than the highest number.
+incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits, not UTC.
+The sequence is monotonic. Reread existing values for that date before write. The next id is one more than the highest number.
 If 001 and 003 exist, write 004. Do not fill gaps. Never reuse one. Do not write INC-YYYYMMDD-01.
 01 and 001 count as the same number.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
@@ -167,12 +172,15 @@ Evidence must be enough for an engineer. No secrets.
 street_address_source: local Polar or private profile. Never copy the street value into git or the Sheet.
 Normal ATS email, account email, preferred contact, and password-reset email use the local APPLICATION mailbox.
 If a field asks for school email, university email, or institutional email, use the local academic mailbox.
-A resume parser that pastes Harvard email into a normal contact field is wrong. Correct it before Submit.
+A resume parser or Simplify Copilot that pastes the Harvard or school mailbox into a normal ATS account, contact, or password-reset field is wrong.
+Correct that field to the local APPLICATION mailbox before continuing. polar_policy.contact_email_action is the engineer table.
+Do not finish account creation on the academic mailbox.
 Do not create a second employer account only to change email.
 Do not write mailbox values or passwords into the Sheet.
 
 Approved documents:
 - emory_official_transcript: path `Emory_Official_Transcript.pdf` (available). Use when the form asks for that document class.
+- production_resume_ai_infra_v1: path `generated/resumes/export/ai_infra_v1.pdf` (missing). Use when the form asks for that document class.
 - harvard_unofficial_transcript: path `Harvard_unofficial_transcript.pdf` (available). Use when the form asks for that document class.
 Do not attach a transcript when the job asks for a different school or a diploma.
 If a required transcript is missing locally and in the registry, mark BLOCKED with category MISSING_DOCUMENT.
@@ -327,14 +335,27 @@ For the current job:
 4. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
 5. Read the full employer JD now. Run the apply-time hard eligibility check before login or form work.
 6. Capture employer identity and run requisition dedupe. Then continue only if the job is still eligible.
-7. Copilot preflight on this employer ATS page before substantial fill.
-   If Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.
+7. Copilot preflight only on the real application form that shows personal-information widgets.
+   polar_policy.copilot_preflight_scope is the engineer table. login_signup or SSO pages defer. Do not write OWNER_ACTION_REQUIRED there.
+   On the real form, if Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.
    Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.
 8. Authenticate with ordinary browser flows when asked. Account creation is normal work.
-9. Prefer the Simplify resume already attached. If Copilot is PRESENT, Autofill once. Use Simplify at most once.
-   Do not upload `resumes/base/JZ_resume.pdf`. That file is the two-page master, not a production attach.
-   If the widget is empty, mark REVIEW_READY with blocker missing_production_resume and continue the worker.
-10. Fill standing answers from section A. Correct a resume-parser Harvard email on a normal contact field.
+   After the real application form is visible, judge Copilot again. polar_policy.copilot_after_auth_action is the engineer table.
+   A login or SSO defer is not a pass. Do not continue to fill until that table returns continue.
+   If it returns owner_action_required, restore the remembered READY status and attempt_count.
+   Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.
+   Do not Autofill. Do not fill the form by hand.
+   After Copilot or account creation, reread the account email field. Academic mailbox on a normal field is wrong.
+   Incident repeat_key copilot_academic_mailbox_on_application_field if Copilot put the school mailbox there.
+9. If and only if copilot_after_auth_action returned continue, Autofill once. Use Simplify at most once.
+   If Copilot is MISSING or UNKNOWN, do not fill by hand. Use the step 8 OWNER_ACTION_REQUIRED exit.
+   Then look at the native Resume/CV widget, not the Copilot sidebar.
+   polar_policy.native_resume_action is the engineer table. Sidebar Completed is ignored.
+   If the native widget is empty and `generated/resumes/export/ai_infra_v1.pdf` exists locally, attach that export.
+   Do not upload `resumes/base/JZ_resume.pdf`. Do not upload the sanitized PDF next to the family .tex.
+   Do not compile LaTeX during apply.
+   If the native widget is still empty, mark REVIEW_READY with blocker missing_production_resume. Incident repeat_key native_resume_empty. Continue the worker.
+10. Fill standing answers from section A. Correct a resume-parser or Copilot Harvard email on a normal contact field.
    Authorization and identity widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.
    If the field is optional, leave it blank. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship.
@@ -354,7 +375,9 @@ For the current job:
     If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.
     If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.
     Do not consult a shared daily remaining count. This worker's budget is max_new_jobs.
-    Validate, Submit once, verify. SUBMITTED or SUBMISSION_UNKNOWN. Do not click Submit a second time.
+    Validate, Submit once. Proof is employer-page confirmation text plus a matching queue readback.
+    Copilot Completed is not confirmation. polar_policy.submit_outcome is the engineer table.
+    If the page confirmation is missing or the queue readback does not match, write SUBMISSION_UNKNOWN. Incident repeat_key submit_success_without_page_confirmation. Do not click Submit a second time.
 14. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.
     Before Submit, reread this row and the live sibling rows.
     If polar_policy.submit_claim_still_held is false, skip.
@@ -362,7 +385,9 @@ For the current job:
     Apply polar_policy.priority_submit_permitted before Submit.
     If any meaningful custom question is unanswered in writing_log, do not Submit. Mark BLOCKED.
     A logged question with a blank answer or a blank evidence_note is a Submit blocker.
-    If writing_log is complete and final validation passes, Submit once and verify.
+    If writing_log is complete and final validation passes, Submit once.
+    Proof is employer-page confirmation text plus a matching queue readback of confirmation, submitted_at, and the visible resume filename.
+    Copilot Completed is not confirmation. If that proof is missing, SUBMISSION_UNKNOWN. Do not click Submit again.
     REVIEW_READY is only for a missing owner fact or an explicit hold. It is not the default for prioritized rows.
 15. If this environment cannot complete a required job-specific step after a normal attempt, status BLOCKED. Continue.
     Missing Copilot is not this case. Missing Copilot already stopped the run.

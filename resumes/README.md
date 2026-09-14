@@ -13,10 +13,18 @@ This folder starts fresh with one active resume.
 
 ## How Polar attaches a resume
 
-Prefer the Simplify resume already attached.
+Look at the native ATS Resume/CV widget. Copilot sidebar Completed is
+not proof that widget has a file.
 
-If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.
-Mark REVIEW_READY with blocker `missing_production_resume` and continue the batch.
+If the native widget already shows a file, leave it.
+
+If it is empty and `generated/resumes/export/ai_infra_v1.pdf` exists
+locally, attach that export. Do not upload `resumes/base/JZ_resume.pdf`.
+Do not upload the sanitized PDF next to the family `.tex`. Do not
+compile LaTeX during apply.
+
+If the native widget is still empty, mark REVIEW_READY with blocker
+`missing_production_resume` and continue the batch.
 
 Do not invent a new resume for every job.
 

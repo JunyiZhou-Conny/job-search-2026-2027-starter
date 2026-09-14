@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 import unittest
+from datetime import datetime, timezone
 from pathlib import Path
 
 import yaml
@@ -13,15 +14,30 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from polar_policy import (  # noqa: E402
     APPLY_URL_CONFIDENCE,
+    CONTROL_KEY_DUPLICATE_REPEAT_KEY,
     DEGREE_LEVEL_REPEAT_KEY,
     INCIDENT_CATEGORIES,
     JOBRIGHT_ONBOARDING_REPEAT_KEY,
+    NATIVE_RESUME_REPEAT_KEY,
+    PRODUCTION_RESUME_EXPORT_PATH,
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     TIME_LOST_CATEGORIES,
     PreferenceCandidate,
     apply_run_caps,
     canonical_repeat_key,
+    contact_email_action,
+    copilot_after_auth_action,
+    copilot_completed_is_submit_proof,
+    copilot_preflight_scope,
+    format_sheet_timestamp,
+    forbidden_resume_attach_path,
+    jobright_job_id,
+    mint_run_id,
+    native_resume_action,
+    run_log_row_is_final,
+    sheet_timestamp_is_valid,
+    submit_outcome,
     closed_posting_action,
     control_row_is_writable,
     control_write_persisted,
@@ -363,6 +379,10 @@ class TestWorkflowVersionAndDocuments(unittest.TestCase):
             docs["harvard_unofficial_transcript"]["approved_path"],
             "Harvard_unofficial_transcript.pdf",
         )
+        self.assertEqual(
+            docs["production_resume_ai_infra_v1"]["approved_path"],
+            PRODUCTION_RESUME_EXPORT_PATH,
+        )
 
     def test_time_lost_categories_cover_measured_bottlenecks(self):
         self.assertEqual(
@@ -581,6 +601,153 @@ class TestCanonicalRepeatKey(unittest.TestCase):
 
     def test_blank_is_empty(self):
         self.assertEqual(canonical_repeat_key("  "), "")
+
+    def test_control_key_aliases_collapse(self):
+        for raw in (
+            "control_duplicate_key",
+            "control_duplicate_key_env_simplify_copilot",
+            CONTROL_KEY_DUPLICATE_REPEAT_KEY,
+        ):
+            self.assertEqual(
+                canonical_repeat_key(raw),
+                CONTROL_KEY_DUPLICATE_REPEAT_KEY,
+                raw,
+            )
+
+
+class TestVisibleFormTruth(unittest.TestCase):
+    def test_jobright_job_id_strips_query(self):
+        self.assertEqual(
+            jobright_job_id("https://jobright.ai/jobs/info/6aa6f43982e82b4e?x"),
+            "6aa6f43982e82b4e",
+        )
+        self.assertEqual(
+            jobright_job_id("https://jobright.ai/jobs/info/6aa6f4382ed333b4ea5cad07"),
+            "6aa6f4382ed333b4ea5cad07",
+        )
+        self.assertEqual(jobright_job_id("https://example.com/jobs/info/abc"), "")
+
+    def test_run_id_uses_eastern_wall_clock(self):
+        utc = datetime(2026, 9, 13, 17, 1, 34, tzinfo=timezone.utc)
+        self.assertEqual(mint_run_id(utc), "R-20260913-130134")
+        stamp = format_sheet_timestamp(utc)
+        self.assertTrue(stamp.startswith("2026-09-13T13:01:34"))
+        self.assertIn("-04:00", stamp)
+        self.assertTrue(sheet_timestamp_is_valid(stamp))
+        self.assertFalse(sheet_timestamp_is_valid("2026-09-13 16:31:31 EDT"))
+
+    def test_run_log_row_requires_ended_at(self):
+        self.assertFalse(
+            run_log_row_is_final(
+                {
+                    "run_id": "R-1",
+                    "workflow": "discover-jobs-hourly",
+                    "started_at": "2026-09-13T17:00:00-04:00",
+                    "ended_at": "",
+                    "result": "PARTIAL",
+                }
+            )
+        )
+        self.assertTrue(
+            run_log_row_is_final(
+                {
+                    "run_id": "R-1",
+                    "workflow": "discover-jobs-hourly",
+                    "started_at": "2026-09-13T17:00:00-04:00",
+                    "ended_at": "2026-09-13T17:10:00-04:00",
+                    "result": "SUCCESS",
+                }
+            )
+        )
+
+    def test_native_resume_ignores_copilot_sidebar(self):
+        self.assertEqual(
+            native_resume_action(
+                native_widget_has_file=False,
+                export_available=True,
+                copilot_sidebar_completed=True,
+            ),
+            "attach_export",
+        )
+        self.assertEqual(
+            native_resume_action(
+                native_widget_has_file=False,
+                export_available=False,
+                copilot_sidebar_completed=True,
+            ),
+            "review_ready_missing_production_resume",
+        )
+        self.assertEqual(
+            native_resume_action(
+                native_widget_has_file=True,
+                export_available=False,
+                copilot_sidebar_completed=False,
+            ),
+            "keep_visible_file",
+        )
+        self.assertTrue(forbidden_resume_attach_path("resumes/base/JZ_resume.pdf"))
+        self.assertFalse(forbidden_resume_attach_path(PRODUCTION_RESUME_EXPORT_PATH))
+        self.assertEqual(canonical_repeat_key(NATIVE_RESUME_REPEAT_KEY), NATIVE_RESUME_REPEAT_KEY)
+
+    def test_academic_mailbox_on_application_field_is_corrected(self):
+        self.assertEqual(
+            contact_email_action("application", "academic"),
+            "correct_to_application",
+        )
+        self.assertEqual(
+            contact_email_action("academic", "application"),
+            "use_academic",
+        )
+        self.assertEqual(
+            contact_email_action("application", "application"),
+            "keep_application",
+        )
+
+    def test_submit_requires_page_confirmation(self):
+        self.assertEqual(
+            submit_outcome(page_confirmation=True, queue_matches_page=True),
+            "SUBMITTED",
+        )
+        self.assertEqual(
+            submit_outcome(page_confirmation=True, queue_matches_page=False),
+            "SUBMISSION_UNKNOWN",
+        )
+        self.assertEqual(
+            submit_outcome(page_confirmation=False, queue_matches_page=True),
+            "SUBMISSION_UNKNOWN",
+        )
+        self.assertFalse(copilot_completed_is_submit_proof())
+
+    def test_copilot_login_page_defers(self):
+        self.assertEqual(copilot_preflight_scope("login_signup"), "defer")
+        self.assertEqual(copilot_preflight_scope("application_form"), "judge")
+
+    def test_copilot_after_auth_missing_still_stops(self):
+        self.assertEqual(
+            copilot_after_auth_action("login_signup", "missing"),
+            "defer",
+        )
+        self.assertEqual(
+            copilot_after_auth_action("application_form", "missing"),
+            "owner_action_required",
+        )
+        self.assertEqual(
+            copilot_after_auth_action("application_form", "unknown"),
+            "owner_action_required",
+        )
+        self.assertEqual(
+            copilot_after_auth_action("application_form", "present"),
+            "continue",
+        )
+
+    def test_duplicate_control_key_aborts(self):
+        rows = [
+            {"key": "env_simplify_copilot", "notes": "old"},
+            {"key": "env_simplify_copilot", "notes": "new"},
+        ]
+        plan = plan_control_write(rows, "env_simplify_copilot")
+        self.assertEqual(plan.action, "abort")
+        self.assertIn("duplicate", plan.notes)
 
 
 class TestPref20260911005Resolution(unittest.TestCase):
