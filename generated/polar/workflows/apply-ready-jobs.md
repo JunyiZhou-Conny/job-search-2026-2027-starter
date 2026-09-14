@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-14.perfect-resume+bfea9592cfd3
+workflow_version: 2026-09-14.jobright-first+f0fb20a38f10
 status: production
 enabled: true
 needs_browser_lock: false
@@ -90,7 +90,7 @@ If the live queue header has no claim_run_id, do not append it from this workflo
 Note missing_claim_column. Incident repeat_key missing_claim_column.
 Write OWNER_ACTION_REQUIRED. Exit. Run polar-sheet-migration once after merge.
 If claim_run_id appears more than once, abort. Do not guess which column.
-Remember the current READY_REGULAR or READY_PRIORITY status and attempt_count.
+Remember the current NEW, READY_REGULAR, READY_PRIORITY, or IN_PROGRESS status and attempt_count.
 Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, and updated_at now.
 Read back job_key, status, last_stage, and claim_run_id.
 If claim_run_id is not this run_id, the write lost. Note already_claimed. Incident repeat_key work_already_claimed.
@@ -186,72 +186,47 @@ Do not attach a transcript when the job asks for a different school or a diploma
 If a required transcript is missing locally and in the registry, mark BLOCKED with category MISSING_DOCUMENT.
 Never paste transcript contents into logs.
 
-## Priority contract
+## Entry
 
-max_new_jobs: 3
-reserved_priority_slots: 1
-shared_pool: true
-reservation_is_from_pool: true
-shared_pool means READY_PRIORITY and READY_REGULAR share max_new_jobs. It is not a daily cap.
-worker_budget: per_run
+entry: jobright_recommendations
+sheet_queue_is_prerequisite: false
+url: https://jobright.ai/jobs/recommend
+select_gate: polar_policy.select_next_apply_job
+legacy_ready: polar_policy.legacy_ready_disposition
+
+An empty READY queue is a valid start. Do not FIFO READY_REGULAR or READY_PRIORITY.
+READY_* rows are inventory and dedupe only unless that job_key appears on Jobright.
+select_next_apply_job recovers SUBMISSION_UNKNOWN and abandoned or self-owned IN_PROGRESS only.
+
+## Budget
+
+max_considered: 3
+reserved_priority_slots: 0
+worker_budget: considered_not_submitted
 daily_regular_cap: none
 prioritized_auto_submit: true
 writing_log_required_before_priority_submit: true
 priority_submit_gate: polar_policy.priority_submit_permitted
+run_log_map: jobs_seen=considered, jobs_attempted=forms_reached
 
-This invocation is one worker. Its new-work budget is max_new_jobs.
-Another apply-ready-jobs run has its own budget. Do not subtract that worker's jobs from this one.
-There is no shared daily regular submission pool.
-The hourly schedule plus this per-run budget is the limiter.
-Recovery first. Inspect every SUBMISSION_UNKNOWN row. Verify. Never blindly resubmit.
-Then resume abandoned or self-owned IN_PROGRESS rows from last_stage.
-Do not steal a live claim owned by another run_id.
-Select the next job with polar_policy.select_next_apply_job.
-Do not pre-claim the selected list.
-Claim one job, process it, then select again.
-Exclude keys this run already claimed, recovered, or skipped.
-already_claimed and a lost readback do not consume the new-job budget.
-Recovery of SUBMISSION_UNKNOWN and abandoned or self-owned IN_PROGRESS does not consume the new-job budget.
-Stop new claims when this run has claimed max_new_jobs new jobs, or the next select is empty.
-Another live worker is not a stop condition.
-If READY_PRIORITY exists, reserve 1 new-execution slot for one priority job.
-Use remaining new-execution slots for READY_REGULAR.
-If no READY_PRIORITY exists, regular may use every configured new-execution slot.
-Do not let a READY_REGULAR backlog starve READY_PRIORITY.
-After this run claims one READY_PRIORITY, later selects in the same run take regulars.
+3 considered candidates is not 3 submissions.
+Recovery does not consume considered.
+A skip of closed, duplicate, Applied, or hard-fact-conflict consumes considered and continues.
+Stop new Jobright cards when polar_policy.considered_budget_exhausted is true.
+Another apply-ready-jobs run has its own budget. Do not start a second Polar apply.
+Weight is writing-depth metadata. It is not a slot reservation.
 
-## Simplify contract
+## Autofill
 
-role: required_precondition
-proof: employer_page_copilot_ui
-not_proof: simplify.jobs login, simplify.jobs API
-max_attempts_per_application: 1
-silent_manual_fallback: false
-missing_action: owner_action_required
-consume_job: false
-control_key: env_simplify_copilot
-states: PRESENT, MISSING, UNKNOWN
+owner: jobright_extension
+max_attempts_per_form: 1
+do_not_use_simplify_copilot: true
+autofill_gate: polar_policy.autofill_action
+page_surface: polar_policy.page_surface
 
-Simplify Copilot is required before substantial application fill.
-Proof is the Copilot sidebar or Autofill This Page, Start Application, or Create Account & Autofill on the employer ATS page.
-A healthy simplify.jobs session is not proof.
-If Copilot is PRESENT, click Autofill This Page or Start Application once. Never Run Autofill Again. Never Generate with AI.
-Then read the visible widgets and correct standing answers.
-If Copilot is MISSING or UNKNOWN, do not fall back to traditional clicking.
-This is an ENVIRONMENT blocker, not a job qualification failure.
-Restore the probe job to its prior READY_REGULAR or READY_PRIORITY status.
-Do not bump attempt_count for the miss. Do not mark the job BLOCKED.
-Upsert control key env_simplify_copilot by key cell. Never write it into the polar_browser row.
-notes use state=PRESENT|MISSING|UNKNOWN; evidence=short page proof. No secrets.
-If a human is in this conversation, ask them once to install Simplify Copilot and recheck after they say it is installed.
-Clear claim_run_id on the restored READY row. Do not wait on polar_browser.
-On a scheduled unattended run, do not wait.
-Write incident category ENVIRONMENT, time_lost_category SIMPLIFY, repeat_key simplify_copilot_missing.
-job_key on that incident may name the probe page. The queue row stays READY.
-Write run_log result OWNER_ACTION_REQUIRED. simplify_fallback_count stays 0.
-Exit the apply run. Do not start the next READY job.
-The next apply-ready-jobs run rechecks Copilot on an employer page. Last MISSING is not a skip-check cache.
-When Copilot is PRESENT, overwrite env_simplify_copilot to state=PRESENT and continue.
+Jobright extension owns autofill on this path. Do not click Simplify Copilot Autofill.
+Missing Copilot is not OWNER_ACTION_REQUIRED and does not stop the run.
+Autofill once on the real form. Never Run Autofill Again.
 
 ## Memory ownership
 
@@ -291,11 +266,11 @@ Sponsorship unknown, unavailable, or generally not offered is not a skip.
 F-1 or OPT mentioned on a board is not a skip.
 An exclusive graduation window remains a note, not a skip.
 Do not change graduation-window policy.
-Do not move Original Job Post resolution into hourly discovery.
+Do not use discover-jobs-hourly as apply admission.
 
 ## Employer requisition dedupe
 
-After Original Job Post or the employer application is resolved, capture the most stable identity:
+After the employer application is resolved, capture the most stable identity:
 employer_requisition_id, canonical employer apply_url, and ats_job_id.
 Write those named fields. Keep apply_url_confidence.
 Compare against the Sheet and section K.
@@ -313,54 +288,55 @@ Do not create a second ledger.
 
 ## Work order
 
-Never click Jobright APPLY WITH AUTOFILL.
-Never invent facts. If a required fact is missing, leave the widget and mark BLOCKED.
+Never invent facts. If a required fact is missing, leave the widget. polar_policy.missing_required_fact_action.
+Missing references: polar_policy.missing_references_action. Do not fabricate DOB, OPT, references, or sponsorship.
 A blocked job must not stall the worker.
+Do not invent a Jobright Turbo credit policy.
 
-claimed_new starts at 0. priority_claimed starts at 0. seen starts empty.
-Loop until select_next_apply_job returns empty or Copilot stops the run.
-Read the live queue each time. Pass exclude_keys=seen, new_jobs_already_claimed=claimed_new,
-and priority_already_claimed=priority_claimed.
+considered starts at 0. forms_reached starts at 0. seen starts empty.
 If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.
 If it is duplicate, abort.
-Process only the next_key. After that job finishes, add it to seen and loop.
 
-For the current job:
-1. Claim the row with polar_policy.attempt_claim_job. Read back job_key, status, last_stage, and claim_run_id.
-   If confirm_claim_readback is not CLAIMED, add the key to seen and continue. Do not increment claimed_new.
-   If prior_status was READY_REGULAR or READY_PRIORITY, increment claimed_new after a successful claim.
-   If prior_status was READY_PRIORITY, also increment priority_claimed.
-2. Open apply_url when confidence is exact or strong. Otherwise open source_url and use Original Job Post.
-3. Confirm company and title match the queue row. If they do not match, BLOCKED or SKIP.
-4. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
-5. Read the full employer JD now. Run the apply-time hard eligibility check before login or form work.
-6. Capture employer identity and run requisition dedupe. Then continue only if the job is still eligible.
-7. Copilot preflight only on the real application form that shows personal-information widgets.
-   polar_policy.copilot_preflight_scope is the engineer table. login_signup or SSO pages defer. Do not write OWNER_ACTION_REQUIRED there.
-   On the real form, if Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.
-   Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.
-8. Authenticate with ordinary browser flows when asked. Account creation is normal work.
-   After the real application form is visible, judge Copilot again. polar_policy.copilot_after_auth_action is the engineer table.
-   A login or SSO defer is not a pass. Do not continue to fill until that table returns continue.
-   If it returns owner_action_required, restore the remembered READY status and attempt_count.
-   Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.
-   Do not Autofill. Do not fill the form by hand.
-   After Copilot or account creation, reread the account email field. Academic mailbox on a normal field is wrong.
-   Incident repeat_key copilot_academic_mailbox_on_application_field if Copilot put the school mailbox there.
-9. If and only if copilot_after_auth_action returned continue, Autofill once. Use Simplify at most once.
-   If Copilot is MISSING or UNKNOWN, do not fill by hand. Use the step 8 OWNER_ACTION_REQUIRED exit.
-   Then look at the native Resume/CV widget, not the Copilot sidebar.
-   polar_policy.native_resume_action is the engineer table. Sidebar Completed is ignored.
+Recover first. Loop select_next_apply_job with exclude_keys=seen.
+Process each recovery job with the employer finish rules below. Recovery does not consume considered.
+Do not Jobright-ack a recovery unless this run submitted and the employer confirmed.
+
+Then open https://jobright.ai/jobs/recommend while already logged in.
+If Matches onboarding blocks, write jobright_matches_onboarding_gate and stop that surface.
+Loop visible recommendation cards until considered_budget_exhausted or the loaded list ends.
+Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.
+
+For each Jobright card:
+1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.
+2. Decide with polar_policy.consider_jobright_card against Applied, Sheet status, section K, requisition identity, closed, and hard-fact conflict.
+   Skip closed, duplicate, Applied, or hard-fact-conflict. Count considered. Continue.
+3. Upsert a queue row if missing. NEW is claimable. Claim with polar_policy.attempt_claim_job.
+   Read back job_key, status, last_stage, and claim_run_id.
+   If confirm_claim_readback is not CLAIMED, add the key to seen and continue. That miss does not consume considered.
+   After a successful new-card claim, increment considered.
+4. Labels only. Do not invent selectors: Apply with Autofill. Quick Edit. Select All. Generate My Resume. Apply Now.
+5. Confirm company and title. If they do not match, SKIP or BLOCKED. Continue.
+6. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
+7. Read the employer JD. Run apply-time hard eligibility before expensive form work.
+8. Capture employer identity and run requisition dedupe. Continue only if still eligible.
+9. Authenticate with ordinary browser flows when asked. Account creation is normal work.
+   polar_policy.page_surface distinguishes landing, login, apply CTA, and form.
+   No fillable form exists is investigate_not_unsupported: login, JD, or another Apply. Not unsupported.
+   After the real form is visible, increment forms_reached.
+   Autofill once with the Jobright extension. polar_policy.autofill_action. Do not click Copilot Autofill.
+   Reread the account email field. Academic mailbox on a normal field is wrong.
+   Incident repeat_key copilot_academic_mailbox_on_application_field if a parser put the school mailbox there.
+10. Look at the native Resume/CV widget. polar_policy.native_resume_action. Sidebar Completed is ignored.
+   Prefer the just-generated Jobright resume when it is visible or available.
    If the native widget already shows a file that is not a forbidden file, leave it.
-   If the widget is empty, attach the Polar/Simplify resume named `Perfect Resume`.
-   If a native file upload is required and the stored resume cannot be uploaded, attach `resumes/Perfect Resume/perfect_resume.pdf` when that checkout file exists.
-   If that repo file is missing, attach `/Users/conny/Desktop/JZ_Resume_911.pdf` only when that file exists. Do not invent another path.
+   If the widget is empty and the generated Jobright resume is available, attach that generated file.
+   Else attach Perfect Resume by stored name, or `resumes/Perfect Resume/perfect_resume.pdf` when that checkout file exists.
+   If that repo file is missing, attach `/Users/conny/Desktop/JZ_Resume_911.pdf` only when that file exists. That is the identified 911 gold copy. Do not invent another path.
    Do not upload `resumes/base/JZ_resume.pdf`. Do not upload `generated/resumes/export/ai_infra_v1.pdf`. Do not upload the sanitized PDF next to a family .tex.
    Do not compile LaTeX during apply. Do not switch resume families. Do not silently fall back to `ai_infra_v1`.
-   If Perfect Resume cannot be accessed or uploaded, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker.
-   Incident repeat_key native_resume_empty when Perfect Resume cannot be attached.
-10. Fill standing answers from section A. Correct a resume-parser or Copilot Harvard email on a normal contact field.
-   Authorization and identity widgets use polar_policy.auth_form_action.
+   If neither generated nor 911 / Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker.
+   Incident repeat_key native_resume_empty when neither generated nor 911 / Perfect Resume can be attached.
+11. Finish remaining required fields from section A. Authorization widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.
    If the field is optional, leave it blank. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship.
    Required future-sponsorship widget: Yes. Required H-1B-named widget: No.
@@ -373,31 +349,23 @@ For the current job:
    After autofill, correct invented citizenship, copied sponsorship answers, unasked F-1, or extra explanation.
    Do not mention immigration in Why-us, motivation, cover letters, or other free response unless the prompt asked.
    A blocked authorization field must not stop the rest of the worker.
-11. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
-12. For every nontrivial free-response question, append one writing_log row with the exact question, the exact answer used, and a short evidence note.
-13. Regular row. Before Submit, reread this queue row and the live sibling rows.
+12. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
+    For every nontrivial free-response question, append one writing_log row.
+    If weight is prioritized, polar_policy.priority_submit_permitted must be true before Submit.
+13. Before Submit, reread this queue row and the live sibling rows.
     If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.
     If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.
-    Do not consult a shared daily remaining count. This worker's budget is max_new_jobs.
-    Validate, Submit once. Proof is employer-page confirmation text plus a matching queue readback.
+    Validate, Submit once. Proof is employer-page confirmation plus a matching queue readback.
     Copilot Completed is not confirmation. polar_policy.submit_outcome is the engineer table.
-    If the page confirmation is missing or the queue readback does not match, write SUBMISSION_UNKNOWN. Incident repeat_key submit_success_without_page_confirmation. Do not click Submit a second time.
-14. Prioritized row. Deeper JD and company-specific reasoning. Same evidence-bank ceiling. writing_log is mandatory for every meaningful custom question.
-    Before Submit, reread this row and the live sibling rows.
-    If polar_policy.submit_claim_still_held is false, skip.
-    If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.
-    Apply polar_policy.priority_submit_permitted before Submit.
-    If any meaningful custom question is unanswered in writing_log, do not Submit. Mark BLOCKED.
-    A logged question with a blank answer or a blank evidence_note is a Submit blocker.
-    If writing_log is complete and final validation passes, Submit once.
-    Proof is employer-page confirmation text plus a matching queue readback of confirmation, submitted_at, and the visible resume filename.
-    Copilot Completed is not confirmation. If that proof is missing, SUBMISSION_UNKNOWN. Do not click Submit again.
-    REVIEW_READY is only for a missing owner fact or an explicit hold. It is not the default for prioritized rows.
-15. If this environment cannot complete a required job-specific step after a normal attempt, status BLOCKED. Continue.
-    Missing Copilot is not this case. Missing Copilot already stopped the run.
-16. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at on this job row.
+    If confirmation is missing or the queue readback does not match, write SUBMISSION_UNKNOWN. Incident repeat_key submit_success_without_page_confirmation. polar_policy.uncertain_submit_action. Do not click Submit again.
+14. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.
+15. Return to the matching Jobright tab. polar_policy.jobright_ack_action.
+    Yes / I applied only after employer confirmation. Do not mark Applied if this run did not submit.
+    last_stage jobright_ack after a truthful ack. Continue the Recommended List.
+16. If this environment cannot complete a required job-specific step after a normal attempt, status BLOCKED. Continue.
+17. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at.
 
 ATS family is only a note.
 Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion.
-Update the same run_id run_log row, including submitted_regular, submitted_priority, simplify_attempted, and simplify_fallback_count.
+Update the same run_id run_log row with polar_policy.apply_run_counters.
 lock_result is NOT_REQUIRED.

@@ -71,7 +71,7 @@ Automations. Junyi creates it once in the Cursor UI from
 
 ## 5. Polar is the local production operator
 
-Polar runs hourly discovery and application execution on Junyi's Mac
+Polar runs Jobright-first application execution on Junyi's Mac
 (`docs/automation/POLAR.md`). It reads one compiled file,
 `generated/polar/runtime/POLAR_RUNTIME.md`, and checkpoints the Google
 Sheet. The Live Slot mailbox `generated/polar/LIVE.md` is pilot history.

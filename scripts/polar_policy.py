@@ -159,6 +159,10 @@ MEMORY_PRECEDENCE = (
 
 COPILOT_REPEAT_KEY = "simplify_copilot_missing"
 READY_STATUSES = ("READY_REGULAR", "READY_PRIORITY")
+CLAIMABLE_STATUSES = READY_STATUSES + ("NEW",)
+APPLY_ENTRY_SOURCE = "jobright_recommendations"
+AUTOFILL_OWNER = "jobright_extension"
+LEGACY_READY_INVENTORY = "inventory_only"
 PREF_ID_RE = re.compile(r"^pref_(\d{8})_(\d{3})$")
 PREF_LINE_RE = re.compile(r"^(pref_\d{8}_\d{3})\s*:\s*(.*)$")
 RESOLUTION_REMOVE_OUTCOMES = frozenset(
@@ -618,7 +622,7 @@ def attempt_claim_job(
     status = str(row.get("status") or "")
     attempt = _attempt_count(row)
     owner = str(row.get(CLAIM_RUN_ID) or "").strip()
-    if status in READY_STATUSES:
+    if status in CLAIMABLE_STATUSES:
         next_attempt = attempt + 1
         fields = {
             "status": "IN_PROGRESS",
@@ -956,16 +960,21 @@ def native_resume_action(
     perfect_resume_accessible: bool,
     visible_filename: str = "",
     copilot_sidebar_completed: bool = False,
+    generated_resume_available: bool = False,
 ) -> str:
     del copilot_sidebar_completed
     if native_widget_has_file:
         if visible_filename_is_forbidden(visible_filename):
+            if generated_resume_available:
+                return "replace_with_generated_resume"
             return (
                 "replace_with_perfect_resume"
                 if perfect_resume_accessible
                 else "review_ready_missing_production_resume"
             )
         return "keep_visible_file"
+    if generated_resume_available:
+        return "attach_generated_resume"
     if perfect_resume_accessible:
         return "attach_perfect_resume"
     return "review_ready_missing_production_resume"
@@ -1003,6 +1012,142 @@ def submit_outcome(*, page_confirmation: bool, queue_matches_page: bool) -> str:
 
 def copilot_completed_is_submit_proof() -> bool:
     return False
+
+
+def apply_entry_source() -> str:
+    return APPLY_ENTRY_SOURCE
+
+
+def autofill_owner() -> str:
+    return AUTOFILL_OWNER
+
+
+def discover_is_apply_entry() -> bool:
+    return False
+
+
+def do_not_use_simplify_copilot_autofill() -> bool:
+    return True
+
+
+def legacy_ready_disposition(status: str) -> str:
+    token = str(status or "").strip()
+    if token in READY_STATUSES:
+        return LEGACY_READY_INVENTORY
+    if token in {"SUBMISSION_UNKNOWN", "IN_PROGRESS"}:
+        return "recover"
+    return "ignore"
+
+
+@dataclass(frozen=True)
+class ConsiderDecision:
+    action: str
+    consume_considered: bool
+    continue_run: bool
+    notes: str
+
+
+def consider_jobright_card(
+    *,
+    closed: bool = False,
+    already_applied_on_jobright: bool = False,
+    sheet_status: str = "",
+    section_k_hit: bool = False,
+    requisition_blocked: bool = False,
+    hard_fact_conflict: bool = False,
+) -> ConsiderDecision:
+    status = normalize_text(sheet_status)
+    if already_applied_on_jobright or status == "submitted":
+        return ConsiderDecision("skip_applied", True, True, "already applied")
+    if closed:
+        return ConsiderDecision("skip_closed", True, True, "closed posting")
+    if section_k_hit or requisition_blocked:
+        return ConsiderDecision("skip_duplicate", True, True, "historical or requisition dup")
+    if status in {"in_progress", "submission_unknown", "review_ready", "blocked", "skip"}:
+        return ConsiderDecision("skip_duplicate", True, True, f"sheet status {sheet_status}")
+    if hard_fact_conflict:
+        return ConsiderDecision("skip_hard_fact", True, True, "hard fact conflict")
+    return ConsiderDecision("admit", True, True, "jobright recommendation")
+
+
+def page_surface(page_kind: str) -> str:
+    kind = normalize_text(page_kind)
+    if kind == "application_form":
+        return "form"
+    if kind in {"login_signup", "login", "sso"}:
+        return "login"
+    if kind in {"job_description", "jd_landing", "landing"}:
+        return "landing"
+    if kind in {"apply_cta", "apply_button"}:
+        return "apply_cta"
+    if kind in {"no_fillable_form", "no_fillable_form_exists"}:
+        return "investigate"
+    return "unknown"
+
+
+def autofill_action(*, page_kind: str, already_autofilled: bool) -> str:
+    if already_autofilled:
+        return "skip_already_done"
+    surface = page_surface(page_kind)
+    if surface == "form":
+        return "autofill_once"
+    return "investigate_not_unsupported"
+
+
+def jobright_ack_action(
+    *,
+    employer_page_confirmation: bool,
+    submit_clicked: bool,
+) -> str:
+    if employer_page_confirmation and submit_clicked:
+        return "ack_i_applied"
+    return "do_not_ack"
+
+
+def after_confirm_persistence_action(*, sheet_write_ok: bool) -> str:
+    return "persist" if sheet_write_ok else "repair_do_not_resubmit"
+
+
+def uncertain_submit_action() -> str:
+    return "submission_unknown_no_retry"
+
+
+def missing_required_fact_action() -> str:
+    return "leave_unresolved_continue"
+
+
+def missing_references_action() -> str:
+    return "record_and_continue"
+
+
+def apply_run_counters(
+    *,
+    considered: int,
+    forms_reached: int,
+    confirmed_regular: int = 0,
+    confirmed_priority: int = 0,
+    skipped: int = 0,
+    blocked: int = 0,
+    submission_unknown: int = 0,
+) -> Dict[str, str]:
+    return {
+        "jobs_seen": str(considered),
+        "jobs_attempted": str(forms_reached),
+        "submitted_regular": str(confirmed_regular),
+        "submitted_priority": str(confirmed_priority),
+        "skipped": str(skipped),
+        "blocked": str(blocked),
+        "submission_unknown": str(submission_unknown),
+    }
+
+
+def considered_budget_exhausted(
+    considered: int,
+    max_considered: Optional[int] = None,
+    root: Optional[Path] = None,
+) -> bool:
+    limit = apply_run_caps(root).max_considered if max_considered is None else max_considered
+    return max(0, considered) >= max(0, limit)
 
 
 def copilot_preflight_scope(page_kind: str) -> str:
@@ -1421,9 +1566,13 @@ class ApplyBatch:
 
 @dataclass(frozen=True)
 class ApplyRunCaps:
-    max_new_jobs: int
+    max_considered: int
     reserved_priority_slots: int
     prioritized_auto_submit: bool
+
+    @property
+    def max_new_jobs(self) -> int:
+        return self.max_considered
 
 
 @dataclass(frozen=True)
@@ -1476,7 +1625,7 @@ def resolve_apply_run_caps(
             "and submit_gates polar_local"
         )
     return ApplyRunCaps(
-        max_new_jobs=max_jobs,
+        max_considered=max_jobs,
         reserved_priority_slots=reserved_slots,
         prioritized_auto_submit=bool(auto),
     )
@@ -1611,21 +1760,17 @@ def select_apply_batch(
         ):
             recoverable.append(row)
     in_progress = sorted(recoverable, key=_sort_key)
-    priority = [r for r in visible if r.get("status") == "READY_PRIORITY"]
-    regular = [r for r in visible if r.get("status") == "READY_REGULAR"]
     recovery = [str(r.get("job_key") or "") for r in unknown + in_progress]
-    chosen_priority: List[str] = []
-    remaining = max(0, max_new_jobs - max(0, new_jobs_already_claimed))
-    reserved_left = max(0, reserved_priority_slots - max(0, priority_already_claimed))
-    if reserved_left > 0 and priority and remaining > 0:
-        take = min(reserved_left, remaining, len(priority))
-        chosen_priority = [str(r.get("job_key") or "") for r in priority[:take]]
-        remaining -= take
-    chosen_regular = [str(r.get("job_key") or "") for r in regular[:remaining]]
+    _ = (
+        max_new_jobs,
+        reserved_priority_slots,
+        new_jobs_already_claimed,
+        priority_already_claimed,
+    )
     return ApplyBatch(
         recovery=tuple(k for k in recovery if k),
-        priority=tuple(k for k in chosen_priority if k),
-        regular=tuple(k for k in chosen_regular if k),
+        priority=(),
+        regular=(),
     )
 
 

@@ -131,7 +131,8 @@ class TestApplyRunCaps(unittest.TestCase):
     def test_live_repo_caps_are_one_shared_pool(self):
         caps = apply_run_caps(ROOT)
         self.assertEqual(caps.max_new_jobs, 3)
-        self.assertEqual(caps.reserved_priority_slots, 1)
+        self.assertEqual(caps.max_considered, 3)
+        self.assertEqual(caps.reserved_priority_slots, 0)
         self.assertFalse(hasattr(caps, "max_regular_submissions_per_local_day"))
         self.assertTrue(caps.prioritized_auto_submit)
         batch = select_apply_batch(
@@ -143,14 +144,13 @@ class TestApplyRunCaps(unittest.TestCase):
             ],
             root=ROOT,
         )
-        self.assertEqual(len(batch.priority) + len(batch.regular), caps.max_new_jobs)
-        self.assertEqual(batch.priority, ("p1",))
-        self.assertEqual(batch.regular, ("r1", "r2"))
+        self.assertEqual(batch.priority, ())
+        self.assertEqual(batch.regular, ())
 
     def test_divergent_caps_are_rejected(self):
         canary = {
             "max_jobs_per_run": 3,
-            "reserved_priority_slots_per_run": 1,
+            "reserved_priority_slots_per_run": 0,
             "prioritized_auto_submit": True,
         }
         polar_local = {
@@ -262,10 +262,10 @@ class TestPriorityScheduling(unittest.TestCase):
             {"job_key": "r2", "status": "READY_REGULAR"},
             {"job_key": "r3", "status": "READY_REGULAR"},
         ]
-        batch = select_apply_batch(rows, max_new_jobs=3, reserved_priority_slots=1)
+        batch = select_apply_batch(rows, max_new_jobs=3, reserved_priority_slots=0)
         self.assertEqual(batch.recovery, ("u1",))
-        self.assertEqual(batch.priority, ("p1",))
-        self.assertEqual(batch.regular, ("r1", "r2"))
+        self.assertEqual(batch.priority, ())
+        self.assertEqual(batch.regular, ())
 
     def test_regular_gets_all_slots_when_no_priority(self):
         rows = [
@@ -274,9 +274,9 @@ class TestPriorityScheduling(unittest.TestCase):
             {"job_key": "r3", "status": "READY_REGULAR"},
             {"job_key": "r4", "status": "READY_REGULAR"},
         ]
-        batch = select_apply_batch(rows, max_new_jobs=3, reserved_priority_slots=1)
+        batch = select_apply_batch(rows, max_new_jobs=3, reserved_priority_slots=0)
         self.assertEqual(batch.priority, ())
-        self.assertEqual(batch.regular, ("r1", "r2", "r3"))
+        self.assertEqual(batch.regular, ())
 
     def test_in_progress_is_recovered_before_new_work(self):
         rows = [
@@ -285,7 +285,7 @@ class TestPriorityScheduling(unittest.TestCase):
         ]
         batch = select_apply_batch(rows, max_new_jobs=3)
         self.assertEqual(batch.recovery, ("old",))
-        self.assertEqual(batch.priority, ("p1",))
+        self.assertEqual(batch.priority, ())
 
 
 class TestRequisitionDedupe(unittest.TestCase):

@@ -18,7 +18,6 @@ from js_lib import (
     read_rows,
 )
 from polar_policy import (
-    COPILOT_REPEAT_KEY,
     COPILOT_STATES,
     DEGREE_LEVEL_REPEAT_KEY,
     JOBRIGHT_ONBOARDING_REPEAT_KEY,
@@ -442,16 +441,20 @@ def compile_sections() -> Dict[str, str]:
     section_b = "\n".join(
         [
             "Use the authenticated Jobright session. Do not scrape the public internet as a substitute.",
-            "Do not use Jobright APPLY WITH AUTOFILL.",
+            "Apply entry is Jobright recommendations at https://jobright.ai/jobs/recommend.",
+            "On that path, use Apply with Autofill, then Quick Edit, Select All, Generate My Resume, Apply Now.",
+            "Jobright extension owns autofill. Do not click Simplify Copilot Autofill.",
+            "discover-jobs-hourly is retired from apply admission.",
             "Cloud Ashby board sweep stays on Cursor. Polar does not rerun it.",
             "",
-            "Primary surfaces:",
+            "Primary apply surface:",
             "",
             bullet(
                 [
-                    "Jobright Matches: https://jobright.ai/jobs/recommend",
+                    "Jobright recommendations: https://jobright.ai/jobs/recommend",
                     "Tracks are co-primary: internship and new grad.",
                     "Enabled category slugs: " + ", ".join(slugs),
+                    "Minisite boards below are inventory only. They are not apply entry.",
                 ]
                 + minisites
             ),
@@ -475,9 +478,8 @@ def compile_sections() -> Dict[str, str]:
         )
     section_c = "\n".join(
         [
-            "Triage after discover and dedupe.",
-            "Discovery keeps the Jobright source_url. Do not open Original Job Post during discover-jobs-hourly.",
-            "apply-ready-jobs resolves Original Job Post on demand.",
+            "Triage at apply time from the Jobright card and the employer JD. Dedupe against the Sheet and section K.",
+            "discover-jobs-hourly is not apply admission.",
             "",
             bullet(rule_lines),
             "",
@@ -488,9 +490,8 @@ def compile_sections() -> Dict[str, str]:
             "Do not invent work_model, location, graduation windows, or H1B facts.",
             "Blank location is not an automatic skip.",
             "apply-ready-jobs reads the full employer posting immediately after it is open, before login or form fill.",
-            "A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip that discovery missed.",
+            "A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip.",
             "Those degree-level misses share repeat_key degree_level_gate_missed_at_discovery.",
-            "Do not reopen Original Job Post during hourly discovery to catch them.",
         ]
     )
 
@@ -520,13 +521,12 @@ def compile_sections() -> Dict[str, str]:
                 ]
             ),
             "",
-            "Polar may assign READY_PRIORITY when a strong configured signal is present.",
-            "Junyi does not confirm every priority label before the queue can move.",
-            "Priority controls execution effort, writing depth, and post-submit writing audit.",
+            "Polar may mark weight=prioritized when a strong configured signal is visible on the Jobright card or JD.",
+            "That mark is writing depth and post-submit audit. It is not apply-queue admission and not a slot reservation.",
             "Polar Local may Submit a prioritized row when writing_log is complete and final validation passes.",
             "It is not permission to invent company facts.",
             "",
-            "Strong signals. Assign READY_PRIORITY:",
+            "Strong signals. Mark weight prioritized:",
             bullet(
                 [
                     "fde (title)",
@@ -537,7 +537,7 @@ def compile_sections() -> Dict[str, str]:
                 ]
             ),
             "",
-            "Weak signals. Stay READY_REGULAR unless clearly justified:",
+            "Weak signals. Stay regular unless clearly justified:",
             bullet(
                 [
                     "startup or prestige hints",
@@ -548,8 +548,8 @@ def compile_sections() -> Dict[str, str]:
             "",
             "FDE / Forward Deployed titles stay and are marked prioritized.",
             "Do not claim customer on-site FDE work already done.",
-            "READY_PRIORITY no longer waits behind a permanent READY_REGULAR backlog.",
-            f"Reserve up to {caps.reserved_priority_slots} new-execution slot per apply-ready-jobs run for READY_PRIORITY when one exists.",
+            "READY_* rows are inventory. Do not FIFO them as apply source.",
+            f"Priority slot reservation is {caps.reserved_priority_slots}. Jobright ranks new cards.",
         ]
     )
 
@@ -620,11 +620,11 @@ def compile_sections() -> Dict[str, str]:
             "Use only normal browser flows for security or anti-abuse challenges.",
             "Do not implement CAPTCHA-bypass services, fingerprint spoofing, or anti-abuse evasion.",
             "Escalate to BLOCKED only after this local environment cannot complete a required step.",
-            "A blocked job must not stall the queue. Persist the blocker and continue to the next READY job.",
+            "A blocked job must not stall the worker. Persist the blocker and continue to the next Jobright card.",
             "ATS family is diagnostic metadata only. Do not organize work by ATS worker class.",
-            "Simplify Copilot is a required apply precondition. See section P.",
-            "Missing Copilot is an ENVIRONMENT blocker. Do not mark the queue job BLOCKED.",
-            "Do not silently fall back to traditional clicking.",
+            "Jobright extension owns autofill. See section P.",
+            "Do not click Simplify Copilot Autofill on this path.",
+            "Missing Copilot does not stop the run.",
         ]
     )
 
@@ -639,9 +639,9 @@ def compile_sections() -> Dict[str, str]:
             "",
             "polar_local uses capability and policy checks, not ATS family.",
             f"Gate model: {polar_local.get('gate_model')}.",
-            f"Per-run worker budget on apply-ready-jobs: {caps.max_new_jobs} new jobs.",
-            f"READY_PRIORITY reservation: {caps.reserved_priority_slots} slot taken from that pool, not added to it.",
-            "If no READY_PRIORITY exists, READY_REGULAR may use the whole pool.",
+            f"Per-run worker budget on apply-ready-jobs: {caps.max_considered} considered candidates, not {caps.max_considered} submissions.",
+            f"READY_PRIORITY reservation: {caps.reserved_priority_slots}. Allocation is obsolete. Jobright ranks.",
+            "An empty READY queue is a valid start.",
             "Another apply-ready-jobs run has its own budget. There is no shared daily regular submission pool.",
             f"Prioritized auto-submit: {caps.prioritized_auto_submit}.",
             "",
@@ -709,9 +709,9 @@ def compile_sections() -> Dict[str, str]:
             "Statuses:",
             bullet(
                 [
-                    "NEW: seen and written. Not yet READY.",
-                    "READY_REGULAR: triaged keep, regular weight, eligible to execute.",
-                    "READY_PRIORITY: triaged keep, prioritized weight, eligible to execute with deeper writing.",
+                    "NEW: seen and written. Claimable when Jobright shows the card.",
+                    "READY_REGULAR: historical inventory, regular weight. Not silent apply FIFO.",
+                    "READY_PRIORITY: historical inventory, prioritized writing depth. Not silent apply FIFO.",
                     "IN_PROGRESS: this run owns the job via claim_run_id. Different jobs may be IN_PROGRESS at the same time.",
                     "REVIEW_READY: form is complete but Polar stopped for a missing owner fact or explicit hold.",
                     "SUBMITTED: employer-page confirmation is visible and the queue readback matches that page.",
@@ -729,9 +729,9 @@ def compile_sections() -> Dict[str, str]:
             "Queue columns: " + ", ".join(str(x) for x in columns),
             md_escape(operator.get("job_key_rule")),
             "",
-            "Workflows never apply during discover-jobs-hourly.",
+            "discover-jobs-hourly is retired from apply admission. It never applies.",
             "apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then abandoned or self-owned IN_PROGRESS.",
-            "It then reserves one new-execution slot for READY_PRIORITY when one exists, and uses remaining slots for READY_REGULAR.",
+            "New work comes from Jobright recommendations. READY_* is inventory only.",
             "daily-job-summary never includes passwords, OTP codes, or cookies.",
             "production-learning-daily writes a sanitized report and does not change GitHub policy.",
         ]
@@ -766,7 +766,7 @@ def compile_sections() -> Dict[str, str]:
             "Do not write run_log result SKIPPED_LOCKED because that row looks held.",
             "Independent Polar workflows may use their own browser surfaces at the same time.",
             "Apply ownership is queue.claim_run_id on one job_key.",
-            "Each apply-ready-jobs run claims one job at a time until its per-run budget is used.",
+            "Each apply-ready-jobs run claims one job at a time until its considered budget is used.",
             "The same employer requisition has one canonical owner via pick_canonical_requisition_row.",
             "Two live sibling claims do not both back off.",
             "Before Submit, reread claim_run_id and rerun requisition_submit_blocked.",
@@ -801,7 +801,7 @@ def compile_sections() -> Dict[str, str]:
     )
     section_o = "\n".join(
         [
-            "After Original Job Post or the employer application is resolved, capture employer_requisition_id,",
+            "After the employer application is resolved, capture employer_requisition_id,",
             "canonical employer apply_url, and ats_job_id.",
             "If multiple Jobright rows point at the same employer requisition, keep one canonical row.",
             "requisition_submit_blocked ignores SKIP and abandoned IN_PROGRESS, then pick_canonical_requisition_row ranks the rest.",
@@ -833,19 +833,14 @@ def compile_sections() -> Dict[str, str]:
             "Default for Polar and for unattended nightly maintenance: STOP BEFORE MERGE.",
             "Junyi-authorized maintenance path: after tests pass, merge verified maintenance changes with gh. Record merged by this agent. Do not enable GitHub auto-merge. Do not bypass required checks. Do not merge personal-fact values or apply-policy guesses.",
             "",
-            "Simplify Copilot is a required apply precondition.",
-            "proof: Copilot UI on the real employer application form that shows personal-information widgets.",
-            "not_proof: simplify.jobs login or API. not_proof: a login, SSO, or signup page.",
-            "polar_policy.copilot_preflight_scope is the engineer table. login_signup defers. application_form judges.",
-            "After login, polar_policy.copilot_after_auth_action judges again on the real form. A login defer is not PRESENT.",
-            "states: " + ", ".join(COPILOT_STATES) + ".",
-            f"control_key: {ENV_SIMPLIFY_KEY}. Locate by key. Never overwrite polar_browser.",
-            "If Copilot is PRESENT after that re-check, Autofill once. Then read the visible widgets.",
-            "If Copilot is MISSING or UNKNOWN on the real form, do not fall back to traditional clicking.",
-            "Restore the probe job to READY. Do not consume it as BLOCKED.",
-            f"Incident category ENVIRONMENT. repeat_key {COPILOT_REPEAT_KEY}.",
-            "run_log result OWNER_ACTION_REQUIRED. Clear claim_run_id. Exit the apply run.",
-            "The next apply run rechecks the employer page. Last MISSING is not a cache that skips the check.",
+            "Jobright extension owns autofill on the apply path. polar_policy.autofill_owner.",
+            "Do not click Simplify Copilot Autofill. Do not let Copilot fight the Jobright extension.",
+            "polar_policy.page_surface and polar_policy.autofill_action are the engineer tables.",
+            "login, JD landing, apply CTA, and No fillable form exists are investigate_not_unsupported.",
+            "Autofill once on the real application form. Then Polar finishes remaining required fields from facts.",
+            "Missing Copilot is not OWNER_ACTION_REQUIRED and does not stop the run.",
+            "states (observational only): " + ", ".join(COPILOT_STATES) + ".",
+            f"Historical control_key {ENV_SIMPLIFY_KEY} is not an apply gate. Never overwrite polar_browser.",
         ]
     )
 

@@ -62,7 +62,7 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Base ledger: Simplify. Polar runtime state lives in the Google Sheet,
   not a second `applications.csv`.
 - Local repo: resume version, lane, sponsorship signal, auth Q&A, networking, interview learning, next actions.
-- Browser execution has two environments. Cursor cloud Computer Use, and Polar on Junyi's machine. Polar reads `generated/polar/runtime/POLAR_RUNTIME.md`. Prefer a trusted `apply_url`. If the source is still Jobright, Polar uses **Original Job Post**, never **APPLY WITH AUTOFILL**. Polar apply requires visible Simplify Copilot on the employer ATS page. A simplify.jobs login is not proof. If Copilot is missing, Polar stops the apply run for owner action, keeps the queue job READY, and clears the job claim. Polar must not fall back to manual clicking. Pending PREFERENCES candidates keep a `pref_YYYYMMDD_NNN` id until a resolution row is on `main`.
+- Browser execution has two environments. Cursor cloud Computer Use, and Polar on Junyi's machine. Polar reads `generated/polar/runtime/POLAR_RUNTIME.md`. Polar Local apply starts on authenticated Jobright recommendations. Use **Apply with Autofill**, then Quick Edit / Select All / Generate My Resume / Apply Now. The Jobright extension owns autofill. Do not click Simplify Copilot Autofill on that path. Polar finishes remaining required fields from facts, Submits, confirms on the employer page, then answers Yes / I applied only after confirmation. Sheet `READY_*` rows are inventory, not silent FIFO. Pending PREFERENCES candidates keep a `pref_YYYYMMDD_NNN` id until a resolution row is on `main`.
 - Prefer one-way `import-simplify` over retyping every application. See `docs/platforms.md`.
 
 ## Boundaries (see `docs/BOUNDARIES.md`)
@@ -71,14 +71,15 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 2. **Skills live in the repo** (`knowledge/evidence_bank.yaml` + profile) — not in chat memory.
 3. **Cloud scheduled discovery is a Cursor Automation**, driven by
    `docs/automation/DAILY_JOB_DISCOVERY.md` in a fresh checkout of
-   `main`. Polar Local runs its own hourly Workflow. Cloud stays shadow
-   during migration. Uncommitted work is invisible to the Cloud run.
+   `main`. Polar Local apply starts from Jobright recommendations.
+   Cloud stays shadow discovery. Uncommitted work is invisible to the
+   Cloud run.
 4. **Credentials stay out of git and chat.** Polar sessions stay on Junyi's computer.
 5. **Polar is the local production operator.** GitHub stays memory.
    Cursor stays engineer and Cloud-discovery fallback. Polar does
-   hourly local discovery and application execution. See
-   `docs/automation/POLAR.md`. Cloud discovery stays as shadow during
-   the first 48 hours of Polar hourly discovery.
+   Jobright-first application execution. See `docs/automation/POLAR.md`.
+   Cloud discovery stays as shadow. Polar hourly discover is not apply
+   admission.
 
 ## Collaborators
 

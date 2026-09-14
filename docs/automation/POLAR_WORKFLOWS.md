@@ -26,8 +26,8 @@ Queue reference: `docs/automation/POLAR_QUEUE.md`.
 
 | Workflow | Eastern Time | Polar mode |
 |---|---|---|
-| `discover-jobs-hourly` | `0 * * * *` (minute 00) | Saved Workflow. Named local profile. Discovery and Sheet writes only. |
-| `apply-ready-jobs` | `20 * * * *` (minute 20) | Saved Workflow. Same profile. Execution with the configured cap. |
+| `discover-jobs-hourly` | retired from apply path (`enabled: false`) | Optional inventory only. Not apply admission. |
+| `apply-ready-jobs` | `20 * * * *` (minute 20) | Saved Workflow. Jobright recommendations entry. Considered-candidate cap. |
 | `daily-job-summary` | `30 21 * * *` (21:30) | Saved Workflow. Sheet read and one email. No application clicks. |
 | `production-learning-daily` | `0 22 * * *` (22:00) | Saved Workflow. Sanitized learning report. No application clicks. |
 | `polar-scheduler-heartbeat` | `5 * * * *` until proven | Saved Workflow. Harmless page plus one heartbeat row. |

@@ -3,8 +3,8 @@
 **Single source of truth** for the Cursor Automation “Daily Job Discovery”.
 
 During Polar Local migration this Automation is shadow and fallback.
-Do not turn it off on day one. Polar hourly discovery is the production
-candidate. Compare the two after about 48 hours of Polar runs. See
+Do not turn it off from this file. Polar hourly discover is not apply
+admission. Apply starts on Jobright recommendations. See
 `docs/automation/POLAR.md`.
 
 - Edit **this file** in git when rules change, then `git push`.

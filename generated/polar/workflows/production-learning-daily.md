@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-14.perfect-resume+d37c3b43a89d
+workflow_version: 2026-09-14.jobright-first+2a2c53ed1aec
 status: production
 enabled: true
 needs_browser_lock: false
@@ -143,6 +143,8 @@ Evidence must be enough for an engineer. No secrets.
 
 This workflow does not change GitHub policy.
 It does not apply. It does not click Submit.
+Do not recommend restoring discover-jobs-hourly as apply entry.
+Apply entry is Jobright recommendations. READY_* inventory is not apply admission.
 
 Read today's America/New_York rows from run_log, incident_log, writing_log, and queue.
 Group incidents by repeat_key.

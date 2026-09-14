@@ -1,13 +1,22 @@
 last_updated: "2026-09-14"
-policy_revision: "2026-09-14.perfect-resume"
-source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Each apply-ready-jobs run is one worker with its own per-run new-job budget. There is no shared daily regular submission pool. Ownership is per job and requisition, not a global browser lease."
+policy_revision: "2026-09-14.jobright-first"
+source: "Owner 2026-09-14. Apply entry is authenticated Jobright recommendations. Jobright extension owns autofill. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Each apply-ready-jobs run is one worker with a per-run considered-candidate budget. There is no shared daily regular submission pool. Ownership is per job and requisition, not a global browser lease."
 timezone: "America/New_York"
+apply_entry: jobright_recommendations
+autofill:
+  owner: jobright_extension
+  max_attempts_per_form: 1
+  do_not_use_simplify_copilot: true
+legacy_ready_rows:
+  disposition: inventory_only
+  owner: polar_policy.legacy_ready_disposition
+  removal_condition: "Remove this shim after Jobright-first apply is the loaded main compile and no run treats READY_* as silent FIFO."
 
 writing_observation_mode: true
 
 canary:
   max_jobs_per_run: 3
-  reserved_priority_slots_per_run: 1
+  reserved_priority_slots_per_run: 0
   prioritized_auto_submit: true
 
 lease:
@@ -68,17 +77,18 @@ schedules:
   discover_jobs_hourly:
     workflow: discover-jobs-hourly
     cron_et: "0 * * * *"
-    meaning: "Every hour at minute 00 Eastern Time"
-    enabled: true
+    meaning: "Retired from apply admission. Optional inventory only if invoked. Not the apply entry."
+    enabled: false
+    apply_path: false
     needs_browser_lock: false
-    polar_mode: "Saved Polar Workflow on the named local browser profile. Discovery and queue only."
+    polar_mode: "Saved Polar Workflow. Off the default apply path. Inventory and dedupe only if someone runs it."
   apply_ready_jobs:
     workflow: apply-ready-jobs
     cron_et: "20 * * * *"
-    meaning: "Every hour at minute 20 Eastern Time"
+    meaning: "Every hour at minute 20 Eastern Time. Starts on Jobright recommendations. Sheet READY_* is not the source."
     enabled: true
     needs_browser_lock: false
-    polar_mode: "Saved Polar Workflow on the same named local browser profile. Application execution."
+    polar_mode: "Saved Polar Workflow on the same named local browser profile. Jobright-first application execution."
   daily_job_summary:
     workflow: daily-job-summary
     cron_et: "30 21 * * *"
@@ -149,12 +159,11 @@ last_stages:
   - reviewed
   - submit_clicked
   - confirmation_seen
+  - jobright_ack
 
 recovery_order:
   - SUBMISSION_UNKNOWN
   - IN_PROGRESS
-  - READY_PRIORITY
-  - READY_REGULAR
 
 queue_columns:
   - job_key
@@ -314,11 +323,10 @@ time_lost_categories:
 job_key_rule: >
   Prefer the Jobright job id when the source is Jobright
   (the last path segment of https://jobright.ai/jobs/info/<id>).
-  Discovery stores the Jobright source_url. Do not require an
-  employer URL during discovery. apply-ready-jobs fills apply_url
-  later. Deduplicate again by normalized company + role + location
-  when a Jobright id is missing. After Original Job Post is resolved,
-  also deduplicate by employer requisition id, ATS job id, or
+  Apply writes the Jobright source_url when it considers a card.
+  Deduplicate again by normalized company + role + location
+  when a Jobright id is missing. After the employer application is
+  resolved, also deduplicate by employer requisition id, ATS job id, or
   canonical employer apply URL.
 
 apply_url_confidence_values:

@@ -1,9 +1,9 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-14.perfect-resume+62bab1b3bf52
-status: production
-enabled: true
+workflow_version: 2026-09-14.jobright-first+be870e38214a
+status: retired_from_apply_path
+enabled: false
 needs_browser_lock: false
 schedule: 0 * * * * America/New_York
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
@@ -149,33 +149,24 @@ Evidence must be enough for an engineer. No secrets.
 
 ## Work order
 
-Never apply. Never click Submit. Never click Jobright APPLY WITH AUTOFILL.
+Retired from the default apply path. apply_path: false.
+Do not set READY_REGULAR or READY_PRIORITY. Those statuses are not apply admission.
+Never apply. Never click Submit. Never click Apply with Autofill.
 Never invent metrics, projects, employers, referrals, citizenship, or clearance.
-This run must finish quickly. Checkpoint the Sheet after every new or updated job.
+If this workflow is invoked anyway, write inventory for history and dedupe only.
 
-1. Create run_id. Do not read polar_browser as a mutex. Continue even if that row looks held.
-2. Open Jobright while already logged in.
-3. Inspect Matches at https://jobright.ai/jobs/recommend.
-4. Inspect the intern and newgrad minisite boards listed in POLAR_RUNTIME section B.
-5. For each unseen card, write or update one queue row using named header mapping.
+1. Create run_id. Do not read polar_browser as a mutex.
+2. Open Jobright while already logged in only if you are writing inventory.
+3. For each unseen card, write or update one queue row using named header mapping.
    If the live header has no claim_run_id, do not append it. Note missing_claim_column.
-   Continue discovery writes on the existing headers. polar-sheet-migration is the schema mutator.
    If the existing row is IN_PROGRESS, SUBMITTED, SUBMISSION_UNKNOWN, REVIEW_READY, or BLOCKED,
-   do not overwrite status, claim_run_id, last_stage, attempt_count, submitted_at, confirmation,
-   blocker, or writing_summary. polar_policy.discover_may_overwrite_execution_fields is the check.
-6. job_key is polar_policy.jobright_job_id(source_url). That helper reads the path and ignores ?query.
-   https://jobright.ai/jobs/info/<id>?x uses job_key <id>. Do not keep the query string in job_key.
-7. Deduplicate by that job_key first, then company + role + location, then section K.
-8. Triage with section C. Hard skips become status SKIP.
-9. If a section K key matches, do not set READY_REGULAR or READY_PRIORITY.
-10. For KEEP rows that pass section K, set READY_REGULAR or READY_PRIORITY using section D.
-11. Set resume_cluster from section E.
-12. Keep Jobright source_url. last_stage stays discovered.
-13. Leave apply_url empty unless you already have a trusted employer URL.
-14. Always write apply_url_confidence. Use none when apply_url is empty.
-15. Do not open Original Job Post in this Workflow.
-16. Never start apply-ready-jobs work in this Workflow.
+   do not overwrite execution fields. polar_policy.discover_may_overwrite_execution_fields is the check.
+4. job_key is polar_policy.jobright_job_id(source_url). Ignore ?query.
+5. Deduplicate by that job_key first, then company + role + location, then section K.
+6. New inventory rows stay NEW or SKIP. Do not mint READY_* as apply source.
+7. Keep Jobright source_url. last_stage stays discovered.
+8. Always write apply_url_confidence. Use none when apply_url is empty.
+9. Do not open Original Job Post. Do not start apply-ready-jobs work.
 
-Stop when the first loaded pages of the configured boards are covered.
-Do not infinite-scroll the whole internet.
+Stop after a thin inventory pass. Do not infinite-scroll.
 Write the run_log row. lock_result is NOT_REQUIRED.

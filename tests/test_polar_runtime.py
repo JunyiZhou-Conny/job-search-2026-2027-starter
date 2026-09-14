@@ -110,8 +110,8 @@ class TestPolarRuntime(unittest.TestCase):
         text = compile_text()
         for status in STATUSES:
             self.assertIn(status, text, status)
-        self.assertIn("Per-run worker budget on apply-ready-jobs: 3 new jobs.", text)
-        self.assertIn("taken from that pool, not added to it", text)
+        self.assertIn("Per-run worker budget on apply-ready-jobs: 3 considered candidates", text)
+        self.assertIn("Allocation is obsolete", text)
         self.assertNotIn("Regular jobs per apply-ready-jobs run:", text)
         self.assertIn("There is no shared daily regular submission pool.", text)
         self.assertNotIn("Regular submissions per local calendar day", text)
@@ -122,9 +122,9 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("degree_level_gate_missed_at_discovery", text)
         self.assertIn("github_write_canary must not overwrite polar_browser", text)
         self.assertIn("clearly says answer Yes or answer No", text)
-        self.assertIn("Simplify Copilot is a required apply precondition.", text)
-        self.assertIn("copilot_after_auth_action", text)
-        self.assertIn("OWNER_ACTION_REQUIRED", text)
+        self.assertIn("Jobright extension owns autofill", text)
+        self.assertNotIn("Simplify Copilot is a required apply precondition.", text)
+        self.assertIn("Do not click Simplify Copilot Autofill", text)
         self.assertNotIn("optional_accelerator", text)
         self.assertIn("PREFERENCES.md is not a second strategy database.", text)
         self.assertIn("pref_20260911_005 | PROMOTE | scripts/polar_policy.py", text)
@@ -256,16 +256,17 @@ class TestPolarRuntime(unittest.TestCase):
     def test_discover_forbids_ojp_apply_still_resolves(self):
         discover = workflow_prompt("discover-jobs-hourly")
         apply = workflow_prompt("apply-ready-jobs")
-        self.assertIn("Do not open Original Job Post in this Workflow.", discover)
+        self.assertIn("Do not open Original Job Post.", discover)
         self.assertNotIn("click Original Job Post", discover)
         self.assertIn("section K", discover)
-        self.assertIn("Original Job Post", apply)
+        self.assertIn("retired_from_apply_path", discover)
+        self.assertIn("Apply with Autofill", apply)
         self.assertIn("section K", apply)
 
     def test_ready_priority_auto_assign_without_label_gate(self):
         text = compile_text()
         self.assertIn(
-            "Polar may assign READY_PRIORITY when a strong configured signal is present.",
+            "Polar may mark weight=prioritized when a strong configured signal is visible on the Jobright card or JD.",
             text,
         )
         self.assertNotIn("Labels stay suggestions until Junyi confirms.", text)

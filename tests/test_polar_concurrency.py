@@ -299,8 +299,8 @@ class TestWorkClaim(unittest.TestCase):
             now=NOW,
         )
         self.assertNotIn("live", batch.recovery)
-        self.assertEqual(batch.priority, ("p1",))
-        self.assertEqual(batch.regular, ("r1", "r2"))
+        self.assertEqual(batch.priority, ())
+        self.assertEqual(batch.regular, ())
 
     def test_two_workers_each_get_a_full_per_run_budget(self):
         rows = [_ready(f"r{i}") for i in range(1, 8)]
@@ -330,9 +330,10 @@ class TestWorkClaim(unittest.TestCase):
             run_id="run-b",
             now=NOW,
         )
-        self.assertEqual(first.regular, ("r1", "r2", "r3"))
-        self.assertEqual(second.regular, ("r4", "r5", "r6"))
-        self.assertFalse(set(first.regular) & set(second.regular))
+        self.assertEqual(first.regular, ())
+        self.assertEqual(second.regular, ())
+        self.assertEqual(first.recovery, ())
+        self.assertEqual(second.recovery, ())
 
     def test_lost_claim_does_not_consume_the_run_budget(self):
         rows = [_ready("taken"), _ready("open-1"), _ready("open-2"), _ready("open-3")]
@@ -345,7 +346,7 @@ class TestWorkClaim(unittest.TestCase):
             run_id="run-b",
             now=NOW,
         )
-        self.assertEqual(nxt, "open-1")
+        self.assertIsNone(nxt)
         later = select_apply_batch(
             rows,
             max_new_jobs=3,
@@ -355,7 +356,7 @@ class TestWorkClaim(unittest.TestCase):
             run_id="run-b",
             now=NOW,
         )
-        self.assertEqual(later.regular, ("open-2", "open-3"))
+        self.assertEqual(later.regular, ())
 
     def test_after_one_priority_claim_later_selects_are_regular(self):
         rows = [
@@ -371,7 +372,7 @@ class TestWorkClaim(unittest.TestCase):
             run_id="run-a",
             now=NOW,
         )
-        self.assertEqual(first, "p1")
+        self.assertIsNone(first)
         nxt = select_next_apply_job(
             rows,
             max_new_jobs=3,
@@ -382,7 +383,7 @@ class TestWorkClaim(unittest.TestCase):
             run_id="run-a",
             now=NOW,
         )
-        self.assertEqual(nxt, "r1")
+        self.assertIsNone(nxt)
 
     def test_shared_daily_regular_cap_is_absent(self):
         import yaml
