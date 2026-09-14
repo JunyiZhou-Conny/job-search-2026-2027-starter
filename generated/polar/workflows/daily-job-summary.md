@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-13.repeat-key-canon+74acad475253
+workflow_version: 2026-09-14.visible-form-truth+ada304bee755
 status: production
 enabled: true
 needs_browser_lock: false
@@ -76,9 +76,11 @@ never_omit: apply_url_confidence
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
+Reread every row with that key before write. polar_policy.plan_control_write is the engineer table.
 If the target key is missing, append a new row.
 If the visible row has a different key, or no key, abort. Do not write that row.
-If two rows share the same key, abort.
+If two rows share the same key, abort. Do not guess. Do not update either row.
+Incident repeat_key control_key_duplicate.
 Commit the edit. Then reread key, owner_run_id, notes.
 A cell that looked correct is not proof the write persisted. The reread is the proof.
 github_write_canary and env_simplify_copilot must never overwrite polar_browser.
@@ -93,7 +95,10 @@ Named writes are the fix. Prose that says remember column I is not the fix.
 
 One workflow invocation writes one run_log row.
 Copy workflow_version from this file into that row.
+Mint run_id with polar_policy.mint_run_id on the America/New_York wall clock. Do not use UTC for the suffix.
 Record started_at when you acquire work. Record ended_at before you exit.
+Both timestamps use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset. Do not write EDT or EST.
+The row is not final until polar_policy.run_log_row_is_final is true.
 duration_minutes is coarse. Use whole minutes.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED.
 SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.

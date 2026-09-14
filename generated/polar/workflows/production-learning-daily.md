@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-13.repeat-key-canon+bb80439cd965
+workflow_version: 2026-09-14.visible-form-truth+d37c3b43a89d
 status: production
 enabled: true
 needs_browser_lock: false
@@ -95,9 +95,11 @@ never_omit: apply_url_confidence
 
 Control tab writes are key upserts.
 Locate the row by the key cell. Never choose a row because it looks empty on screen.
+Reread every row with that key before write. polar_policy.plan_control_write is the engineer table.
 If the target key is missing, append a new row.
 If the visible row has a different key, or no key, abort. Do not write that row.
-If two rows share the same key, abort.
+If two rows share the same key, abort. Do not guess. Do not update either row.
+Incident repeat_key control_key_duplicate.
 Commit the edit. Then reread key, owner_run_id, notes.
 A cell that looked correct is not proof the write persisted. The reread is the proof.
 github_write_canary and env_simplify_copilot must never overwrite polar_browser.
@@ -112,7 +114,10 @@ Named writes are the fix. Prose that says remember column I is not the fix.
 
 One workflow invocation writes one run_log row.
 Copy workflow_version from this file into that row.
+Mint run_id with polar_policy.mint_run_id on the America/New_York wall clock. Do not use UTC for the suffix.
 Record started_at when you acquire work. Record ended_at before you exit.
+Both timestamps use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset. Do not write EDT or EST.
+The row is not final until polar_policy.run_log_row_is_final is true.
 duration_minutes is coarse. Use whole minutes.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED.
 SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.
@@ -125,8 +130,8 @@ AUTH, ACCOUNT_CREATION, SIMPLIFY, MISSING_FACT, MISSING_DOCUMENT, WRITING, DROPD
 repeat_key groups recurrences. Write polar_policy.canonical_repeat_key(your_key).
 Jobright Matches onboarding uses jobright_matches_onboarding_gate. Do not invent jobright_onboarding_* variants.
 Degree-level hard gates that discovery missed use degree_level_gate_missed_at_discovery. Do not invent phd_only_missed_at_discovery variants.
-incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits.
-The sequence is monotonic. Read existing values for that date. The next id is one more than the highest number.
+incident_id is INC-YYYYMMDD-NNN on today's America/New_York date, three digits, not UTC.
+The sequence is monotonic. Reread existing values for that date before write. The next id is one more than the highest number.
 If 001 and 003 exist, write 004. Do not fill gaps. Never reuse one. Do not write INC-YYYYMMDD-01.
 01 and 001 count as the same number.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.

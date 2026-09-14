@@ -1,5 +1,5 @@
-last_updated: "2026-09-13"
-policy_revision: "2026-09-13.repeat-key-canon"
+last_updated: "2026-09-14"
+policy_revision: "2026-09-14.visible-form-truth"
 source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Each apply-ready-jobs run is one worker with its own per-run new-job budget. There is no shared daily regular submission pool. Ownership is per job and requisition, not a global browser lease."
 timezone: "America/New_York"
 
@@ -272,6 +272,17 @@ repeat_keys:
       - phd_only_missed_at_discovery
       - phd_only_gate_missed_at_discovery
       - undergrad_only_gate_missed_at_discovery
+  control_key_duplicate:
+    meaning: "Two Sheet control-tab rows share one key. Polar must abort that write, not guess."
+    aliases:
+      - control_duplicate_key
+      - control_duplicate_key_env_simplify_copilot
+  native_resume_empty:
+    meaning: "Employer native resume widget is empty. Copilot sidebar Completed is not proof."
+  copilot_academic_mailbox_on_application_field:
+    meaning: "Simplify Copilot or a resume parser put the academic mailbox on a normal ATS account or contact field."
+  submit_success_without_page_confirmation:
+    meaning: "A run claimed SUCCESS or SUBMITTED without employer-page confirmation plus matching queue readback."
 
 incident_categories:
   - UI_ONE_OFF

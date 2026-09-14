@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 from urllib.parse import urlparse
+from zoneinfo import ZoneInfo
 
 from js_lib import canonical_url, normalize_text
 
@@ -177,6 +178,22 @@ CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
 CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
 DEGREE_LEVEL_REPEAT_KEY = "degree_level_gate_missed_at_discovery"
 JOBRIGHT_ONBOARDING_REPEAT_KEY = "jobright_matches_onboarding_gate"
+CONTROL_KEY_DUPLICATE_REPEAT_KEY = "control_key_duplicate"
+NATIVE_RESUME_REPEAT_KEY = "native_resume_empty"
+COPILOT_EMAIL_REPEAT_KEY = "copilot_academic_mailbox_on_application_field"
+SUBMIT_PROOF_REPEAT_KEY = "submit_success_without_page_confirmation"
+PRODUCTION_RESUME_EXPORT_PATH = "generated/resumes/export/ai_infra_v1.pdf"
+TWO_PAGE_MASTER_PATH = "resumes/base/JZ_resume.pdf"
+SANITIZED_FAMILY_RESUME_PATH = "resumes/families/ai_infra/ai_infra_v1.pdf"
+TELEMETRY_TZ_NAME = "America/New_York"
+TELEMETRY_TZ = ZoneInfo(TELEMETRY_TZ_NAME)
+REQUIRED_RUN_LOG_FINAL_FIELDS = (
+    "run_id",
+    "workflow",
+    "started_at",
+    "ended_at",
+    "result",
+)
 REPEAT_KEY_ALIASES = {
     "jobright_onboarding_required": JOBRIGHT_ONBOARDING_REPEAT_KEY,
     "jobright_onboarding_gate": JOBRIGHT_ONBOARDING_REPEAT_KEY,
@@ -187,6 +204,8 @@ REPEAT_KEY_ALIASES = {
     "phd_only_missed_at_discovery": DEGREE_LEVEL_REPEAT_KEY,
     "phd_only_gate_missed_at_discovery": DEGREE_LEVEL_REPEAT_KEY,
     "undergrad_only_gate_missed_at_discovery": DEGREE_LEVEL_REPEAT_KEY,
+    "control_duplicate_key": CONTROL_KEY_DUPLICATE_REPEAT_KEY,
+    "control_duplicate_key_env_simplify_copilot": CONTROL_KEY_DUPLICATE_REPEAT_KEY,
 }
 INCIDENT_ID_RE = re.compile(r"^INC-(\d{8})-(\d{1,3})$")
 
@@ -786,7 +805,15 @@ def plan_control_write(
     rows: Sequence[Mapping[str, Any]],
     key: str,
 ) -> ControlWritePlan:
-    index = locate_row_by_key(rows, key, "key")
+    try:
+        index = locate_row_by_key(rows, key, "key")
+    except ValueError:
+        return ControlWritePlan(
+            "abort",
+            None,
+            key,
+            "duplicate control key",
+        )
     if index is None:
         return ControlWritePlan("append", None, key, "append new control key")
     return ControlWritePlan("update", index, key, "update existing control key")
@@ -864,9 +891,102 @@ def canonical_repeat_key(raw: str) -> str:
     token = re.sub(r"[^a-z0-9]+", "_", normalize_text(raw)).strip("_")
     if not token:
         return ""
-    if token in {DEGREE_LEVEL_REPEAT_KEY, JOBRIGHT_ONBOARDING_REPEAT_KEY, COPILOT_REPEAT_KEY}:
+    if token in {
+        DEGREE_LEVEL_REPEAT_KEY,
+        JOBRIGHT_ONBOARDING_REPEAT_KEY,
+        COPILOT_REPEAT_KEY,
+        CONTROL_KEY_DUPLICATE_REPEAT_KEY,
+        NATIVE_RESUME_REPEAT_KEY,
+        COPILOT_EMAIL_REPEAT_KEY,
+        SUBMIT_PROOF_REPEAT_KEY,
+    }:
         return token
     return REPEAT_KEY_ALIASES.get(token, token)
+
+
+def jobright_job_id(url: str) -> str:
+    parsed = urlparse((url or "").strip())
+    host = (parsed.netloc or "").lower()
+    if host != "jobright.ai" and not host.endswith(".jobright.ai"):
+        return ""
+    parts = [part for part in (parsed.path or "").split("/") if part]
+    if len(parts) >= 3 and parts[0] == "jobs" and parts[1] == "info":
+        return parts[2]
+    return ""
+
+
+def eastern_datetime(now: Optional[datetime] = None) -> datetime:
+    if now is None:
+        return datetime.now(TELEMETRY_TZ)
+    if now.tzinfo is None:
+        return now.replace(tzinfo=TELEMETRY_TZ)
+    return now.astimezone(TELEMETRY_TZ)
+
+
+def mint_run_id(now: Optional[datetime] = None) -> str:
+    stamp = eastern_datetime(now)
+    return f"R-{stamp.strftime('%Y%m%d-%H%M%S')}"
+
+
+def format_sheet_timestamp(now: Optional[datetime] = None) -> str:
+    return eastern_datetime(now).isoformat(timespec="seconds")
+
+
+def sheet_timestamp_is_valid(value: str) -> bool:
+    parsed = parse_timestamp(value)
+    return parsed is not None and parsed.tzinfo is not None
+
+
+def run_log_row_is_final(row: Mapping[str, Any]) -> bool:
+    return all(str(row.get(field) or "").strip() for field in REQUIRED_RUN_LOG_FINAL_FIELDS)
+
+
+def native_resume_action(
+    *,
+    native_widget_has_file: bool,
+    export_available: bool,
+    copilot_sidebar_completed: bool = False,
+) -> str:
+    del copilot_sidebar_completed
+    if native_widget_has_file:
+        return "keep_visible_file"
+    if export_available:
+        return "attach_export"
+    return "review_ready_missing_production_resume"
+
+
+def forbidden_resume_attach_path(path: str) -> bool:
+    token = (path or "").replace("\\", "/").lstrip("./")
+    return token in {TWO_PAGE_MASTER_PATH, SANITIZED_FAMILY_RESUME_PATH}
+
+
+def contact_email_action(field_kind: str, filled_kind: str) -> str:
+    field = normalize_text(field_kind)
+    filled = normalize_text(filled_kind)
+    if field == "academic":
+        return "use_academic" if filled != "academic" else "keep_academic"
+    if filled == "academic":
+        return "correct_to_application"
+    if filled == "application":
+        return "keep_application"
+    return "fill_application"
+
+
+def submit_outcome(*, page_confirmation: bool, queue_matches_page: bool) -> str:
+    if page_confirmation and queue_matches_page:
+        return "SUBMITTED"
+    return "SUBMISSION_UNKNOWN"
+
+
+def copilot_completed_is_submit_proof() -> bool:
+    return False
+
+
+def copilot_preflight_scope(page_kind: str) -> str:
+    kind = normalize_text(page_kind)
+    if kind == "application_form":
+        return "judge"
+    return "defer"
 
 
 def incident_ids_are_unique(existing: Sequence[str]) -> bool:

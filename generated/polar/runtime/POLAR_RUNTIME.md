@@ -33,12 +33,15 @@ Phone numbers live in the local Polar profile and in Simplify. They are not comp
 Normal ATS email, candidate account email, preferred application contact, and password-reset email
 use the dedicated local APPLICATION mailbox from Polar, Simplify, or the browser profile.
 If a field asks for school email, university email, or institutional email, use the local academic mailbox.
-A resume parser that fills Harvard email into a normal contact field is wrong. Correct it before Submit.
+A resume parser or Simplify Copilot that fills the Harvard or school mailbox into a normal ATS account, contact, or password-reset field is wrong.
+Correct that field to the local APPLICATION mailbox before continuing. Do not finish account creation on the academic mailbox.
 Do not create a second employer account only to change email.
+polar_policy.contact_email_action is the engineer table for that reread.
 street_address_source: local Polar or private profile. Do not compile or log the street value.
 
 Approved documents. Attach only when the form asks for that class. Never paste contents.
 - emory_official_transcript: `Emory_Official_Transcript.pdf` (available in repo). official undergraduate transcript.
+- production_resume_ai_infra_v1: `generated/resumes/export/ai_infra_v1.pdf` (not in repo). frozen family one-pager export for Polar attach when the native resume widget is empty.
 - harvard_unofficial_transcript: `Harvard_unofficial_transcript.pdf` (available in repo). unofficial current-program transcript.
 
 - Legal name: Junyi Zhou
@@ -210,10 +213,14 @@ Reserve up to 1 new-execution slot per apply-ready-jobs run for READY_PRIORITY w
 ## E. Resume-cluster selection
 
 One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach.
-Prefer the Simplify resume already attached.
-If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.
-Mark REVIEW_READY with blocker missing_production_resume and continue the worker.
+Prefer the Simplify resume already attached only when the native ATS resume widget already shows a file.
+Copilot sidebar Completed is not proof the native Resume/CV input has a file.
+Look at the page widget. polar_policy.native_resume_action is the engineer table.
+If the native widget is empty and `generated/resumes/export/ai_infra_v1.pdf` exists locally, attach that export.
+Do not upload `resumes/base/JZ_resume.pdf`. Do not upload the sanitized PDF next to the family .tex.
+If the native widget is still empty, mark REVIEW_READY with blocker missing_production_resume and continue the worker.
 Do not invent a new resume for every job.
+Do not compile LaTeX during apply. The export must already exist on the Mac.
 
 Title families are job taxonomy only. resume_cluster is not a file.
 - cloud_swe: Software Engineer, Backend Engineer, Platform Engineer, Cloud Engineer, Infrastructure Engineer, New Grad SWE
@@ -332,15 +339,18 @@ Prioritized auto-submit: True.
 A regular job may be submitted once only when every item holds:
 - Duplicate check passes against the Sheet and section K.
 - Company and title on the page match the queue row.
-- Approved production resume is attached (Simplify). Do not upload the two-page master.
+- Approved production resume is visible on the native ATS widget. Do not upload the two-page master.
 - Identity fields are correct after a visible read-back.
+- Normal account and contact email fields show the APPLICATION mailbox, not the academic mailbox.
 - Required factual fields are resolved from this runtime or left for Junyi.
 - No unsupported claim was invented.
 - Writing is evidence-grounded.
 - application_weight is regular.
 - Final review of visible widgets passes.
 - One final Submit is used.
-- Result is verified, or status becomes SUBMISSION_UNKNOWN.
+- Employer-page confirmation text is visible. Copilot Completed is not confirmation.
+- Queue confirmation, submitted_at, and the visible resume filename match that page. polar_policy.submit_outcome is the engineer table.
+- If the page confirmation is missing or the queue readback does not match, status is SUBMISSION_UNKNOWN. Do not click Submit again.
 
 A prioritized job may be submitted once when every regular item holds and polar_policy.priority_submit_permitted is true.
 That function is false when writing_log is missing a custom question, the answer is blank, or the evidence note is blank.
@@ -377,8 +387,8 @@ Statuses:
 - READY_PRIORITY: triaged keep, prioritized weight, eligible to execute with deeper writing.
 - IN_PROGRESS: this run owns the job via claim_run_id. Different jobs may be IN_PROGRESS at the same time.
 - REVIEW_READY: form is complete but Polar stopped for a missing owner fact or explicit hold.
-- SUBMITTED: Submit clicked and verification succeeded.
-- SUBMISSION_UNKNOWN: Submit may have happened. Verify before any retry. Never blindly resubmit.
+- SUBMITTED: employer-page confirmation is visible and the queue readback matches that page.
+- SUBMISSION_UNKNOWN: Submit may have happened, or the page confirmation is missing, or the queue readback does not match. Verify before any retry. Never blindly resubmit. Copilot Completed is not confirmation.
 - BLOCKED: this environment cannot finish a required step. Queue continues.
 - SKIP: hard skip, closed posting, or owner skip.
 
@@ -579,6 +589,8 @@ If claim_run_id is another run_id, do not overwrite it.
 If the queue header has no claim_run_id, do not append it from apply or discover.
 polar-sheet-migration is the only schema mutator for that column.
 Control writes locate the row by key. Never pick a visually empty row.
+Read every row with that key first. polar_policy.plan_control_write aborts when two rows share the key.
+That abort uses repeat_key control_key_duplicate. Do not invent control_duplicate_key variants.
 If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.
 After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
 Commit the edit, then reread key, owner_run_id, and notes. Looking correct is not persistence.
@@ -603,12 +615,17 @@ Heartbeat, daily summary, and production-learning-daily do not claim queue jobs.
 ## N. Run and incident telemetry
 
 One workflow invocation upserts one run_log row by run_id and copies workflow_version from the instruction file.
+Mint run_id with polar_policy.mint_run_id on the America/New_York wall clock. Do not use UTC for the suffix.
+started_at and ended_at use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset. Do not write EDT or EST.
+A run_log row is not final until polar_policy.run_log_row_is_final is true, including ended_at.
 Write incident_log rows for material events. Use the small category list in knowledge/polar_operator.yaml.
-incident_id is INC-YYYYMMDD-NNN with three digits. The sequence is monotonic. The next id is one more than the highest number for that date. If 001 and 003 exist, write 004. 01 and 001 count as the same number.
+incident_id is INC-YYYYMMDD-NNN with three digits on today's America/New_York date, not UTC.
+The sequence is monotonic. Reread existing ids for that date before write. The next id is one more than the highest number. If 001 and 003 exist, write 004. 01 and 001 count as the same number. Never reuse.
 Write incident_log.repeat_key with polar_policy.canonical_repeat_key.
 Jobright Matches onboarding uses repeat_key jobright_matches_onboarding_gate.
 Do not invent jobright_onboarding_* variants.
 Degree-level apply-time skips share repeat_key degree_level_gate_missed_at_discovery.
+Duplicate control-tab keys use repeat_key control_key_duplicate.
 A missing birth date or OPT-months answer is MISSING_FACT, not MISSING_DOCUMENT.
 Authorization telemetry uses auth_outcome answered, optional_left_blank, ambiguous_required_blocked, hard_eligibility_skip, or disclosure_prevented.
 If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.
@@ -645,11 +662,29 @@ KEEP_LOCAL leaves pending and stays in Local-only facts. Do not re-export it.
 Match candidate_id only. Do not compare wording.
 preference_resolutions:
 - pref_20260911_005 | PROMOTE | scripts/polar_policy.py | none
-Cursor writes generalized lessons and knowledge/preference_resolutions.yaml. STOP BEFORE MERGE.
+- pref_20260910_012 | DROP_REDUNDANT | scripts/polar_policy.py | none
+- pref_20260911_001 | DROP_REDUNDANT | generated/polar/runtime/POLAR_RUNTIME.md | none
+- pref_20260911_002 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260911_003 | PROMOTE | knowledge/polar_operator.yaml | none
+- pref_20260911_004 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260912_001 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260912_002 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260912_003 | OWNER_DECISION | none | none
+- pref_20260912_004 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260910_024 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260910_025 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260913_001 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260913_002 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260913_003 | DROP_REDUNDANT | scripts/polar_policy.py | none
+- pref_20260913_004 | PROMOTE | scripts/polar_policy.py | none
+Cursor writes generalized lessons and knowledge/preference_resolutions.yaml.
+Default for Polar and for unattended nightly maintenance: STOP BEFORE MERGE.
+Junyi-authorized maintenance path: after tests pass, merge verified maintenance changes with gh. Record merged by this agent. Do not enable GitHub auto-merge. Do not bypass required checks. Do not merge personal-fact values or apply-policy guesses.
 
 Simplify Copilot is a required apply precondition.
-proof: Copilot UI on the employer ATS page.
-not_proof: simplify.jobs login or API.
+proof: Copilot UI on the real employer application form that shows personal-information widgets.
+not_proof: simplify.jobs login or API. not_proof: a login, SSO, or signup page.
+polar_policy.copilot_preflight_scope is the engineer table. login_signup defers. application_form judges.
 states: PRESENT, MISSING, UNKNOWN.
 control_key: env_simplify_copilot. Locate by key. Never overwrite polar_browser.
 If Copilot is PRESENT, Autofill once. Then read the visible widgets.
