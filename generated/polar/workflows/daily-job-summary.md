@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-14.visible-form-truth+ada304bee755
+workflow_version: 2026-09-14.perfect-resume+ada304bee755
 status: production
 enabled: true
 needs_browser_lock: false

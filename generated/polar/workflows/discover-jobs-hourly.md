@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-14.visible-form-truth+62bab1b3bf52
+workflow_version: 2026-09-14.perfect-resume+62bab1b3bf52
 status: production
 enabled: true
 needs_browser_lock: false

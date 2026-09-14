@@ -206,7 +206,7 @@ def main() -> int:
                 "label_reason": (r.get("reason") or "")[:500],
                 "needs_review": "false",
                 "next_action": (
-                    f"Open posting → Prefer Simplify already attached; empty widget → REVIEW_READY missing_production_resume ({active_base_resume()} is master only)"
+                    f"Open posting → Attach Perfect Resume; empty widget without it → REVIEW_READY missing_production_resume ({active_base_resume()} is master only)"
                 ),
                 "next_action_date": today,
                 "notes": f"[triage:{day} decision=keep] {r.get('reason', '')}".strip(),

@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-14.visible-form-truth+11d932c44871
+workflow_version: 2026-09-14.perfect-resume+bfea9592cfd3
 status: production
 enabled: true
 needs_browser_lock: false
@@ -179,9 +179,9 @@ Do not create a second employer account only to change email.
 Do not write mailbox values or passwords into the Sheet.
 
 Approved documents:
-- emory_official_transcript: path `Emory_Official_Transcript.pdf` (available). Use when the form asks for that document class.
-- production_resume_ai_infra_v1: path `generated/resumes/export/ai_infra_v1.pdf` (missing). Use when the form asks for that document class.
-- harvard_unofficial_transcript: path `Harvard_unofficial_transcript.pdf` (available). Use when the form asks for that document class.
+- emory_official_transcript: `Emory_Official_Transcript.pdf` (available). Use when the form asks for that document class.
+- production_resume_perfect: Polar/Simplify stored name `Perfect Resume`; native-file `resumes/Perfect Resume/perfect_resume.pdf` (available). Use when the form asks for that document class.
+- harvard_unofficial_transcript: `Harvard_unofficial_transcript.pdf` (available). Use when the form asks for that document class.
 Do not attach a transcript when the job asks for a different school or a diploma.
 If a required transcript is missing locally and in the registry, mark BLOCKED with category MISSING_DOCUMENT.
 Never paste transcript contents into logs.
@@ -351,10 +351,14 @@ For the current job:
    If Copilot is MISSING or UNKNOWN, do not fill by hand. Use the step 8 OWNER_ACTION_REQUIRED exit.
    Then look at the native Resume/CV widget, not the Copilot sidebar.
    polar_policy.native_resume_action is the engineer table. Sidebar Completed is ignored.
-   If the native widget is empty and `generated/resumes/export/ai_infra_v1.pdf` exists locally, attach that export.
-   Do not upload `resumes/base/JZ_resume.pdf`. Do not upload the sanitized PDF next to the family .tex.
-   Do not compile LaTeX during apply.
-   If the native widget is still empty, mark REVIEW_READY with blocker missing_production_resume. Incident repeat_key native_resume_empty. Continue the worker.
+   If the native widget already shows a file that is not a forbidden file, leave it.
+   If the widget is empty, attach the Polar/Simplify resume named `Perfect Resume`.
+   If a native file upload is required and the stored resume cannot be uploaded, attach `resumes/Perfect Resume/perfect_resume.pdf` when that checkout file exists.
+   If that repo file is missing, attach `/Users/conny/Desktop/JZ_Resume_911.pdf` only when that file exists. Do not invent another path.
+   Do not upload `resumes/base/JZ_resume.pdf`. Do not upload `generated/resumes/export/ai_infra_v1.pdf`. Do not upload the sanitized PDF next to a family .tex.
+   Do not compile LaTeX during apply. Do not switch resume families. Do not silently fall back to `ai_infra_v1`.
+   If Perfect Resume cannot be accessed or uploaded, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker.
+   Incident repeat_key native_resume_empty when Perfect Resume cannot be attached.
 10. Fill standing answers from section A. Correct a resume-parser or Copilot Harvard email on a normal contact field.
    Authorization and identity widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.

@@ -1,0 +1,55 @@
+# Standing Polar attach contract. Junyi 2026-09-14.
+# Perfect Resume is the only production resume for every application.
+# Polar and Simplify already store the name. Do not invent another path.
+# Family one-pagers stay BUILD artifacts. Per-role routing is postponed.
+# The two-page master stays inventory.
+
+version: 1
+updated: "2026-09-14"
+owner_decision: "Junyi 2026-09-14. Standing policy. Perfect Resume only."
+
+stored_name: "Perfect Resume"
+selector: polar_simplify_stored_name
+ingest_pdf: "resumes/Perfect Resume/perfect_resume.pdf"
+# Identified on Junyi's Mac 2026-09-14. Same SHA256 as the chat
+# attachment JZ_Resume_911.pdf. Not invented. Not the older compile on
+# cursor/resume-stack-families-744a.
+identified_mac_pdf: "/Users/conny/Desktop/JZ_Resume_911.pdf"
+master_pdf: "resumes/base/JZ_resume.pdf"
+family_export_pdf: "generated/resumes/export/ai_infra_v1.pdf"
+sanitized_family_pdf: "resumes/families/ai_infra/ai_infra_v1.pdf"
+
+expected_visible_names:
+  - "Perfect Resume"
+  - "perfect_resume.pdf"
+  - "JZ_Resume_911.pdf"
+
+never_upload:
+  - "resumes/base/JZ_resume.pdf"
+  - "generated/resumes/export/ai_infra_v1.pdf"
+  - "resumes/families/ai_infra/ai_infra_v1.pdf"
+
+runtime_lines:
+  - "Perfect Resume is the only production resume for every job. Polar and Simplify select it by the stored name `Perfect Resume` (Polar attachment or Copilot profile). Do not invent another path."
+  - "Per-role family routing is postponed. Do not switch to `ai_infra` or any other family at apply time."
+  - "One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach."
+  - "Look at the native ATS Resume/CV widget. Copilot sidebar Completed is not proof the widget has a file. polar_policy.native_resume_action is the engineer table."
+  - "If the native widget already shows a file that is not a forbidden file, leave it. A visible Perfect Resume, `perfect_resume.pdf`, or `JZ_Resume_911.pdf` may stay."
+  - "If the widget is empty, attach the Polar/Simplify resume named `Perfect Resume`."
+  - "If the native widget needs a real file and the stored resume cannot be uploaded, use `resumes/Perfect Resume/perfect_resume.pdf` when that file exists in the checkout."
+  - "If that repo file is missing, the identified Mac gold copy is `/Users/conny/Desktop/JZ_Resume_911.pdf` when that file exists. Do not invent a third path."
+  - "Do not upload `resumes/base/JZ_resume.pdf`. Do not upload `generated/resumes/export/ai_infra_v1.pdf`. Do not upload the sanitized PDF next to a family .tex."
+  - "If Perfect Resume cannot be accessed or uploaded, mark REVIEW_READY with blocker missing_production_resume and continue the worker. Report why."
+  - "Do not compile LaTeX during apply. Do not export or create `ai_infra_v1` as a fallback."
+  - "Do not invent a new resume for every job."
+
+workflow_lines:
+  - "If the native widget already shows a file that is not a forbidden file, leave it."
+  - "If the widget is empty, attach the Polar/Simplify resume named `Perfect Resume`."
+  - "If a native file upload is required and the stored resume cannot be uploaded, attach `resumes/Perfect Resume/perfect_resume.pdf` when that checkout file exists."
+  - "If that repo file is missing, attach `/Users/conny/Desktop/JZ_Resume_911.pdf` only when that file exists. Do not invent another path."
+  - "Do not upload `resumes/base/JZ_resume.pdf`. Do not upload `generated/resumes/export/ai_infra_v1.pdf`. Do not upload the sanitized PDF next to a family .tex."
+  - "Do not compile LaTeX during apply. Do not switch resume families. Do not silently fall back to `ai_infra_v1`."
+  - "If Perfect Resume cannot be accessed or uploaded, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker."
+
+submit_check: "Approved production resume is Perfect Resume (visible widget, Polar/Simplify stored name, or the identified file if Polar had to upload). Do not upload the two-page master or any ai_infra file."

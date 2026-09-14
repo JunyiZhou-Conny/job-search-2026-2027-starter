@@ -1,5 +1,5 @@
-last_updated: "2026-09-08"
-source: "Repo inspection 2026-09-08. Paths only. No document contents."
+last_updated: "2026-09-14"
+source: "Repo inspection 2026-09-08. Perfect Resume standing policy 2026-09-14. Paths and stored names only. No document contents."
 
 rule: >
   Attach an approved document only when the application asks for that
@@ -21,18 +21,21 @@ documents:
       - the form asks for a degree certificate or diploma instead
     privacy_note: Do not reproduce transcript contents in runtime, logs, or mail.
 
-  - id: production_resume_ai_infra_v1
-    purpose: frozen family one-pager export for Polar attach when the native resume widget is empty
-    approved_path: generated/resumes/export/ai_infra_v1.pdf
-    expected_filename: ai_infra_v1.pdf
+  - id: production_resume_perfect
+    purpose: only production resume for every application
+    stored_name: Perfect Resume
+    selector: polar_simplify_stored_name
+    approved_path: resumes/Perfect Resume/perfect_resume.pdf
+    expected_filename: perfect_resume.pdf
     use_when:
-      - the native ATS resume or CV file input is empty
-      - Copilot sidebar shows a resume but the page widget says No file chosen
+      - every job's native ATS resume or CV widget
+      - the native widget is empty and Polar must attach a resume
     do_not_use_when:
-      - the native widget already has a file
+      - the native widget already shows Perfect Resume
       - the only local PDF is resumes/base/JZ_resume.pdf
-      - the only local PDF is the sanitized compile next to the family .tex
-    privacy_note: Export with RESUME_EMAIL or SIMPLIFY_EMAIL. Never use HARVARD_EMAIL. Do not commit the export.
+      - the only local PDF is generated/resumes/export/ai_infra_v1.pdf
+      - the only local PDF is the sanitized compile next to a family .tex
+    privacy_note: Polar and Simplify already store the name Perfect Resume. Do not invent another path. Do not fall back to ai_infra_v1.
 
   - id: harvard_unofficial_transcript
     purpose: unofficial current-program transcript

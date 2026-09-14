@@ -78,11 +78,11 @@ python3 scripts/resume_quality.py vip-tailor --jd <jd>
 
 ## What Polar may attach
 
-1. The Simplify resume already on the profile, when that widget is filled.
-2. After BUILD exists, the routed frozen family PDF.
-3. After a human accepts a VIP run, that one registered variant.
+1. The Polar/Simplify resume stored as **Perfect Resume**, when that widget is filled or Copilot can attach it by name.
+2. `resumes/Perfect Resume/perfect_resume.pdf` when a native ATS widget needs bytes and that checkout file exists.
+3. After a human accepts a VIP run, that one registered variant. Not the default.
 
-The two-page master is inventory. It is not the production attach. Landed `main` marks an empty resume widget `REVIEW_READY` / `missing_production_resume` and does not upload `resumes/base/JZ_resume.pdf`. This stack will replace that gap with a routed family variant once BUILD writes one. This PR does not edit Polar runtime.
+The two-page master is inventory. It is not the production attach. Per-role family routing, including `ai_infra_v1`, is postponed. An empty widget where Perfect Resume cannot be accessed is `REVIEW_READY` / `missing_production_resume`. Do not upload `resumes/base/JZ_resume.pdf` or `generated/resumes/export/ai_infra_v1.pdf`.
 
 A missing production one-pager is an acceptable transitional state. Do not invent a cluster tree to fill the gap. Do not restore `scripts/build_clusters.py`.
 

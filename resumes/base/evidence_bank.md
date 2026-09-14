@@ -57,6 +57,7 @@ Do not quote new speciesOT scorecard decimals until Junyi clears them.
 
 ## Polar attach
 
-Prefer the Simplify resume already attached.
-If the widget is empty, do not upload `resumes/base/JZ_resume.pdf`.
+Attach Perfect Resume (Polar/Simplify stored name).
+If the widget is empty and Perfect Resume cannot be uploaded, do not
+upload `resumes/base/JZ_resume.pdf` or `ai_infra_v1`.
 Mark REVIEW_READY with blocker `missing_production_resume`.

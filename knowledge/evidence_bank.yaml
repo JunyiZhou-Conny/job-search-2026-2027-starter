@@ -513,7 +513,7 @@ projects:
       - "Role-specific one-page resume views generated from this evidence bank"
     do_not_claim:
       - "Fully autonomous applications or messages sent on Junyi's behalf"
-      - "That Polar uploads resumes/base/JZ_resume.pdf. Prefer Simplify. Empty widget is REVIEW_READY / missing_production_resume."
+      - "That Polar uploads resumes/base/JZ_resume.pdf or ai_infra_v1. Perfect Resume is the only production attach. Empty widget without Perfect Resume is REVIEW_READY / missing_production_resume."
       - "A submitted-application count from this OS"
       - "That Cloud Computer Use is the production apply operator"
     interview_depth: strong

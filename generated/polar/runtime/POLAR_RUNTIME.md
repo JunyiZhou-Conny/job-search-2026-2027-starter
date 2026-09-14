@@ -12,6 +12,7 @@ Canonical sources:
 - `knowledge/polar_operator.yaml`
 - `knowledge/preference_resolutions.yaml`
 - `knowledge/polar_documents.yaml`
+- `knowledge/polar_resume_attach.yaml`
 - `knowledge/work_authorization.yaml`
 - `knowledge/form_strategy.yaml`
 - `knowledge/application_priority.yaml`
@@ -41,7 +42,7 @@ street_address_source: local Polar or private profile. Do not compile or log the
 
 Approved documents. Attach only when the form asks for that class. Never paste contents.
 - emory_official_transcript: `Emory_Official_Transcript.pdf` (available in repo). official undergraduate transcript.
-- production_resume_ai_infra_v1: `generated/resumes/export/ai_infra_v1.pdf` (not in repo). frozen family one-pager export for Polar attach when the native resume widget is empty.
+- production_resume_perfect: Polar/Simplify stored name `Perfect Resume`; native-file `resumes/Perfect Resume/perfect_resume.pdf` (available in repo). only production resume for every application.
 - harvard_unofficial_transcript: `Harvard_unofficial_transcript.pdf` (available in repo). unofficial current-program transcript.
 
 - Legal name: Junyi Zhou
@@ -212,15 +213,18 @@ Reserve up to 1 new-execution slot per apply-ready-jobs run for READY_PRIORITY w
 
 ## E. Resume-cluster selection
 
+Perfect Resume is the only production resume for every job. Polar and Simplify select it by the stored name `Perfect Resume` (Polar attachment or Copilot profile). Do not invent another path.
+Per-role family routing is postponed. Do not switch to `ai_infra` or any other family at apply time.
 One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach.
-Prefer the Simplify resume already attached only when the native ATS resume widget already shows a file.
-Copilot sidebar Completed is not proof the native Resume/CV input has a file.
-Look at the page widget. polar_policy.native_resume_action is the engineer table.
-If the native widget is empty and `generated/resumes/export/ai_infra_v1.pdf` exists locally, attach that export.
-Do not upload `resumes/base/JZ_resume.pdf`. Do not upload the sanitized PDF next to the family .tex.
-If the native widget is still empty, mark REVIEW_READY with blocker missing_production_resume and continue the worker.
+Look at the native ATS Resume/CV widget. Copilot sidebar Completed is not proof the widget has a file. polar_policy.native_resume_action is the engineer table.
+If the native widget already shows a file that is not a forbidden file, leave it. A visible Perfect Resume, `perfect_resume.pdf`, or `JZ_Resume_911.pdf` may stay.
+If the widget is empty, attach the Polar/Simplify resume named `Perfect Resume`.
+If the native widget needs a real file and the stored resume cannot be uploaded, use `resumes/Perfect Resume/perfect_resume.pdf` when that file exists in the checkout.
+If that repo file is missing, the identified Mac gold copy is `/Users/conny/Desktop/JZ_Resume_911.pdf` when that file exists. Do not invent a third path.
+Do not upload `resumes/base/JZ_resume.pdf`. Do not upload `generated/resumes/export/ai_infra_v1.pdf`. Do not upload the sanitized PDF next to a family .tex.
+If Perfect Resume cannot be accessed or uploaded, mark REVIEW_READY with blocker missing_production_resume and continue the worker. Report why.
+Do not compile LaTeX during apply. Do not export or create `ai_infra_v1` as a fallback.
 Do not invent a new resume for every job.
-Do not compile LaTeX during apply. The export must already exist on the Mac.
 
 Title families are job taxonomy only. resume_cluster is not a file.
 - cloud_swe: Software Engineer, Backend Engineer, Platform Engineer, Cloud Engineer, Infrastructure Engineer, New Grad SWE
@@ -339,7 +343,7 @@ Prioritized auto-submit: True.
 A regular job may be submitted once only when every item holds:
 - Duplicate check passes against the Sheet and section K.
 - Company and title on the page match the queue row.
-- Approved production resume is visible on the native ATS widget. Do not upload the two-page master.
+- Approved production resume is Perfect Resume (visible widget, Polar/Simplify stored name, or the identified file if Polar had to upload). Do not upload the two-page master or any ai_infra file.
 - Identity fields are correct after a visible read-back.
 - Normal account and contact email fields show the APPLICATION mailbox, not the academic mailbox.
 - Required factual fields are resolved from this runtime or left for Junyi.
@@ -668,7 +672,8 @@ preference_resolutions:
 - pref_20260911_003 | PROMOTE | knowledge/polar_operator.yaml | none
 - pref_20260911_004 | PROMOTE | scripts/polar_policy.py | none
 - pref_20260912_001 | PROMOTE | scripts/polar_policy.py | none
-- pref_20260912_002 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260912_002 | STALE | scripts/polar_policy.py | none
+- pref_20260914_001 | PROMOTE | knowledge/polar_resume_attach.yaml | none
 - pref_20260912_003 | OWNER_DECISION | none | none
 - pref_20260912_004 | PROMOTE | scripts/polar_policy.py | none
 - pref_20260910_024 | PROMOTE | scripts/polar_policy.py | none

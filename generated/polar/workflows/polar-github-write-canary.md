@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-14.visible-form-truth+e60ae9fe705a
+workflow_version: 2026-09-14.perfect-resume+e60ae9fe705a
 status: manual_canary
 enabled: false
 needs_browser_lock: false

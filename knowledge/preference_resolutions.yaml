@@ -39,10 +39,17 @@ resolutions:
     resolved_revision: ""
     # Judge Copilot only on the real application form, not a login or signup page.
   - candidate_id: pref_20260912_002
-    outcome: PROMOTE
+    outcome: STALE
     canonical_destination: scripts/polar_policy.py
     resolved_revision: ""
-    # Native resume widget is the source of truth. Attach the family export if present.
+    # Family-export attach (ai_infra_v1) is revoked. Native-widget truth
+    # remains inside pref_20260914_001. Do not attach a family PDF.
+  - candidate_id: pref_20260914_001
+    outcome: PROMOTE
+    canonical_destination: knowledge/polar_resume_attach.yaml
+    resolved_revision: ""
+    # Perfect Resume is the only production resume. Polar/Simplify stored
+    # name is the selector. No family switch. Inaccessible → REVIEW_READY.
   - candidate_id: pref_20260912_003
     outcome: OWNER_DECISION
     canonical_destination: ""

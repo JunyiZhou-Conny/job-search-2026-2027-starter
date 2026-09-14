@@ -115,7 +115,13 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("copilot_after_auth_action", text)
         self.assertIn("A login or SSO defer is not a pass.", text)
         self.assertIn("Do not fill the form by hand.", text)
-        self.assertIn("generated/resumes/export/ai_infra_v1.pdf", text)
+        self.assertIn("Perfect Resume", text)
+        self.assertIn("resumes/Perfect Resume/perfect_resume.pdf", text)
+        self.assertIn("Do not silently fall back to `ai_infra_v1`.", text)
+        self.assertNotIn(
+            "If the native widget is empty and `generated/resumes/export/ai_infra_v1.pdf` exists locally, attach that export.",
+            text,
+        )
         discover = read_workflow("discover-jobs-hourly")
         self.assertIn("polar_policy.jobright_job_id", discover)
         self.assertIn("before login or form work", text)
