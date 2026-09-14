@@ -27,6 +27,7 @@ from polar_policy import (  # noqa: E402
     apply_run_caps,
     canonical_repeat_key,
     contact_email_action,
+    copilot_after_auth_action,
     copilot_completed_is_submit_proof,
     copilot_preflight_scope,
     format_sheet_timestamp,
@@ -720,6 +721,24 @@ class TestVisibleFormTruth(unittest.TestCase):
     def test_copilot_login_page_defers(self):
         self.assertEqual(copilot_preflight_scope("login_signup"), "defer")
         self.assertEqual(copilot_preflight_scope("application_form"), "judge")
+
+    def test_copilot_after_auth_missing_still_stops(self):
+        self.assertEqual(
+            copilot_after_auth_action("login_signup", "missing"),
+            "defer",
+        )
+        self.assertEqual(
+            copilot_after_auth_action("application_form", "missing"),
+            "owner_action_required",
+        )
+        self.assertEqual(
+            copilot_after_auth_action("application_form", "unknown"),
+            "owner_action_required",
+        )
+        self.assertEqual(
+            copilot_after_auth_action("application_form", "present"),
+            "continue",
+        )
 
     def test_duplicate_control_key_aborts(self):
         rows = [

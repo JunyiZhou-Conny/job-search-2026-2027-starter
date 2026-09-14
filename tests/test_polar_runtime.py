@@ -123,6 +123,7 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("github_write_canary must not overwrite polar_browser", text)
         self.assertIn("clearly says answer Yes or answer No", text)
         self.assertIn("Simplify Copilot is a required apply precondition.", text)
+        self.assertIn("copilot_after_auth_action", text)
         self.assertIn("OWNER_ACTION_REQUIRED", text)
         self.assertNotIn("optional_accelerator", text)
         self.assertIn("PREFERENCES.md is not a second strategy database.", text)

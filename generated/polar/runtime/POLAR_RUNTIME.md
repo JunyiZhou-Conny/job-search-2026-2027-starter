@@ -685,10 +685,11 @@ Simplify Copilot is a required apply precondition.
 proof: Copilot UI on the real employer application form that shows personal-information widgets.
 not_proof: simplify.jobs login or API. not_proof: a login, SSO, or signup page.
 polar_policy.copilot_preflight_scope is the engineer table. login_signup defers. application_form judges.
+After login, polar_policy.copilot_after_auth_action judges again on the real form. A login defer is not PRESENT.
 states: PRESENT, MISSING, UNKNOWN.
 control_key: env_simplify_copilot. Locate by key. Never overwrite polar_browser.
-If Copilot is PRESENT, Autofill once. Then read the visible widgets.
-If Copilot is MISSING or UNKNOWN, do not fall back to traditional clicking.
+If Copilot is PRESENT after that re-check, Autofill once. Then read the visible widgets.
+If Copilot is MISSING or UNKNOWN on the real form, do not fall back to traditional clicking.
 Restore the probe job to READY. Do not consume it as BLOCKED.
 Incident category ENVIRONMENT. repeat_key simplify_copilot_missing.
 run_log result OWNER_ACTION_REQUIRED. Clear claim_run_id. Exit the apply run.

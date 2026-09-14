@@ -989,6 +989,16 @@ def copilot_preflight_scope(page_kind: str) -> str:
     return "defer"
 
 
+def copilot_after_auth_action(page_kind: str, copilot_state: str) -> str:
+    """After login, judge Copilot on the real form. A login-page defer is not PRESENT."""
+    if copilot_preflight_scope(page_kind) != "judge":
+        return "defer"
+    state = normalize_text(copilot_state)
+    if state == "present":
+        return "continue"
+    return "owner_action_required"
+
+
 def incident_ids_are_unique(existing: Sequence[str]) -> bool:
     values = [str(raw).strip() for raw in existing if str(raw).strip()]
     if len(values) != len(set(values)):
