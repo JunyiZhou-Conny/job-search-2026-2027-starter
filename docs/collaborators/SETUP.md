@@ -1,10 +1,17 @@
-# Collaborator setup — agent-executable runbook
+# Collaborator setup. Identity-reset runbook
 
 **Audience:** a friend or future collaborator, and **their** Cursor agent.  
-**Last updated:** 2026-08-17  
+**Last updated:** 2026-09-12  
 **Upstream template:** `JunyiZhou-Conny/job-search-2026-2027-starter`
 
-This is the long setup guide. If you are a human, read §1–§4 once, then give
+The front door is now [`README.md`](../../README.md). Start there for Polar, Google,
+the application mailbox, Cursor, Google Sheets, and prompt paste. This file keeps
+the Mode A identity interview and the `init_personal_copy.py` steps.
+
+This file is still Cloud-era in places. If a paragraph here and `README.md` or
+`docs/automation/POLAR.md` disagree, the README and Polar essay win.
+
+If you are a human, read `README.md`, then give
 [`AGENT_KICKOFF.md`](./AGENT_KICKOFF.md) to your Cursor agent (Cloud or local).
 In Cursor you can also run **`/collaborator-setup`**.
 
@@ -12,6 +19,8 @@ Related docs (do not duplicate them here):
 
 | Doc | Use when |
 |---|---|
+| [`README.md`](../../README.md) | Polar-era install journey. Start here. |
+| [`docs/automation/POLAR.md`](../automation/POLAR.md) | Polar production essay. Wins if this file disagrees. |
 | [`docs/FRIENDS_CANVAS.md`](../FRIENDS_CANVAS.md) | What is shared vs personal; current progress |
 | [`docs/CONTRIBUTING.md`](../CONTRIBUTING.md) | What belongs in an upstream PR |
 | [`docs/platforms.md`](../platforms.md) | Simplify vs this repo vs Jobright |

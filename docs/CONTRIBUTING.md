@@ -2,10 +2,10 @@
 
 This repo is an **early shared toolkit**. Read `docs/FRIENDS_CANVAS.md` first.
 
-**New collaborator?** Have your Cursor agent follow
-[`docs/collaborators/SETUP.md`](collaborators/SETUP.md) (paste
-[`docs/collaborators/AGENT_KICKOFF.md`](collaborators/AGENT_KICKOFF.md) or run
-`/collaborator-setup`). Do not wipe identity files on this upstream repo.
+**New collaborator?** Start at [`README.md`](../README.md). Then have your
+Cursor agent follow [`docs/collaborators/SETUP.md`](collaborators/SETUP.md)
+(paste [`docs/collaborators/AGENT_KICKOFF.md`](collaborators/AGENT_KICKOFF.md)
+or run `/collaborator-setup`). Do not wipe identity files on this upstream repo.
 
 ## Model: one template, many personal copies
 

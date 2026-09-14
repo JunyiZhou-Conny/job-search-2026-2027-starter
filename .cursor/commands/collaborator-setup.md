@@ -6,7 +6,7 @@ This command is for the **collaborator’s** Cursor agent, not for rewriting Jun
 
 ## Do this
 
-1. Read and follow `docs/collaborators/SETUP.md` as the runbook.
+1. Read and follow `README.md` as the setup journey. Use `docs/collaborators/SETUP.md` for the identity interview and `init_personal_copy.py`.
 2. Use the kickoff rules in `docs/collaborators/AGENT_KICKOFF.md`.
 3. Ask Mode A / B / C if the human has not chosen.
 4. For Mode A: prove `origin` is their fork, then run `scripts/init_personal_copy.py` (dry-run first).
