@@ -1,7 +1,7 @@
 # polar-sheet-migration
 
 workflow: polar-sheet-migration
-workflow_version: 2026-09-14.perfect-resume+bb77ac7f560e
+workflow_version: 2026-09-14.jobright-first+bb77ac7f560e
 status: manual_once
 enabled: false
 needs_browser_lock: false

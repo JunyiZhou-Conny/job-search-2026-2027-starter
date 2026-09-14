@@ -20,33 +20,31 @@ canonical memory, configuration, policy, evidence, audit
         v                                             v
 Cursor / Cloud                                  Polar / Local
 engineer, maintainer                            authenticated production
-fallback discovery                              hourly discovery
-reconciliation                                  Jobright source_url
-                                                form execution
-                                                lane-aware submit
-                                                result reporting
+shadow discovery                                Jobright recommendations
+reconciliation                                  extension autofill
+                                                form finish + submit
+                                                Sheet history / learning
 ```
 
 ## Owner decision
 
 The product goal is no longer one Cursor discovery pass, one pasted job, and one Polar experiment.
 
-The production loop is hourly authenticated local discovery, a durable queue, local Polar execution, resumable state, automatic Submit on regular and prioritized jobs, a daily digest, and a sanitized production-learning report. Polar conversation windows are disposable. Learning lives in Sheet telemetry and the compiled GitHub artifacts.
+The production loop is authenticated Jobright recommendations, local Polar execution, a durable Sheet for history and ownership, automatic Submit when policy checks pass, a daily digest, and a sanitized production-learning report. Polar conversation windows are disposable. Learning lives in Sheet telemetry and the compiled GitHub artifacts. Bulk Sheet discovery is not the apply entry.
 
 ATS family is diagnostic metadata only. It is not the root abstraction.
 
 The root loop is:
 
 ```text
-READY job
-  -> reach the original employer application
-  -> authenticate if needed
-  -> fill
-  -> answer
-  -> validate
-  -> submit or prepare for review
-  -> verify
-  -> persist state
+Jobright recommendation
+  -> skip Applied / Sheet dup / closed / hard-fact conflict
+  -> Apply with Autofill, generate resume, Apply Now
+  -> Jobright extension autofill once on the real form
+  -> Polar finishes remaining required fields
+  -> submit and confirm on the employer page
+  -> Jobright Yes / I applied
+  -> persist state and continue
 ```
 
 ## Evidence kinds
@@ -63,7 +61,7 @@ GitHub is canonical memory. Policy, evidence, resume metadata, and audit live he
 
 Cursor and Cloud remain the engineer. They maintain this repo, compile `POLAR_RUNTIME`, reconcile the Sheet into `data/applications.csv` when a result is verified, and keep Cloud discovery running as shadow and fallback. Cloud Computer Use stays available on a Cloud Agent VM. See `docs/automation/DAILY_JOB_DISCOVERY.md` and `docs/automation/COMPUTER_USE_PROMPT.md`.
 
-Polar is the local production operator. It runs on Junyi's Mac with the real browser profile. It does hourly Jobright discovery. apply-ready-jobs resolves Original Job Post on demand. Polar also does ordinary account creation and auth, writing, Submit according to lane, and result reporting.
+Polar is the local production operator. It runs on Junyi's Mac with the real browser profile. apply-ready-jobs starts on authenticated Jobright recommendations. The Jobright extension autofills. Polar finishes remaining fields, Submits, confirms, and acknowledges on Jobright. The Sheet is history, dedupe, ownership, and learning — not apply admission.
 
 Junyi is willing to leave the Mac powered on and online. Polar Workflows can use a named profile, save reusable instructions, attach files, and run on a schedule, including an hourly schedule at a selected minute.
 
@@ -74,8 +72,8 @@ Polar's own introduction says it "clicks, types, and navigates the web the way y
 Polar must not become a second job-search truth system.
 
 - Own `data/applications.csv` or mint ledger ids.
-- Click Jobright **APPLY WITH AUTOFILL**.
-- Silently fall back to traditional clicking when Simplify Copilot is missing.
+- Click Simplify Copilot Autofill on the Jobright-first path (the Jobright extension owns autofill).
+- FIFO unprocessed `READY_*` rows as the silent apply source.
 - Copy the whole repository into the Workflow prompt.
 - Store passwords, cookies, OTP codes, or 2FA secrets in git, the Sheet, or mail.
 - Invent metrics, projects, employers, referrals, clearance, or technologies outside the evidence bank.
@@ -113,19 +111,15 @@ These two fields are not interchangeable.
 | `source_url` | Where Polar found the row. Often `https://jobright.ai/jobs/info/...`. |
 | `apply_url` | Employer application URL when Polar trusts it. |
 
-If `apply_url` is present and `apply_url_confidence` is `exact` or `strong`, Polar opens that URL. Do not open Jobright first.
+Apply entry is `https://jobright.ai/jobs/recommend`. Polar uses the observed Jobright labels only: Apply with Autofill, Quick Edit, Select All, Generate My Resume, Apply Now. Do not invent CSS selectors.
 
-discover-jobs-hourly does not open Original Job Post. It keeps the Jobright `source_url`.
+`apply_url` is still stored when the employer page is known. It is history, not the start of a new card.
 
-If `apply_url` is empty and `source_url` is a Jobright job page, apply-ready-jobs opens that page in the local logged-in session and clicks **Original Job Post** only. Follow one redirect if the click needs it. Keep the result only when the final host is not `jobright.ai`.
+`discover-jobs-hourly` is retired from apply admission. If invoked, it writes inventory only and must not set `READY_*` as apply source.
 
-Junyi observed that logged-in Jobright shows **Original Job Post**. For Tallgrass Intern-AI and Data Solutions, that link was `https://epix.fa.us2.oraclecloud.com/hcmUI/CandidateExperience/en/sites/CX_1/job/4239?jr_id=6a9b267b90a313642c658c5f`.
+Historical Original Job Post notes stay in experiment packets. They are not the production apply path.
 
-`scripts/resolve_apply_url.py` still helps cloud runs that have no Jobright session. Polar does not need it when Original Job Post works.
-
-If Original Job Post cannot be resolved, keep the Jobright URL. Application execution must still be able to resolve it later. The resolver is an optimization, not a prerequisite.
-
-Do not resolve Original Job Post for obvious SKIP rows.
+`scripts/resolve_apply_url.py` still helps cloud runs that have no Jobright session. Polar Local does not need it on this path.
 
 ## Durable state
 
@@ -149,7 +143,7 @@ See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery ord
 
 `application_weight` stays. It is production policy, not a pilot leftover.
 
-Regular work is fast and truthful. Perfect Resume is the only production resume. Require Simplify Copilot on the employer page, Autofill once, then correct visible fields. If a resume is already on the widget and it is not a forbidden file, leave it. If Polar must upload a file, attach Perfect Resume by Polar/Simplify stored name, or `resumes/Perfect Resume/perfect_resume.pdf` when that file exists. Do not upload the two-page master `JZ_resume` PDF. Do not fall back to `ai_infra_v1`. If Perfect Resume cannot be accessed, mark REVIEW_READY with blocker missing_production_resume and continue the worker. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. If Copilot is missing, stop the apply run for owner action. Do not consume the queue job.
+Regular work is fast and truthful. Prefer the just-generated Jobright resume. Else attach Perfect Resume / identified `JZ_Resume_911.pdf`. Jobright extension Autofill once, then Polar corrects visible fields. If a resume is already on the widget and it is not a forbidden file, leave it. Do not upload the two-page master `JZ_resume` PDF. Do not fall back to `ai_infra_v1`. If neither generated nor 911 / Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume and continue. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. Missing Copilot does not stop the run.
 
 Prioritized work gets more care. Signals include startup or scale-up Junyi values, Fortune 500 or major companies, NVIDIA GTC, prestige, biotech or health AI, strong biostatistics or bio data-science fit, FDE, and unusually strong personal fit. Do not mark a generic analyst or data role prioritized only because the title contains "data".
 
@@ -183,8 +177,9 @@ Polar Local uses capability and policy checks. A regular job may be submitted on
 
 Initial canary caps live in `knowledge/polar_operator.yaml` and `config/submit_gates.yaml` `polar_local`:
 
-- 3 new jobs per `apply-ready-jobs` run (one worker budget; priority reservation is taken from it)
-- No shared daily regular submission pool. Overlapping apply runs each get their own budget.
+- 3 considered candidates per `apply-ready-jobs` run (not 3 submissions)
+- No priority-slot reservation. Jobright ranks.
+- No shared daily regular submission pool. Do not start a second Polar apply.
 
 Junyi can raise the per-run budget after production evidence is good.
 
@@ -194,8 +189,8 @@ Do not merge these into one giant Workflow. Saved Polar Workflows store only the
 
 | Workflow | Eastern Time | Polar mode |
 |---|---|---|
-| `discover-jobs-hourly` | minute 00 every hour | Saved Workflow on the named local profile. Discovery and queue only. No global browser lock. |
-| `apply-ready-jobs` | minute 20 every hour | Saved Workflow on the same profile. Execution with the run cap. Claims one job at a time. |
+| `discover-jobs-hourly` | retired from apply path | Off by default. Inventory only if invoked. |
+| `apply-ready-jobs` | minute 20 every hour | Saved Workflow. Jobright recommendations entry. Considered-candidate cap. |
 | `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. |
 | `production-learning-daily` | 22:00 daily | Saved Workflow. Sanitized learning report. No application clicks. |
 
@@ -230,7 +225,7 @@ Do not assume sleep or lock behavior. Record the result before raising overnight
 
 Cursor Cloud Agents and the daily discovery Automation run in a fresh checkout. They do not see Junyi's laptop sessions. `secrets/jobright_storage.json` is gitignored and has been absent from every recent cloud discovery pack.
 
-Polar sees the local browser. That is why Original Job Post and ordinary auth are available there.
+Polar sees the local browser. That is why Jobright recommendations, the Jobright extension, and ordinary auth are available there.
 
 Polar's May 2026 product note says Polar is macOS only for now ([A New Interface for Composer](https://polarbrowser.com/blog/new-interface)). Do not assume a Windows Polar exists.
 

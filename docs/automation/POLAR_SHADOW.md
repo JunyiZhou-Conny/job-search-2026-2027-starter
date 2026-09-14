@@ -1,7 +1,8 @@
 # 48-hour Polar versus Cloud discovery shadow
 
-Polar hourly discovery is the production candidate.
-Cloud morning and evening discovery stays on. Do not disable the Automation on day one.
+Polar hourly discovery is **not** the apply entry. Apply starts on Jobright recommendations.
+This checklist is historical comparison for inventory writers.
+Cloud morning and evening discovery stays as shadow. Do not disable the Automation from this file.
 
 This file is the comparison checklist. It is not a preference.
 

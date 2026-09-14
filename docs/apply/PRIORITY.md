@@ -37,13 +37,13 @@ data role prioritized only because the title contains data.
    last-mile role. See `knowledge/role_families.yaml`. Junyi 2026-08-24:
    mark these; they are suitable. Charta is the type example.
 
-Polar may assign READY_PRIORITY when a strong configured signal is present. Junyi does not confirm every priority label before the queue can move. Priority controls execution effort, writing depth, and post-submit writing audit. It is not permission to invent company facts.
+Polar may mark weight=prioritized when a strong configured signal is visible on the Jobright card or JD. That mark is writing depth and post-submit audit. It is not apply-queue admission. It is not permission to invent company facts.
 
 Strong signals. Assign READY_PRIORITY: fde title, gtc_2026 company on the NVIDIA GTC 2026 list, confirmed_prioritized YAML match, clear fortune_500_or_major, clear biotech_health_ai.
 
 Weak signals. Stay READY_REGULAR unless clearly justified: startup or prestige hints, personal_fit, generic data or analyst titles.
 
-READY_PRIORITY no longer waits behind a permanent READY_REGULAR backlog. Polar Local may Submit after writing_log is complete.
+READY_* rows are inventory, not silent FIFO. Polar Local may Submit a prioritized Jobright card after writing_log is complete.
 
 ## Confirmed so far
 

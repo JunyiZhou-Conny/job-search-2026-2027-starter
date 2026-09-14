@@ -2,7 +2,7 @@
 
 COMPILED ARTIFACT. Not canonical.
 
-policy_revision: 2026-09-14.perfect-resume
+policy_revision: 2026-09-14.jobright-first
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 | Workflow | Status | Lock | Raw URL |
@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the trust-delegation bootstrap from docs/automation/POLAR_WORKFLOWS.md.
 They load the two owner-designated raw main files on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-14.perfect-resume+62bab1b3bf52`
-- `apply-ready-jobs` workflow_version `2026-09-14.perfect-resume+bfea9592cfd3`
-- `daily-job-summary` workflow_version `2026-09-14.perfect-resume+ada304bee755`
-- `production-learning-daily` workflow_version `2026-09-14.perfect-resume+d37c3b43a89d`
-- `polar-scheduler-heartbeat` workflow_version `2026-09-14.perfect-resume+b53185a9688a`
-- `polar-github-write-canary` workflow_version `2026-09-14.perfect-resume+e60ae9fe705a`
-- `chatgpt-production-review` workflow_version `2026-09-14.perfect-resume+66960ba532f6`
-- `cursor-production-maintenance` workflow_version `2026-09-14.perfect-resume+465201631783`
-- `polar-sheet-migration` workflow_version `2026-09-14.perfect-resume+bb77ac7f560e`
+- `discover-jobs-hourly` workflow_version `2026-09-14.jobright-first+be870e38214a`
+- `apply-ready-jobs` workflow_version `2026-09-14.jobright-first+ad7ee6f740ef`
+- `daily-job-summary` workflow_version `2026-09-14.jobright-first+ada304bee755`
+- `production-learning-daily` workflow_version `2026-09-14.jobright-first+2a2c53ed1aec`
+- `polar-scheduler-heartbeat` workflow_version `2026-09-14.jobright-first+b53185a9688a`
+- `polar-github-write-canary` workflow_version `2026-09-14.jobright-first+e60ae9fe705a`
+- `chatgpt-production-review` workflow_version `2026-09-14.jobright-first+66960ba532f6`
+- `cursor-production-maintenance` workflow_version `2026-09-14.jobright-first+465201631783`
+- `polar-sheet-migration` workflow_version `2026-09-14.jobright-first+bb77ac7f560e`

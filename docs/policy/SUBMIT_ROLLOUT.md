@@ -36,7 +36,7 @@ Polar Local may click Submit on a regular or prioritized job only when every ite
 
 - Duplicate check passes against the Sheet and known ledger memory.
 - Company and title on the page match the queue row.
-- Approved production resume is Perfect Resume (visible widget, Polar/Simplify stored name, or the identified file if Polar had to upload). Do not upload the two-page master or any `ai_infra` file.
+- Approved resume is the just-generated Jobright file, or Perfect Resume / identified `JZ_Resume_911.pdf`. Do not upload the two-page master or any `ai_infra` file.
 - Identity is correct after a visible read-back.
 - Required factual fields are resolved from `POLAR_RUNTIME` or left for Junyi.
 - No unsupported claim was invented.
@@ -50,9 +50,9 @@ Never blindly resubmit a `SUBMISSION_UNKNOWN` row.
 
 Initial canary caps, also in `knowledge/polar_operator.yaml`:
 
-- max 3 new jobs per `apply-ready-jobs` run. That is one worker budget.
-  A READY_PRIORITY reservation is taken from the pool, not added to it.
-  Another apply run has its own budget.
+- max 3 considered candidates per `apply-ready-jobs` run. That is not
+  3 submissions. Priority slot reservation is 0. Jobright ranks.
+  Do not start a second Polar apply.
 - No shared daily regular submission pool.
 
 `writing_observation_mode` is true. Regular writing may still submit when

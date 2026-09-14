@@ -75,30 +75,32 @@ class TestGeneratedWorkflows(unittest.TestCase):
 
     def test_apply_priority_and_simplify_contracts(self):
         text = read_workflow("apply-ready-jobs")
-        priority = parse_contract_block(text, "Priority contract")
-        self.assertEqual(priority.get("reserved_priority_slots"), "1")
-        self.assertEqual(priority.get("max_new_jobs"), "3")
-        self.assertEqual(priority.get("shared_pool"), "true")
-        self.assertEqual(priority.get("reservation_is_from_pool"), "true")
-        self.assertEqual(priority.get("worker_budget"), "per_run")
-        self.assertEqual(priority.get("daily_regular_cap"), "none")
-        self.assertEqual(priority.get("prioritized_auto_submit"), "true")
+        entry = parse_contract_block(text, "Entry")
+        self.assertEqual(entry.get("entry"), "jobright_recommendations")
+        self.assertEqual(entry.get("sheet_queue_is_prerequisite"), "false")
+        budget = parse_contract_block(text, "Budget")
+        self.assertEqual(budget.get("reserved_priority_slots"), "0")
+        self.assertEqual(budget.get("max_considered"), "3")
+        self.assertEqual(budget.get("worker_budget"), "considered_not_submitted")
+        self.assertEqual(budget.get("daily_regular_cap"), "none")
+        self.assertEqual(budget.get("prioritized_auto_submit"), "true")
         self.assertEqual(
-            priority.get("writing_log_required_before_priority_submit"),
+            budget.get("writing_log_required_before_priority_submit"),
             "true",
         )
         self.assertEqual(
-            priority.get("priority_submit_gate"),
+            budget.get("priority_submit_gate"),
             "polar_policy.priority_submit_permitted",
         )
-        simplify = parse_contract_block(text, "Simplify contract")
-        self.assertEqual(simplify.get("role"), "required_precondition")
-        self.assertEqual(simplify.get("max_attempts_per_application"), "1")
-        self.assertEqual(simplify.get("silent_manual_fallback"), "false")
-        self.assertEqual(simplify.get("missing_action"), "owner_action_required")
-        self.assertEqual(simplify.get("consume_job"), "false")
-        self.assertEqual(simplify.get("control_key"), "env_simplify_copilot")
-        self.assertIn("do not fall back to traditional clicking", text.lower())
+        self.assertIn(
+            "If that gate is false, do not Submit. Mark BLOCKED. Continue.",
+            text,
+        )
+        autofill = parse_contract_block(text, "Autofill")
+        self.assertEqual(autofill.get("owner"), "jobright_extension")
+        self.assertEqual(autofill.get("max_attempts_per_form"), "1")
+        self.assertEqual(autofill.get("do_not_use_simplify_copilot"), "true")
+        self.assertIn("Do not click Simplify Copilot Autofill.", text)
         self.assertIn("OWNER_ACTION_REQUIRED", text)
         self.assertIn("## Memory ownership", text)
         self.assertIn("Polar Preferences Delta", read_workflow("production-learning-daily"))
@@ -111,10 +113,9 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("polar_policy.canonical_repeat_key", text)
         self.assertIn("polar_policy.native_resume_action", text)
         self.assertIn("polar_policy.submit_outcome", text)
-        self.assertIn("copilot_preflight_scope", text)
-        self.assertIn("copilot_after_auth_action", text)
-        self.assertIn("A login or SSO defer is not a pass.", text)
-        self.assertIn("Do not fill the form by hand.", text)
+        self.assertIn("polar_policy.page_surface", text)
+        self.assertIn("polar_policy.autofill_action", text)
+        self.assertIn("Apply with Autofill", text)
         self.assertIn("Perfect Resume", text)
         self.assertIn("resumes/Perfect Resume/perfect_resume.pdf", text)
         self.assertIn("Do not silently fall back to `ai_infra_v1`.", text)
@@ -124,14 +125,15 @@ class TestGeneratedWorkflows(unittest.TestCase):
         )
         discover = read_workflow("discover-jobs-hourly")
         self.assertIn("polar_policy.jobright_job_id", discover)
-        self.assertIn("before login or form work", text)
+        self.assertIn("retired_from_apply_path", discover)
+        self.assertIn("before expensive form work", text)
         self.assertIn("Do not pick a sibling from the employer's current openings.", text)
         self.assertIn("clearly says answer Yes or answer No", text)
         self.assertIn("polar_policy.auth_form_action", text)
         self.assertIn("Required future-sponsorship widget: Yes.", text)
         self.assertIn("A blocked authorization field must not stop the rest of the worker.", text)
         self.assertIn("Barriers removed is not a closed page.", text)
-        self.assertIn("Do not move Original Job Post resolution into hourly discovery.", text)
+        self.assertIn("Do not use discover-jobs-hourly as apply admission.", text)
         self.assertNotIn("optional_accelerator", text)
         self.assertNotIn("preferences-learning-daily", text)
         learning = read_workflow("production-learning-daily")

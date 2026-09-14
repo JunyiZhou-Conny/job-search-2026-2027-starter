@@ -61,9 +61,9 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 
 | Status | Meaning |
 |---|---|
-| `NEW` | Seen and written. Not yet READY. |
-| `READY_REGULAR` | Keep, regular weight, eligible to execute. |
-| `READY_PRIORITY` | Keep, prioritized weight, eligible to execute with deeper writing. |
+| `NEW` | Seen and written. Claimable when Jobright shows the card. |
+| `READY_REGULAR` | Historical inventory, regular weight. Not silent apply FIFO. |
+| `READY_PRIORITY` | Historical inventory, prioritized writing depth. Not silent apply FIFO. |
 | `IN_PROGRESS` | This run owns the job via `claim_run_id`. Different jobs may be `IN_PROGRESS` at the same time. |
 | `REVIEW_READY` | Form is complete but Polar stopped for a missing owner fact or explicit hold. |
 | `SUBMITTED` | Submit clicked and verification succeeded. |
@@ -73,7 +73,7 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 
 ## `last_stage` values
 
-`discovered`, `source_resolved`, `application_open`, `authenticated`, `form_filled`, `reviewed`, `submit_clicked`, `confirmation_seen`.
+`discovered`, `source_resolved`, `application_open`, `authenticated`, `form_filled`, `reviewed`, `submit_clicked`, `confirmation_seen`, `jobright_ack`.
 
 ## Recovery
 
@@ -81,8 +81,7 @@ Read the Sheet. Do not trust a leftover browser tab.
 
 1. Inspect every `SUBMISSION_UNKNOWN` row. Open the employer portal, confirmation page, or mail. Never blindly resubmit.
 2. Resume abandoned or self-owned `IN_PROGRESS` rows. Do not steal a live foreign claim.
-3. If `READY_PRIORITY` exists, reserve one new-execution slot for it.
-4. Use remaining new-execution slots for `READY_REGULAR`.
+3. Do not FIFO `READY_*`. New work comes from Jobright recommendations. `legacy_ready_disposition` is `inventory_only`.
 
 ## Schema-safe writes
 
@@ -92,7 +91,7 @@ Read the live header row. Map field names to columns. Write by name. Write expli
 
 If the live queue header has no `claim_run_id`, do not append it from apply or discover. Run `polar-sheet-migration` once. That workflow appends the header at the far right when it is missing and leaves it unchanged when it already exists exactly once.
 
-`apply-ready-jobs` is one worker. It selects the next job, claims that `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`, then processes it. A lost claim does not consume the per-run budget. The worker then selects another READY job. Do not write `SKIPPED_LOCKED`. Before Submit, reread `claim_run_id` and rerun `requisition_submit_blocked` on the live sibling rows. If this run lost the claim or is no longer the canonical survivor, do not Submit.
+`apply-ready-jobs` is one worker. Recovery uses `select_next_apply_job`. New work is a Jobright card. It claims that `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`, then processes it. A lost claim does not consume the considered budget. Do not write `SKIPPED_LOCKED`. Before Submit, reread `claim_run_id` and rerun `requisition_submit_blocked` on the live sibling rows. If this run lost the claim or is no longer the canonical survivor, do not Submit.
 
 Same employer requisition uses `pick_canonical_requisition_row`. Only that survivor continues toward Submit. The other sibling is `SKIP`.
 
@@ -106,17 +105,15 @@ Recover `IN_PROGRESS` only when `claim_run_id` is empty, the owner run_log is no
 
 If the Mac slept while Job 6 was `IN_PROGRESS` and the claim is abandoned or self-owned, resume Job 6. Do not start over from Job 1.
 
-## Environment Copilot row
+## Autofill owner
 
-`apply-ready-jobs` upserts the control key `env_simplify_copilot` after it checks the employer page.
+Jobright extension owns autofill on the apply path. Do not click Simplify Copilot Autofill. Missing Copilot does not stop the run.
 
-This row is not a lease. Leave `expires_at` empty. Locate the row by key. Never write these fields into the `polar_browser` row.
-
-States are `PRESENT`, `MISSING`, and `UNKNOWN`. `MISSING` or `UNKNOWN` stops the apply run. It does not mark the queue job `BLOCKED`. Restore the job to its prior `READY_REGULAR` or `READY_PRIORITY` status. Clear `claim_run_id`. Write `run_log` result `OWNER_ACTION_REQUIRED`. The next apply run checks the employer page again.
+`env_simplify_copilot` is historical observational state, not an apply gate. Locate control rows by key. Never write these fields into the `polar_browser` row.
 
 ## Dedup
 
-Match `job_key` first. If Jobright id is missing, match normalized company + role + location. After Original Job Post is resolved, also match `employer_requisition_id`, `ats_job_id`, or canonical employer `apply_url`. Keep one canonical row. Mark siblings `SKIP`.
+Match `job_key` first. If Jobright id is missing, match normalized company + role + location. After the employer application is resolved, also match `employer_requisition_id`, `ats_job_id`, or canonical employer `apply_url`. Keep one canonical row. Mark siblings `SKIP`.
 
 ## What the Sheet is not
 
