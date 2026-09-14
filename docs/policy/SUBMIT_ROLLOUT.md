@@ -36,7 +36,7 @@ Polar Local may click Submit on a regular or prioritized job only when every ite
 
 - Duplicate check passes against the Sheet and known ledger memory.
 - Company and title on the page match the queue row.
-- Approved production resume is attached (Simplify). Do not upload the two-page master.
+- Approved production resume is Perfect Resume (visible widget, Polar/Simplify stored name, or the identified file if Polar had to upload). Do not upload the two-page master or any `ai_infra` file.
 - Identity is correct after a visible read-back.
 - Required factual fields are resolved from `POLAR_RUNTIME` or left for Junyi.
 - No unsupported claim was invented.

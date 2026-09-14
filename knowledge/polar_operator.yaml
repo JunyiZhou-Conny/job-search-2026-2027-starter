@@ -1,5 +1,5 @@
 last_updated: "2026-09-14"
-policy_revision: "2026-09-14.visible-form-truth"
+policy_revision: "2026-09-14.perfect-resume"
 source: "Owner 2026-09-10. Copilot is an apply precondition. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Each apply-ready-jobs run is one worker with its own per-run new-job budget. There is no shared daily regular submission pool. Ownership is per job and requisition, not a global browser lease."
 timezone: "America/New_York"
 
@@ -278,7 +278,7 @@ repeat_keys:
       - control_duplicate_key
       - control_duplicate_key_env_simplify_copilot
   native_resume_empty:
-    meaning: "Employer native resume widget is empty. Copilot sidebar Completed is not proof."
+    meaning: "Employer native resume widget is empty and Perfect Resume could not be attached from Polar/Simplify or the identified file. Copilot sidebar Completed is not proof."
   copilot_academic_mailbox_on_application_field:
     meaning: "Simplify Copilot or a resume parser put the academic mailbox on a normal ATS account or contact field."
   submit_success_without_page_confirmation:

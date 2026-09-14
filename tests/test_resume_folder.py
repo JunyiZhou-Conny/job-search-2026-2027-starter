@@ -61,7 +61,7 @@ class TestResumeFolder(unittest.TestCase):
         text = compile_text()
         self.assertIn("## E. Resume-cluster selection", text)
         self.assertIn("JZ_resume", text)
-        self.assertIn("Prefer the Simplify resume", text)
+        self.assertIn("Perfect Resume", text)
         self.assertIn("missing_production_resume", text)
         self.assertNotIn("If the widget is empty, upload `resumes/base/JZ_resume.pdf` only.", text)
         self.assertNotIn("Pick one existing cluster resume", text)

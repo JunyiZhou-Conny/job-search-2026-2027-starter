@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Tuple
 
+from polar_resume_attach import workflow_lines as resume_workflow_lines
 from polar_policy import (
     APPLY_URL_CONFIDENCE,
     CLAIM_REPEAT_ALREADY,
@@ -20,7 +21,7 @@ from polar_policy import (
     NATIVE_RESUME_REPEAT_KEY,
     COPILOT_EMAIL_REPEAT_KEY,
     SUBMIT_PROOF_REPEAT_KEY,
-    PRODUCTION_RESUME_EXPORT_PATH,
+    format_approved_document_line,
     ENV_SIMPLIFY_KEY,
     HEARTBEAT_COLUMNS,
     INCIDENT_CATEGORIES,
@@ -322,13 +323,7 @@ def _telemetry_block(include_incidents: bool = True) -> str:
 
 def _identity_block() -> str:
     docs = document_availability()
-    doc_lines = []
-    for doc in docs:
-        avail = "available" if doc.get("exists") else "missing"
-        doc_lines.append(
-            f"- {doc.get('id')}: path `{doc.get('approved_path')}` ({avail}). "
-            f"Use when the form asks for that document class."
-        )
+    doc_lines = [format_approved_document_line(doc, workflow=True) for doc in docs]
     return _lines(
         [
             "## Local identities and documents",
@@ -576,10 +571,8 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "   If Copilot is MISSING or UNKNOWN, do not fill by hand. Use the step 8 OWNER_ACTION_REQUIRED exit.",
             "   Then look at the native Resume/CV widget, not the Copilot sidebar.",
             "   polar_policy.native_resume_action is the engineer table. Sidebar Completed is ignored.",
-            f"   If the native widget is empty and `{PRODUCTION_RESUME_EXPORT_PATH}` exists locally, attach that export.",
-            "   Do not upload `resumes/base/JZ_resume.pdf`. Do not upload the sanitized PDF next to the family .tex.",
-            "   Do not compile LaTeX during apply.",
-            f"   If the native widget is still empty, mark REVIEW_READY with blocker missing_production_resume. Incident repeat_key {NATIVE_RESUME_REPEAT_KEY}. Continue the worker.",
+            *[f"   {line}" for line in resume_workflow_lines()],
+            f"   Incident repeat_key {NATIVE_RESUME_REPEAT_KEY} when Perfect Resume cannot be attached.",
             "10. Fill standing answers from section A. Correct a resume-parser or Copilot Harvard email on a normal contact field.",
             "   Authorization and identity widgets use polar_policy.auth_form_action.",
             "   Classify the exact question. Answer only that semantic. Do not copy one fact into another field.",

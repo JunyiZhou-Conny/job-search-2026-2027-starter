@@ -7,7 +7,8 @@ This folder starts fresh with one active resume.
 - `base/JZ_resume.tex` is the source.
 - `base/JZ_resume.pdf` is the compiled two-page master. It is not a Polar attach.
 - `base/evidence_bank.md` lists what the base resume may claim.
-- `families/ai_infra/ai_infra_v1.tex` is the first frozen production one-pager from Resume Stack BUILD. Polar is not wired to it yet.
+- `families/ai_infra/ai_infra_v1.tex` is a frozen Resume Stack BUILD one-pager. It is not Polar's apply resume.
+- `Perfect Resume/perfect_resume.pdf` is the Junyi-supervised gold copy Polar may upload when a native widget needs bytes. Polar and Simplify already store the name **Perfect Resume**.
 
 `role_cluster` and `resume_cluster` stay job taxonomy (`cloud_swe`, `data_ml`, `health_ai`). They are not files here. Do not recreate those folders.
 
@@ -16,15 +17,19 @@ This folder starts fresh with one active resume.
 Look at the native ATS Resume/CV widget. Copilot sidebar Completed is
 not proof that widget has a file.
 
-If the native widget already shows a file, leave it.
+If the native widget already shows a file that is not a forbidden
+file, leave it.
 
-If it is empty and `generated/resumes/export/ai_infra_v1.pdf` exists
-locally, attach that export. Do not upload `resumes/base/JZ_resume.pdf`.
-Do not upload the sanitized PDF next to the family `.tex`. Do not
-compile LaTeX during apply.
+If it is empty, attach the Polar/Simplify resume named
+`Perfect Resume`. If a native widget needs a real file, use
+`resumes/Perfect Resume/perfect_resume.pdf` when that checkout file
+exists. Do not upload `resumes/base/JZ_resume.pdf`. Do not upload
+`generated/resumes/export/ai_infra_v1.pdf`. Do not upload the
+sanitized PDF next to a family `.tex`. Do not compile LaTeX during
+apply. Do not switch families.
 
-If the native widget is still empty, mark REVIEW_READY with blocker
-`missing_production_resume` and continue the batch.
+If Perfect Resume cannot be accessed or uploaded, mark REVIEW_READY
+with blocker `missing_production_resume` and continue the batch.
 
 Do not invent a new resume for every job.
 

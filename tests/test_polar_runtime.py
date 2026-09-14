@@ -131,10 +131,17 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertNotIn("preference_resolutions: none", text)
         self.assertIn("jobright_matches_onboarding_gate", text)
         self.assertIn("polar_policy.canonical_repeat_key", text)
-        self.assertIn("generated/resumes/export/ai_infra_v1.pdf", text)
+        self.assertIn("Perfect Resume", text)
+        self.assertIn("resumes/Perfect Resume/perfect_resume.pdf", text)
+        self.assertIn("Do not upload `generated/resumes/export/ai_infra_v1.pdf`.", text)
+        self.assertNotIn(
+            "If the native widget is empty and `generated/resumes/export/ai_infra_v1.pdf` exists locally, attach that export.",
+            text,
+        )
         self.assertIn("Copilot sidebar Completed is not proof", text)
         self.assertIn("Junyi-authorized maintenance path", text)
-        self.assertIn("pref_20260912_002 | PROMOTE", text)
+        self.assertIn("pref_20260912_002 | STALE", text)
+        self.assertIn("pref_20260914_001 | PROMOTE", text)
         self.assertIn("An open Cursor PR is not canonical.", text)
         self.assertIn("Match candidate_id only.", text)
         self.assertIn("Never reuse. Never fill gaps.", text)

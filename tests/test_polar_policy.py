@@ -20,6 +20,8 @@ from polar_policy import (  # noqa: E402
     JOBRIGHT_ONBOARDING_REPEAT_KEY,
     NATIVE_RESUME_REPEAT_KEY,
     PRODUCTION_RESUME_EXPORT_PATH,
+    PRODUCTION_RESUME_REPO_PATH,
+    PRODUCTION_RESUME_STORED_NAME,
     QUEUE_COLUMNS,
     REQUIRED_QUEUE_READBACK,
     TIME_LOST_CATEGORIES,
@@ -380,9 +382,15 @@ class TestWorkflowVersionAndDocuments(unittest.TestCase):
             "Harvard_unofficial_transcript.pdf",
         )
         self.assertEqual(
-            docs["production_resume_ai_infra_v1"]["approved_path"],
-            PRODUCTION_RESUME_EXPORT_PATH,
+            docs["production_resume_perfect"]["approved_path"],
+            PRODUCTION_RESUME_REPO_PATH,
         )
+        self.assertEqual(
+            docs["production_resume_perfect"]["stored_name"],
+            PRODUCTION_RESUME_STORED_NAME,
+        )
+        self.assertTrue(docs["production_resume_perfect"]["exists"])
+        self.assertNotIn("production_resume_ai_infra_v1", docs)
 
     def test_time_lost_categories_cover_measured_bottlenecks(self):
         self.assertEqual(
@@ -664,15 +672,15 @@ class TestVisibleFormTruth(unittest.TestCase):
         self.assertEqual(
             native_resume_action(
                 native_widget_has_file=False,
-                export_available=True,
+                perfect_resume_accessible=True,
                 copilot_sidebar_completed=True,
             ),
-            "attach_export",
+            "attach_perfect_resume",
         )
         self.assertEqual(
             native_resume_action(
                 native_widget_has_file=False,
-                export_available=False,
+                perfect_resume_accessible=False,
                 copilot_sidebar_completed=True,
             ),
             "review_ready_missing_production_resume",
@@ -680,13 +688,30 @@ class TestVisibleFormTruth(unittest.TestCase):
         self.assertEqual(
             native_resume_action(
                 native_widget_has_file=True,
-                export_available=False,
+                perfect_resume_accessible=False,
                 copilot_sidebar_completed=False,
             ),
             "keep_visible_file",
         )
+        self.assertEqual(
+            native_resume_action(
+                native_widget_has_file=True,
+                perfect_resume_accessible=True,
+                visible_filename="ai_infra_v1.pdf",
+            ),
+            "replace_with_perfect_resume",
+        )
+        self.assertEqual(
+            native_resume_action(
+                native_widget_has_file=True,
+                perfect_resume_accessible=False,
+                visible_filename="generated/resumes/export/ai_infra_v1.pdf",
+            ),
+            "review_ready_missing_production_resume",
+        )
         self.assertTrue(forbidden_resume_attach_path("resumes/base/JZ_resume.pdf"))
-        self.assertFalse(forbidden_resume_attach_path(PRODUCTION_RESUME_EXPORT_PATH))
+        self.assertTrue(forbidden_resume_attach_path(PRODUCTION_RESUME_EXPORT_PATH))
+        self.assertFalse(forbidden_resume_attach_path(PRODUCTION_RESUME_REPO_PATH))
         self.assertEqual(canonical_repeat_key(NATIVE_RESUME_REPEAT_KEY), NATIVE_RESUME_REPEAT_KEY)
 
     def test_academic_mailbox_on_application_field_is_corrected(self):

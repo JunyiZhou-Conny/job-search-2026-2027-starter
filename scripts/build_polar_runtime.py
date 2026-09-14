@@ -37,11 +37,14 @@ from polar_policy import (
     WRITING_LOG_COLUMNS,
     apply_run_caps,
     document_availability,
+    format_approved_document_line,
     format_runtime_resolutions,
     load_preference_resolutions,
     raw_runtime_url,
     work_claim_ttl_minutes,
 )
+from polar_resume_attach import runtime_lines as resume_runtime_lines
+from polar_resume_attach import submit_check as resume_submit_check
 from polar_workflows import write_schema_csvs, write_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -364,13 +367,7 @@ def compile_sections() -> Dict[str, str]:
     sponsorship_execution = md_escape(visa_block.get("execution") or "")
 
     docs = document_availability()
-    doc_lines = []
-    for doc in docs:
-        avail = "available in repo" if doc.get("exists") else "not in repo"
-        doc_lines.append(
-            f"{doc.get('id')}: `{doc.get('approved_path')}` ({avail}). "
-            f"{md_escape(doc.get('purpose'))}."
-        )
+    doc_lines = [format_approved_document_line(doc) for doc in docs]
 
     section_a = "\n".join(
         [
@@ -565,15 +562,7 @@ def compile_sections() -> Dict[str, str]:
         cluster_lines.append(f"{name}: {titles}")
     section_e = "\n".join(
         [
-            "One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach.",
-            "Prefer the Simplify resume already attached only when the native ATS resume widget already shows a file.",
-            "Copilot sidebar Completed is not proof the native Resume/CV input has a file.",
-            "Look at the page widget. polar_policy.native_resume_action is the engineer table.",
-            "If the native widget is empty and `generated/resumes/export/ai_infra_v1.pdf` exists locally, attach that export.",
-            "Do not upload `resumes/base/JZ_resume.pdf`. Do not upload the sanitized PDF next to the family .tex.",
-            "If the native widget is still empty, mark REVIEW_READY with blocker missing_production_resume and continue the worker.",
-            "Do not invent a new resume for every job.",
-            "Do not compile LaTeX during apply. The export must already exist on the Mac.",
+            *resume_runtime_lines(),
             "",
             "Title families are job taxonomy only. resume_cluster is not a file.",
             bullet(cluster_lines),
@@ -661,7 +650,7 @@ def compile_sections() -> Dict[str, str]:
                 [
                     "Duplicate check passes against the Sheet and section K.",
                     "Company and title on the page match the queue row.",
-                    "Approved production resume is visible on the native ATS widget. Do not upload the two-page master.",
+                    resume_submit_check() or "Approved production resume is Perfect Resume. Do not upload the two-page master or any ai_infra file.",
                     "Identity fields are correct after a visible read-back.",
                     "Normal account and contact email fields show the APPLICATION mailbox, not the academic mailbox.",
                     "Required factual fields are resolved from this runtime or left for Junyi.",
@@ -920,6 +909,7 @@ def render(parts: Dict[str, str]) -> str:
         "- `knowledge/polar_operator.yaml`",
         "- `knowledge/preference_resolutions.yaml`",
         "- `knowledge/polar_documents.yaml`",
+        "- `knowledge/polar_resume_attach.yaml`",
         "- `knowledge/work_authorization.yaml`",
         "- `knowledge/form_strategy.yaml`",
         "- `knowledge/application_priority.yaml`",

@@ -63,7 +63,7 @@ python3 scripts/jobsearch.py dashboard
 | `data/applications.csv` | The ledger |
 | `data/job_decisions.csv` | Passed roles (URL archive, prevents resurfacing) |
 | `generated/` | Machine output — triage packs, apply queue, dashboards |
-| `resumes/` | One active resume in `resumes/base/`. Registry in `data/resume_versions.csv` |
+| `resumes/` | Inventory in `resumes/base/`. Polar ingest is Perfect Resume. Registry in `data/resume_versions.csv` |
 | `docs/` | Current policy; `docs/archive/` is history, not current state |
 | `docs/collaborators/` | Friend / future-collaborator setup runbook + identity templates |
 
@@ -78,9 +78,9 @@ python3 scripts/jobsearch.py dashboard
 ## Resumes
 
 - Master inventory: `resumes/base/JZ_resume.tex`. Evidence lives in `knowledge/evidence_bank.yaml`.
-- Polar prefers the Simplify-attached resume. If that widget is empty, do not upload the two-page master. Mark REVIEW_READY.
-- After BUILD exists, disk attach is the routed family one-pager, not the two-page master.
-- Apply time: route to a frozen family variant. VIP tailor is `python3 scripts/resume_quality.py run --jd` only for exceptional rows. See `docs/resume/QUALITY_ENGINE.md`.
+- Polar uses **Perfect Resume** for every job (Polar/Simplify stored name). Per-role family routing is postponed.
+- If the native widget is empty and Perfect Resume cannot be attached, do not upload the two-page master or `ai_infra_v1`. Mark REVIEW_READY.
+- VIP tailor is `python3 scripts/resume_quality.py run --jd` only for exceptional rows. See `docs/resume/QUALITY_ENGINE.md`.
 - `role_cluster` values (`cloud_swe`, `data_ml`, `health_ai`) are job taxonomy, not resume folders.
 - Default resume line is **December 2026 program completion**; use the dual-date line
   (March 2027 commencement + December 2026 completion) only when a posting demands

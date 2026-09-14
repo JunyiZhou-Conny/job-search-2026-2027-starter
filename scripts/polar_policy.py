@@ -12,6 +12,17 @@ from urllib.parse import urlparse
 from zoneinfo import ZoneInfo
 
 from js_lib import canonical_url, normalize_text
+from polar_resume_attach import (
+    FAMILY_RESUME_EXPORT_PATH,
+    IDENTIFIED_MAC_RESUME_PATH,
+    PRODUCTION_RESUME_REPO_PATH,
+    PRODUCTION_RESUME_STORED_NAME,
+    SANITIZED_FAMILY_RESUME_PATH,
+    TWO_PAGE_MASTER_PATH,
+    format_document_line,
+    perfect_resume_file_available,
+    visible_filename_is_forbidden,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -182,9 +193,7 @@ CONTROL_KEY_DUPLICATE_REPEAT_KEY = "control_key_duplicate"
 NATIVE_RESUME_REPEAT_KEY = "native_resume_empty"
 COPILOT_EMAIL_REPEAT_KEY = "copilot_academic_mailbox_on_application_field"
 SUBMIT_PROOF_REPEAT_KEY = "submit_success_without_page_confirmation"
-PRODUCTION_RESUME_EXPORT_PATH = "generated/resumes/export/ai_infra_v1.pdf"
-TWO_PAGE_MASTER_PATH = "resumes/base/JZ_resume.pdf"
-SANITIZED_FAMILY_RESUME_PATH = "resumes/families/ai_infra/ai_infra_v1.pdf"
+PRODUCTION_RESUME_EXPORT_PATH = FAMILY_RESUME_EXPORT_PATH
 TELEMETRY_TZ_NAME = "America/New_York"
 TELEMETRY_TZ = ZoneInfo(TELEMETRY_TZ_NAME)
 REQUIRED_RUN_LOG_FINAL_FIELDS = (
@@ -944,20 +953,34 @@ def run_log_row_is_final(row: Mapping[str, Any]) -> bool:
 def native_resume_action(
     *,
     native_widget_has_file: bool,
-    export_available: bool,
+    perfect_resume_accessible: bool,
+    visible_filename: str = "",
     copilot_sidebar_completed: bool = False,
 ) -> str:
     del copilot_sidebar_completed
     if native_widget_has_file:
+        if visible_filename_is_forbidden(visible_filename):
+            return (
+                "replace_with_perfect_resume"
+                if perfect_resume_accessible
+                else "review_ready_missing_production_resume"
+            )
         return "keep_visible_file"
-    if export_available:
-        return "attach_export"
+    if perfect_resume_accessible:
+        return "attach_perfect_resume"
     return "review_ready_missing_production_resume"
 
 
 def forbidden_resume_attach_path(path: str) -> bool:
-    token = (path or "").replace("\\", "/").lstrip("./")
-    return token in {TWO_PAGE_MASTER_PATH, SANITIZED_FAMILY_RESUME_PATH}
+    return visible_filename_is_forbidden(path)
+
+
+def perfect_resume_accessible(
+    *,
+    polar_or_simplify_has_named_resume: bool,
+    root: Optional[Path] = None,
+) -> bool:
+    return bool(polar_or_simplify_has_named_resume) or perfect_resume_file_available(root)
 
 
 def contact_email_action(field_kind: str, filled_kind: str) -> str:
@@ -1893,16 +1916,32 @@ def document_availability(root: Optional[Path] = None) -> List[Dict[str, Any]]:
     rows = []
     for doc in load_documents(base):
         rel = str(doc.get("approved_path") or "").strip()
-        path = (base / rel) if rel else None
-        exists = bool(path and path.is_file())
+        stored = str(doc.get("stored_name") or "").strip()
+        if rel:
+            path = Path(rel) if Path(rel).is_absolute() else (base / rel)
+            exists = path.is_file()
+        else:
+            exists = False
+        if exists and rel.startswith("/"):
+            availability = "local_mac"
+        elif exists:
+            availability = "in_repo"
+        elif stored:
+            availability = "stored_name"
+        else:
+            availability = "not_in_repo"
         rows.append(
             {
                 **doc,
                 "exists": exists,
-                "availability": "in_repo" if exists else "not_in_repo",
+                "availability": availability,
             }
         )
     return rows
+
+
+def format_approved_document_line(doc: Mapping[str, Any], *, workflow: bool = False) -> str:
+    return format_document_line(doc, workflow=workflow)
 
 
 def parse_contract_block(text: str, heading: str) -> Dict[str, str]:

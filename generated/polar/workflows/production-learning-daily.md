@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-14.visible-form-truth+d37c3b43a89d
+workflow_version: 2026-09-14.perfect-resume+d37c3b43a89d
 status: production
 enabled: true
 needs_browser_lock: false
