@@ -82,14 +82,17 @@ class TestSkipAndContinue(unittest.TestCase):
 
         dup = consider_jobright_card(section_k_hit=True)
         self.assertEqual(dup.action, "skip_duplicate")
+        self.assertTrue(dup.consume_considered)
         self.assertTrue(dup.continue_run)
 
         applied = consider_jobright_card(already_applied_on_jobright=True)
         self.assertEqual(applied.action, "skip_applied")
+        self.assertTrue(applied.consume_considered)
         self.assertTrue(applied.continue_run)
 
         conflict = consider_jobright_card(hard_fact_conflict=True)
         self.assertEqual(conflict.action, "skip_hard_fact")
+        self.assertTrue(conflict.consume_considered)
         self.assertTrue(conflict.continue_run)
 
         admit = consider_jobright_card()
@@ -251,6 +254,16 @@ class TestLearningAndDiscoverPath(unittest.TestCase):
         self.assertIn("sheet_queue_is_prerequisite: false", apply)
         self.assertNotIn("Never click Jobright APPLY WITH AUTOFILL.", apply)
         self.assertIn("Apply with Autofill", apply)
+        self.assertIn("Skip closed, duplicate, Applied, or hard-fact-conflict. Count considered. Continue.", apply)
+        self.assertIn(
+            "If confirm_claim_readback is not CLAIMED, add the key to seen and continue. That miss does not consume considered.",
+            apply,
+        )
+        self.assertIn("After a successful new-card claim, increment considered.", apply)
+        self.assertIn(
+            "If that gate is false, do not Submit. Mark BLOCKED. Continue.",
+            apply,
+        )
         self.assertFalse(operator["schedules"]["discover_jobs_hourly"]["enabled"])
 
 
