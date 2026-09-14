@@ -21,7 +21,7 @@ Saved Polar Workflows store only the trust-delegation bootstrap from docs/automa
 They load the two owner-designated raw main files on each run.
 
 - `discover-jobs-hourly` workflow_version `2026-09-14.visible-form-truth+62bab1b3bf52`
-- `apply-ready-jobs` workflow_version `2026-09-14.visible-form-truth+041201492d0d`
+- `apply-ready-jobs` workflow_version `2026-09-14.visible-form-truth+029674e03493`
 - `daily-job-summary` workflow_version `2026-09-14.visible-form-truth+ada304bee755`
 - `production-learning-daily` workflow_version `2026-09-14.visible-form-truth+d37c3b43a89d`
 - `polar-scheduler-heartbeat` workflow_version `2026-09-14.visible-form-truth+b53185a9688a`

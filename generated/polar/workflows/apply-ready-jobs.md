@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-14.visible-form-truth+041201492d0d
+workflow_version: 2026-09-14.visible-form-truth+029674e03493
 status: production
 enabled: true
 needs_browser_lock: false
@@ -340,9 +340,14 @@ For the current job:
    On the real form, if Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.
    Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.
 8. Authenticate with ordinary browser flows when asked. Account creation is normal work.
+   After the real application form is visible, apply the same Copilot preflight as step 7.
+   A login or SSO defer is not a pass. Do not continue to fill until Copilot is judged PRESENT.
+   If Copilot is MISSING or UNKNOWN, restore the remembered READY status and attempt_count.
+   Clear claim_run_id. Persist env_simplify_copilot. Write OWNER_ACTION_REQUIRED. Exit the run.
    After Copilot or account creation, reread the account email field. Academic mailbox on a normal field is wrong.
    Incident repeat_key copilot_academic_mailbox_on_application_field if Copilot put the school mailbox there.
 9. If Copilot is PRESENT, Autofill once. Use Simplify at most once.
+   If Copilot is MISSING or UNKNOWN, do not fill by hand. Use the step 7 OWNER_ACTION_REQUIRED exit.
    Then look at the native Resume/CV widget, not the Copilot sidebar.
    polar_policy.native_resume_action is the engineer table. Sidebar Completed is ignored.
    If the native widget is empty and `generated/resumes/export/ai_infra_v1.pdf` exists locally, attach that export.
