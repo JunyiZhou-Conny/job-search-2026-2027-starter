@@ -19,7 +19,7 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
 - Do not self-reject on sponsorship, F-1, OPT, or a company that
   generally does not sponsor. Those are not discovery skips.
   Answer only the asked semantic from `knowledge/work_authorization.yaml`.
-  Required future-sponsorship widget: **Yes** (`future_sponsorship_required`).
+  Required future-sponsorship widget: **No** (`future_sponsorship_required`).
   Required H-1B-named widget: **No**. Required citizenship: **China**.
   Required visa type: **F-1**. Required any-employer authorization:
   **Yes**. Required currently-authorized: unknown, so BLOCK that job
@@ -27,8 +27,10 @@ This repository is a job-search **strategy and memory layer**, not a second Simp
   immigration facts: do not disclose. Ambiguous required widgets:
   BLOCK that job only and continue the batch.
   Re-read these widgets after every autofill (Copilot set United
-  States once). The fact `future_sponsorship_required: true` is
-  unchanged.
+  States once). Autofill No on that future-sponsorship widget is
+  correct. Forcing Yes is the defect. The fact
+  `future_sponsorship_required: false` is the 2026-09-15 owner
+  decision.
 - Graduation **date** widgets: **2026-12-18**. Year-only widgets: **2027**.
 - Non-US work location (Belgrade, etc.) → skip. Do not Submit.
 - Use `pursuit_lane`: `core` | `broad` | `practice`.

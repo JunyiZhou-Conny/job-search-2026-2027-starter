@@ -395,10 +395,10 @@ gaps:
     status: observed_ok
     already_in: "knowledge/form_strategy.yaml always.visa_sponsorship"
     form_effect: >
-      Copilot often answers No on visa-sponsorship widgets. Owner
-      policy 2026-09-10 answers the stored future-sponsorship fact
-      (Yes) on that exact widget. Autofill No is a correction, not
-      the standing answer.
+      Autofill often answers No on visa-sponsorship widgets. Owner
+      policy 2026-09-15 sets the stored future-sponsorship fact to
+      false, so the standing answer is No. Autofill No is correct.
+      Forcing Yes is the defect.
     ask_later: "None. Re-read the exact widget. Do not copy this Yes onto a different authorization question."
 
   - id: authorized_for_any_employer
@@ -415,7 +415,7 @@ gaps:
     form_effect: >
       Perplexity asked sponsorship for the United Kingdom, Germany or
       Serbia (role location Belgrade). Copilot No. Do not apply the
-      US Yes rule.
+      US visa-sponsorship widget rule.
     ask_later: "None unless a later form mixes US + other countries."
 
   - id: years_of_relevant_experience

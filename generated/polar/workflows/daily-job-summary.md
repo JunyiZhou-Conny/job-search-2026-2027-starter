@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-15.fast-validation+73e8412a69d7
+workflow_version: 2026-09-15.future-sponsorship-no+73e8412a69d7
 status: production
 enabled: true
 needs_browser_lock: false

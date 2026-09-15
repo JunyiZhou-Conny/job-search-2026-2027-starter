@@ -89,8 +89,9 @@ them.
   citizenship or export-control widget shows anything other than China.
 - A sponsorship or authorization widget shows an answer that does not
   match `polar_policy.auth_form_action` for that exact question. Polar
-  Local may show Yes on a future-sponsorship widget. That is the
-  stored fact, not a Cloud G2 identity error.
+  Local may show No on a future-sponsorship widget. That is the
+  stored fact, not a Cloud G2 identity error. Forcing Yes is the
+  defect.
 - A required free response has no approved answer in
   `knowledge/written_response_bank.yaml` or
   `docs/apply/written_answers/`.
@@ -135,8 +136,9 @@ them.
 ## Open owner decisions
 
 - Authorization widgets. Polar Local answers only the asked semantic.
-  A required future-sponsorship widget is Yes from
-  `future_sponsorship_required`. A required H-1B-named widget is No.
+  A required future-sponsorship widget is No from
+  `future_sponsorship_required` (owner policy 2026-09-15). A required
+  H-1B-named widget is No.
   Citizenship China. Eligible to begin immediately Yes. Optional
   identity fields stay blank. An ambiguous required widget blocks
   that job only. Cursor Cloud G2 still re-reads every sponsorship,

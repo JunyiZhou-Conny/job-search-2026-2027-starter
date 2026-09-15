@@ -19,8 +19,10 @@ expected_opt_start_window: "2027-01-18 onward"
 expected_ead_ready: "2027-01-18"  # planned from program end; confirm against actual EAD / HIO
 earliest_full_time_start: "2027-01-18"
 preferred_full_time_start: "2027-01-18 ideal; any later 2027 date including Summer OK"
-future_sponsorship_required: true
+future_sponsorship_required: false
 # Independent facts. Do not infer one answer from another.
+# Owner policy 2026-09-15: the standard now-or-future sponsorship
+# widget answers No. Do not invent other immigration facts from this.
 current_us_work_authorization: unknown
 legally_eligible_to_begin_immediately: true
 authorized_for_any_employer: true
@@ -36,7 +38,8 @@ permanent_resident_elsewhere_since_citizenship: false
 export_control_country: "China"   # citizenship or LPR, whichever obtained last
 
 # Form strategy (widgets) vs standing fact.
-# Fact above is unchanged: future employer sponsorship is still expected.
+# Owner policy 2026-09-15: future_sponsorship_required is false.
+# That is the standard now-or-future sponsorship widget only.
 form_strategy:
   h1b_named_question_only:
     decided: "2026-08-23"
@@ -44,7 +47,7 @@ form_strategy:
     when: >
       The question is specifically "Will you require H-1B sponsorship?"
       or the same idea with H-1B named.
-    fact_unchanged: "future_sponsorship_required remains true"
+    fact_unchanged: "h1b_sponsorship_required stays false. Independent of future_sponsorship_required."
 
   visa_type_named:
     decided: "2026-08-24"
@@ -54,16 +57,16 @@ form_strategy:
 
   visa_sponsorship:
     status: derived_from_fact
-    confirmed_by: "Owner policy 2026-09-10. Historical mapping 2026-09-03 was No."
-    form_answer: "Yes"
+    confirmed_by: "Owner policy 2026-09-15. Standard now-or-future sponsorship widget is No."
+    form_answer: "No"
     execution: answer_from_future_sponsorship_required
-    historical_form_answer: "No"
+    historical_form_answer: "Yes"
     when: >
       Will you now or in the future require visa sponsorship? The
       future_sponsorship_required fact only. Do not add F-1, OPT, or
       citizenship to this answer.
-    history: "2026-08-24 recorded No; 2026-09-03 Junyi confirmed No; 2026-09-09 Polar blocked the conflict; 2026-09-10 owner policy answers the fact (Yes) and does not volunteer extra status."
-    fact_unchanged: "future_sponsorship_required remains true."
+    history: "2026-08-24 recorded No; 2026-09-03 Junyi confirmed No; 2026-09-09 Polar blocked the conflict; 2026-09-10 owner policy answered Yes from a true fact; 2026-09-15 owner policy sets the fact to false so the widget is No. Autofill No is correct. Forcing Yes is the defect."
+    fact_unchanged: "future_sponsorship_required is false as of 2026-09-15."
     explicit_status_instruction: >
       If the form names F-1/J-1/M-1 and clearly says answer Yes or
       answer No, follow that polarity on that widget. Select Yes or No,
@@ -92,8 +95,8 @@ standard_question_answers:
     typical_answer: "Yes"
     condition: "Valid OPT EAD covering the employment period"
   will_require_sponsorship_now_or_future:
-    typical_answer: "Yes"
-    confirmed: "Owner policy 2026-09-10. Derived from future_sponsorship_required."
+    typical_answer: "No"
+    confirmed: "Owner policy 2026-09-15. Derived from future_sponsorship_required."
     condition: "This widget only. Do not add status, OPT, or citizenship."
   program_end_or_graduation_date:
     typical_answer: "Program completion / I-20 end: December 18, 2026; commencement March 2027"

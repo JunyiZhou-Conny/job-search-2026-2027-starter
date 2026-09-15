@@ -58,7 +58,8 @@ class TestPolarResumeAttach(unittest.TestCase):
     def test_runtime_forbids_family_fallback(self):
         joined = "\n".join(runtime_lines() + workflow_lines() + [submit_check()])
         self.assertIn(PRODUCTION_RESUME_STORED_NAME, joined)
-        self.assertIn(POLAR_COMPILE_ALIAS_REPO_PATH, joined)
+        self.assertIn("resumes/Perfect Resume/JZ_Resume_2027.pdf", joined)
+        self.assertNotIn("/Users/conny/Desktop/JZ_Resume_911.pdf", joined)
         self.assertIn("Do not silently fall back to `ai_infra_v1`.", joined)
         self.assertNotIn("attach that export", joined)
 

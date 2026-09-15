@@ -67,7 +67,7 @@ sponsorship on a field that did not ask.
 
 | Exact question | Fact | Required | Optional |
 |---|---|---|---|
-| Will you now or in the future require visa sponsorship? | `future_sponsorship_required` | **Yes** | leave blank |
+| Will you now or in the future require visa sponsorship? | `future_sponsorship_required` | **No** | leave blank |
 | Do you require sponsorship to begin employment? | `sponsorship_required_to_begin` | unknown → BLOCK that job | leave blank |
 | Will you require H-1B sponsorship? | `h1b_sponsorship_required` | **No** | leave blank |
 | Are you a U.S. citizen? / country of citizenship | `citizenship_country` | **China** | leave blank |

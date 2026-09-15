@@ -36,11 +36,11 @@ always:
 
   visa_sponsorship:
     status: derived_from_fact
-    confirmed_by: "Owner policy 2026-09-10"
-    form_answer: "Yes"
+    confirmed_by: "Owner policy 2026-09-15"
+    form_answer: "No"
     execution: answer_from_future_sponsorship_required
-    historical_form_answer: "No"
-    accept_also: ["Yes"]
+    historical_form_answer: "Yes"
+    accept_also: ["No", "None", "No, I do not need sponsorship"]
     see: "knowledge/work_authorization.yaml form_strategy.visa_sponsorship"
     when: >
       Will you now or in the future require visa sponsorship? Answer
@@ -54,23 +54,23 @@ always:
       Quantbot Greenhouse 2026-09-04. Polar set No from the standing
       sponsorship answer. The widget says work authorization, not visa
       sponsorship. Leave for Junyi until that wording is confirmed.
-    supersedes: "2026-08-23 broad-Yes flip (Lila/Hayden/Relativity/Scale)"
+    supersedes: "2026-09-10 Yes mapping from a then-true fact"
     before_any_submit: >
       Re-read each authorization widget as its own question. If the form
       names F-1, J-1, or M-1 and clearly says answer Yes or answer No,
       that polarity governs that widget. A required future-sponsorship
-      widget should match future_sponsorship_required (Yes). If a
-      required widget is semantically unclear, leave it and mark only
-      that job BLOCKED. Do not Submit a Yes that belongs to a different
-      semantic.
-    fact_unchanged: "future_sponsorship_required remains true"
+      widget should match future_sponsorship_required (No). Autofill No
+      is correct. Forcing Yes is the defect. If a required widget is
+      semantically unclear, leave it and mark only that job BLOCKED.
+      Do not Submit a Yes that belongs to a different semantic.
+    fact_unchanged: "future_sponsorship_required is false as of 2026-09-15"
     explicit_status_instruction: >
       Follow a clear F-1, J-1, or M-1 Yes or No instruction on that
       widget. Select Yes or No, or not/never with Yes, stays unresolved.
     reason: >
-      Historical Hayden 2026-08-24 mapping was No. Owner policy
-      2026-09-10 answers the stored future-sponsorship fact (Yes) on
-      that exact widget and does not volunteer extra status.
+      Owner policy 2026-09-15 sets the stored future-sponsorship fact
+      to false. The standard now-or-future widget is No. Do not
+      volunteer extra status. Do not invent other immigration facts.
 
   citizenship_country:
     decided: "2026-09-03"
@@ -436,11 +436,12 @@ copilot_sidebar_is_not_the_form:
     autofill.fast_validation_pass: identity (First Name, Last Name,
     application email), work authorization, eligibility-critical
     widgets, required-but-empty or error widgets, and required legal
-    attestations. The extension wrote the nickname Conny on First Name,
-    guessed sponsorship No, and invented Event as a referral. Correct
-    those from facts. A populated widget with no error and no known
-    failure class is trusted, not re-read. Never invent a referral. Do
-    not Run Autofill Again.
+    attestations. The extension wrote the nickname Conny on First Name
+    and invented Event as a referral. Correct those from facts.
+    Autofill No on a future-sponsorship widget is the standing answer.
+    Forcing Yes is the defect. A populated widget with no error and no
+    known failure class is trusted, not re-read. Never invent a
+    referral. Do not Run Autofill Again.
   especially_on: prioritized
   do_not: "Mark identity complete from the sidebar alone."
   do_not_either: "Re-read every populated widget to prove Autofill worked."
@@ -504,7 +505,7 @@ authorized_for_any_employer:
     truth for his applications. Not an invention. If Copilot set No,
     flip to Yes.
 
-# Country-named sponsorship is not the US Yes-rule (Perplexity 2026-08-23)
+# Country-named sponsorship is not the US visa-sponsorship widget (Perplexity 2026-08-23)
 country_specific_sponsorship:
   decided: "2026-08-23"
   when: >
@@ -515,7 +516,7 @@ country_specific_sponsorship:
   reason: >
     Perplexity Search ML intern asked UK/Germany/Serbia. Copilot No.
     That is a different question from the US visa-sponsorship widget.
-    Do not auto-map it.
+    Do not auto-map it onto the standing US No answer.
 
 # Computer-use children do not inherit the parent rulebook
 # (Junyi 2026-08-24: short Task prompts, retries)

@@ -1,6 +1,6 @@
 last_updated: "2026-09-15"
-policy_revision: "2026-09-15.fast-validation"
-source: "Owner 2026-09-15. Jobright-era apply. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Sheet blocked/submitted/unknown memory stays. Full-queue reads, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
+policy_revision: "2026-09-15.future-sponsorship-no"
+source: "Owner 2026-09-15. Jobright-era apply. Standard future-sponsorship widget is No from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Sheet blocked/submitted/unknown memory stays. Full-queue reads, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
 autofill:
@@ -26,8 +26,9 @@ autofill:
       Owner 2026-09-15 after production run R-20260914-2309 (3/3
       submitted, about 85 minutes, about 28 minutes per application).
       The slow part was a post-Autofill full-form audit. Autofill is
-      imperfect (nickname on First Name, sponsorship No, blanks), so
-      Autofill then blind Submit is not allowed either.
+      imperfect (nickname on First Name, blanks). Autofill No on a
+      future-sponsorship widget is now the standing answer. Forcing
+      Yes is the defect. Autofill then blind Submit is not allowed.
     meaning: >
       Jobright Autofill is the default filler. Polar is anomaly detection
       and targeted repair. After Autofill, Polar verifies only the
@@ -128,13 +129,13 @@ autofill:
         upstream_candidate: "Jobright profile name field or generated resume header. Owner action."
         upstream_status: unknown
         repeat_key: autofill_nickname_on_legal_first_name
-      sponsorship_no_on_future_sponsorship_widget:
-        observed: "Jobright-era apply 2026-09-15"
-        wrong_value: "No"
-        repair: "future_sponsorship_required is true. Required widget answer is Yes. polar_policy.auth_form_action."
-        upstream_candidate: "Jobright profile sponsorship setting. Owner action."
+      sponsorship_yes_on_future_sponsorship_widget:
+        observed: "Owner policy 2026-09-15. Retires the Autofill-No-is-defect class."
+        wrong_value: "Yes"
+        repair: "future_sponsorship_required is false. Required widget answer is No. polar_policy.auth_form_action. Forcing Yes is the defect."
+        upstream_candidate: "A later correction or profile setting that forces Yes. Owner action if Jobright profile still says Yes."
         upstream_status: unknown
-        repeat_key: autofill_sponsorship_no_on_future_sponsorship_widget
+        repeat_key: autofill_sponsorship_yes_on_future_sponsorship_widget
       academic_mailbox_on_application_field:
         wrong_value: "academic mailbox"
         repair: "Local APPLICATION mailbox. polar_policy.contact_email_action."
@@ -490,8 +491,10 @@ repeat_keys:
     meaning: "Autofill invented a referral source such as Event. Clear it. Do not invent a referral."
   autofill_nickname_on_legal_first_name:
     meaning: "Autofill wrote the nickname Conny into a legal First Name field. Repair to the legal first name. Upstream candidate fix is the Jobright profile name field or the generated resume header, an owner action. Do not encode an endless per-form rewrite."
+  autofill_sponsorship_yes_on_future_sponsorship_widget:
+    meaning: "Autofill or a later correction set Yes on a future-sponsorship widget. The standing answer is No. Forcing Yes is the defect. The retired Autofill-No class is not this key."
   autofill_sponsorship_no_on_future_sponsorship_widget:
-    meaning: "Autofill set No on a future-sponsorship widget. The fact is Yes. Upstream candidate fix is the Jobright profile sponsorship setting, an owner action."
+    meaning: "Retired 2026-09-15. Autofill No on a future-sponsorship widget is now correct. Do not treat No as a defect. Use autofill_sponsorship_yes_on_future_sponsorship_widget when Yes was forced."
   mailbox_unreadable_stale:
     meaning: "A local PREFERENCES or jobright.ai site note still says the application mailbox cannot be read. GitHub says Polar may retrieve verification codes via the application Outlook inbox."
   submit_success_without_page_confirmation:

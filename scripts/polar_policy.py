@@ -205,7 +205,8 @@ NATIVE_RESUME_REPEAT_KEY = "native_resume_empty"
 COPILOT_EMAIL_REPEAT_KEY = "copilot_academic_mailbox_on_application_field"
 SUBMIT_PROOF_REPEAT_KEY = "submit_success_without_page_confirmation"
 NICKNAME_FIRST_NAME_REPEAT_KEY = "autofill_nickname_on_legal_first_name"
-SPONSORSHIP_NO_REPEAT_KEY = "autofill_sponsorship_no_on_future_sponsorship_widget"
+SPONSORSHIP_YES_REPEAT_KEY = "autofill_sponsorship_yes_on_future_sponsorship_widget"
+SPONSORSHIP_NO_REPEAT_KEY = "autofill_sponsorship_no_on_future_sponsorship_widget"  # retired 2026-09-15; No is correct
 INVENTED_REFERRAL_REPEAT_KEY = "invented_referral"
 POST_AUTOFILL_TRUST_SOURCE = "form_dom"
 # Fast validation pass. Jobright Autofill is the default filler. Polar
@@ -227,7 +228,7 @@ POST_AUTOFILL_TRUSTED_CLASSES = (
 )
 KNOWN_AUTOFILL_FAILURE_CLASSES = (
     "nickname_on_legal_first_name",
-    "sponsorship_no_on_future_sponsorship_widget",
+    "sponsorship_yes_on_future_sponsorship_widget",
     "academic_mailbox_on_application_field",
     "invented_referral",
     "citizenship_not_china",
@@ -1570,6 +1571,23 @@ def classify_auth_question(text: str) -> str:
         return "unknown"
     if re.search(r"\b(citizen|citizenship|nationality)\b", normalized):
         return "citizenship"
+    if re.search(r"\bauthoriz", normalized) and re.search(
+        r"\b(without sponsorship|no sponsorship|not require sponsorship)\b",
+        normalized,
+    ):
+        return "authorization_without_sponsorship"
+    if re.search(r"\bsponsor", normalized):
+        if re.search(
+            r"\b(to begin|to start|to commence|before start|at start|start date)\b",
+            normalized,
+        ):
+            return "sponsorship_to_begin"
+        if re.search(r"\bh-?1b\b", normalized) and not re.search(
+            r"now or in the future|in the future|e\.g\.|for example",
+            normalized,
+        ):
+            return "h1b_sponsorship"
+        return "future_sponsorship"
     if re.search(
         r"\b(visa type|visa status|visa\s*/\s*status|current status|"
         r"select your visa|what is your visa|immigration status|current visa)\b",
@@ -1584,18 +1602,6 @@ def classify_auth_question(text: str) -> str:
         return "opt_approval"
     if re.search(r"\bopt\b", normalized) and re.search(r"eligib|qualif", normalized):
         return "opt_eligibility"
-    if re.search(r"\bauthoriz", normalized) and re.search(
-        r"\b(without sponsorship|no sponsorship|not require sponsorship)\b",
-        normalized,
-    ):
-        return "authorization_without_sponsorship"
-    if re.search(r"\bsponsor", normalized) and re.search(
-        r"\b(to begin|to start|to commence|before start|at start|start date)\b",
-        normalized,
-    ):
-        return "sponsorship_to_begin"
-    if re.search(r"\bsponsor", normalized):
-        return "future_sponsorship"
     if re.search(r"\bany (?:u\.?s\.? )?employer\b", normalized):
         return "authorized_for_any_employer"
     if _STATUS_RE.search(normalized) and re.search(r"\b(are you|do you hold)\b", normalized):

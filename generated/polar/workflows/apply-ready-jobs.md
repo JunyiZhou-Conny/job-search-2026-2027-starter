@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-15.fast-validation+cb353ba6d32c
+workflow_version: 2026-09-15.future-sponsorship-no+11ff673cad39
 status: production
 enabled: true
 needs_browser_lock: false
@@ -187,7 +187,7 @@ A PREFERENCES.md or jobright.ai site note that says the mailbox cannot be read i
 
 Approved documents:
 - emory_official_transcript: `Emory_Official_Transcript.pdf` (available). Use when the form asks for that document class.
-- production_resume_perfect: Polar/Simplify stored name `Perfect Resume`; native-file `resumes/Perfect Resume/perfect_resume.pdf` (available). Use when the form asks for that document class.
+- production_resume_perfect: Polar/Simplify stored name `Perfect Resume`; native-file `resumes/Perfect Resume/JZ_Resume_2027.pdf` (available). Use when the form asks for that document class.
 - harvard_unofficial_transcript: `Harvard_unofficial_transcript.pdf` (available). Use when the form asks for that document class.
 Do not attach a transcript when the job asks for a different school or a diploma.
 If a required transcript is missing locally and in the registry, mark BLOCKED with category MISSING_DOCUMENT.
@@ -278,7 +278,7 @@ Do not:
 
 Known failure classes. Repair from facts. Note the class:
 - nickname_on_legal_first_name: wrong value Conny. Repair: First Name is the legal first name from config/profile.yaml. Upstream candidate: Jobright profile name field or generated resume header. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_nickname_on_legal_first_name. Observed: Owner-observed 2026-09-15, production run R-20260914-2309.
-- sponsorship_no_on_future_sponsorship_widget: wrong value No. Repair: future_sponsorship_required is true. Required widget answer is Yes. polar_policy.auth_form_action. Upstream candidate: Jobright profile sponsorship setting. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_no_on_future_sponsorship_widget. Observed: Jobright-era apply 2026-09-15.
+- sponsorship_yes_on_future_sponsorship_widget: wrong value Yes. Repair: future_sponsorship_required is false. Required widget answer is No. polar_policy.auth_form_action. Forcing Yes is the defect. Upstream candidate: A later correction or profile setting that forces Yes. Owner action if Jobright profile still says Yes. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_yes_on_future_sponsorship_widget. Observed: Owner policy 2026-09-15. Retires the Autofill-No-is-defect class..
 - academic_mailbox_on_application_field: wrong value academic mailbox. Repair: Local APPLICATION mailbox. polar_policy.contact_email_action. repeat_key copilot_academic_mailbox_on_application_field.
 - invented_referral: wrong value Event. Repair: Blank unless a verified referral fact exists. polar_policy.referral_field_action. repeat_key invented_referral. Observed: Jobright-era apply 2026-09-15.
 - citizenship_not_china: wrong value United States. Repair: China. Observed: Copilot on Twitch 2026-09-03, pre-Jobright.
@@ -289,7 +289,7 @@ Timing: a routine form is single digits to low teens minutes. Three routine appl
 Corrections log: note meaningful Autofill corrections in run_log notes as autofill_corrections=<class tokens>. polar_policy.autofill_corrections_note.
 One incident_log row per repeated correction class per run with the canonical repeat_key. Not one row per widget. No heavier telemetry.
 
-The extension guessed sponsorship No. Re-classify the exact question with polar_policy.auth_form_action.
+Autofill No on a future-sponsorship widget is correct. Forcing Yes is the defect. Re-classify the exact question with polar_policy.auth_form_action.
 The extension invented Event as a referral. polar_policy.referral_field_action. Clear invented referrals. Do not invent a referrer.
 
 ## Mailbox
@@ -411,23 +411,23 @@ For each Jobright card:
    Prefer the just-generated Jobright resume when it is visible or available.
    If the native widget already shows a file that is not a forbidden file, leave it.
    If the widget is empty and the generated Jobright resume is available, attach that generated file.
-   Else attach Perfect Resume by stored name, or `resumes/Perfect Resume/perfect_resume.pdf` when that checkout file exists.
-   If that repo file is missing, attach `/Users/conny/Desktop/JZ_Resume_911.pdf` only when that file exists. That is the identified 911 gold copy. Do not invent another path.
+   Else attach Perfect Resume by stored name, or `resumes/Perfect Resume/JZ_Resume_2027.pdf` when that checkout file exists.
+   Do not invent a Desktop 911 path. identified_mac_pdf is empty.
    Do not upload `resumes/base/JZ_resume.pdf`. Do not upload `generated/resumes/export/ai_infra_v1.pdf`. Do not upload the sanitized PDF next to a family .tex.
    Do not compile LaTeX during apply. Do not switch resume families. Do not silently fall back to `ai_infra_v1`.
-   If neither generated nor 911 / Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker.
-   Incident repeat_key native_resume_empty when neither generated nor 911 / Perfect Resume can be attached.
+   If neither generated nor Perfect Resume / `JZ_Resume_2027.pdf` can be attached, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker.
+   Incident repeat_key native_resume_empty when neither generated nor Perfect Resume / JZ_Resume_2027.pdf can be attached.
 11. Fill required-but-empty widgets from section A. Do not walk section A against populated widgets. Authorization widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.
    If the field is optional, leave it blank. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship.
-   Required future-sponsorship widget: Yes. Required H-1B-named widget: No.
+   Required future-sponsorship widget: No. Required H-1B-named widget: No.
    Required citizenship: China. Required visa type: F-1. Required eligible-to-begin: Yes.
    Required authorized-for-any-employer: Yes. Required EAD: No. Required OPT approval: No. Required OPT eligibility: Yes.
    Required currently-authorized or sponsorship-to-begin: leave the field and mark BLOCKED on this job only when that fact is unknown.
    If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity.
    If it says select Yes or No, or uses not or never with Yes, leave the field and mark BLOCKED on this job only.
    Country-only lists and work-authorization-without-sponsorship wording: blank if optional, BLOCKED if required.
-   After autofill, correct invented citizenship, copied sponsorship answers, unasked F-1, extra explanation, and invented referrals.
+   After autofill, correct invented citizenship, a forced Yes on the future-sponsorship widget, copied sponsorship answers, unasked F-1, extra explanation, and invented referrals.
    Do not mention immigration in Why-us, motivation, cover letters, or other free response unless the prompt asked.
    A blocked authorization field must not stop the rest of the worker.
 12. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.

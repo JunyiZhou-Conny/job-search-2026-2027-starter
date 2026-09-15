@@ -138,8 +138,10 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Junyi Zhou", text)
         self.assertIn("Citizenship country (form and fact): China", text)
         self.assertIn("Current visa type when asked: F-1", text)
-        self.assertIn("Required future-sponsorship widget: Yes.", text)
-        self.assertIn("Future sponsorship required (standing fact): True", text)
+        self.assertIn("Required future-sponsorship widget: No.", text)
+        self.assertIn("Future sponsorship required (standing fact): False", text)
+        self.assertNotIn("Required future-sponsorship widget: Yes.", text)
+        self.assertNotIn("Future sponsorship required (standing fact): True", text)
         self.assertIn("Answer only the asked semantic.", text)
         self.assertIn("Optional identity or status fields stay blank.", text)
         self.assertIn("Program end / I-20 date: 2026-12-18", text)
@@ -147,7 +149,8 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Earliest full-time start: 2027-01-18", text)
         self.assertIn("Remote ok: False", text)
         self.assertNotIn("Citizenship country (form and fact): United States", text)
-        self.assertIn("visa_sponsorship: Yes.", text)
+        self.assertIn("visa_sponsorship: No.", text)
+        self.assertNotIn("visa_sponsorship: Yes.", text)
         self.assertIn("DO NOT AUTO-MAP", text)
         self.assertIn("require work authorization", text)
         self.assertIn("Do not treat that wording as this answer", text)
@@ -201,7 +204,8 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("jobright_matches_onboarding_gate", text)
         self.assertIn("polar_policy.canonical_repeat_key", text)
         self.assertIn("Perfect Resume", text)
-        self.assertIn("resumes/Perfect Resume/perfect_resume.pdf", text)
+        self.assertIn("resumes/Perfect Resume/JZ_Resume_2027.pdf", text)
+        self.assertNotIn("/Users/conny/Desktop/JZ_Resume_911.pdf", text)
         self.assertIn("Do not upload `generated/resumes/export/ai_infra_v1.pdf`.", text)
         self.assertNotIn(
             "If the native widget is empty and `generated/resumes/export/ai_infra_v1.pdf` exists locally, attach that export.",
@@ -395,7 +399,10 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Do not assume the profile was fixed.", text)
         self.assertIn("Status unknown.", text)
         self.assertIn("repeat_key autofill_nickname_on_legal_first_name", text)
-        self.assertIn("repeat_key autofill_sponsorship_no_on_future_sponsorship_widget", text)
+        self.assertIn("repeat_key autofill_sponsorship_yes_on_future_sponsorship_widget", text)
+        self.assertIn("sponsorship_yes_on_future_sponsorship_widget: wrong value Yes.", text)
+        self.assertNotIn("repeat_key autofill_sponsorship_no_on_future_sponsorship_widget", text)
+        self.assertNotIn("sponsorship_no_on_future_sponsorship_widget: wrong value No.", text)
         self.assertIn("Three routine applications in 30 to 40 minutes is the evaluation target, not a timeout.", text)
         self.assertIn("autofill_corrections=<class tokens>", text)
         self.assertIn("Not one row per widget.", text)
@@ -411,7 +418,8 @@ class TestPolarRuntime(unittest.TestCase):
 
     def test_fast_validation_keeps_the_safeties(self):
         text = compile_text()
-        self.assertIn("Required future-sponsorship widget: Yes.", text)
+        self.assertIn("Required future-sponsorship widget: No.", text)
+        self.assertNotIn("Required future-sponsorship widget: Yes.", text)
         self.assertIn("H-1B-named widget: No", text)
         self.assertIn("Citizenship country (form and fact): China", text)
         self.assertIn("Never invent.", text)
@@ -429,7 +437,7 @@ class TestPolarRuntime(unittest.TestCase):
         operator = yaml.safe_load(
             (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
         )
-        self.assertEqual(operator["policy_revision"], "2026-09-15.fast-validation")
+        self.assertEqual(operator["policy_revision"], "2026-09-15.future-sponsorship-no")
         autofill = operator["autofill"]
         self.assertIs(autofill["full_form_audit"], False)
         self.assertEqual(tuple(autofill["post_autofill_checks"]), FAST_VALIDATION_CLASSES)
@@ -446,7 +454,9 @@ class TestPolarRuntime(unittest.TestCase):
         known = autofill["fast_validation_pass"]["known_failure_classes"]
         self.assertEqual(known["nickname_on_legal_first_name"]["wrong_value"], "Conny")
         self.assertEqual(known["nickname_on_legal_first_name"]["upstream_status"], "unknown")
-        self.assertEqual(known["sponsorship_no_on_future_sponsorship_widget"]["upstream_status"], "unknown")
+        self.assertEqual(known["sponsorship_yes_on_future_sponsorship_widget"]["wrong_value"], "Yes")
+        self.assertEqual(known["sponsorship_yes_on_future_sponsorship_widget"]["upstream_status"], "unknown")
+        self.assertNotIn("sponsorship_no_on_future_sponsorship_widget", known)
         self.assertIs(autofill["fast_validation_pass"]["timing"]["is_timeout"], False)
 
 
