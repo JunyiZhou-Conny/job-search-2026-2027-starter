@@ -109,6 +109,13 @@ AUTH_QUESTION_KINDS = (
     "unknown",
 )
 
+# Every kind auth_form_action classifies is re-read after Autofill, even when
+# Autofill populated it. "unknown" is not a widget kind; a required widget the
+# classifier cannot place is already BLOCK that job only.
+WORK_AUTHORIZATION_VERIFY_KINDS = tuple(
+    kind for kind in AUTH_QUESTION_KINDS if kind != "unknown"
+)
+
 _OPTIONAL_IDENTITY_KINDS = frozenset(AUTH_QUESTION_KINDS)
 _UNCLEAR_INSTRUCTION_KINDS = frozenset(
     {"future_sponsorship", "sponsorship_to_begin"}
@@ -1272,6 +1279,10 @@ def known_autofill_failure_classes() -> Tuple[str, ...]:
 
 def full_form_audit_permitted() -> bool:
     return FULL_FORM_AUDIT_PERMITTED
+
+
+def work_authorization_verify_kinds() -> Tuple[str, ...]:
+    return WORK_AUTHORIZATION_VERIFY_KINDS
 
 
 def post_autofill_field_action(

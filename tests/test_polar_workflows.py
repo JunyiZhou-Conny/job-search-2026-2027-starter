@@ -21,7 +21,11 @@ from polar_policy import (  # noqa: E402
     raw_workflow_url,
     sanitize_learning_text,
 )
-from polar_workflows import WORKFLOW_RENDERERS, render_workflow  # noqa: E402
+from polar_workflows import (  # noqa: E402
+    WORKFLOW_RENDERERS,
+    fast_validation_contract,
+    render_workflow,
+)
 
 sys.path.insert(0, str(ROOT / "tests"))
 from test_polar_runtime import (  # noqa: E402
@@ -285,6 +289,29 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("- Autofill corrections by class, from autofill_corrections tokens in run_log notes", learning)
         for name in WORKFLOW_RENDERERS:
             self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-15\.fast-validation\+", name)
+
+    def test_compiler_refuses_short_or_renamed_auth_verify_list(self):
+        import copy
+
+        import yaml
+
+        operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        self.assertIsInstance(fast_validation_contract(operator), dict)
+        auth = operator["autofill"]["fast_validation_pass"]["verify"]["work_authorization"]
+        for kind in ("sponsorship_to_begin", "ead_possession", "opt_approval", "opt_eligibility", "authorization_at_start", "status_yes_no", "authorization_without_sponsorship", "country_specific_sponsorship"):
+            short = copy.deepcopy(operator)
+            widgets = short["autofill"]["fast_validation_pass"]["verify"]["work_authorization"]["widgets"]
+            widgets.remove(kind)
+            with self.assertRaises(SystemExit, msg=kind):
+                fast_validation_contract(short)
+        renamed = copy.deepcopy(operator)
+        widgets = renamed["autofill"]["fast_validation_pass"]["verify"]["work_authorization"]["widgets"]
+        widgets[widgets.index("h1b_sponsorship")] = "h1b_named"
+        with self.assertRaises(SystemExit):
+            fast_validation_contract(renamed)
+        self.assertEqual(len(auth["widgets"]), len(set(auth["widgets"])))
 
     def test_apply_url_confidence_stays_in_queue_schema(self):
         header = (ROOT / "generated" / "polar" / "queue_schema.csv").read_text(

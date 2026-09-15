@@ -378,6 +378,56 @@ class TestFastValidationPass(unittest.TestCase):
             "repair_from_facts",
         )
 
+    def test_every_classified_auth_kind_is_reread_and_answered_from_facts(self):
+        from polar_policy import (
+            AUTH_QUESTION_KINDS,
+            auth_form_action,
+            classify_auth_question,
+            load_auth_facts,
+            work_authorization_verify_kinds,
+        )
+
+        kinds = work_authorization_verify_kinds()
+        self.assertEqual(set(kinds), set(AUTH_QUESTION_KINDS) - {"unknown"})
+        self.assertEqual(len(kinds), len(set(kinds)))
+        # A populated work-authorization widget is verified, never trusted.
+        self.assertEqual(
+            post_autofill_field_action(field_class="work_authorization", required=True, populated=True),
+            "verify_against_facts",
+        )
+        self.assertEqual(
+            post_autofill_field_action(field_class="work_authorization", required=False, populated=True),
+            "verify_against_facts",
+        )
+        facts = load_auth_facts()
+        # The five kinds Bugbot flagged, plus the wording each one comes from.
+        expected = {
+            "Do you require sponsorship to begin employment?": ("sponsorship_to_begin", "leave_unresolved"),
+            "Do you have an EAD?": ("ead_possession", "answer_no"),
+            "Has your OPT been approved?": ("opt_approval", "answer_no"),
+            "Will you be eligible for OPT?": ("opt_eligibility", "answer_yes"),
+            "Are you legally eligible to begin employment immediately?": ("authorization_at_start", "answer_yes"),
+            "Are you currently authorized to work in the U.S.?": ("current_work_authorization", "leave_unresolved"),
+            "Are you an F-1 student?": ("status_yes_no", "answer_yes"),
+            "Are you authorized to work without sponsorship?": ("authorization_without_sponsorship", "leave_unresolved"),
+        }
+        for prompt, (kind, required_action) in expected.items():
+            self.assertEqual(classify_auth_question(prompt), kind, prompt)
+            self.assertIn(kind, kinds, prompt)
+            action, _reason = auth_form_action(widget_text=prompt, required=True, facts=facts)
+            self.assertEqual(action, required_action, prompt)
+            optional_action, optional_reason = auth_form_action(widget_text=prompt, required=False, facts=facts)
+            self.assertEqual(optional_action, "leave_blank", prompt)
+            self.assertEqual(optional_reason, "optional_identity_field", prompt)
+        country_action, country_reason = auth_form_action(
+            widget_text="Do you require sponsorship for the United Kingdom, Germany, or Serbia?",
+            required=True,
+            names_non_us_countries_only=True,
+            facts=facts,
+        )
+        self.assertEqual((country_action, country_reason), ("leave_unresolved", "country_specific_sponsorship"))
+        self.assertIn("country_specific_sponsorship", kinds)
+
     def test_routine_is_default_complexity(self):
         self.assertEqual(form_complexity(), "routine")
         self.assertEqual(form_complexity("greenhouse"), "routine")

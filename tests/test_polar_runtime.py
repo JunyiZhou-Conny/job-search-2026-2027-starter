@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from build_polar_runtime import OUT_DEFAULT, main, render, compile_sections  # noqa: E402
+from polar_policy import AUTH_QUESTION_KINDS, WORK_AUTHORIZATION_VERIFY_KINDS  # noqa: E402
 
 REQUIRED_HEADINGS = [
     "## A. Candidate facts",
@@ -359,12 +360,24 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Legal first name Junyi. Legal last name Zhou.", text)
         self.assertIn("No full profile audit.", text)
         self.assertIn(
-            "- work_authorization: future_sponsorship, sponsorship_to_begin, "
-            "h1b_named, citizenship, visa_type, authorized_for_any_employer, "
-            "currently_authorized, authorization_at_start, ead_possession, "
-            "opt_approval, opt_eligibility, work_authorization_wording.",
+            "- work_authorization: " + ", ".join(WORK_AUTHORIZATION_VERIFY_KINDS) + ". These are every kind polar_policy.auth_form_action classifies. Re-read each present widget of these kinds even when Autofill populated it.",
             text,
         )
+        for kind in (
+            "sponsorship_to_begin",
+            "ead_possession",
+            "opt_approval",
+            "opt_eligibility",
+            "authorization_at_start",
+            "status_yes_no",
+            "authorization_without_sponsorship",
+            "country_specific_sponsorship",
+            "current_work_authorization",
+        ):
+            self.assertIn(kind, WORK_AUTHORIZATION_VERIFY_KINDS, kind)
+        self.assertIn("Required currently-authorized or sponsorship-to-begin with an unknown fact: leave the field and BLOCK that job only.", text)
+        self.assertIn("Optional widgets of these kinds stay blank;", text)
+        self.assertIn("Do not fill unasked OPT, EAD, or immigration widgets.", text)
         self.assertIn("knowledge/work_authorization.yaml stays authoritative", text)
         self.assertIn("Only widgets that decide eligibility for this role. Not every generic question.", text)
         self.assertIn("jobright_sidebar_complete_but_employer_dom_empty", text)
@@ -424,20 +437,11 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertEqual(autofill["default_filler"], "jobright_extension")
         self.assertEqual(
             tuple(autofill["fast_validation_pass"]["verify"]["work_authorization"]["widgets"]),
-            (
-                "future_sponsorship",
-                "sponsorship_to_begin",
-                "h1b_named",
-                "citizenship",
-                "visa_type",
-                "authorized_for_any_employer",
-                "currently_authorized",
-                "authorization_at_start",
-                "ead_possession",
-                "opt_approval",
-                "opt_eligibility",
-                "work_authorization_wording",
-            ),
+            WORK_AUTHORIZATION_VERIFY_KINDS,
+        )
+        self.assertEqual(
+            set(WORK_AUTHORIZATION_VERIFY_KINDS),
+            set(AUTH_QUESTION_KINDS) - {"unknown"},
         )
         known = autofill["fast_validation_pass"]["known_failure_classes"]
         self.assertEqual(known["nickname_on_legal_first_name"]["wrong_value"], "Conny")

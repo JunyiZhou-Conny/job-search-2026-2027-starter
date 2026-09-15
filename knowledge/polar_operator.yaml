@@ -43,23 +43,36 @@ autofill:
           email fields show the local APPLICATION mailbox. No full
           profile audit.
       work_authorization:
+        # Exactly polar_policy.AUTH_QUESTION_KINDS minus unknown. The
+        # compiler refuses a shorter or renamed list.
         widgets:
-          - future_sponsorship
-          - sponsorship_to_begin
-          - h1b_named
           - citizenship
-          - visa_type
-          - authorized_for_any_employer
-          - currently_authorized
+          - visa_status
+          - status_yes_no
+          - current_work_authorization
           - authorization_at_start
-          - ead_possession
-          - opt_approval
+          - authorized_for_any_employer
+          - authorization_without_sponsorship
+          - sponsorship_to_begin
+          - future_sponsorship
+          - h1b_sponsorship
           - opt_eligibility
+          - opt_approval
+          - ead_possession
           - work_authorization_wording
+          - country_specific_sponsorship
         rule: >
-          knowledge/work_authorization.yaml stays authoritative. Classify
-          the exact question with polar_policy.auth_form_action. Answer
-          only that semantic.
+          These are every kind polar_policy.auth_form_action classifies.
+          Re-read each present widget of these kinds even when Autofill
+          populated it. knowledge/work_authorization.yaml stays
+          authoritative. Classify the exact question with
+          polar_policy.auth_form_action and answer only that semantic.
+          Required currently-authorized or sponsorship-to-begin with an
+          unknown fact: leave the field and BLOCK that job only. Optional
+          widgets of these kinds stay blank; clear a guessed value when
+          the widget allows it, and if it cannot be cleared the value
+          must match auth_form_action or the job is BLOCKED. Do not fill
+          unasked OPT, EAD, or immigration widgets.
       eligibility_critical:
         widgets:
           - enrollment_status

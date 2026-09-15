@@ -21,6 +21,7 @@ from polar_policy import (
     SUBMIT_PROOF_REPEAT_KEY,
     POST_AUTOFILL_CHECKS,
     POST_AUTOFILL_TRUSTED_CLASSES,
+    WORK_AUTHORIZATION_VERIFY_KINDS,
     KNOWN_AUTOFILL_FAILURE_CLASSES,
     FORM_COMPLEXITY_SIGNALS,
     AUTOFILL_CORRECTIONS_NOTE_TOKEN,
@@ -101,6 +102,14 @@ def fast_validation_contract(operator: Dict[str, Any]) -> Dict[str, Any]:
     trusted = tuple(str(x) for x in pass_block.get("trust_when_populated_no_error_no_known_failure") or ())
     if trusted != POST_AUTOFILL_TRUSTED_CLASSES:
         raise SystemExit("fast_validation_pass trust list does not match polar_policy.POST_AUTOFILL_TRUSTED_CLASSES")
+    auth_widgets = tuple(
+        str(x) for x in ((pass_block.get("verify") or {}).get("work_authorization") or {}).get("widgets") or ()
+    )
+    if auth_widgets != WORK_AUTHORIZATION_VERIFY_KINDS:
+        raise SystemExit(
+            "fast_validation_pass.verify.work_authorization.widgets must be exactly "
+            "polar_policy.WORK_AUTHORIZATION_VERIFY_KINDS (every kind auth_form_action classifies)"
+        )
     failures = pass_block.get("known_failure_classes") or {}
     if tuple(failures.keys()) != KNOWN_AUTOFILL_FAILURE_CLASSES:
         raise SystemExit("fast_validation_pass.known_failure_classes does not match polar_policy.KNOWN_AUTOFILL_FAILURE_CLASSES")
