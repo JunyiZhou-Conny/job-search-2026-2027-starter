@@ -635,6 +635,8 @@ job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Two rows with the 
 Do not create scratch tabs. Do not acquire polar_browser. Do not create grok_browser.
 After each job stage, write last_stage and updated_at on that queue row.
 Heartbeat, daily summary, and production-learning-daily do not claim queue jobs.
+Heartbeat writes are retired. polar_policy.heartbeat_writes_permitted is false. Missing heartbeat is not apply failure.
+READY_* is inventory. polar_policy.ready_fifo_permitted is false. Do not FIFO the Sheet.
 
 ## N. Run and incident telemetry
 

@@ -241,11 +241,9 @@ Keep Cloud as fallback, reduce it, or retire it only after that evidence exists.
 
 ## Locked-screen scheduler test
 
-Before overnight autonomous Submit, run `polar-scheduler-heartbeat`.
+`polar-scheduler-heartbeat` is retired. It is not apply proof and it is not required before overnight Submit.
 
-The Workflow opens a harmless page and writes one `heartbeat` row while Polar is backgrounded, the screen is locked, and the Mac stays powered and online.
-
-Do not assume sleep or lock behavior. Record the result before raising overnight Submit confidence.
+Sep 14-15 `apply-ready-jobs` `run_log` already shows Polar can write the Sheet on a schedule. A missing `heartbeat` row is not a failure. Do not start that workflow to prove apply. Do not treat `lock_result` as a mutex.
 
 ## Environments
 
@@ -275,7 +273,7 @@ Cloud Computer Use still uses `scripts/compile_cu_task.py` on cloud Chrome. Do n
 | Workflow exists and can use a named profile, saved instructions, attachments, and an hourly schedule | owner-observed. Public press agrees. | Proven as a product capability |
 | Junyi will leave the Mac powered and online | owner-observed | Stated 2026-09-08 |
 | Polar Workflow can consume `POLAR_RUNTIME` from a raw GitHub URL unattended | inference | Unproven |
-| Polar Workflow writes the Google Sheet while the screen is locked | inference | Unproven until the heartbeat test |
+| Polar Workflow writes the Google Sheet while the screen is locked | observed via apply run_log | Proven as Sheet writes on Sep 14-15 apply runs. Heartbeat tab is retired. |
 | Polar hourly discovery matches Cloud discovery quality | inference | Unproven until the 48-hour shadow |
 | Every Original Job Post is an employer ATS | inference | Unproven |
 | Polar can write `apply_attempts.csv` without a human | inference | Unproven |

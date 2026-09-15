@@ -1,7 +1,7 @@
 # chatgpt-production-review
 
 workflow: chatgpt-production-review
-workflow_version: 2026-09-16.apply-runtime-convergence+b40c7e78b50a
+workflow_version: 2026-09-16.apply-runtime-archive+b40c7e78b50a
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
