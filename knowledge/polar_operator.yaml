@@ -1,6 +1,6 @@
 last_updated: "2026-09-15"
-policy_revision: "2026-09-15.future-sponsorship-no"
-source: "Owner 2026-09-15. Jobright-era apply. Standard future-sponsorship widget is No from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Sheet blocked/submitted/unknown memory stays. Full-queue reads, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
+policy_revision: "2026-09-15.apply-runtime-convergence"
+source: "Owner 2026-09-15. Jobright-era apply. Standard future-sponsorship widget is No from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
 autofill:
@@ -184,6 +184,35 @@ queue_read:
     - SUBMISSION_UNKNOWN
     - IN_PROGRESS
   do_not_dump_ready_backlog: true
+  unique_job_key: true
+  scratch_tabs: false
+  sheet_error_is_miss: true
+  live_apply_query:
+    workflows:
+      - apply-ready-jobs
+      - grok-apply-jobs
+    result: PARTIAL
+    ended_at: blank
+skip_path:
+  owner: polar_policy.skip_path_action
+  cheap_first: true
+  claim_before_cheap_skip: false
+  generate_resume_on_skip: false
+  apply_now_on_skip: false
+  open_ats_on_skip: false
+  leave_terminal_sheet_row: true
+  employer_jd_only_when_card_insufficient: true
+concurrency:
+  one_job_key_one_row: true
+  one_live_apply: true
+  executors:
+    - polar
+    - grok
+  mutex: none
+  do_not_create:
+    - polar_browser
+    - grok_browser
+    - scratch_tabs
 application_mailbox:
   readable: true
   source: browser_outlook_application_inbox
@@ -499,6 +528,10 @@ repeat_keys:
     meaning: "A local PREFERENCES or jobright.ai site note still says the application mailbox cannot be read. GitHub says Polar may retrieve verification codes via the application Outlook inbox."
   submit_success_without_page_confirmation:
     meaning: "A run claimed SUCCESS or SUBMITTED without employer-page confirmation plus matching queue readback."
+  duplicate_job_key:
+    meaning: "Two or more queue rows share one job_key. Abort that job. Do not claim. Do not Submit. Do not guess which row. Incident category QUEUE_STATE."
+  sheet_query_na:
+    meaning: "A targeted Sheet QUERY returned #N/A, #REF!, or another error token. Treat as a lookup miss. Do not create a scratch tab or dump the queue."
   # Shared with the Grok Bot sibling executor (knowledge/grokbot_operator.yaml).
   # Grok writes the same queue, run_log, incident_log, and writing_log tabs
   # with G- run ids and run_log.workflow grok-apply-jobs. No Grok-only tab.

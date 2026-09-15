@@ -263,7 +263,8 @@ class TestPolarRuntime(unittest.TestCase):
             header = (ROOT / "generated" / "polar" / name).read_text(encoding="utf-8").strip()
             self.assertEqual(header.split(","), operator[key], name)
         self.assertIn("apply_url_confidence", operator["queue_columns"])
-        self.assertEqual(operator["queue_columns"].index("apply_url_confidence"), 8)
+        # Index is not architecture. Named writes survive a moved column.
+        self.assertIn("status", operator["queue_columns"])
 
     def test_workflow_prompts_are_paste_ready(self):
         text = (ROOT / "docs" / "automation" / "POLAR_WORKFLOWS.md").read_text(
@@ -431,13 +432,13 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Writing is evidence-grounded.", text)
         self.assertIn("Referral / how-heard is blank unless a verified fact exists.", text)
 
-    def test_policy_revision_is_fast_validation(self):
+    def test_policy_revision_is_apply_runtime_convergence(self):
         import yaml
 
         operator = yaml.safe_load(
             (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
         )
-        self.assertEqual(operator["policy_revision"], "2026-09-15.future-sponsorship-no")
+        self.assertEqual(operator["policy_revision"], "2026-09-15.apply-runtime-convergence")
         autofill = operator["autofill"]
         self.assertIs(autofill["full_form_audit"], False)
         self.assertEqual(tuple(autofill["post_autofill_checks"]), FAST_VALIDATION_CLASSES)

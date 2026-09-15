@@ -277,6 +277,21 @@ RUN_ID_PREFIXES = {
 }
 ATS_PRIOR_SUBMISSION_REPEAT_KEY = "ats_prior_submission"
 ATS_PRIOR_SUBMISSION_BLOCKER = "already_applied_on_ats"
+DUPLICATE_JOB_KEY_REPEAT_KEY = "duplicate_job_key"
+SHEET_QUERY_NA_REPEAT_KEY = "sheet_query_na"
+TELEMETRY_INCONSISTENCY = "TELEMETRY_INCONSISTENCY"
+APPLY_WORKFLOW_NAMES = frozenset({"apply-ready-jobs", "grok-apply-jobs"})
+SHEET_ERROR_TOKENS = frozenset({"#n/a", "#ref!", "#value!", "#name?", "#null!"})
+CHEAP_SKIP_LEAVE_STATUSES = frozenset(
+    {
+        "blocked",
+        "submitted",
+        "skip",
+        "review_ready",
+        "in_progress",
+        "submission_unknown",
+    }
+)
 PRODUCTION_RESUME_EXPORT_PATH = FAMILY_RESUME_EXPORT_PATH
 TELEMETRY_TZ_NAME = "America/New_York"
 TELEMETRY_TZ = ZoneInfo(TELEMETRY_TZ_NAME)
@@ -781,6 +796,48 @@ def attempt_claim_job(
     )
 
 
+def claim_job_key(
+    rows: Sequence[Mapping[str, Any]],
+    job_key: str,
+    *,
+    run_id: str,
+    now: datetime,
+    ttl_minutes: Optional[int] = None,
+    run_logs: Sequence[Mapping[str, Any]] = (),
+    root: Optional[Path] = None,
+) -> WorkClaimDecision:
+    plan = plan_queue_upsert_by_job_key(rows, job_key)
+    if plan.action == "abort":
+        return WorkClaimDecision(
+            "DUPLICATE_KEY",
+            "abort",
+            job_key,
+            "",
+            "",
+            "",
+            0,
+            {},
+            "duplicate job_key",
+        )
+    if plan.action == "append":
+        row: Mapping[str, Any] = {
+            "job_key": job_key,
+            "status": "NEW",
+            "attempt_count": "0",
+        }
+    else:
+        assert plan.row_index is not None
+        row = rows[plan.row_index]
+    return attempt_claim_job(
+        row,
+        run_id=run_id,
+        now=now,
+        ttl_minutes=ttl_minutes,
+        run_logs=run_logs,
+        root=root,
+    )
+
+
 def confirm_claim_readback(
     after: Mapping[str, Any],
     *,
@@ -847,22 +904,62 @@ class ControlWritePlan:
     notes: str
 
 
+def locate_rows_by_key(
+    rows: Sequence[Mapping[str, Any]],
+    key: str,
+    field: str = "key",
+) -> Tuple[int, ...]:
+    target = normalize_text(key)
+    if not target:
+        return ()
+    return tuple(
+        index
+        for index, row in enumerate(rows)
+        if normalize_text(str(row.get(field) or "")) == target
+    )
+
+
 def locate_row_by_key(
     rows: Sequence[Mapping[str, Any]],
     key: str,
     field: str = "key",
 ) -> Optional[int]:
-    target = normalize_text(key)
-    matches = [
-        index
-        for index, row in enumerate(rows)
-        if normalize_text(str(row.get(field) or "")) == target
-    ]
+    matches = locate_rows_by_key(rows, key, field)
     if len(matches) > 1:
         raise ValueError(f"duplicate {field} {key}")
     if not matches:
         return None
     return matches[0]
+
+
+@dataclass(frozen=True)
+class QueueUpsertPlan:
+    action: str
+    row_index: Optional[int]
+    job_key: str
+    match_count: int
+    notes: str
+    repeat_key: str = ""
+
+
+def plan_queue_upsert_by_job_key(
+    rows: Sequence[Mapping[str, Any]],
+    job_key: str,
+) -> QueueUpsertPlan:
+    """One job_key → one row. Sheets is last-write-wins; Polar enforces uniqueness."""
+    matches = locate_rows_by_key(rows, job_key, "job_key")
+    if len(matches) > 1:
+        return QueueUpsertPlan(
+            "abort",
+            None,
+            job_key,
+            len(matches),
+            "duplicate job_key",
+            DUPLICATE_JOB_KEY_REPEAT_KEY,
+        )
+    if not matches:
+        return QueueUpsertPlan("append", None, job_key, 0, "append one row")
+    return QueueUpsertPlan("update", matches[0], job_key, 1, "update existing row")
 
 
 def control_row_is_writable(row: Mapping[str, Any], intended_key: str) -> bool:
@@ -953,7 +1050,15 @@ def plan_run_log_write(
     rows: Sequence[Mapping[str, Any]],
     run_id: str,
 ) -> ControlWritePlan:
-    index = locate_row_by_key(rows, run_id, "run_id")
+    try:
+        index = locate_row_by_key(rows, run_id, "run_id")
+    except ValueError:
+        return ControlWritePlan(
+            "abort",
+            None,
+            run_id,
+            "duplicate run_id",
+        )
     if index is None:
         return ControlWritePlan("append", None, run_id, "append new run_log row")
     return ControlWritePlan("update", index, run_id, "update existing run_log row")
@@ -993,6 +1098,8 @@ def canonical_repeat_key(raw: str) -> str:
         COPILOT_EMAIL_REPEAT_KEY,
         SUBMIT_PROOF_REPEAT_KEY,
         ATS_PRIOR_SUBMISSION_REPEAT_KEY,
+        DUPLICATE_JOB_KEY_REPEAT_KEY,
+        SHEET_QUERY_NA_REPEAT_KEY,
     }:
         return token
     return REPEAT_KEY_ALIASES.get(token, token)
@@ -1051,6 +1158,123 @@ def sheet_timestamp_is_valid(value: str) -> bool:
 
 def run_log_row_is_final(row: Mapping[str, Any]) -> bool:
     return all(str(row.get(field) or "").strip() for field in REQUIRED_RUN_LOG_FINAL_FIELDS)
+
+
+def run_duration_minutes(started_at: str, ended_at: str) -> Optional[int]:
+    """Authoritative duration: ended_at - started_at on the same clock.
+
+    Whole minutes. Never chat wall-clock. Unparseable timestamps return None.
+    """
+    start = parse_timestamp(started_at)
+    end = parse_timestamp(ended_at)
+    if start is None or end is None:
+        return None
+    seconds = (end - start).total_seconds()
+    return max(0, int(round(seconds / 60.0)))
+
+
+def telemetry_duration_status(
+    *,
+    started_at: str,
+    ended_at: str,
+    recorded_minutes: Any = "",
+) -> str:
+    computed = run_duration_minutes(started_at, ended_at)
+    if computed is None:
+        return TELEMETRY_INCONSISTENCY
+    text = "" if recorded_minutes is None else str(recorded_minutes).strip()
+    if not text:
+        return "ok"
+    try:
+        recorded = int(round(float(text)))
+    except (TypeError, ValueError):
+        return TELEMETRY_INCONSISTENCY
+    if recorded != computed:
+        return TELEMETRY_INCONSISTENCY
+    return "ok"
+
+
+def apply_workflow_name(name: str) -> bool:
+    return str(name or "").strip() in APPLY_WORKFLOW_NAMES
+
+
+def apply_run_is_live(row: Mapping[str, Any]) -> bool:
+    if not apply_workflow_name(str(row.get("workflow") or "")):
+        return False
+    if str(row.get("result") or "").strip() != "PARTIAL":
+        return False
+    return not str(row.get("ended_at") or "").strip()
+
+
+def live_apply_run_id(
+    run_logs: Sequence[Mapping[str, Any]],
+    *,
+    exclude_run_id: str = "",
+) -> Optional[str]:
+    skip = normalize_text(exclude_run_id)
+    for row in run_logs:
+        if not apply_run_is_live(row):
+            continue
+        run_id = str(row.get("run_id") or "").strip()
+        if not run_id:
+            continue
+        if skip and normalize_text(run_id) == skip:
+            continue
+        return run_id
+    return None
+
+
+def start_apply_run_action(
+    run_logs: Sequence[Mapping[str, Any]],
+    *,
+    this_run_id: str = "",
+) -> str:
+    """One live real-job applier across Polar (R-) and Grok (G-)."""
+    if live_apply_run_id(run_logs, exclude_run_id=this_run_id):
+        return "NO_WORK"
+    return "continue"
+
+
+def scratch_tab_permitted() -> bool:
+    return False
+
+
+def tab_is_forbidden_scratch(name: str) -> bool:
+    token = normalize_text(name).replace(" ", "_")
+    return token.startswith("scratch")
+
+
+def sheet_query_failure_action(cell_value: str) -> str:
+    token = normalize_text(cell_value)
+    if token in SHEET_ERROR_TOKENS:
+        return "treat_as_miss_no_scratch"
+    return "use_value"
+
+
+def incident_id_day_prefix(day: str) -> str:
+    compact = (day or "").replace("-", "")
+    if len(compact) != 8 or not compact.isdigit():
+        raise ValueError("incident day must be YYYY-MM-DD or YYYYMMDD")
+    return f"INC-{compact}-"
+
+
+def incident_ids_for_day(existing: Sequence[str], day: str) -> Tuple[str, ...]:
+    prefix = incident_id_day_prefix(day)
+    return tuple(raw for raw in existing if str(raw or "").startswith(prefix))
+
+
+def capability_reprove_permitted(*, already_proven: bool) -> bool:
+    return not already_proven
+
+
+def preferences_reconcile_action(
+    *,
+    pending_ids: Sequence[str] = (),
+    new_main_rows: Sequence[str] = (),
+) -> str:
+    if pending_ids or new_main_rows:
+        return "reconcile"
+    return "noop"
 
 
 def native_resume_action(
@@ -1201,6 +1425,54 @@ def consider_jobright_card(
     if hard_fact_conflict:
         return ConsiderDecision("skip_hard_fact", True, True, "hard fact conflict")
     return ConsiderDecision("admit", False, True, "jobright recommendation")
+
+
+def skip_path_action(
+    *,
+    already_applied_on_jobright: bool = False,
+    sheet_status: str = "",
+    section_k_hit: bool = False,
+    closed_on_card: bool = False,
+    hard_fact_on_card: bool = False,
+    skip_reason_visible_on_jobright_card: bool = False,
+    card_jd_sufficient: Optional[bool] = None,
+) -> str:
+    """Cheap SKIP is first-class. Do not claim or open ATS to record it."""
+    status = normalize_text(sheet_status)
+    if (
+        already_applied_on_jobright
+        or closed_on_card
+        or hard_fact_on_card
+        or section_k_hit
+        or skip_reason_visible_on_jobright_card
+        or status in CHEAP_SKIP_LEAVE_STATUSES
+    ):
+        return "cheap_skip_no_ats"
+    if card_jd_sufficient is False:
+        return "open_employer_jd_only"
+    return "continue_toward_claim"
+
+
+def cheap_skip_write_action(sheet_status: str = "") -> str:
+    if normalize_text(sheet_status) in CHEAP_SKIP_LEAVE_STATUSES:
+        return "leave_existing_row"
+    return "write_skip_row"
+
+
+def cheap_skip_opens_employer_ats() -> bool:
+    return False
+
+
+def cheap_skip_generates_resume() -> bool:
+    return False
+
+
+def cheap_skip_claims_in_progress() -> bool:
+    return False
+
+
+def eligibility_surface_action(*, card_jd_sufficient: bool) -> str:
+    return "decide_on_card" if card_jd_sufficient else "open_employer_jd_only"
 
 
 def page_surface(page_kind: str) -> str:
@@ -1357,9 +1629,13 @@ def targeted_queue_statuses() -> Tuple[str, ...]:
     return TARGETED_QUEUE_STATUSES
 
 
+def recovery_lookup_statuses() -> Tuple[str, ...]:
+    return ("SUBMISSION_UNKNOWN", "IN_PROGRESS")
+
+
 def recovery_queue_filter(row: Mapping[str, Any]) -> bool:
     status = str(row.get("status") or "").strip()
-    return status in {"SUBMISSION_UNKNOWN", "IN_PROGRESS"}
+    return status in recovery_lookup_statuses()
 
 
 def post_autofill_trust_source() -> str:
@@ -2432,6 +2708,8 @@ def capability_preflight_block(workflow_name: str) -> str:
         "A missing tab is a polar-sheet-migration data issue, not CAPABILITY_MISSING, "
         "unless google_sheets itself is missing.\n"
         "If all required capabilities are available, execute this workflow.\n"
+        "Prove each required capability once at start. polar_policy.capability_reprove_permitted.\n"
+        "After they succeed, do not re-prove google_sheets, browser, or local_filesystem mid-run.\n"
         "If any required capability is unavailable, report ENVIRONMENT / CAPABILITY_MISSING "
         "in this run's own output.\n"
         "Name the missing capability. Stop. Do not invent execution.\n"
