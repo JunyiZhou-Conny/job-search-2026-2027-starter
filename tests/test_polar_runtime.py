@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from build_polar_runtime import OUT_DEFAULT, main, render, compile_sections  # noqa: E402
+from polar_policy import AUTH_QUESTION_KINDS, WORK_AUTHORIZATION_VERIFY_KINDS  # noqa: E402
 
 REQUIRED_HEADINGS = [
     "## A. Candidate facts",
@@ -48,6 +49,66 @@ SECRET_LINE = re.compile(
     r"(?i)(password\s*[:=]\s*\S+|cookie\s*[:=]\s*\S+|set-cookie\s*[:=]"
     r"|otp\s*[:=]\s*\d{4,8}|2fa\s*[:=]\s*\S+|storage_state)"
 )
+
+# Wording that would send Polar back into a post-Autofill full-form audit.
+# None of it may appear in a compiled artifact, in any polarity.
+BROAD_AUDIT_PHRASES = (
+    "verify every field",
+    "review all fields",
+    "inspect every autofilled",
+    "validate the entire form",
+    "reread all populated",
+    "re-read all populated",
+    "verify all profile",
+    "final review of visible widgets",
+    "line-by-line",
+    "line by line",
+    "every autofilled answer",
+    "review every field",
+    "check every field",
+    "verify each field",
+    "verify every widget",
+    "audit the whole form",
+)
+
+# Wording that may appear only as a prohibition (inside a "Do not:" list or
+# on a line that itself says not).
+NEGATED_ONLY_PHRASES = (
+    "re-read every populated widget",
+    "re-verify gender",
+    "reproduce jobright profile filling",
+    "distrust all autofill",
+    "walk the section a standing-answer list",
+    "walk it against every populated widget",
+    "walk section a against populated widgets",
+)
+
+FAST_VALIDATION_CLASSES = (
+    "identity",
+    "work_authorization",
+    "eligibility_critical",
+    "required_empty_or_error",
+    "required_legal_compliance",
+)
+
+
+def assert_no_full_form_audit(case: unittest.TestCase, text: str, label: str) -> None:
+    lowered = text.lower()
+    for phrase in BROAD_AUDIT_PHRASES:
+        case.assertNotIn(phrase, lowered, f"{label}: {phrase!r}")
+    in_do_not_list = False
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.lower().rstrip(":") in {"do not", "why-us must not", "fde do not claim"}:
+            in_do_not_list = True
+            continue
+        if in_do_not_list and not stripped.startswith("- "):
+            in_do_not_list = False
+        low = stripped.lower()
+        for phrase in NEGATED_ONLY_PHRASES:
+            if phrase in low:
+                negated = in_do_not_list or re.search(r"\b(do not|does not|not|never)\b", low)
+                case.assertTrue(negated, f"{label}: {phrase!r} appears as an instruction: {stripped!r}")
 
 
 def compile_text() -> str:
@@ -286,6 +347,107 @@ class TestPolarRuntime(unittest.TestCase):
             text,
         )
         self.assertIn("non-blocking eligibility note, not a skip", text)
+
+    def test_fast_validation_pass_replaces_full_form_audit(self):
+        text = compile_text()
+        assert_no_full_form_audit(self, text, "POLAR_RUNTIME")
+        self.assertIn("Fast validation pass after Autofill:", text)
+        self.assertIn("Jobright Autofill is the default filler. Polar is anomaly detection and targeted repair.", text)
+        self.assertIn("polar_policy.full_form_audit_permitted is false", text)
+        for name in FAST_VALIDATION_CLASSES:
+            self.assertIn(f"- {name}: ", text, name)
+        self.assertIn("- identity: first_name, last_name, application_email.", text)
+        self.assertIn("Legal first name Junyi. Legal last name Zhou.", text)
+        self.assertIn("No full profile audit.", text)
+        self.assertIn(
+            "- work_authorization: " + ", ".join(WORK_AUTHORIZATION_VERIFY_KINDS) + ". These are every kind polar_policy.auth_form_action classifies. Re-read each present widget of these kinds even when Autofill populated it.",
+            text,
+        )
+        for kind in (
+            "sponsorship_to_begin",
+            "ead_possession",
+            "opt_approval",
+            "opt_eligibility",
+            "authorization_at_start",
+            "status_yes_no",
+            "authorization_without_sponsorship",
+            "country_specific_sponsorship",
+            "current_work_authorization",
+        ):
+            self.assertIn(kind, WORK_AUTHORIZATION_VERIFY_KINDS, kind)
+        self.assertIn("Required currently-authorized or sponsorship-to-begin with an unknown fact: leave the field and BLOCK that job only.", text)
+        self.assertIn("Optional widgets of these kinds stay blank;", text)
+        self.assertIn("Do not fill unasked OPT, EAD, or immigration widgets.", text)
+        self.assertIn("knowledge/work_authorization.yaml stays authoritative", text)
+        self.assertIn("Only widgets that decide eligibility for this role. Not every generic question.", text)
+        self.assertIn("jobright_sidebar_complete_but_employer_dom_empty", text)
+        self.assertIn("Employer DOM is truth.", text)
+        self.assertIn("Do not generalize one employer's seven compliance questions to every form.", text)
+        self.assertIn(
+            "Trust when populated, no validation error, no known failure class: eeo_demographics, phone_address_formatting, resume_filename, populated_education_employment, routine_non_material. Do not re-read those widgets.",
+            text,
+        )
+        self.assertIn("A visible conflict with known candidate truth, seen in passing, is repaired and noted.", text)
+        self.assertIn("- re-verify gender, race, ethnicity, veteran, or disability after Autofill", text)
+        self.assertIn("- reproduce Jobright profile filling by hand", text)
+        self.assertIn("- distrust all Autofill output by default", text)
+        self.assertIn("nickname_on_legal_first_name: wrong value Conny.", text)
+        self.assertIn("Do not assume the profile was fixed.", text)
+        self.assertIn("Status unknown.", text)
+        self.assertIn("repeat_key autofill_nickname_on_legal_first_name", text)
+        self.assertIn("repeat_key autofill_sponsorship_no_on_future_sponsorship_widget", text)
+        self.assertIn("Three routine applications in 30 to 40 minutes is the evaluation target, not a timeout.", text)
+        self.assertIn("autofill_corrections=<class tokens>", text)
+        self.assertIn("Not one row per widget.", text)
+        self.assertIn(
+            "Fast validation pass passes (section P): identity, work authorization, eligibility-critical, required-empty-or-error, required legal/compliance.",
+            text,
+        )
+        self.assertIn("Identity fields (First Name, Last Name, application email) are correct after a visible form DOM read-back.", text)
+        self.assertIn("This list is a fill table.", text)
+        self.assertIn("It is not a license to re-read every populated widget.", text)
+        self.assertIn("Trusted when populated. Do not reopen or re-verify them after Autofill.", text)
+        self.assertNotIn("Then Polar reads the form DOM: identity, contact, sponsorship wording, referral.", text)
+
+    def test_fast_validation_keeps_the_safeties(self):
+        text = compile_text()
+        self.assertIn("Required future-sponsorship widget: Yes.", text)
+        self.assertIn("H-1B-named widget: No", text)
+        self.assertIn("Citizenship country (form and fact): China", text)
+        self.assertIn("Never invent.", text)
+        self.assertIn("Extension sidebar Completed is not proof a widget has a value. Look at the form DOM.", text)
+        self.assertIn("Duplicate check passes against the Sheet and section K.", text)
+        self.assertIn("One final Submit is used.", text)
+        self.assertIn("Employer-page confirmation text is visible.", text)
+        self.assertIn("Do not submit the same employer requisition twice.", text)
+        self.assertIn("Writing is evidence-grounded.", text)
+        self.assertIn("Referral / how-heard is blank unless a verified fact exists.", text)
+
+    def test_policy_revision_is_fast_validation(self):
+        import yaml
+
+        operator = yaml.safe_load(
+            (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
+        )
+        self.assertEqual(operator["policy_revision"], "2026-09-15.fast-validation")
+        autofill = operator["autofill"]
+        self.assertIs(autofill["full_form_audit"], False)
+        self.assertEqual(tuple(autofill["post_autofill_checks"]), FAST_VALIDATION_CLASSES)
+        self.assertEqual(autofill["polar_role"], "anomaly_detection_and_targeted_repair")
+        self.assertEqual(autofill["default_filler"], "jobright_extension")
+        self.assertEqual(
+            tuple(autofill["fast_validation_pass"]["verify"]["work_authorization"]["widgets"]),
+            WORK_AUTHORIZATION_VERIFY_KINDS,
+        )
+        self.assertEqual(
+            set(WORK_AUTHORIZATION_VERIFY_KINDS),
+            set(AUTH_QUESTION_KINDS) - {"unknown"},
+        )
+        known = autofill["fast_validation_pass"]["known_failure_classes"]
+        self.assertEqual(known["nickname_on_legal_first_name"]["wrong_value"], "Conny")
+        self.assertEqual(known["nickname_on_legal_first_name"]["upstream_status"], "unknown")
+        self.assertEqual(known["sponsorship_no_on_future_sponsorship_widget"]["upstream_status"], "unknown")
+        self.assertIs(autofill["fast_validation_pass"]["timing"]["is_timeout"], False)
 
 
 if __name__ == "__main__":

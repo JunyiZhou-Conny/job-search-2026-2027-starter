@@ -41,7 +41,7 @@ Jobright recommendation
   -> skip Applied / Sheet dup / blocked / closed / hard-fact conflict
   -> Apply with Autofill, generate resume, Apply Now
   -> Jobright extension autofill once on the real form
-  -> Polar reads the form DOM (not the sidebar) and finishes remaining fields
+  -> Polar runs the fast validation pass on the form DOM (not the sidebar) and repairs anomalies
   -> email verify via application Outlook if asked
   -> submit and confirm on the employer page
   -> Jobright Yes / I applied
@@ -144,7 +144,27 @@ See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery ord
 
 `application_weight` stays. It is production policy, not a pilot leftover.
 
-Regular work is fast and truthful. Prefer the just-generated Jobright resume. Else attach Perfect Resume / identified `JZ_Resume_911.pdf`. Jobright extension Autofill once, then Polar corrects visible fields. If a resume is already on the widget and it is not a forbidden file, leave it. Do not upload the two-page master `JZ_resume` PDF. Do not fall back to `ai_infra_v1`. If neither generated nor 911 / Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume and continue. Complete ordinary account creation. Write short prompt-faithful answers. Validate. Submit once. Verify. Persist. Missing Copilot does not stop the run.
+Regular work is fast and truthful. Prefer the just-generated Jobright resume. Else attach Perfect Resume / identified `JZ_Resume_911.pdf`. Jobright extension Autofill once, then Polar runs the fast validation pass below and repairs only anomalies. If a resume is already on the widget and it is not a forbidden file, leave it. Do not upload the two-page master `JZ_resume` PDF. Do not fall back to `ai_infra_v1`. If neither generated nor 911 / Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume and continue. Complete ordinary account creation. Write short prompt-faithful answers. Fast validation passes. Submit once. Verify. Persist. Missing Copilot does not stop the run.
+
+## Fast validation pass
+
+Jobright Autofill is the default filler. Polar is anomaly detection and targeted repair. The canonical list is `knowledge/polar_operator.yaml` `autofill.fast_validation_pass`; `polar_policy.post_autofill_field_action` is the engineer table.
+
+Production run R-20260914-2309 submitted 3 of 3 in about 85 minutes, about 28 minutes per application. The slow part was a post-Autofill audit of the whole form. Autofill is imperfect (nickname on First Name, sponsorship No, blanks), so Autofill followed by a blind Submit is not allowed either.
+
+After Autofill, Polar verifies only five classes on the employer form DOM:
+
+1. Identity: First Name, Last Name, application email. The nickname Conny on First Name is a known failure class.
+2. Work authorization and sponsorship. `knowledge/work_authorization.yaml` stays authoritative.
+3. Eligibility-critical widgets only: enrollment, graduation timing, internship eligibility, location or relocation, age, clearance, citizenship when genuinely relevant.
+4. Required-but-empty, validation error, unanswered required radio, required combobox left at Select, or a Jobright sidebar that says complete while the employer DOM is empty. Employer DOM is truth.
+5. Required legal or compliance attestations, only when they exist and are required on this form.
+
+Populated widgets with no error and no known failure class are trusted, not re-read: EEO and demographics, phone and address formatting, resume filename, populated education and employment, other routine non-material fields. The one exception is a visible conflict with known candidate truth seen in passing.
+
+Routine Greenhouse, Ashby, and SmartRecruiters forms take the fast path and should land in single-digit to low-teens minutes. Extra care is spent only when the form actually needs an account or OTP, a Workday or Eightfold multi-step flow, a large compliance block, nontrivial writing, or unusual eligibility. Three routine applications in 30 to 40 minutes is the evaluation target, not a timeout.
+
+Known Autofill failure classes are repaired per form and noted in `run_log` notes as `autofill_corrections=<class tokens>`, with at most one `incident_log` row per repeated class per run. Where the Jobright profile is the likely upstream fix (name field, sponsorship setting), that is an owner action; the compile does not assume it happened.
 
 Prioritized work gets more care. Signals include startup or scale-up Junyi values, Fortune 500 or major companies, NVIDIA GTC, prestige, biotech or health AI, strong biostatistics or bio data-science fit, FDE, and unusually strong personal fit. Do not mark a generic analyst or data role prioritized only because the title contains "data".
 

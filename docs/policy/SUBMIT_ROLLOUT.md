@@ -37,12 +37,12 @@ Polar Local may click Submit on a regular or prioritized job only when every ite
 - Duplicate check passes against the Sheet and known ledger memory.
 - Company and title on the page match the queue row.
 - Approved resume is the just-generated Jobright file, or Perfect Resume / identified `JZ_Resume_911.pdf`. Do not upload the two-page master or any `ai_infra` file.
-- Identity is correct after a visible read-back.
+- Identity (First Name, Last Name, application email) is correct after a visible read-back.
 - Required factual fields are resolved from `POLAR_RUNTIME` or left for Junyi.
 - No unsupported claim was invented.
 - Writing is evidence-grounded.
 - `application_weight` is `regular`, or it is `prioritized` and every meaningful custom question is in `writing_log` with the exact answer used.
-- Final review of visible widgets passes.
+- Fast validation pass passes (`knowledge/polar_operator.yaml` `autofill.fast_validation_pass`): identity, work authorization, eligibility-critical, required-empty-or-error, required legal/compliance. Populated routine widgets with no error and no known failure class are trusted, not re-read.
 - One final Submit is used.
 - Result is verified, or status becomes `SUBMISSION_UNKNOWN`.
 
@@ -78,7 +78,10 @@ above the open gate, and the two files must agree.
 
 ## Stop-the-line (applies at every gate)
 
-Block Submit and record the reason when any of these hold.
+Block Submit and record the reason when any of these hold. On
+`polar_local` these apply to what the fast validation pass actually
+reads. Polar does not reopen trusted demographic widgets to hunt for
+them.
 
 - Copilot filled an EEO field with a value other than the five Junyi
   confirmed in `form_strategy.yaml` `eeo_self_identification`.

@@ -82,7 +82,8 @@ Approved documents. Attach only when the form asks for that class. Never paste c
 - Eligible to begin employment immediately: Yes
 - US Person / export control: I am not a U.S. Person. Export-control country China.
 
-Standing widget answers (owner-confirmed). Apply them verbatim.
+Standing widget answers (owner-confirmed). Apply them verbatim when you fill a widget that is empty, in error, or in a fast-validation class (section P).
+This list is a fill table. Do not walk it against every populated widget after Autofill.
 
 - how_heard_or_referral: (blank). When: How did you hear about this role / referral source / Event.
 - employed_by_this_company_before: No. When: Have you been employed by [this company] in the past?.
@@ -92,7 +93,7 @@ Standing widget answers (owner-confirmed). Apply them verbatim.
 - citizenship_country: China. When: Country of citizenship / nationality. Also the export-control country widget..
 - permanent_resident_elsewhere: No. When: Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?.
 - eligible_to_begin_employment_immediately: Yes. When: If offered employment, would you be legally eligible to begin employment immediately?.
-- eeo_self_identification: Preserve the values Simplify Copilot fills from Junyi's profile. Do not clear them. Do not change them. Confirmed: gender Male; hispanic_latino No; race Asian; veteran_status I am not a protected veteran; disability No, I do not have a disability and have not had one in the past.
+- eeo_self_identification: Preserve the values Autofill fills from Junyi's profile. Do not clear them. Do not change them. Trusted when populated. Do not reopen or re-verify them after Autofill. Use the confirmed values only when a required EEO widget is empty or left at Select, or when a wrong value is visible in passing. Confirmed: gender Male; hispanic_latino No; race Asian; veteran_status I am not a protected veteran; disability No, I do not have a disability and have not had one in the past.
 - years_of_relevant_experience: 2. When: How many years of relevant / work / professional experience do you have?.
 - automated_script_or_spoofing: No. When: Are you applying via an automated script or spoofing?.
 - prior_internship_or_coop_in_general: Yes. When: Do you have prior internship or co-op experience?.
@@ -328,6 +329,7 @@ Escalate to BLOCKED only after this local environment cannot complete a required
 A blocked job must not stall the worker. Persist the blocker and continue to the next Jobright card.
 ATS family is diagnostic metadata only. Do not organize work by ATS worker class.
 Jobright extension owns autofill. Trust the form DOM. See section P.
+Jobright Autofill is the default filler. Polar is anomaly detection and targeted repair, not a full-form auditor.
 Do not click Simplify Copilot Autofill on this path.
 Do not read every queue row. polar_policy.queue_read_scope is targeted.
 
@@ -352,14 +354,14 @@ A regular job may be submitted once only when every item holds:
 - Duplicate check passes against the Sheet and section K.
 - Company and title on the page match the queue row.
 - Approved resume is the just-generated Jobright file, or Perfect Resume / identified JZ_Resume_911.pdf. Do not upload the two-page master or any ai_infra file.
-- Identity fields are correct after a visible form DOM read-back. Extension sidebar progress is not proof.
+- Identity fields (First Name, Last Name, application email) are correct after a visible form DOM read-back. Extension sidebar progress is not proof.
 - Normal account and contact email fields show the APPLICATION mailbox, not the academic mailbox.
 - Referral / how-heard is blank unless a verified fact exists. Clear invented Event referrals.
 - Required factual fields are resolved from this runtime or left for Junyi.
 - No unsupported claim was invented.
 - Writing is evidence-grounded.
 - application_weight is regular.
-- Final review of visible widgets passes.
+- Fast validation pass passes (section P): identity, work authorization, eligibility-critical, required-empty-or-error, required legal/compliance. Populated routine widgets with no error and no known failure class are trusted, not re-read.
 - One final Submit is used.
 - Employer-page confirmation text is visible. Copilot Completed is not confirmation.
 - Queue confirmation, submitted_at, and the visible resume filename match that page. polar_policy.submit_outcome is the engineer table.
@@ -388,6 +390,7 @@ Do not invent any of the following:
 If a required fact is missing, leave the widget and mark needs_human or BLOCKED.
 Extension sidebar Completed is not proof a widget has a value. Look at the form DOM.
 Copilot Completed is not proof a widget has a value.
+That sidebar rule catches required widgets that are still empty. It is not a license to re-read every populated widget. Section P scopes the pass.
 
 ## J. Runtime status semantics
 
@@ -706,9 +709,43 @@ Jobright extension owns autofill on the apply path. polar_policy.autofill_owner.
 Do not click Simplify Copilot Autofill. Do not let Copilot fight the Jobright extension.
 polar_policy.page_surface and polar_policy.autofill_action are the engineer tables.
 login, JD landing, apply CTA, and No fillable form exists are investigate_not_unsupported.
-Autofill once on the real application form. Then Polar reads the form DOM: identity, contact, sponsorship wording, referral.
+Autofill once on the real application form. Then Polar runs the fast validation pass on the form DOM.
 Trust the form, not the extension sidebar. polar_policy.post_autofill_trust_source.
 Clear invented referrals. Re-classify sponsorship vs future-sponsorship. polar_policy.referral_field_action.
 Missing Copilot does not stop the run. Copilot is not the autofill owner.
 Historical control_key env_simplify_copilot is not an apply gate. Never overwrite polar_browser.
 The application Outlook inbox is readable. Do not treat mailbox access as a hard blocker.
+
+Fast validation pass after Autofill:
+
+Jobright Autofill is the default filler. Polar is anomaly detection and targeted repair.
+Full-form audit is off. polar_policy.full_form_audit_permitted is false.
+Verify only these five classes on the employer form DOM. polar_policy.post_autofill_checks. polar_policy.post_autofill_field_action is the engineer table.
+- identity: first_name, last_name, application_email. Legal first and last name from config/profile.yaml. Normal email fields show the local APPLICATION mailbox. No full profile audit. Legal first name Junyi. Legal last name Zhou.
+- work_authorization: citizenship, visa_status, status_yes_no, current_work_authorization, authorization_at_start, authorized_for_any_employer, authorization_without_sponsorship, sponsorship_to_begin, future_sponsorship, h1b_sponsorship, opt_eligibility, opt_approval, ead_possession, work_authorization_wording, country_specific_sponsorship. These are every kind polar_policy.auth_form_action classifies. Re-read each present widget of these kinds even when Autofill populated it. knowledge/work_authorization.yaml stays authoritative. Classify the exact question with polar_policy.auth_form_action and answer only that semantic. Required currently-authorized or sponsorship-to-begin with an unknown fact: leave the field and BLOCK that job only. Optional widgets of these kinds stay blank; clear a guessed value when the widget allows it, and if it cannot be cleared the value must match auth_form_action or the job is BLOCKED. Do not fill unasked OPT, EAD, or immigration widgets.
+- eligibility_critical: enrollment_status, graduation_timing, internship_eligibility, work_location_or_relocation, minimum_age, security_clearance, citizenship_when_genuinely_relevant. Only widgets that decide eligibility for this role. Not every generic question.
+- required_empty_or_error: required_but_empty, validation_error, unanswered_required_radio, required_combobox_left_at_select, jobright_sidebar_complete_but_employer_dom_empty. Employer DOM is truth. Fill from section A facts or leave for Junyi and BLOCK that job only. Never invent.
+- required_legal_compliance: required_attestation, required_consent_checkbox, required_export_control, required_automated_script_declaration. Only when the widgets exist and are required on this form. Do not generalize one employer's seven compliance questions to every form.
+
+Trust when populated, no validation error, no known failure class: eeo_demographics, phone_address_formatting, resume_filename, populated_education_employment, routine_non_material. Do not re-read those widgets.
+Trust exception: A visible conflict with known candidate truth, seen in passing, is repaired and noted. Polar does not go looking for one.
+
+Do not:
+- re-read every populated widget after Autofill
+- re-verify gender, race, ethnicity, veteran, or disability after Autofill
+- reproduce Jobright profile filling by hand
+- distrust all Autofill output by default
+- walk the section A standing-answer list against populated widgets
+
+Known failure classes. Repair from facts. Note the class:
+- nickname_on_legal_first_name: wrong value Conny. Repair: First Name is the legal first name from config/profile.yaml. Upstream candidate: Jobright profile name field or generated resume header. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_nickname_on_legal_first_name. Observed: Owner-observed 2026-09-15, production run R-20260914-2309.
+- sponsorship_no_on_future_sponsorship_widget: wrong value No. Repair: future_sponsorship_required is true. Required widget answer is Yes. polar_policy.auth_form_action. Upstream candidate: Jobright profile sponsorship setting. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_no_on_future_sponsorship_widget. Observed: Jobright-era apply 2026-09-15.
+- academic_mailbox_on_application_field: wrong value academic mailbox. Repair: Local APPLICATION mailbox. polar_policy.contact_email_action. repeat_key copilot_academic_mailbox_on_application_field.
+- invented_referral: wrong value Event. Repair: Blank unless a verified referral fact exists. polar_policy.referral_field_action. repeat_key invented_referral. Observed: Jobright-era apply 2026-09-15.
+- citizenship_not_china: wrong value United States. Repair: China. Observed: Copilot on Twitch 2026-09-03, pre-Jobright.
+
+Routine forms are the default path. Complex signals: account_or_otp_required, workday_or_eightfold_multistep, large_compliance_block, nontrivial_writing, unusual_eligibility.
+Extra care only when a complex signal is actually on the form. Routine forms take the fast path. polar_policy.form_complexity.
+Timing: a routine form is single digits to low teens minutes. Three routine applications in 30 to 40 minutes is the evaluation target, not a timeout. Baseline R-20260914-2309: 3/3 submitted in about 85 minutes.
+Corrections log: note meaningful Autofill corrections in run_log notes as autofill_corrections=<class tokens>. polar_policy.autofill_corrections_note.
+One incident_log row per repeated correction class per run with the canonical repeat_key. Not one row per widget. No heavier telemetry.

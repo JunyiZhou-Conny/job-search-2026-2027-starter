@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-15.sheets-capability+4a7a0bbe7f73
+workflow_version: 2026-09-15.fast-validation+cb353ba6d32c
 status: production
 enabled: true
 needs_browser_lock: false
@@ -251,10 +251,44 @@ Do not increment simplify_attempted or simplify_fallback_count. Leave those hist
 
 trust: form_dom
 sidebar_is_proof: false
-check: identity, contact, sponsorship_wording, referral
+full_form_audit: false
+mode: fast_validation_pass
+check: identity, work_authorization, eligibility_critical, required_empty_or_error, required_legal_compliance
+trust_when_populated_no_error_no_known_failure: eeo_demographics, phone_address_formatting, resume_filename, populated_education_employment, routine_non_material
 polar_policy.post_autofill_trust_source is form_dom.
 
-After Autofill, read the real widgets. Correct identity, contact, sponsorship vs future-sponsorship wording, and referral from facts.
+Jobright Autofill is the default filler. Polar is anomaly detection and targeted repair.
+Full-form audit is off. polar_policy.full_form_audit_permitted is false.
+Verify only these five classes on the employer form DOM. polar_policy.post_autofill_checks. polar_policy.post_autofill_field_action is the engineer table.
+- identity: first_name, last_name, application_email. Legal first and last name from config/profile.yaml. Normal email fields show the local APPLICATION mailbox. No full profile audit. Legal first name Junyi. Legal last name Zhou.
+- work_authorization: citizenship, visa_status, status_yes_no, current_work_authorization, authorization_at_start, authorized_for_any_employer, authorization_without_sponsorship, sponsorship_to_begin, future_sponsorship, h1b_sponsorship, opt_eligibility, opt_approval, ead_possession, work_authorization_wording, country_specific_sponsorship. These are every kind polar_policy.auth_form_action classifies. Re-read each present widget of these kinds even when Autofill populated it. knowledge/work_authorization.yaml stays authoritative. Classify the exact question with polar_policy.auth_form_action and answer only that semantic. Required currently-authorized or sponsorship-to-begin with an unknown fact: leave the field and BLOCK that job only. Optional widgets of these kinds stay blank; clear a guessed value when the widget allows it, and if it cannot be cleared the value must match auth_form_action or the job is BLOCKED. Do not fill unasked OPT, EAD, or immigration widgets.
+- eligibility_critical: enrollment_status, graduation_timing, internship_eligibility, work_location_or_relocation, minimum_age, security_clearance, citizenship_when_genuinely_relevant. Only widgets that decide eligibility for this role. Not every generic question.
+- required_empty_or_error: required_but_empty, validation_error, unanswered_required_radio, required_combobox_left_at_select, jobright_sidebar_complete_but_employer_dom_empty. Employer DOM is truth. Fill from section A facts or leave for Junyi and BLOCK that job only. Never invent.
+- required_legal_compliance: required_attestation, required_consent_checkbox, required_export_control, required_automated_script_declaration. Only when the widgets exist and are required on this form. Do not generalize one employer's seven compliance questions to every form.
+
+Trust when populated, no validation error, no known failure class: eeo_demographics, phone_address_formatting, resume_filename, populated_education_employment, routine_non_material. Do not re-read those widgets.
+Trust exception: A visible conflict with known candidate truth, seen in passing, is repaired and noted. Polar does not go looking for one.
+
+Do not:
+- re-read every populated widget after Autofill
+- re-verify gender, race, ethnicity, veteran, or disability after Autofill
+- reproduce Jobright profile filling by hand
+- distrust all Autofill output by default
+- walk the section A standing-answer list against populated widgets
+
+Known failure classes. Repair from facts. Note the class:
+- nickname_on_legal_first_name: wrong value Conny. Repair: First Name is the legal first name from config/profile.yaml. Upstream candidate: Jobright profile name field or generated resume header. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_nickname_on_legal_first_name. Observed: Owner-observed 2026-09-15, production run R-20260914-2309.
+- sponsorship_no_on_future_sponsorship_widget: wrong value No. Repair: future_sponsorship_required is true. Required widget answer is Yes. polar_policy.auth_form_action. Upstream candidate: Jobright profile sponsorship setting. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_no_on_future_sponsorship_widget. Observed: Jobright-era apply 2026-09-15.
+- academic_mailbox_on_application_field: wrong value academic mailbox. Repair: Local APPLICATION mailbox. polar_policy.contact_email_action. repeat_key copilot_academic_mailbox_on_application_field.
+- invented_referral: wrong value Event. Repair: Blank unless a verified referral fact exists. polar_policy.referral_field_action. repeat_key invented_referral. Observed: Jobright-era apply 2026-09-15.
+- citizenship_not_china: wrong value United States. Repair: China. Observed: Copilot on Twitch 2026-09-03, pre-Jobright.
+
+Routine forms are the default path. Complex signals: account_or_otp_required, workday_or_eightfold_multistep, large_compliance_block, nontrivial_writing, unusual_eligibility.
+Extra care only when a complex signal is actually on the form. Routine forms take the fast path. polar_policy.form_complexity.
+Timing: a routine form is single digits to low teens minutes. Three routine applications in 30 to 40 minutes is the evaluation target, not a timeout. Baseline R-20260914-2309: 3/3 submitted in about 85 minutes.
+Corrections log: note meaningful Autofill corrections in run_log notes as autofill_corrections=<class tokens>. polar_policy.autofill_corrections_note.
+One incident_log row per repeated correction class per run with the canonical repeat_key. Not one row per widget. No heavier telemetry.
+
 The extension guessed sponsorship No. Re-classify the exact question with polar_policy.auth_form_action.
 The extension invented Event as a referral. polar_policy.referral_field_action. Clear invented referrals. Do not invent a referrer.
 
@@ -335,7 +369,7 @@ Missing references: polar_policy.missing_references_action. Do not fabricate DOB
 A blocked job must not stall the worker.
 Do not invent a Jobright Turbo credit policy.
 
-Canonical apply: recommendation → eligibility/blocked/dup check → Autofill → validate form DOM → writing → email verify if needed → employer confirm → Jobright ack → minimal Sheet write.
+Canonical apply: recommendation → eligibility/blocked/dup check → Autofill → fast validation pass on the form DOM (five classes) → targeted repair → writing → email verify if needed → employer confirm → Jobright ack → minimal Sheet write.
 
 considered starts at 0. forms_reached starts at 0. seen starts empty.
 If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.
@@ -369,7 +403,8 @@ For each Jobright card:
    If the page asks for email verification, polar_policy.email_verification_action. Read application Outlook. Continue.
    After the real form is visible, increment forms_reached.
    Autofill once with the Jobright extension. polar_policy.autofill_action. Do not click Copilot Autofill.
-   Validate form DOM, not the sidebar: identity, contact, sponsorship wording, referral.
+   Fast validation pass on the form DOM, not the sidebar: First Name, Last Name, application email; work-authorization widgets; eligibility-critical widgets; required-but-empty or error widgets; required legal attestations.
+   Trust populated routine widgets with no error and no known failure class. Do not re-read the whole form.
    Reread the account email field. Academic mailbox on a normal field is wrong.
    Incident repeat_key copilot_academic_mailbox_on_application_field if a parser put the school mailbox there.
 10. Look at the native Resume/CV widget. polar_policy.native_resume_action. Sidebar Completed is ignored.
@@ -382,7 +417,7 @@ For each Jobright card:
    Do not compile LaTeX during apply. Do not switch resume families. Do not silently fall back to `ai_infra_v1`.
    If neither generated nor 911 / Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker.
    Incident repeat_key native_resume_empty when neither generated nor 911 / Perfect Resume can be attached.
-11. Finish remaining required fields from section A. Authorization widgets use polar_policy.auth_form_action.
+11. Fill required-but-empty widgets from section A. Do not walk section A against populated widgets. Authorization widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.
    If the field is optional, leave it blank. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship.
    Required future-sponsorship widget: Yes. Required H-1B-named widget: No.
@@ -402,7 +437,7 @@ For each Jobright card:
 13. Before Submit, reread this queue row and the live sibling rows.
     If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.
     If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.
-    Validate, Submit once. Proof is employer-page confirmation plus a matching queue readback.
+    Fast validation pass passes, then Submit once. Proof is employer-page confirmation plus a matching queue readback.
     Sidebar Completed is not confirmation. Copilot Completed is not confirmation. polar_policy.submit_outcome is the engineer table.
     If confirmation is missing or the queue readback does not match, write SUBMISSION_UNKNOWN. Incident repeat_key submit_success_without_page_confirmation. polar_policy.uncertain_submit_action. Do not click Submit again.
 14. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.

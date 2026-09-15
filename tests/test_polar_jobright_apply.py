@@ -18,23 +18,30 @@ from polar_policy import (  # noqa: E402
     apply_run_counters,
     attempt_claim_job,
     autofill_action,
+    autofill_corrections_note,
     autofill_owner,
     consider_jobright_card,
     considered_budget_exhausted,
     discover_is_apply_entry,
     do_not_use_simplify_copilot_autofill,
     email_verification_action,
+    form_complexity,
+    full_form_audit_permitted,
     full_queue_read_permitted,
     incident_learning_era,
     jobright_ack_action,
+    known_autofill_failure_classes,
     legacy_ready_disposition,
     mailbox_unreadable_is_blocker,
     missing_references_action,
     missing_required_fact_action,
     native_resume_action,
     page_surface,
+    post_autofill_checks,
+    post_autofill_field_action,
     post_autofill_sidebar_is_proof,
     post_autofill_trust_source,
+    post_autofill_trusted_classes,
     queue_read_scope,
     referral_field_action,
     select_apply_batch,
@@ -303,6 +310,137 @@ class TestJobrightEraContract(unittest.TestCase):
         self.assertFalse(post_autofill_sidebar_is_proof())
         self.assertEqual(referral_field_action(filled_value="Event"), "clear_invented")
         self.assertEqual(referral_field_action(filled_value=""), "leave_blank")
+
+
+class TestFastValidationPass(unittest.TestCase):
+    def test_five_high_risk_classes_only(self):
+        self.assertFalse(full_form_audit_permitted())
+        self.assertEqual(
+            post_autofill_checks(),
+            (
+                "identity",
+                "work_authorization",
+                "eligibility_critical",
+                "required_empty_or_error",
+                "required_legal_compliance",
+            ),
+        )
+        self.assertNotIn("contact", post_autofill_checks())
+        self.assertNotIn("eeo_demographics", post_autofill_checks())
+        self.assertEqual(
+            post_autofill_trusted_classes(),
+            (
+                "eeo_demographics",
+                "phone_address_formatting",
+                "resume_filename",
+                "populated_education_employment",
+                "routine_non_material",
+            ),
+        )
+        self.assertIn("nickname_on_legal_first_name", known_autofill_failure_classes())
+        self.assertIn("sponsorship_no_on_future_sponsorship_widget", known_autofill_failure_classes())
+
+    def test_populated_routine_widgets_are_trusted(self):
+        for klass in post_autofill_trusted_classes():
+            self.assertEqual(
+                post_autofill_field_action(field_class=klass, required=True, populated=True),
+                "trust_skip",
+                klass,
+            )
+        self.assertEqual(
+            post_autofill_field_action(field_class="eeo_demographics", required=False, populated=False),
+            "leave_optional_blank",
+        )
+
+    def test_high_risk_classes_are_verified(self):
+        for klass in post_autofill_checks():
+            self.assertEqual(
+                post_autofill_field_action(field_class=klass, required=True, populated=True),
+                "verify_against_facts",
+                klass,
+            )
+
+    def test_empty_error_and_known_failures_are_repaired_not_invented(self):
+        self.assertEqual(
+            post_autofill_field_action(field_class="routine_non_material", required=True, populated=False),
+            "fill_from_facts_or_block",
+        )
+        self.assertEqual(
+            post_autofill_field_action(field_class="routine_non_material", required=True, populated=True, has_error=True),
+            "repair_from_facts",
+        )
+        self.assertEqual(
+            post_autofill_field_action(field_class="identity", required=True, populated=True, known_failure=True),
+            "repair_from_facts",
+        )
+        self.assertEqual(
+            post_autofill_field_action(field_class="eeo_demographics", required=False, populated=True, conflicts_with_fact=True),
+            "repair_from_facts",
+        )
+
+    def test_every_classified_auth_kind_is_reread_and_answered_from_facts(self):
+        from polar_policy import (
+            AUTH_QUESTION_KINDS,
+            auth_form_action,
+            classify_auth_question,
+            load_auth_facts,
+            work_authorization_verify_kinds,
+        )
+
+        kinds = work_authorization_verify_kinds()
+        self.assertEqual(set(kinds), set(AUTH_QUESTION_KINDS) - {"unknown"})
+        self.assertEqual(len(kinds), len(set(kinds)))
+        # A populated work-authorization widget is verified, never trusted.
+        self.assertEqual(
+            post_autofill_field_action(field_class="work_authorization", required=True, populated=True),
+            "verify_against_facts",
+        )
+        self.assertEqual(
+            post_autofill_field_action(field_class="work_authorization", required=False, populated=True),
+            "verify_against_facts",
+        )
+        facts = load_auth_facts()
+        # The five kinds Bugbot flagged, plus the wording each one comes from.
+        expected = {
+            "Do you require sponsorship to begin employment?": ("sponsorship_to_begin", "leave_unresolved"),
+            "Do you have an EAD?": ("ead_possession", "answer_no"),
+            "Has your OPT been approved?": ("opt_approval", "answer_no"),
+            "Will you be eligible for OPT?": ("opt_eligibility", "answer_yes"),
+            "Are you legally eligible to begin employment immediately?": ("authorization_at_start", "answer_yes"),
+            "Are you currently authorized to work in the U.S.?": ("current_work_authorization", "leave_unresolved"),
+            "Are you an F-1 student?": ("status_yes_no", "answer_yes"),
+            "Are you authorized to work without sponsorship?": ("authorization_without_sponsorship", "leave_unresolved"),
+        }
+        for prompt, (kind, required_action) in expected.items():
+            self.assertEqual(classify_auth_question(prompt), kind, prompt)
+            self.assertIn(kind, kinds, prompt)
+            action, _reason = auth_form_action(widget_text=prompt, required=True, facts=facts)
+            self.assertEqual(action, required_action, prompt)
+            optional_action, optional_reason = auth_form_action(widget_text=prompt, required=False, facts=facts)
+            self.assertEqual(optional_action, "leave_blank", prompt)
+            self.assertEqual(optional_reason, "optional_identity_field", prompt)
+        country_action, country_reason = auth_form_action(
+            widget_text="Do you require sponsorship for the United Kingdom, Germany, or Serbia?",
+            required=True,
+            names_non_us_countries_only=True,
+            facts=facts,
+        )
+        self.assertEqual((country_action, country_reason), ("leave_unresolved", "country_specific_sponsorship"))
+        self.assertIn("country_specific_sponsorship", kinds)
+
+    def test_routine_is_default_complexity(self):
+        self.assertEqual(form_complexity(), "routine")
+        self.assertEqual(form_complexity("greenhouse"), "routine")
+        self.assertEqual(form_complexity("workday_or_eightfold_multistep"), "complex")
+        self.assertEqual(form_complexity("account_or_otp_required"), "complex")
+        self.assertEqual(form_complexity("nontrivial_writing"), "complex")
+
+    def test_corrections_note_is_minimal(self):
+        self.assertEqual(autofill_corrections_note([]), "")
+        self.assertEqual(
+            autofill_corrections_note(["nickname_on_legal_first_name", "nickname_on_legal_first_name", "invented_referral"]),
+            "autofill_corrections=nickname_on_legal_first_name,invented_referral",
+        )
 
     def test_outlook_mailbox_is_recoverable(self):
         self.assertEqual(email_verification_action(), "read_application_outlook")

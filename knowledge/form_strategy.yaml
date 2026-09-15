@@ -91,7 +91,8 @@ always:
 
   eeo_self_identification:
     decided: "2026-09-03"
-    rule: "Preserve the values Simplify Copilot fills from Junyi's profile. Do not clear them. Do not change them."
+    revised: "2026-09-15"
+    rule: "Preserve the values Autofill fills from Junyi's profile. Do not clear them. Do not change them. Trusted when populated. Do not reopen or re-verify them after Autofill. Use the confirmed values only when a required EEO widget is empty or left at Select, or when a wrong value is visible in passing."
     junyi_confirmed_values:
       gender: "Male"
       hispanic_latino: "No"
@@ -423,18 +424,26 @@ later_not_this_run:
 # Trust the visible form, not the extension sidebar.
 # Jobright-era Polar: Jobright extension sidebar lied. Copilot sidebar
 # also lied (Lila 2026-08-23). Same rule for both.
+# This rule catches required widgets the sidebar called complete while
+# the employer DOM is empty. It is not a full-form audit.
 copilot_sidebar_is_not_the_form:
   decided: "2026-08-23"
   revised: "2026-09-15"
   rule: >
     "Completed" on phone / phone-country / resume / progress does not
-    mean the widget has a value. Look at the form DOM. After Autofill,
-    re-check identity, contact, sponsorship vs future-sponsorship
-    wording, and referral. The extension guessed sponsorship No and
-    invented Event as a referral. Correct from facts. Never invent
-    a referral. Do not Run Autofill Again.
+    mean the widget has a value. Look at the form DOM for the fast
+    validation pass in knowledge/polar_operator.yaml
+    autofill.fast_validation_pass: identity (First Name, Last Name,
+    application email), work authorization, eligibility-critical
+    widgets, required-but-empty or error widgets, and required legal
+    attestations. The extension wrote the nickname Conny on First Name,
+    guessed sponsorship No, and invented Event as a referral. Correct
+    those from facts. A populated widget with no error and no known
+    failure class is trusted, not re-read. Never invent a referral. Do
+    not Run Autofill Again.
   especially_on: prioritized
   do_not: "Mark identity complete from the sidebar alone."
+  do_not_either: "Re-read every populated widget to prove Autofill worked."
 
 # Last gate before Submit. Simplify Copilot often skips these.
 consent_checkboxes:

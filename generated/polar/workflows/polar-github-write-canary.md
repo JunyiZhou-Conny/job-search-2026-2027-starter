@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-15.sheets-capability+951051b259e1
+workflow_version: 2026-09-15.fast-validation+951051b259e1
 status: manual_canary
 enabled: false
 needs_browser_lock: false
