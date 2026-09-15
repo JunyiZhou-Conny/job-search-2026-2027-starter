@@ -499,6 +499,19 @@ repeat_keys:
     meaning: "A local PREFERENCES or jobright.ai site note still says the application mailbox cannot be read. GitHub says Polar may retrieve verification codes via the application Outlook inbox."
   submit_success_without_page_confirmation:
     meaning: "A run claimed SUCCESS or SUBMITTED without employer-page confirmation plus matching queue readback."
+  # Shared with the Grok Bot sibling executor (knowledge/grokbot_operator.yaml).
+  # Grok writes the same queue, run_log, incident_log, and writing_log tabs
+  # with G- run ids and run_log.workflow grok-apply-jobs. No Grok-only tab.
+  ats_prior_submission:
+    meaning: "Employer ATS shows this applicant account already submitted for the requisition. SKIP with blocker already_applied_on_ats. No fill, no Submit. Jobright ack permitted (owner 2026-09-15)."
+  grok_sheet_unreachable:
+    meaning: "Grok Bot computer could not read or write Polar Jobs during a run that had google_sheets at start. Fill-only, no Submit, no invented state."
+  grok_extension_missing:
+    meaning: "Jobright autofill extension is absent from the Grok Bot browser, for example after Update or Recover. Autofill cannot run. Do not type identity by hand to fake it."
+  grok_cache_checksum_mismatch:
+    meaning: "A file under the Grok Bot resource cache is missing or its sha256 does not match the compiled GROKBOT_RUNTIME document row. Refetch from raw main. Never attach a mismatched file."
+  grok_approval_stop:
+    meaning: "Auto Review or an approval prompt stopped an unattended Grok Bot routine step. Counted per day so overnight Submit confidence is measured, not assumed."
 
 incident_categories:
   - UI_ONE_OFF

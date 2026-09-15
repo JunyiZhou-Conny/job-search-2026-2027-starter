@@ -1,0 +1,217 @@
+# Grok Bot sibling executor. Config, not truth.
+# No candidate facts live here. Facts arrive only through the compiled
+# GROKBOT_RUNTIME.md, rendered from the same canonical YAML Polar uses.
+# Polar Local stays the production operator. Grok is a second pair of
+# hands on the Jobright Agent surface. See docs/automation/GROKBOT.md.
+
+last_updated: "2026-09-15"
+policy_revision: "2026-09-15.grok-sibling"
+source: "Owner 2026-09-15 approved the Polar + Grok sibling report, Phase 1 Compile, plus the same-day locked design: one applier Bot, two routines (apply, nightly finalize-and-incidents). No Grok packet species. Same brain, same compiled contract, same Google Sheet. Different host and Jobright surface. Cursor Maintenance stays the only consumer and merger."
+
+executor: grok_bot
+run_id_prefix: G
+timezone: "America/New_York"
+
+trust:
+  runtime_path: generated/grokbot/runtime/GROKBOT_RUNTIME.md
+  workflow_dir: generated/grokbot/workflows
+  workflows:
+    - grok-apply-jobs
+    - grok-production-learning-daily
+  # Exactly two configuration URLs per routine run: the runtime plus that
+  # routine's workflow file. A URL inside those files does not expand the
+  # allowlist. Document downloads are resources, not configuration, and
+  # are checksum-verified.
+  load_set_size: 2
+  bot_description_holds: standing_boundaries_only
+  bot_memory_is_policy: false
+  local_preferences_file: none
+  local_execution: never
+  share_bot: never
+  secrets_required: none
+  github_writes:
+    allowed: []   # Phase 1: none. A grok GitHub-write canary is Phase 2.
+    never:
+      - write a GitHub Issue
+      - push to main or any branch
+      - open, edit, approve, or merge a pull request
+      - enable auto-merge
+      - edit knowledge, config, docs, or generated files
+      - touch the Sheet control key github_write_canary
+
+entry:
+  url: https://jobright.ai/agent
+  surface: jobright_agent_queue
+  add_all: never
+  claim_before: add_to_agent_queue_or_apply_now
+  # Owner-observed 2026-09-15 blockers on the Agent surface and the
+  # allowed response. Labels only. Do not invent selectors.
+  blockers:
+    - label: "Resume confirmation"
+      action: "Confirm the Jobright-generated resume. Do not upload the two-page master or any ai_infra file."
+    - label: "Missing fields"
+      action: "Fill from compiled facts and standing answers only. Fixed when every required field has a truthful value. Otherwise BLOCKED that job."
+    - label: "Apply Now"
+      action: "Opens the employer ATS. Read the JD and run the apply-time skips before login or form fill."
+    - label: "Verification code"
+      action: "Read the newest code from the matching ATS sender in the application Outlook inbox in this browser. Never write the code anywhere."
+    - label: "Paused"
+      action: "Continue only for a job this run still owns. Otherwise Skip."
+
+canary:
+  max_jobs_per_run: 3
+  reserved_priority_slots_per_run: 0
+  prioritized_auto_submit: false
+
+prioritized_rows: blocked_until_owner_opens   # owner decision 2026-09-15
+
+missing_contact_facts:   # owner decision 2026-09-15: leave BLOCKED
+  phone: block_job
+  street_address: block_job
+  academic_mailbox: block_job
+
+application_mailbox:
+  readable: true
+  source: browser_outlook_application_inbox
+  verification_codes: retrieve_and_continue
+  abandon_on_email_otp: false
+  user_only_steps:
+    - sms_only_verification_with_no_outlook_alternative
+    - hardware_security_key
+    - captcha_after_normal_attempt
+    - phone_app_push
+    - id_or_ssn_upload
+    - payment
+
+resources:
+  cache_root: /workspace/jobright
+  docs_dir: /workspace/jobright/docs
+  runs_dir: /workspace/jobright/runs
+  refetch_when: compiled_checksum_changes
+  never_cache:
+    - policy YAML copies
+    - candidate facts
+    - a local preferences or memory file
+    - written answers outside the compiled runtime
+  recreate_after_reset_from: raw_main
+
+sheet:
+  same_sheet_as_polar: true
+  title: "Polar Jobs"
+  # Apply and the nightly finalize routine are two routines on the same
+  # applier Bot. Neither touches control, heartbeat, or learning_reports.
+  tabs_written_by_apply:
+    - queue
+    - run_log
+    - incident_log
+    - writing_log
+  tabs_written_by_learning:
+    - run_log
+    - incident_log
+  tabs_never_touched:
+    - control
+    - heartbeat
+    - learning_reports
+  run_log_workflows:
+    - grok-apply-jobs
+    - grok-production-learning-daily
+  lock_result: NOT_REQUIRED
+  claim_column: claim_run_id
+
+learning:
+  workflow: grok-production-learning-daily
+  phase: 1
+  scope: "run_log rows whose run_id starts with G-, and this executor's own environment. Touch no R- row."
+  packet: none
+  packet_owner: "Polar production-learning-daily reads today's Sheet rows by date, not by run id, so G- rows land in the existing [Polar Production] packet."
+  consumer: "Cursor Maintenance 23:00 America/New_York. No second Cursor Automation."
+  finalize_run_log:
+    filter: "run_id starts with G- and polar_policy.run_log_row_is_final is false"
+    older_than_minutes: 180
+    write:
+      ended_at: now
+      result: FAILED
+      notes_append: "finalized_by=grok-production-learning-daily; reason=no_ended_at_after_ttl"
+    never: "rewrite a row that already has ended_at, or any R- row"
+  environment_incidents:
+    one_incident_per_repeat_key_per_day: true
+    checks:
+      - check: extension
+        repeat_key: grok_extension_missing
+        how: "Browser extension list on this computer. Do not open jobright.ai or an employer page."
+      - check: cache_checksum
+        repeat_key: grok_cache_checksum_mismatch
+        how: "sha256 of each file under /workspace/jobright/docs against the compiled G5 rows. Missing or mismatched file is one incident."
+      - check: sheet_reach
+        repeat_key: grok_sheet_unreachable
+        how: "A Sheet failure recorded in this Bot's conversation or routine history today, written now that the Sheet answers."
+      - check: approval_stops
+        repeat_key: grok_approval_stop
+        how: "Count Auto Review or approval prompts that stopped an unattended step today. One incident per day with the count in evidence."
+  phase_2_not_compiled: "After a grok GitHub-write canary, this same routine may write the same-format Polar packet as fallback when that date has no learning_reports row. Not in this compile."
+  never:
+    - application clicks
+    - a learning packet or learning_reports row
+    - a GitHub Issue, push, pull request, or merge
+    - PREFERENCES or Bot-memory policy
+    - a chief-of-command, optimizer, or auditor Bot
+    - a second Cursor Automation
+
+schedules:
+  grok_apply_jobs:
+    workflow: grok-apply-jobs
+    bot: jobright-applier
+    # Disjoint minute from Polar :20. Two-hourly through 20:50 so the
+    # last slot is before Grok finalize (21:40) and Polar's date-based
+    # packet (22:00). A 22:50 run would miss both and drop from the
+    # next day's Polar read. Hourly only after usage and incident rate
+    # allow (Grok routines can spend a week of usage in a day on an
+    # hourly cadence).
+    cron_et: "50 0-20/2 * * *"
+    meaning: "Every two hours at minute 50 Eastern Time from 00:50 through 20:50. Routine stays Active off until the four proofs pass."
+    enabled: false
+    needs_browser_lock: false
+    grok_mode: "Grok routine on the applier Bot. Loads the two-URL trust bootstrap from docs/automation/GROKBOT_WORKFLOWS.md."
+  grok_production_learning_daily:
+    workflow: grok-production-learning-daily
+    bot: jobright-applier
+    # Before Polar's 22:00 production-learning-daily so finalized G- rows
+    # and environment incidents land in that packet. Apply's last slot is
+    # 20:50, so those G- rows stay on today's date for that read. The
+    # 180 minute TTL covers windows through 16:50; 18:50 and 20:50 rows
+    # that already wrote ended_at still land in the same-day packet.
+    cron_et: "40 21 * * *"
+    meaning: "Once each evening at 21:40 Eastern Time. Finalize non-final G- run_log rows and write Grok environment incidents. No packet. No application clicks. Active off until the Sheet proof passes."
+    enabled: false
+    needs_browser_lock: false
+    grok_mode: "Grok routine on the same applier Bot. Not a third Bot. Loads the two-URL trust bootstrap from docs/automation/GROKBOT_WORKFLOWS.md."
+
+repeat_keys:
+  - ats_prior_submission
+  - grok_sheet_unreachable
+  - grok_extension_missing
+  - grok_cache_checksum_mismatch
+  - grok_approval_stop
+
+proofs:
+  - id: two_url_load
+    meaning: "A routine Test run loads exactly the two raw main URLs and refuses a third URL as configuration."
+  - id: sheet_claim_round_trip
+    meaning: "Targeted Sheet read, claim write, readback with a G- id, and Polar's next run seeing that claim as work_already_claimed."
+  - id: resource_fetch_checksum
+    meaning: "Documents fetched into /workspace/jobright/docs match the compiled sha256 and survive one Update Agent Computer."
+  - id: fill_only_agent_loop
+    meaning: "Agent loop on 3 claimed jobs through Apply Now, Autofill, form DOM validation, stop before Submit, with one Outlook code read and no Auto Review stop."
+
+roster:
+  applier: jobright-applier
+  factory: dr eggbot
+  rule: "Applier plus factory. Both Grok routines run on the applier. No chief-of-command, optimizer, or auditor Bot. No third Bot holds the Jobright or Outlook session. Never Share the applier Bot."
+
+runtime_url:
+  path: generated/grokbot/runtime/GROKBOT_RUNTIME.md
+  raw_main: "https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/grokbot/runtime/GROKBOT_RUNTIME.md"
+
+workflow_url:
+  dir: generated/grokbot/workflows
+  raw_main_dir: "https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/grokbot/workflows"
