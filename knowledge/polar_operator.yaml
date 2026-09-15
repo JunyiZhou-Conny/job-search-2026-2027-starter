@@ -1,6 +1,6 @@
 last_updated: "2026-09-15"
-policy_revision: "2026-09-15.jobright-era"
-source: "Owner 2026-09-15. Jobright-era apply. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar validates the form DOM, finishes remaining fields, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Sheet blocked/submitted/unknown memory stays. Full-queue reads and Copilot-as-autofill do not. PREFERENCES stays thin."
+policy_revision: "2026-09-15.sheets-capability"
+source: "Owner 2026-09-15. Jobright-era apply. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar validates the form DOM, finishes remaining fields, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Sheet blocked/submitted/unknown memory stays. Full-queue reads and Copilot-as-autofill do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
 autofill:
@@ -380,6 +380,29 @@ apply_url_confidence_values:
   - strong
   - weak
   - none
+
+capabilities:
+  google_sheets:
+    meaning: "Read and write Polar Jobs through the Google connector (Drive and Sheets tools)."
+    literal_name_required: false
+    sheet_title: "Polar Jobs"
+    connector_aliases:
+      - google
+      - google_drive
+      - google drive
+      - drive
+      - sheets
+      - google sheets
+    tool_evidence:
+      - Find Drive file
+      - Google Drive
+      - Google Sheets
+      - Sheets API
+    not_sufficient:
+      - browser
+      - sheets.google.com
+      - docs.google.com
+    ask_to_add_connector: false
 
 runtime_url:
   path: generated/polar/runtime/POLAR_RUNTIME.md

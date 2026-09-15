@@ -213,6 +213,15 @@ def assert_operator_columns(operator: Dict[str, Any]) -> None:
         got = operator.get(key)
         if got != columns:
             raise SystemExit(f"{key} in polar_operator.yaml does not match polar_policy.py")
+    spec = (operator.get("capabilities") or {}).get("google_sheets")
+    if not isinstance(spec, dict):
+        raise SystemExit("polar_operator.yaml capabilities.google_sheets is required")
+    if spec.get("literal_name_required") is not False:
+        raise SystemExit("google_sheets.literal_name_required must be false")
+    if spec.get("ask_to_add_connector") is not False:
+        raise SystemExit("google_sheets.ask_to_add_connector must be false")
+    if spec.get("sheet_title") != "Polar Jobs":
+        raise SystemExit("google_sheets.sheet_title must be Polar Jobs")
 
 
 def bullet(items: List[str], indent: str = "- ") -> str:
@@ -768,6 +777,8 @@ def compile_sections() -> Dict[str, str]:
             "After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.",
             "Commit the edit, then reread key, owner_run_id, and notes. Looking correct is not persistence.",
             "Do not increment simplify_attempted or simplify_fallback_count. Those columns are historical.",
+            "google_sheets means the Google connector can read and write Polar Jobs. Drive Find-file and Sheets tools count. A connector named google_sheets is not required.",
+            "Browser sheets.google.com is not google_sheets. Do not ask the owner to add a connector when Google connector tools already exist.",
         ]
     )
     section_m = "\n".join(

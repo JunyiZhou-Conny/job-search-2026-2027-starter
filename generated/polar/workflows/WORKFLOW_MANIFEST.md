@@ -2,7 +2,7 @@
 
 COMPILED ARTIFACT. Not canonical.
 
-policy_revision: 2026-09-15.jobright-era
+policy_revision: 2026-09-15.sheets-capability
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 | Workflow | Status | Lock | Raw URL |
@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the trust-delegation bootstrap from docs/automation/POLAR_WORKFLOWS.md.
 They load the two owner-designated raw main files on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-15.jobright-era+be870e38214a`
-- `apply-ready-jobs` workflow_version `2026-09-15.jobright-era+98fdd28f54f0`
-- `daily-job-summary` workflow_version `2026-09-15.jobright-era+586a0063c572`
-- `production-learning-daily` workflow_version `2026-09-15.jobright-era+13a34e0e32e0`
-- `polar-scheduler-heartbeat` workflow_version `2026-09-15.jobright-era+b53185a9688a`
-- `polar-github-write-canary` workflow_version `2026-09-15.jobright-era+e60ae9fe705a`
-- `chatgpt-production-review` workflow_version `2026-09-15.jobright-era+66960ba532f6`
-- `cursor-production-maintenance` workflow_version `2026-09-15.jobright-era+465201631783`
-- `polar-sheet-migration` workflow_version `2026-09-15.jobright-era+bb77ac7f560e`
+- `discover-jobs-hourly` workflow_version `2026-09-15.sheets-capability+2a458ebb623a`
+- `apply-ready-jobs` workflow_version `2026-09-15.sheets-capability+4a7a0bbe7f73`
+- `daily-job-summary` workflow_version `2026-09-15.sheets-capability+73e8412a69d7`
+- `production-learning-daily` workflow_version `2026-09-15.sheets-capability+5c3a0974625f`
+- `polar-scheduler-heartbeat` workflow_version `2026-09-15.sheets-capability+9892abac3f82`
+- `polar-github-write-canary` workflow_version `2026-09-15.sheets-capability+951051b259e1`
+- `chatgpt-production-review` workflow_version `2026-09-15.sheets-capability+bf2dab21ffc7`
+- `cursor-production-maintenance` workflow_version `2026-09-15.sheets-capability+baba0bb597fb`
+- `polar-sheet-migration` workflow_version `2026-09-15.sheets-capability+2651642dbe7c`
