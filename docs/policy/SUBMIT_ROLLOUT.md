@@ -36,7 +36,7 @@ Polar Local may click Submit on a regular or prioritized job only when every ite
 
 - Duplicate check passes against the Sheet and known ledger memory.
 - Company and title on the page match the queue row.
-- Approved resume is the just-generated Jobright file, or Perfect Resume / identified `JZ_Resume_911.pdf`. Do not upload the two-page master or any `ai_infra` file.
+- Approved resume is the just-generated Jobright file, or Perfect Resume / identified `JZ_Resume_2027.pdf`. Do not upload the two-page master or any `ai_infra` file.
 - Identity (First Name, Last Name, application email) is correct after a visible read-back.
 - Required factual fields are resolved from `POLAR_RUNTIME` or left for Junyi.
 - No unsupported claim was invented.

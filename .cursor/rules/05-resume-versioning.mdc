@@ -13,7 +13,7 @@ alwaysApply: false
 - `role_cluster` / `resume_cluster` are job taxonomy only (`cloud_swe` | `data_ml` | `health_ai`).
 - Look at the native ATS resume widget. Copilot Completed is not proof.
   Empty widget → attach Polar/Simplify **Perfect Resume**. If a native
-  file is required, use `resumes/Perfect Resume/perfect_resume.pdf` when
+  file is required, use `resumes/Perfect Resume/JZ_Resume_2027.pdf` when
   present. Never upload the two-page master or `ai_infra_v1`. Still
   empty → REVIEW_READY / `missing_production_resume`.
 - Per-role family routing is postponed. Production attach is Perfect

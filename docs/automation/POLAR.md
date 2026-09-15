@@ -144,7 +144,7 @@ See `docs/automation/POLAR_QUEUE.md` for columns, statuses, and the recovery ord
 
 `application_weight` stays. It is production policy, not a pilot leftover.
 
-Regular work is fast and truthful. Prefer the just-generated Jobright resume. Else attach Perfect Resume / identified `JZ_Resume_911.pdf`. Jobright extension Autofill once, then Polar runs the fast validation pass below and repairs only anomalies. If a resume is already on the widget and it is not a forbidden file, leave it. Do not upload the two-page master `JZ_resume` PDF. Do not fall back to `ai_infra_v1`. If neither generated nor 911 / Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume and continue. Complete ordinary account creation. Write short prompt-faithful answers. Fast validation passes. Submit once. Verify. Persist. Missing Copilot does not stop the run.
+Regular work is fast and truthful. Prefer the just-generated Jobright resume. Else attach Perfect Resume / identified `JZ_Resume_2027.pdf`. Jobright extension Autofill once, then Polar runs the fast validation pass below and repairs only anomalies. If a resume is already on the widget and it is not a forbidden file, leave it. Do not upload the two-page master `JZ_resume` PDF. Do not fall back to `ai_infra_v1`. If neither generated nor Perfect Resume / `JZ_Resume_2027.pdf` can be attached, mark REVIEW_READY with blocker missing_production_resume and continue. Complete ordinary account creation. Write short prompt-faithful answers. Fast validation passes. Submit once. Verify. Persist. Missing Copilot does not stop the run.
 
 ## Fast validation pass
 

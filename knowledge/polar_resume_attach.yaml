@@ -3,26 +3,35 @@
 # Polar and Simplify already store the name. Do not invent another path.
 # Family one-pagers stay BUILD artifacts. Per-role routing is postponed.
 # The two-page master stays inventory.
+#
+# 2026-09-15: owner supplied JZ_Resume_2027.pdf. That is the native-file
+# gold copy. SHA256
+# 2ac0791447eef92e48c4b4cd11da1c4cef6cf8ec787ed78a249a2f0568d4238e.
+# Do not invent skills, dates, or metrics from the PDF.
+# runtime_lines / workflow_lines / submit_check stay on the 2026-09-14
+# 911 wording until the separate sponsorship PR recompiles Polar.
 
 version: 1
-updated: "2026-09-14"
-owner_decision: "Junyi 2026-09-14. Standing policy. Perfect Resume only."
+updated: "2026-09-15"
+owner_decision: "Junyi 2026-09-15. Owner-supplied JZ_Resume_2027.pdf. Stored name stays Perfect Resume."
 
 stored_name: "Perfect Resume"
 selector: polar_simplify_stored_name
-ingest_pdf: "resumes/Perfect Resume/perfect_resume.pdf"
-# Identified on Junyi's Mac 2026-09-14. Same SHA256 as the chat
-# attachment JZ_Resume_911.pdf. Not invented. Not the older compile on
-# cursor/resume-stack-families-744a.
-identified_mac_pdf: "/Users/conny/Desktop/JZ_Resume_911.pdf"
+ingest_pdf: "resumes/Perfect Resume/JZ_Resume_2027.pdf"
+# No new Mac path was identified for JZ_Resume_2027.pdf. Do not invent one.
+# The 2026-09-14 Desktop 911 path is retired so Polar does not attach
+# those older bytes. Polar compiled text still names 911 until recompile.
+identified_mac_pdf: ""
+# Same bytes as ingest_pdf. Kept so Polar compiled paths still resolve.
+compile_alias_pdf: "resumes/Perfect Resume/perfect_resume.pdf"
 master_pdf: "resumes/base/JZ_resume.pdf"
 family_export_pdf: "generated/resumes/export/ai_infra_v1.pdf"
 sanitized_family_pdf: "resumes/families/ai_infra/ai_infra_v1.pdf"
 
 expected_visible_names:
   - "Perfect Resume"
+  - "JZ_Resume_2027.pdf"
   - "perfect_resume.pdf"
-  - "JZ_Resume_911.pdf"
 
 never_upload:
   - "resumes/base/JZ_resume.pdf"

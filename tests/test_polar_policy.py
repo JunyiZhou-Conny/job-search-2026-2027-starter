@@ -383,7 +383,11 @@ class TestWorkflowVersionAndDocuments(unittest.TestCase):
         )
         self.assertEqual(
             docs["production_resume_perfect"]["approved_path"],
+            "resumes/Perfect Resume/perfect_resume.pdf",
+        )
+        self.assertEqual(
             PRODUCTION_RESUME_REPO_PATH,
+            "resumes/Perfect Resume/JZ_Resume_2027.pdf",
         )
         self.assertEqual(
             docs["production_resume_perfect"]["stored_name"],
