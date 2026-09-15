@@ -1,7 +1,7 @@
 # grok-apply-jobs
 
 workflow: grok-apply-jobs
-workflow_version: 2026-09-15.grok-sibling+0e46556d354f
+workflow_version: 2026-09-15.grok-sibling+c0265e9329b9
 executor: grok_bot
 status: fill_only_until_proven
 enabled: false
@@ -65,10 +65,10 @@ schema_mutator: polar-sheet-migration
 
 A Sheet claim is required before any apply work. A different Jobright surface does not remove collision with Polar Local.
 Mint run_id with polar_policy.mint_run_id(executor=grok). Never mint an R- id.
-QUERY run_log for a live apply-ready-jobs or grok-apply-jobs PARTIAL with blank ended_at. polar_policy.start_apply_run_action. If NO_WORK, write this run_id as NO_WORK and exit. Do not upsert PARTIAL. If stale_close, close that row with polar_policy.stale_apply_close_fields and continue.
+QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies. If NO_WORK, write this run_id as NO_WORK and exit. Do not upsert PARTIAL. If stale_close, close that row with polar_policy.stale_apply_close_fields.
 Do not create grok_browser or any browser mutex control key.
 job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Two rows: abort, repeat_key duplicate_job_key.
-Then upsert a run_log row for this run_id with started_at now and result PARTIAL.
+Unless this run exited NO_WORK, upsert this run_id as PARTIAL with blank ended_at, including after stale_close. Polar upserts after a close. Do the same.
 Claim one job close to execution. Do not pre-claim a list. Do not Add All.
 Remember the current NEW status and attempt_count. Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, updated_at now.
 Read back job_key, status, last_stage, claim_run_id.
@@ -101,10 +101,10 @@ Do not create a Sheet tab named scratch or scratch_*. Named writes are the fix. 
 
 One routine run writes one run_log row. workflow is grok-apply-jobs. Copy workflow_version from this file into that row.
 Mint run_id with polar_policy.mint_run_id(executor=grok). The prefix is G-. Never mint an R- id.
-QUERY run_log for a live apply (apply-ready-jobs or grok-apply-jobs, PARTIAL, ended_at blank) before writing PARTIAL. polar_policy.start_apply_run_action. A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes.
-If NO_WORK, write this run_id as NO_WORK with both timestamps and exit. Do not leave a second live PARTIAL.
-If stale_close, close the other apply row with polar_policy.stale_apply_close_fields (`stale_apply_closed; reason=no_ended_at_after_ttl`), then continue.
-Then upsert the row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.
+QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.
+If NO_WORK, write this run_id as NO_WORK with both timestamps and exit. Do not upsert this run as PARTIAL. Do not leave a second live PARTIAL.
+If stale_close, close the other apply row with polar_policy.stale_apply_close_fields (`stale_apply_closed; reason=no_ended_at_after_ttl`).
+Unless this run exited NO_WORK, upsert this run_id as PARTIAL with blank ended_at on run_log, including after stale_close. Polar upserts after a close. Do the same. Do not start apply work without this row. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.
 duration_minutes is polar_policy.run_duration_minutes(started_at, ended_at). Same clock. Never chat wall-clock. If the written minutes disagree, record TELEMETRY_INCONSISTENCY.
 The row is not final until polar_policy.run_log_row_is_final is true.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED. lock_result is NOT_REQUIRED. SKIPPED_LOCKED is historical; never write it.
