@@ -1,7 +1,7 @@
 # chatgpt-production-review
 
 workflow: chatgpt-production-review
-workflow_version: 2026-09-15.future-sponsorship-no+bf2dab21ffc7
+workflow_version: 2026-09-15.apply-runtime-convergence+b40c7e78b50a
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
@@ -33,6 +33,8 @@ Browser access to sheets.google.com is not google_sheets. If the Google connecto
 queue, run_log, incident_log, control, writing_log, heartbeat, and learning_reports are Google Sheet tabs. They are reached through google_sheets.
 A missing tab is a polar-sheet-migration data issue, not CAPABILITY_MISSING, unless google_sheets itself is missing.
 If all required capabilities are available, execute this workflow.
+Prove each required capability once at start. polar_policy.capability_reprove_permitted.
+After they succeed, do not re-prove google_sheets, browser, or local_filesystem mid-run.
 If any required capability is unavailable, report ENVIRONMENT / CAPABILITY_MISSING in this run's own output.
 Name the missing capability. Stop. Do not invent execution.
 Write an incident_log row only if google_sheets is available.

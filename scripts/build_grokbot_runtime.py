@@ -50,11 +50,16 @@ from grokbot_policy import (
 )
 from polar_policy import (
     APPLY_URL_CONFIDENCE,
+    APPLY_WORKFLOW_NAMES,
     ATS_PRIOR_SUBMISSION_BLOCKER,
     ATS_PRIOR_SUBMISSION_REPEAT_KEY,
     CLAIM_REPEAT_ALREADY,
     CLAIM_REPEAT_MISSING_COLUMN,
     CLAIM_REPEAT_RECOVERED,
+    DUPLICATE_JOB_KEY_REPEAT_KEY,
+    SHEET_QUERY_NA_REPEAT_KEY,
+    STALE_APPLY_CLOSE_NOTE,
+    TELEMETRY_INCONSISTENCY,
     DEGREE_LEVEL_REPEAT_KEY,
     INCIDENT_CATEGORIES,
     REQUIRED_QUEUE_READBACK,
@@ -311,7 +316,21 @@ def section_g8(src: RuntimeSources) -> str:
             "same_requisition: one logical owner across executors",
             "",
             "Both executors claim through the same column. Polar writes R- ids, this Bot writes G- ids. polar_policy.executor_from_run_id reads the prefix. No new column, no mutex row, no Grok tab. A Sheet claim is required before any apply work on either Jobright surface.",
-            "Claim one job close to execution. Remember the current status and attempt_count. Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, updated_at now with datetime.isoformat. polar_policy.attempt_claim_job.",
+            "job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Zero rows: append once. One row: update that row. Two or more: abort that job. "
+            f"Incident repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}. Do not claim. Do not Submit. Do not guess.",
+            "One live apply across Polar and this Bot. QUERY run_log for every open apply "
+            "PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. "
+            "polar_policy.start_apply_run_action classifies. NO_WORK if another apply is live "
+            "(started_at younger than work_claim.ttl_minutes): write this run finalized NO_WORK "
+            "and exit. stale_close if it is older or started_at is unparseable: write ended_at "
+            "and FAILED with polar_policy.stale_apply_close_fields. Unless this run exited "
+            "NO_WORK, upsert this run_id as PARTIAL with blank ended_at, including after "
+            "stale_close. That is the live apply mutex. Do not create grok_browser or any "
+            "browser mutex control key.",
+            "Do not create scratch tabs. If a QUERY returns #N/A or #REF!, treat as miss. "
+            f"Incident repeat_key {SHEET_QUERY_NA_REPEAT_KEY}.",
+            "Cheap SKIP before Add, Apply Now, or Start. polar_policy.skip_path_action. Do not generate a resume or open ATS to record a card-level skip.",
+            "Claim one job close to execution. Remember the current status and attempt_count. Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, updated_at now with datetime.isoformat. polar_policy.claim_job_key.",
             "Read back " + ", ".join(REQUIRED_QUEUE_READBACK) + ". polar_policy.confirm_claim_readback. If claim_run_id is not this run_id, the write lost. " + f"Incident repeat_key {CLAIM_REPEAT_ALREADY}. Skip that job on the Agent surface. Do not consume the budget.",
             f"Never recover a live claim owned by another run id, R- or G-. Recover only this executor's abandoned rows: empty claim_run_id, owner run_log result not PARTIAL, or updated_at older than {ttl} minutes. Incident repeat_key {CLAIM_REPEAT_RECOVERED}. Do not bump attempt_count again.",
             f"If the live queue header has no claim_run_id, do not append it. Incident repeat_key {CLAIM_REPEAT_MISSING_COLUMN}. Write OWNER_ACTION_REQUIRED and end the run. Polar's polar-sheet-migration is the only schema mutator.",
@@ -546,18 +565,32 @@ def _identity_and_preflight(name: str) -> List[str]:
     ]
 
 
-def _telemetry_lines(name: str, *, apply_counters: bool) -> List[str]:
+def _telemetry_lines(name: str, *, apply_counters: bool, live_apply_gate: bool) -> List[str]:
     counters = (
         "Update the same run_id row with polar_policy.apply_run_counters."
         if apply_counters
         else "jobs_seen, jobs_attempted, submitted_regular, submitted_priority, blocked, skipped, and submission_unknown stay 0 or blank on this routine. It applies to nothing."
     )
+    if live_apply_gate:
+        start_lines = [
+            "QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.",
+            "If NO_WORK, write this run_id as NO_WORK with both timestamps and exit. Do not upsert this run as PARTIAL. Do not leave a second live PARTIAL.",
+            f"If stale_close, close the other apply row with polar_policy.stale_apply_close_fields (`{STALE_APPLY_CLOSE_NOTE}`).",
+            "Unless this run exited NO_WORK, upsert this run_id as PARTIAL with blank ended_at on run_log, including after stale_close. Polar upserts after a close. Do the same. Do not start apply work without this row. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.",
+        ]
+    else:
+        start_lines = [
+            "This routine is not an apply. Do not run polar_policy.start_apply_run_action. A live or crashed apply PARTIAL does not stop this finalizer.",
+            "Upsert this routine's own run_log row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.",
+        ]
     return [
         "## Run telemetry",
         "",
         f"One routine run writes one run_log row. workflow is {name}. Copy workflow_version from this file into that row.",
         "Mint run_id with polar_policy.mint_run_id(executor=grok). The prefix is G-. Never mint an R- id.",
-        "Upsert the row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.",
+        *start_lines,
+        "duration_minutes is polar_policy.run_duration_minutes(started_at, ended_at). Same clock. Never chat wall-clock. "
+        f"If the written minutes disagree, record {TELEMETRY_INCONSISTENCY}.",
         "The row is not final until polar_policy.run_log_row_is_final is true.",
         "result is " + ", ".join(RUN_LOG_RESULTS) + ". lock_result is NOT_REQUIRED. SKIPPED_LOCKED is historical; never write it.",
         counters,
@@ -589,6 +622,7 @@ def _sheet_contract_lines(*, tabs_never_touched: str) -> List[str]:
         "7. If job_key, status, or last_stage do not match what you meant, repair those fields.",
         "8. If claim_run_id is another run_id, do not overwrite it. Skip that job.",
         "Leave simplify_attempted and simplify_fallback_count blank. Those columns are historical.",
+        "Do not create a Sheet tab named scratch or scratch_*. Named writes are the fix. Column index is not architecture.",
         "",
     ]
 
@@ -614,7 +648,11 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "",
         "A Sheet claim is required before any apply work. A different Jobright surface does not remove collision with Polar Local.",
         "Mint run_id with polar_policy.mint_run_id(executor=grok). Never mint an R- id.",
-        "Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.",
+        "QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies. If NO_WORK, write this run_id as NO_WORK and exit. Do not upsert PARTIAL. If stale_close, close that row with polar_policy.stale_apply_close_fields.",
+        "Do not create grok_browser or any browser mutex control key.",
+        "job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Two rows: abort, "
+        f"repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}.",
+        "Unless this run exited NO_WORK, upsert this run_id as PARTIAL with blank ended_at, including after stale_close. Polar upserts after a close. Do the same.",
         "Claim one job close to execution. Do not pre-claim a list. Do not Add All.",
         "Remember the current NEW status and attempt_count. Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, updated_at now.",
         "Read back " + ", ".join(REQUIRED_QUEUE_READBACK) + ".",
@@ -625,7 +663,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "After each job stage, write last_stage and updated_at on this queue row with datetime.isoformat.",
         "",
         *_sheet_contract_lines(tabs_never_touched=never_touched),
-        *_telemetry_lines(name, apply_counters=True),
+        *_telemetry_lines(name, apply_counters=True, live_apply_gate=True),
         "## Entry",
         "",
         f"entry: {entry.get('surface')}",
@@ -649,7 +687,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "A skip that needed the employer page (closed, hard-fact conflict, ATS prior submission), Jobright Applied, or a historical or requisition duplicate consumes considered and continues.",
         "A Sheet row already in REVIEW_READY, BLOCKED, IN_PROGRESS, SUBMISSION_UNKNOWN, or SKIP is a leftover the Agent re-offers. Skip it without consuming considered and without a Jobright ack. polar_policy.consider_jobright_card(executor=grok) returns that skip with consume_considered false. Three leftovers must leave the whole budget for new claims.",
         "Stop claiming new jobs when polar_policy.considered_budget_exhausted is true.",
-        "Polar Local's apply-ready-jobs has its own budget on its own host. Do not start a second Grok apply routine.",
+        "Polar Local and this Bot share one live-apply gate. polar_policy.start_apply_run_action. Do not start a second grok-apply-jobs while another apply is live. A stale PARTIAL is stale_close, not NO_WORK.",
         "",
         "## Autofill",
         "",
@@ -715,7 +753,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "Missing references: polar_policy.missing_references_action. Do not fabricate DOB, OPT, references, phone, address, or sponsorship.",
         "A blocked job must not stall the worker.",
         "",
-        "Canonical loop: claim → add to Agent queue or Apply Now → Start → blockers → employer ATS → eligibility/dup/ATS-truth check → Autofill once → validate form DOM → writing tiers → email verify if needed → gate check → REVIEW_READY (closed) or Submit + employer confirm (open) → Jobright ack only on proof → minimal Sheet write.",
+        "Canonical loop: cheap SKIP on card/Sheet → claim only if still eligible → add to Agent queue or Apply Now → Start → blockers → employer ATS → Autofill once → validate form DOM → writing tiers → email verify if needed → gate check → REVIEW_READY (closed) or Submit + employer confirm (open) → Jobright ack only on proof → minimal Sheet write.",
         "",
         "considered starts at 0. forms_reached starts at 0. seen starts empty.",
         "If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED. If it is duplicate, abort.",
@@ -727,28 +765,32 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "",
         "For each candidate job:",
         "1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.",
-        "2. Targeted Sheet plus historical-guard lookup. polar_policy.consider_jobright_card with executor grok against Applied, Sheet status, requisition identity, closed, and hard-fact conflict. A skip of closed, Applied, hard-fact-conflict, ATS prior submission, or a historical or requisition duplicate consumes considered. A Sheet-status skip (REVIEW_READY, BLOCKED, IN_PROGRESS, SUBMISSION_UNKNOWN, SKIP) does not consume considered; add its key to seen, do not ack it, do not touch its row. Continue.",
-        "3. If the card or JD already shows a strong prioritized signal, do not claim it. Leave the row for Polar Local. Continue.",
-        "4. Upsert a queue row if missing. NEW is claimable. Claim with polar_policy.attempt_claim_job. Read back. If confirm_claim_readback is not CLAIMED, add the key to seen, Skip it on the Agent surface, continue without consuming considered. After a successful claim, increment considered.",
-        "5. Add that job to the Agent queue, or process it when the Agent surfaces it. Press Start only after the claimed jobs are in the queue. Labels only. Do not invent selectors.",
-        "6. Resume confirmation blocker: confirm the Jobright-generated resume. Missing fields blocker: fill from compiled facts and standing answers only, then Fixed. A required fact this runtime does not hold means leave it and BLOCKED that job.",
-        "7. Apply Now opens the employer ATS. Confirm company and title. Read the JD. Run apply-time hard eligibility before login or form fill. Closed or 404 is SKIP, no sibling.",
-        f"8. If the ATS shows this account already applied to this requisition, status SKIP, blocker {ATS_PRIOR_SUBMISSION_BLOCKER}, DEDUP incident, Jobright I've Applied is permitted. polar_policy.ats_prior_submission_action. Continue.",
-        "9. Capture employer identity and run requisition dedupe. Continue only if still the canonical row.",
-        "10. Authenticate with ordinary browser flows when asked. Account creation is normal work under the applicant-account rule in runtime section G9. Verification codes come from the application Outlook in this browser. Hand SMS-only, hardware key, CAPTCHA after one attempt, ID or SSN upload, and payment to Junyi or mark BLOCKED.",
-        "11. After the real form is visible, increment forms_reached. Autofill once with the Jobright extension. Validate the form DOM: identity, contact, sponsorship wording, referral. Reread the account email field. Academic mailbox on a normal field is wrong.",
-        "12. Resume widget: polar_policy.native_resume_action. Prefer the generated Jobright resume. Else the checksum-verified Perfect Resume cache file from runtime section G5. Never the two-page master or ai_infra.",
-        "13. Finish remaining required fields from runtime section G2. Authorization widgets use polar_policy.auth_form_action. Answer only the asked semantic. Optional identity fields stay blank. Required and unclear widgets BLOCK that job only. Phone, street, and academic mailbox left empty by autofill BLOCK that job only.",
-        "14. Free-response answers follow the writing tiers in runtime section G4. Append one writing_log row per nontrivial question with source=jobright_generated or source=executor_written. Tier 4 is BLOCKED with blocker writing_needs_draft.",
-        f"15. Gate check. submit_enabled is {str(enabled).lower()}. " + (
+        "2. Targeted Sheet plus historical-guard lookup. QUERY that job_key. If the QUERY returns #N/A or #REF!, treat as miss. "
+        f"Incident repeat_key {SHEET_QUERY_NA_REPEAT_KEY}. Do not create scratch_*.",
+        f"   If polar_policy.plan_queue_upsert_by_job_key returns abort, Skip on the Agent, incident repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}, continue.",
+        "   polar_policy.consider_jobright_card with executor grok against Applied, Sheet status, requisition identity, closed, and hard-fact conflict. A skip of closed, Applied, hard-fact-conflict, ATS prior submission, or a historical or requisition duplicate consumes considered. A Sheet-status skip (REVIEW_READY, BLOCKED, IN_PROGRESS, SUBMISSION_UNKNOWN, SKIP) does not consume considered; add its key to seen, do not ack it, do not touch its row. Continue.",
+        "3. Cheap SKIP first. polar_policy.skip_path_action. If the skip is visible on the Agent card or Sheet, Skip that job on the Agent. Do not Add, do not Apply Now, do not Start, do not open ATS. polar_policy.cheap_skip_write_action leaves a terminal Sheet row.",
+        "4. If the card or JD already shows a strong prioritized signal, do not claim it. Leave the row for Polar Local. Continue.",
+        "5. Only if still eligible: upsert one queue row if missing. NEW is claimable. Claim with polar_policy.claim_job_key. That helper uses polar_policy.attempt_claim_job on the one unique row. Read back. If confirm_claim_readback is not CLAIMED, add the key to seen, Skip it on the Agent surface, continue without consuming considered. After a successful claim, increment considered.",
+        "6. Add that job to the Agent queue, or process it when the Agent surfaces it. Press Start only after the claimed jobs are in the queue. Labels only. Do not invent selectors.",
+        "7. Resume confirmation blocker: confirm the Jobright-generated resume. Missing fields blocker: fill from compiled facts and standing answers only, then Fixed. A required fact this runtime does not hold means leave it and BLOCKED that job.",
+        "8. Apply Now opens the employer ATS. Confirm company and title. Read the JD. Run apply-time hard eligibility before login or form fill. Closed or 404 is SKIP, no sibling.",
+        f"9. If the ATS shows this account already applied to this requisition, status SKIP, blocker {ATS_PRIOR_SUBMISSION_BLOCKER}, DEDUP incident, Jobright I've Applied is permitted. polar_policy.ats_prior_submission_action. Continue.",
+        "10. Capture employer identity and run requisition dedupe. Continue only if still the canonical row.",
+        "11. Authenticate with ordinary browser flows when asked. Account creation is normal work under the applicant-account rule in runtime section G9. Verification codes come from the application Outlook in this browser. Hand SMS-only, hardware key, CAPTCHA after one attempt, ID or SSN upload, and payment to Junyi or mark BLOCKED.",
+        "12. After the real form is visible, increment forms_reached. Autofill once with the Jobright extension. Validate the form DOM: identity, contact, sponsorship wording, referral. Reread the account email field. Academic mailbox on a normal field is wrong.",
+        "13. Resume widget: polar_policy.native_resume_action. Prefer the generated Jobright resume. Else the checksum-verified Perfect Resume cache file from runtime section G5. Never the two-page master or ai_infra.",
+        "14. Finish remaining required fields from runtime section G2. Authorization widgets use polar_policy.auth_form_action. Answer only the asked semantic. Optional identity fields stay blank. Required and unclear widgets BLOCK that job only. Phone, street, and academic mailbox left empty by autofill BLOCK that job only.",
+        "15. Free-response answers follow the writing tiers in runtime section G4. Append one writing_log row per nontrivial question with source=jobright_generated or source=executor_written. Tier 4 is BLOCKED with blocker writing_needs_draft.",
+        f"16. Gate check. submit_enabled is {str(enabled).lower()}. " + (
             f"Stop before Submit. Write REVIEW_READY with blocker {GROK_SUBMIT_CLOSED_BLOCKER} and last_stage reviewed. Do not ack Jobright. Continue."
             if not enabled
             else "Before Submit, reread claim_run_id and rerun polar_policy.requisition_submit_blocked. If polar_policy.submit_claim_still_held is false, skip. Validate, Submit once. Proof is employer-page confirmation plus a matching queue readback. Otherwise SUBMISSION_UNKNOWN, no second click."
         ),
-        "16. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.",
-        "17. Return to the Jobright Agent. polar_policy.jobright_ack_action. I've Applied only after employer confirmation by this run, or a verified prior ATS submission. Never ack a REVIEW_READY row.",
-        "18. If this computer cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.",
-        "19. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.",
+        "17. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.",
+        "18. Return to the Jobright Agent. polar_policy.jobright_ack_action. I've Applied only after employer confirmation by this run, or a verified prior ATS submission. Never ack a REVIEW_READY row.",
+        "19. If this computer cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.",
+        "20. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.",
         "",
         "Update the same run_id run_log row with polar_policy.apply_run_counters. lock_result is NOT_REQUIRED. Write ended_at.",
         "Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion. ATS family is only a note.",
@@ -795,7 +837,7 @@ def render_learning_workflow_body(operator: Dict[str, Any]) -> str:
     lines = [
         *_identity_and_preflight(name),
         *_sheet_contract_lines(tabs_never_touched=never_touched),
-        *_telemetry_lines(name, apply_counters=False),
+        *_telemetry_lines(name, apply_counters=False, live_apply_gate=False),
         "## Status",
         "",
         "status: disabled_until_sheet_proof",

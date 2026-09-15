@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-15.future-sponsorship-no+951051b259e1
+workflow_version: 2026-09-15.apply-runtime-convergence+bba5e8fa6b8c
 status: manual_canary
 enabled: false
 needs_browser_lock: false
@@ -33,6 +33,8 @@ Browser access to sheets.google.com is not google_sheets. If the Google connecto
 queue, run_log, incident_log, control, writing_log, heartbeat, and learning_reports are Google Sheet tabs. They are reached through google_sheets.
 A missing tab is a polar-sheet-migration data issue, not CAPABILITY_MISSING, unless google_sheets itself is missing.
 If all required capabilities are available, execute this workflow.
+Prove each required capability once at start. polar_policy.capability_reprove_permitted.
+After they succeed, do not re-prove google_sheets, browser, or local_filesystem mid-run.
 If any required capability is unavailable, report ENVIRONMENT / CAPABILITY_MISSING in this run's own output.
 Name the missing capability. Stop. Do not invent execution.
 Write an incident_log row only if google_sheets is available.
@@ -92,7 +94,9 @@ Those four cells must still match the values from before the canary write. Notes
 These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.
 
 Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.
-Named writes are the fix. Prose that says remember column I is not the fix.
+Named writes are the fix. Prose that says remember column I is not the fix. Column index is not architecture.
+Do not create a Sheet tab named scratch, scratch2, or scratch_*. Do not copy the queue into a new tab to look it up.
+If a QUERY returns #N/A, #REF!, or another error token, polar_policy.sheet_query_failure_action is treat_as_miss_no_scratch. Incident repeat_key sheet_query_na. Continue. Do not invent an index tab.
 
 ## Work order
 
