@@ -117,17 +117,22 @@ class TestSkipAndContinue(unittest.TestCase):
         self.assertTrue(blocked.consume_considered)
         self.assertTrue(blocked.continue_run)
 
+        # Polar production table is unchanged: a REVIEW_READY hold Polar
+        # re-sees on recommendations is a duplicate skip that counts considered.
         held = consider_jobright_card(sheet_status="REVIEW_READY")
-        self.assertEqual(held.action, "skip_review_ready")
-        self.assertFalse(held.consume_considered)
+        self.assertEqual(held.action, "skip_duplicate")
+        self.assertTrue(held.consume_considered)
         self.assertTrue(held.continue_run)
-
-        leftover = 0
-        for _ in range(3):
-            decision = consider_jobright_card(sheet_status="REVIEW_READY")
-            if decision.consume_considered:
-                leftover += 1
-        self.assertFalse(considered_budget_exhausted(leftover, max_considered=3))
+        self.assertEqual(
+            consider_jobright_card(sheet_status="REVIEW_READY", executor="polar"),
+            held,
+        )
+        for status in ("SUBMITTED", "BLOCKED", "IN_PROGRESS", "SUBMISSION_UNKNOWN", "SKIP"):
+            polar = consider_jobright_card(sheet_status=status)
+            self.assertTrue(polar.consume_considered, status)
+            self.assertEqual(
+                consider_jobright_card(sheet_status=status, executor="grok"), polar, status
+            )
 
         admit = consider_jobright_card()
         self.assertEqual(admit.action, "admit")

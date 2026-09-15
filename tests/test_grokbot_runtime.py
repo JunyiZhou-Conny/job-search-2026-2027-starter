@@ -267,7 +267,8 @@ class TestGrokSubmitGate(unittest.TestCase):
         text = runtime()
         self.assertIn("submit_enabled: false", text)
         self.assertIn("REVIEW_READY with blocker grok_submit_gate_closed", text)
-        self.assertIn("REVIEW_READY does not consume considered.", text)
+        self.assertIn("skip it without consuming considered, add its key to seen, and never ack it. Polar's own table is unchanged.", text)
+        self.assertIn("polar_policy.consider_jobright_card with executor grok", text)
         self.assertIn("A routine run cannot open it.", text)
         self.assertIn("Blocker prioritized_not_open_on_grok_cloud", text)
         apply = workflow(GROK_APPLY_WORKFLOW)
@@ -275,9 +276,36 @@ class TestGrokSubmitGate(unittest.TestCase):
         self.assertIn("enabled: false", apply)
         self.assertIn("The gate is closed.", apply)
         self.assertIn("Do not ack Jobright. Continue.", apply)
-        self.assertIn("A REVIEW_READY sheet row is already held. Skip it without consuming considered.", apply)
-        self.assertIn("REVIEW_READY does not consume considered.", apply)
+        self.assertIn("A REVIEW_READY sheet row is already held. Skip it without consuming considered and without a Jobright ack.", apply)
+        self.assertIn("REVIEW_READY does not consume considered; add its key to seen and do not ack it.", apply)
         self.assertNotIn("Skip consumes considered. Continue.", apply)
+        self.assertIn("Never ack a REVIEW_READY row.", apply)
+
+    def test_fill_only_leftovers_do_not_starve_the_next_run(self):
+        from polar_policy import considered_budget_exhausted
+
+        held = consider_jobright_card(sheet_status="REVIEW_READY", executor="grok")
+        self.assertEqual(held.action, "skip_review_ready")
+        self.assertFalse(held.consume_considered)
+        self.assertTrue(held.continue_run)
+        consumed = sum(
+            1
+            for _ in range(3)
+            if consider_jobright_card(sheet_status="REVIEW_READY", executor="grok").consume_considered
+        )
+        self.assertEqual(consumed, 0)
+        self.assertFalse(considered_budget_exhausted(consumed, max_considered=3))
+        # Polar's default table is untouched by the grok branch.
+        polar = consider_jobright_card(sheet_status="REVIEW_READY")
+        self.assertEqual(polar.action, "skip_duplicate")
+        self.assertTrue(polar.consume_considered)
+        with self.assertRaises(ValueError):
+            consider_jobright_card(sheet_status="REVIEW_READY", executor="cloud")
+        # The re-offered card is never acked as applied.
+        self.assertEqual(
+            jobright_ack_action(employer_page_confirmation=False, submit_clicked=False),
+            "do_not_ack",
+        )
 
     def test_grok_submit_action(self):
         self.assertEqual(grok_submit_action(weight="regular", root=ROOT), ("review_ready_stop_before_submit", "grok_submit_gate_closed"))

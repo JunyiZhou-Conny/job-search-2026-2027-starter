@@ -1,7 +1,7 @@
 # grok-apply-jobs
 
 workflow: grok-apply-jobs
-workflow_version: 2026-09-15.grok-sibling+c444c6b0bc50
+workflow_version: 2026-09-15.grok-sibling+6daa57f9b1bf
 executor: grok_bot
 status: fill_only_until_proven
 enabled: false
@@ -128,7 +128,7 @@ prioritized_rows: blocked, blocker prioritized_not_open_on_grok_cloud
 
 3 considered candidates is not 3 submissions.
 A skip of closed, duplicate, Applied, hard-fact-conflict, or ATS prior submission consumes considered and continues.
-A REVIEW_READY sheet row is already held. Skip it without consuming considered.
+A REVIEW_READY sheet row is already held. Skip it without consuming considered and without a Jobright ack. polar_policy.consider_jobright_card(executor=grok) returns skip_review_ready.
 Stop claiming new jobs when polar_policy.considered_budget_exhausted is true.
 Polar Local's apply-ready-jobs has its own budget on its own host. Do not start a second Grok apply routine.
 
@@ -204,7 +204,7 @@ Do not click Add All. Do not View All and add the list. Work one job at a time.
 
 For each candidate job:
 1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.
-2. Targeted Sheet plus historical-guard lookup. polar_policy.consider_jobright_card against Applied, Sheet status including BLOCKED and REVIEW_READY, requisition identity, closed, and hard-fact conflict. A skip of closed, duplicate, Applied, BLOCKED, hard-fact-conflict, or ATS prior submission consumes considered. REVIEW_READY does not consume considered. Continue.
+2. Targeted Sheet plus historical-guard lookup. polar_policy.consider_jobright_card with executor grok against Applied, Sheet status including BLOCKED and REVIEW_READY, requisition identity, closed, and hard-fact conflict. A skip of closed, duplicate, Applied, BLOCKED, hard-fact-conflict, or ATS prior submission consumes considered. REVIEW_READY does not consume considered; add its key to seen and do not ack it. Continue.
 3. If the card or JD already shows a strong prioritized signal, do not claim it. Leave the row for Polar Local. Continue.
 4. Upsert a queue row if missing. NEW is claimable. Claim with polar_policy.attempt_claim_job. Read back. If confirm_claim_readback is not CLAIMED, add the key to seen, Skip it on the Agent surface, continue without consuming considered. After a successful claim, increment considered.
 5. Add that job to the Agent queue, or process it when the Agent surfaces it. Press Start only after the claimed jobs are in the queue. Labels only. Do not invent selectors.
