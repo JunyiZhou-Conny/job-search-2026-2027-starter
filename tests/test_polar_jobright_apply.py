@@ -130,8 +130,21 @@ class TestSkipAndContinue(unittest.TestCase):
         for status in ("SUBMITTED", "BLOCKED", "IN_PROGRESS", "SUBMISSION_UNKNOWN", "SKIP"):
             polar = consider_jobright_card(sheet_status=status)
             self.assertTrue(polar.consume_considered, status)
+            self.assertEqual(consider_jobright_card(sheet_status=status, executor="polar"), polar, status)
+        # Jobright Applied and page-level skips count on both executors.
+        for kwargs in (
+            {"already_applied_on_jobright": True},
+            {"sheet_status": "SUBMITTED"},
+            {"closed": True},
+            {"hard_fact_conflict": True},
+            {"ats_prior_submission": True},
+            {"section_k_hit": True},
+            {"requisition_blocked": True},
+        ):
             self.assertEqual(
-                consider_jobright_card(sheet_status=status, executor="grok"), polar, status
+                consider_jobright_card(executor="grok", **kwargs),
+                consider_jobright_card(**kwargs),
+                kwargs,
             )
 
         admit = consider_jobright_card()
