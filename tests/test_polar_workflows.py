@@ -23,6 +23,12 @@ from polar_policy import (  # noqa: E402
 )
 from polar_workflows import WORKFLOW_RENDERERS, render_workflow  # noqa: E402
 
+sys.path.insert(0, str(ROOT / "tests"))
+from test_polar_runtime import (  # noqa: E402
+    FAST_VALIDATION_CLASSES,
+    assert_no_full_form_audit,
+)
+
 WORKFLOW_DIR = ROOT / "generated" / "polar" / "workflows"
 SECRET_LINE = re.compile(
     r"(?i)(password\s*[:=]\s*\S+|cookie\s*[:=]\s*\S+|set-cookie\s*[:=]"
@@ -235,6 +241,50 @@ class TestGeneratedWorkflows(unittest.TestCase):
             self.assertLess(len(prompt), 2500)
             self.assertIn("TRUST DELEGATION", prompt)
             self.assertIn(url, prompt)
+
+    def test_apply_post_autofill_is_fast_validation_pass(self):
+        text = read_workflow("apply-ready-jobs")
+        self.assertRegex(text, r"(?m)^workflow_version: 2026-09-15\.fast-validation\+[0-9a-f]{12}$")
+        post = parse_contract_block(text, "Post-autofill")
+        self.assertEqual(post.get("trust"), "form_dom")
+        self.assertEqual(post.get("sidebar_is_proof"), "false")
+        self.assertEqual(post.get("full_form_audit"), "false")
+        self.assertEqual(post.get("mode"), "fast_validation_pass")
+        self.assertEqual(post.get("check"), ", ".join(FAST_VALIDATION_CLASSES))
+        self.assertEqual(
+            post.get("trust_when_populated_no_error_no_known_failure"),
+            "eeo_demographics, phone_address_formatting, resume_filename, populated_education_employment, routine_non_material",
+        )
+        assert_no_full_form_audit(self, text, "apply-ready-jobs")
+        self.assertNotIn("check: identity, contact, sponsorship_wording, referral", text)
+        self.assertNotIn("Validate form DOM, not the sidebar", text)
+        self.assertNotIn("Finish remaining required fields from section A", text)
+        self.assertNotIn("Validate, Submit once.", text)
+        self.assertIn(
+            "Fast validation pass on the form DOM, not the sidebar: First Name, Last Name, application email; work-authorization widgets; eligibility-critical widgets; required-but-empty or error widgets; required legal attestations.",
+            text,
+        )
+        self.assertIn("Trust populated routine widgets with no error and no known failure class. Do not re-read the whole form.", text)
+        self.assertIn("11. Fill required-but-empty widgets from section A. Do not walk section A against populated widgets.", text)
+        self.assertIn("Fast validation pass passes, then Submit once.", text)
+        self.assertIn("fast validation pass on the form DOM (five classes) → targeted repair", text)
+        self.assertIn("nickname_on_legal_first_name: wrong value Conny.", text)
+        self.assertIn("Do not assume the profile was fixed.", text)
+        self.assertIn("- re-verify gender, race, ethnicity, veteran, or disability after Autofill", text)
+        self.assertIn("- reproduce Jobright profile filling by hand", text)
+        self.assertIn("Routine forms are the default path. Complex signals: account_or_otp_required, workday_or_eightfold_multistep, large_compliance_block, nontrivial_writing, unusual_eligibility.", text)
+        self.assertIn("autofill_corrections=<class tokens>", text)
+        # Safeties the pass keeps.
+        self.assertIn("Required future-sponsorship widget: Yes. Required H-1B-named widget: No.", text)
+        self.assertIn("Reread the account email field. Academic mailbox on a normal field is wrong.", text)
+        self.assertIn("Clear invented referrals. Do not invent a referrer.", text)
+        self.assertIn("Yes / I applied only after employer confirmation.", text)
+        self.assertIn("Do not click Submit again.", text)
+        self.assertIn("Never invent facts.", text)
+        learning = read_workflow("production-learning-daily")
+        self.assertIn("- Autofill corrections by class, from autofill_corrections tokens in run_log notes", learning)
+        for name in WORKFLOW_RENDERERS:
+            self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-15\.fast-validation\+", name)
 
     def test_apply_url_confidence_stays_in_queue_schema(self):
         header = (ROOT / "generated" / "polar" / "queue_schema.csv").read_text(
