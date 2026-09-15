@@ -570,7 +570,7 @@ def _telemetry_lines(name: str, *, apply_counters: bool, live_apply_gate: bool) 
             "QUERY run_log for a live apply (apply-ready-jobs or grok-apply-jobs, PARTIAL, ended_at blank) before writing PARTIAL. polar_policy.start_apply_run_action. A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes.",
             "If NO_WORK, write this run_id as NO_WORK with both timestamps and exit. Do not leave a second live PARTIAL.",
             f"If stale_close, close the other apply row with polar_policy.stale_apply_close_fields (`{STALE_APPLY_CLOSE_NOTE}`), then continue.",
-            "Otherwise upsert the row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.",
+            "Then upsert the row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.",
         ]
     else:
         start_lines = [
@@ -646,7 +646,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "Do not create grok_browser or any browser mutex control key.",
         "job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Two rows: abort, "
         f"repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}.",
-        "Otherwise upsert a run_log row for this run_id with started_at now and result PARTIAL.",
+        "Then upsert a run_log row for this run_id with started_at now and result PARTIAL.",
         "Claim one job close to execution. Do not pre-claim a list. Do not Add All.",
         "Remember the current NEW status and attempt_count. Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, updated_at now.",
         "Read back " + ", ".join(REQUIRED_QUEUE_READBACK) + ".",
