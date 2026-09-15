@@ -27,6 +27,7 @@ from polar_policy import (  # noqa: E402
     sheet_ready_is_apply_admission,
 )
 from polar_workflows import render_workflow  # noqa: E402
+from plan_archive_queue import main as plan_archive_main, plan_from_rows  # noqa: E402
 from build_polar_runtime import compile_sections, render as render_polar  # noqa: E402
 
 OPERATOR = None
@@ -98,6 +99,22 @@ class TestArchiveQueueCopyNotDelete(unittest.TestCase):
             ),
             (0, 2),
         )
+
+    def test_read_only_planner_blocks_when_apply_is_live(self):
+        import tempfile
+
+        plan = plan_from_rows(
+            [{"status": "READY_REGULAR"}, {"status": "SUBMITTED"}],
+            apply_is_live=True,
+        )
+        self.assertEqual(plan["archive"], 1)
+        self.assertEqual(plan["keep_live"], 1)
+        self.assertFalse(plan["copy_permitted"])
+        with tempfile.NamedTemporaryFile("w", suffix=".csv", delete=False) as handle:
+            handle.write("status\nREADY_REGULAR\nSUBMITTED\n")
+            path = handle.name
+        self.assertEqual(plan_archive_main(["--queue-csv", path, "--apply-live"]), 2)
+        self.assertEqual(plan_archive_main(["--queue-csv", path]), 0)
 
     def test_migration_compile_is_copy_not_delete(self):
         text = render_workflow("polar-sheet-migration", _operator())
