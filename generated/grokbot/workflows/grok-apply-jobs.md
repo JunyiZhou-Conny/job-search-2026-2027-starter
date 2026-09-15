@@ -1,7 +1,7 @@
 # grok-apply-jobs
 
 workflow: grok-apply-jobs
-workflow_version: 2026-09-15.grok-sibling+c0265e9329b9
+workflow_version: 2026-09-15.grok-sibling+20b67a772f6b
 executor: grok_bot
 status: fill_only_until_proven
 enabled: false
@@ -65,7 +65,7 @@ schema_mutator: polar-sheet-migration
 
 A Sheet claim is required before any apply work. A different Jobright surface does not remove collision with Polar Local.
 Mint run_id with polar_policy.mint_run_id(executor=grok). Never mint an R- id.
-QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies. If NO_WORK, write this run_id as NO_WORK and exit. Do not upsert PARTIAL. If stale_close, close that row with polar_policy.stale_apply_close_fields.
+One QUERY of run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. Do not repeat it later in the run. polar_policy.start_apply_run_action classifies. If NO_WORK, write this run_id as NO_WORK and exit. Do not upsert PARTIAL. If stale_close, close that row with polar_policy.stale_apply_close_fields.
 Do not create grok_browser or any browser mutex control key.
 job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Two rows: abort, repeat_key duplicate_job_key.
 Unless this run exited NO_WORK, upsert this run_id as PARTIAL with blank ended_at, including after stale_close. Polar upserts after a close. Do the same.
@@ -81,6 +81,9 @@ After each job stage, write last_stage and updated_at on this queue row with dat
 ## Sheet write contract
 
 mode: named_header_mapping
+batch: required
+write_mode: named_header_batch
+one_cell_then_reread: false
 required_readback: job_key, status, last_stage, claim_run_id
 blank_policy: write_explicit_blank
 never_omit: apply_url_confidence
@@ -88,7 +91,7 @@ tabs_never_touched: control, heartbeat, learning_reports, learning_reports
 
 1. Read the actual header row of the tab you are writing.
 2. Build a field-name to column mapping from those headers.
-3. Write fields by header name, not by remembered position.
+3. Write fields by header name, not by remembered position. One named-header batch per row mutation. Do not write one cell, reread, then write the next cell.
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
 6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
@@ -97,11 +100,23 @@ tabs_never_touched: control, heartbeat, learning_reports, learning_reports
 Leave simplify_attempted and simplify_fallback_count blank. Those columns are historical.
 Do not create a Sheet tab named scratch or scratch_*. Named writes are the fix. Column index is not architecture.
 
+Start Sheet I/O is two QUERYs, then stop: one live-apply PARTIAL with blank ended_at, and one recovery QUERY for SUBMISSION_UNKNOWN and IN_PROGRESS together.
+polar_policy.sheet_query_plan(phase='apply_start'). polar_policy.recovery_query_is_batched is true. polar_policy.live_apply_query_is_batched is true.
+Do not repeat the live-apply QUERY later in the run. Do not split recovery into two status scans.
+incident_id: one QUERY of today's INC-YYYYMMDD- prefix when minting. polar_policy.sheet_query_plan(phase='incident').
+polar_policy.sheet_io_batching_required is true. polar_policy.full_queue_scan_permitted is false.
+Writes use polar_policy.sheet_write_mode named_header_batch. polar_policy.one_cell_then_reread_permitted is false.
+Do not re-prove google_sheets, browser, or local_filesystem mid-run. polar_policy.capability_reprove_mid_run_permitted is false.
+Do not dump READY_* inventory. polar_policy.dump_ready_inventory_permitted is false.
+Per card: one job_key QUERY, then stop. company+role+location only on a job_key miss. polar_policy.company_role_location_query_permitted.
+Named-field readback after a batched write is not a second job_key QUERY. polar_policy.sheet_write_readback_is_repeat_query is false.
+Do not QUERY the same job_key after claim. polar_policy.sheet_query_after_claim_permitted is false.
+
 ## Run telemetry
 
 One routine run writes one run_log row. workflow is grok-apply-jobs. Copy workflow_version from this file into that row.
 Mint run_id with polar_policy.mint_run_id(executor=grok). The prefix is G-. Never mint an R- id.
-QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.
+One QUERY of run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. Do not repeat this QUERY later in the run. polar_policy.start_apply_run_action classifies live versus stale. polar_policy.live_apply_query_is_batched.
 If NO_WORK, write this run_id as NO_WORK with both timestamps and exit. Do not upsert this run as PARTIAL. Do not leave a second live PARTIAL.
 If stale_close, close the other apply row with polar_policy.stale_apply_close_fields (`stale_apply_closed; reason=no_ended_at_after_ttl`).
 Unless this run exited NO_WORK, upsert this run_id as PARTIAL with blank ended_at on run_log, including after stale_close. Polar upserts after a close. Do the same. Do not start apply work without this row. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.
@@ -205,14 +220,14 @@ Canonical loop: cheap SKIP on card/Sheet → claim only if still eligible → ad
 considered starts at 0. forms_reached starts at 0. seen starts empty.
 If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED. If it is duplicate, abort.
 
-Recover first. Filter this executor's own SUBMISSION_UNKNOWN and abandoned G- IN_PROGRESS rows. Verify on the employer portal or in Outlook. Never blindly resubmit. Recovery does not consume considered.
+Recover first. One QUERY for this executor's own SUBMISSION_UNKNOWN and abandoned G- IN_PROGRESS rows together. polar_policy.recovery_query_is_batched. Verify on the employer portal or in Outlook. Never blindly resubmit. Recovery does not consume considered.
 
 Then open https://jobright.ai/agent while already logged in.
 Do not click Add All. Do not View All and add the list. Work one job at a time.
 
 For each candidate job:
 1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.
-2. Targeted Sheet plus historical-guard lookup. QUERY that job_key. If the QUERY returns #N/A or #REF!, treat as miss. Incident repeat_key sheet_query_na. Do not create scratch_*.
+2. Targeted Sheet plus historical-guard lookup. One QUERY of that job_key, then stop. If the QUERY returns #N/A or #REF!, treat as miss. Incident repeat_key sheet_query_na. Do not create scratch_*.
    If polar_policy.plan_queue_upsert_by_job_key returns abort, Skip on the Agent, incident repeat_key duplicate_job_key, continue.
    polar_policy.consider_jobright_card with executor grok against Applied, Sheet status, requisition identity, closed, and hard-fact conflict. A skip of closed, Applied, hard-fact-conflict, ATS prior submission, or a historical or requisition duplicate consumes considered. A Sheet-status skip (REVIEW_READY, BLOCKED, IN_PROGRESS, SUBMISSION_UNKNOWN, SKIP) does not consume considered; add its key to seen, do not ack it, do not touch its row. Continue.
 3. Cheap SKIP first. polar_policy.skip_path_action. If the skip is visible on the Agent card or Sheet, Skip that job on the Agent. Do not Add, do not Apply Now, do not Start, do not open ATS. polar_policy.cheap_skip_write_action leaves a terminal Sheet row.
@@ -232,7 +247,7 @@ For each candidate job:
 17. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.
 18. Return to the Jobright Agent. polar_policy.jobright_ack_action. I've Applied only after employer confirmation by this run, or a verified prior ATS submission. Never ack a REVIEW_READY row.
 19. If this computer cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.
-20. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.
+20. Update the Sheet after every meaningful stage with one named-header batch. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only. Named-field readback is not a second job_key QUERY.
 
 Update the same run_id run_log row with polar_policy.apply_run_counters. lock_result is NOT_REQUIRED. Write ended_at.
 Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion. ATS family is only a note.

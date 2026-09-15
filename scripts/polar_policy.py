@@ -243,6 +243,13 @@ FORM_COMPLEXITY_SIGNALS = (
 )
 AUTOFILL_CORRECTIONS_NOTE_TOKEN = "autofill_corrections"
 QUEUE_READ_SCOPE = "targeted"
+SHEET_WRITE_MODE = "named_header_batch"
+APPLY_START_QUERY_CONCERNS = (
+    "live_apply_partial",
+    "recovery_unknown_in_progress",
+)
+CARD_QUERY_CONCERNS = ("job_key",)
+INCIDENT_QUERY_CONCERNS = ("incident_id_today_prefix",)
 TARGETED_QUEUE_STATUSES = (
     "BLOCKED",
     "SUBMITTED",
@@ -1480,6 +1487,123 @@ def sheet_io_repeat_lookup_permitted(*, already_queried_this_key: bool) -> bool:
 
 def chatty_sheet_io_permitted() -> bool:
     return False
+
+
+def sheet_io_batching_required() -> bool:
+    return True
+
+
+def full_queue_scan_permitted() -> bool:
+    """Live apply/discover QUERY. Archive planner may read a provided CSV."""
+    return False
+
+
+def dump_ready_inventory_permitted() -> bool:
+    return False
+
+
+def sheet_write_mode() -> str:
+    return SHEET_WRITE_MODE
+
+
+def sheet_write_batch_required() -> bool:
+    return True
+
+
+def one_cell_then_reread_permitted() -> bool:
+    return False
+
+
+def capability_reprove_mid_run_permitted() -> bool:
+    return False
+
+
+def run_log_history_scan_permitted() -> bool:
+    return False
+
+
+def recovery_query_is_batched() -> bool:
+    """One QUERY covers SUBMISSION_UNKNOWN and IN_PROGRESS together."""
+    return True
+
+
+def live_apply_query_is_batched() -> bool:
+    """One QUERY covers both apply workflows with PARTIAL and blank ended_at."""
+    return True
+
+
+def sheet_write_readback_is_repeat_query() -> bool:
+    """Named-field readback of the row just written is part of the write."""
+    return False
+
+
+def sheet_query_after_claim_permitted() -> bool:
+    return False
+
+
+def apply_start_query_concerns() -> Tuple[str, ...]:
+    return APPLY_START_QUERY_CONCERNS
+
+
+def card_query_concerns() -> Tuple[str, ...]:
+    return CARD_QUERY_CONCERNS
+
+
+def incident_query_concerns() -> Tuple[str, ...]:
+    return INCIDENT_QUERY_CONCERNS
+
+
+def sheet_query_remaining(*, already_queried_this_concern: bool) -> int:
+    return 0 if already_queried_this_concern else 1
+
+
+def company_role_location_query_permitted(*, job_key_miss: bool) -> bool:
+    return bool(job_key_miss)
+
+
+def sheet_query_plan(
+    *,
+    phase: str,
+    already_queried: Sequence[str] = (),
+) -> Tuple[str, ...]:
+    """Remaining QUERY concerns for one apply-start, card, or incident mint."""
+    token = normalize_text(phase).replace(" ", "_")
+    if token == "apply_start":
+        allowed = APPLY_START_QUERY_CONCERNS
+    elif token == "card":
+        allowed = CARD_QUERY_CONCERNS
+    elif token == "incident":
+        allowed = INCIDENT_QUERY_CONCERNS
+    else:
+        raise ValueError(f"unknown sheet query phase: {phase}")
+    done = {normalize_text(item).replace(" ", "_") for item in already_queried}
+    return tuple(
+        item
+        for item in allowed
+        if normalize_text(item).replace(" ", "_") not in done
+    )
+
+
+def sheet_io_batching_lines(*, apply_start: bool) -> Tuple[str, ...]:
+    """Compile sentences for Polar and Grok. Keep them identical."""
+    shared = (
+        "polar_policy.sheet_io_batching_required is true. polar_policy.full_queue_scan_permitted is false.",
+        "Writes use polar_policy.sheet_write_mode named_header_batch. polar_policy.one_cell_then_reread_permitted is false.",
+        "Do not re-prove google_sheets, browser, or local_filesystem mid-run. polar_policy.capability_reprove_mid_run_permitted is false.",
+        "Do not dump READY_* inventory. polar_policy.dump_ready_inventory_permitted is false.",
+        "Per card: one job_key QUERY, then stop. company+role+location only on a job_key miss. polar_policy.company_role_location_query_permitted.",
+        "Named-field readback after a batched write is not a second job_key QUERY. polar_policy.sheet_write_readback_is_repeat_query is false.",
+        "Do not QUERY the same job_key after claim. polar_policy.sheet_query_after_claim_permitted is false.",
+    )
+    if not apply_start:
+        return shared
+    return (
+        "Start Sheet I/O is two QUERYs, then stop: one live-apply PARTIAL with blank ended_at, and one recovery QUERY for SUBMISSION_UNKNOWN and IN_PROGRESS together.",
+        "polar_policy.sheet_query_plan(phase='apply_start'). polar_policy.recovery_query_is_batched is true. polar_policy.live_apply_query_is_batched is true.",
+        "Do not repeat the live-apply QUERY later in the run. Do not split recovery into two status scans.",
+        "incident_id: one QUERY of today's INC-YYYYMMDD- prefix when minting. polar_policy.sheet_query_plan(phase='incident').",
+        *shared,
+    )
 
 
 def scratch_tab_permitted() -> bool:

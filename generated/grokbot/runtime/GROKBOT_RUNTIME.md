@@ -420,7 +420,7 @@ same_requisition: one logical owner across executors
 
 Both executors claim through the same column. Polar writes R- ids, this Bot writes G- ids. polar_policy.executor_from_run_id reads the prefix. No new column, no mutex row, no Grok tab. A Sheet claim is required before any apply work on either Jobright surface.
 job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Zero rows: append once. One row: update that row. Two or more: abort that job. Incident repeat_key duplicate_job_key. Do not claim. Do not Submit. Do not guess.
-One live apply across Polar and this Bot. QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies. NO_WORK if another apply is live (started_at younger than work_claim.ttl_minutes): write this run finalized NO_WORK and exit. stale_close if it is older or started_at is unparseable: write ended_at and FAILED with polar_policy.stale_apply_close_fields. Unless this run exited NO_WORK, upsert this run_id as PARTIAL with blank ended_at, including after stale_close. That is the live apply mutex. Do not create grok_browser or any browser mutex control key.
+One live apply across Polar and this Bot. One QUERY of run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. Do not repeat it later in the run. polar_policy.start_apply_run_action classifies. NO_WORK if another apply is live (started_at younger than work_claim.ttl_minutes): write this run finalized NO_WORK and exit. stale_close if it is older or started_at is unparseable: write ended_at and FAILED with polar_policy.stale_apply_close_fields. Unless this run exited NO_WORK, upsert this run_id as PARTIAL with blank ended_at, including after stale_close. That is the live apply mutex. Do not create grok_browser or any browser mutex control key.
 Do not create scratch tabs. If a QUERY returns #N/A or #REF!, treat as miss. Incident repeat_key sheet_query_na.
 Cheap SKIP before Add, Apply Now, or Start. polar_policy.skip_path_action. Do not generate a resume or open ATS to record a card-level skip.
 Claim one job close to execution. Remember the current status and attempt_count. Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, updated_at now with datetime.isoformat. polar_policy.claim_job_key.
@@ -428,7 +428,18 @@ Read back job_key, status, last_stage, claim_run_id. polar_policy.confirm_claim_
 Never recover a live claim owned by another run id, R- or G-. Recover only this executor's abandoned rows: empty claim_run_id, owner run_log result not PARTIAL, or updated_at older than 180 minutes. Incident repeat_key work_claim_recovered. Do not bump attempt_count again.
 If the live queue header has no claim_run_id, do not append it. Incident repeat_key missing_claim_column. Write OWNER_ACTION_REQUIRED and end the run. Polar's polar-sheet-migration is the only schema mutator.
 Before any Submit, reread claim_run_id and rerun polar_policy.requisition_submit_blocked on the live sibling rows. polar_policy.submit_claim_still_held false means do not Submit and do not repair a foreign claim.
-Targeted lookups only: job_key, then company+role+location, then status in BLOCKED, SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, SKIP, REVIEW_READY. Do not read every queue row. A full-queue read is forbidden. polar_policy.full_queue_read_permitted is false.
+Targeted lookups only: job_key, then company+role+location only on a job_key miss, then status in BLOCKED, SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, SKIP, REVIEW_READY. Do not read every queue row. A full-queue read is forbidden. polar_policy.full_queue_read_permitted is false.
+Start Sheet I/O is two QUERYs, then stop: one live-apply PARTIAL with blank ended_at, and one recovery QUERY for SUBMISSION_UNKNOWN and IN_PROGRESS together.
+polar_policy.sheet_query_plan(phase='apply_start'). polar_policy.recovery_query_is_batched is true. polar_policy.live_apply_query_is_batched is true.
+Do not repeat the live-apply QUERY later in the run. Do not split recovery into two status scans.
+incident_id: one QUERY of today's INC-YYYYMMDD- prefix when minting. polar_policy.sheet_query_plan(phase='incident').
+polar_policy.sheet_io_batching_required is true. polar_policy.full_queue_scan_permitted is false.
+Writes use polar_policy.sheet_write_mode named_header_batch. polar_policy.one_cell_then_reread_permitted is false.
+Do not re-prove google_sheets, browser, or local_filesystem mid-run. polar_policy.capability_reprove_mid_run_permitted is false.
+Do not dump READY_* inventory. polar_policy.dump_ready_inventory_permitted is false.
+Per card: one job_key QUERY, then stop. company+role+location only on a job_key miss. polar_policy.company_role_location_query_permitted.
+Named-field readback after a batched write is not a second job_key QUERY. polar_policy.sheet_write_readback_is_repeat_query is false.
+Do not QUERY the same job_key after claim. polar_policy.sheet_query_after_claim_permitted is false.
 Time partition is defense in depth, not the ownership mechanism. Polar runs at minute 20. This routine runs at a disjoint minute. The claim is the mechanism.
 
 GitHub holds configuration, policy, evidence, and audit.
@@ -717,6 +728,9 @@ Sheet writes:
 Read the actual header row before every Sheet write.
 Build a field-name to column mapping from those headers.
 Write by header name. Write explicit blanks. Do not shorten a positional row.
+Sheet writes are one named-header batch per row mutation. Do not write one cell, reread, then write the next cell.
+Do not re-prove google_sheets mid-run. Prove required capabilities once at start.
+Do not scan the full queue. One job_key QUERY per card. Named-field readback after a write is not a second QUERY.
 apply_url_confidence must stay in its named column even when the value is none or blank.
 After an important queue write, read back job_key, status, last_stage, and claim_run_id.
 If job_key, status, or last_stage do not match, repair those fields.

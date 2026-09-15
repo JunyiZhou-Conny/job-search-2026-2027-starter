@@ -1,7 +1,7 @@
 # polar-scheduler-heartbeat
 
 workflow: polar-scheduler-heartbeat
-workflow_version: 2026-09-16.apply-runtime-archive+23f30101c803
+workflow_version: 2026-09-16.apply-runtime-sheet-io+23f30101c803
 status: retired
 enabled: false
 needs_browser_lock: false

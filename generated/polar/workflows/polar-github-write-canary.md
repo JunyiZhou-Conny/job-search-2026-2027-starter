@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-16.apply-runtime-archive+bba5e8fa6b8c
+workflow_version: 2026-09-16.apply-runtime-sheet-io+5416bf089d50
 status: manual_canary
 enabled: false
 needs_browser_lock: false
@@ -66,13 +66,16 @@ Unrelated Polar workflows may already be using their own browser surfaces.
 ## Sheet write contract
 
 mode: named_header_mapping
+batch: required
+write_mode: named_header_batch
+one_cell_then_reread: false
 required_readback: job_key, status, last_stage, claim_run_id
 blank_policy: write_explicit_blank
 never_omit: apply_url_confidence
 
 1. Read the actual header row of the tab you are writing.
 2. Build a field-name to column mapping from those headers.
-3. Write fields by header name, not by remembered position.
+3. Write fields by header name, not by remembered position. One named-header batch per row mutation. Do not write one cell, reread, then write the next cell.
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
 6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
