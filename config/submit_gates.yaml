@@ -1,4 +1,4 @@
-updated: "2026-09-08"
+updated: "2026-09-15"
 cursor_cloud:
   gates:
     ashby: G1
@@ -11,4 +11,14 @@ polar_local:
   gate_model: capability_policy
   writing_observation_mode: true
   prioritized_auto_submit: true
+  regular_submit_cap_per_run: 3
+# Grok Bot sibling executor on the Jobright Agent surface. Closed at birth.
+# Opens only after the four proofs in docs/automation/GROKBOT.md and an
+# owner edit here. submit_enabled false means fill-only: validate, stop
+# before Submit, REVIEW_READY with blocker grok_submit_gate_closed.
+grok_cloud:
+  gate_model: capability_policy
+  submit_enabled: false
+  writing_observation_mode: true
+  prioritized_auto_submit: false
   regular_submit_cap_per_run: 3

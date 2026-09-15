@@ -604,14 +604,55 @@ ashby_spam_submit_block:
 
 # One authorized Cloud Submit on a NEW pod (Junyi 2026-08-24)
 # Workday / ATS account walls (CVS Health 2026-08-23)
+# era pre_jobright: supervised Cloud Chrome tests. Does not bind Polar
+# Local or Grok Bot. Production executors follow applicant_account_rule.
 account_creation_wall:
   decided: "2026-08-23"
+  era: pre_jobright
+  binds: cursor_cloud_supervised_tests_only
+  superseded_by: applicant_account_rule
   do:
     - Close the tab.
     - Do not create Workday / Greenhouse / MyGreenhouse accounts.
     - Do not pick a sibling requisition from the same board.
     - Log autofill_blocked or similar in data/activity_log.csv.
   reason: "Junyi: do not create accounts during these supervised tests."
+
+# Executor-neutral applicant-account rule. Junyi approved 2026-09-15 from
+# the Polar + Grok sibling report (docs/automation/GROKBOT.md). Binds Polar
+# Local and Grok Bot. Rendered into GROKBOT_RUNTIME now. The Polar render
+# waits for the next Polar compile window so a live apply run keeps its
+# loaded bytes. Cross-executor mitigation starts at churn tolerance.
+applicant_account_rule:
+  decided: "2026-09-15"
+  era: jobright
+  binds:
+    - polar_local
+    - grok_cloud
+  rule: >
+    Creating an employer ATS applicant account (Workday, SuccessFactors,
+    iCIMS, Oracle, Taleo, MyGreenhouse, Eightfold, and similar) is
+    ordinary execution for Polar Local and Grok Bot when every condition
+    below holds.
+  conditions:
+    - The account email is the APPLICATION mailbox, never the academic mailbox.
+    - The password is browser-generated and saved in that executor's own browser password store. Never type it into chat, the Sheet, git, Bot memory, or a Secret.
+    - Email verification is completed from the application Outlook inbox in the same browser.
+    - One applicant account per ATS tenant per executor browser. Reuse saved credentials or forgot-password. Never create a second account to change email or to bypass a lockout.
+    - Stop and mark BLOCKED on that job only when the wall demands SMS-only verification with no Outlook alternative, a hardware key, a CAPTCHA after one normal attempt, an ID or SSN upload, or payment.
+    - ITAR or U.S. Person account prompts are answered truthfully and the job continues under the existing export-control rule.
+  cross_executor:
+    mitigation: churn_tolerance
+    meaning: >
+      If Polar created the tenant account in the Mac browser and Grok
+      meets the same tenant without a saved password, Grok does
+      forgot-password through Outlook and Polar repeats it later. Count
+      that under time_lost_category ACCOUNT_CREATION. Do not build tenant
+      affinity or an ats_accounts tab until incident counts show cost.
+  supersedes:
+    - "account_creation_wall (2026-08-23 supervised Cloud tests)"
+    - "clicker_cheap_cuts.never_click.mygreenhouse_login account clause"
+    - "generated/polar/LIVE.md and ats_sweep pilot packets: do not create an employer ATS account"
 
 # Closed / vanished postings (Together AI 2026-08-23; will happen often)
 closed_posting:
@@ -654,7 +695,15 @@ clicker_cheap_cuts:
       quick-apply. That is a login wall.
     ashby_native_autofill: >
       Never click Ashby native "Autofill from resume" / Upload file.
-    mygreenhouse_login: "Never click MyGreenhouse login. Never create an account."
+    mygreenhouse_login:
+      rule: "Never click MyGreenhouse login. Never create an account."
+      era: pre_jobright
+      binds: cursor_cloud_clicker_only
+      superseded_by: applicant_account_rule
+      note: >
+        The click ban still applies to the Cloud Computer Use clicker.
+        The account clause is 2026-08 supervised-test text and does not
+        bind Polar Local or Grok Bot.
     run_autofill_again: "Never Run Autofill Again."
     generate_with_ai: "Never click Generate with AI."
   do_not_run_autofill_again: true
