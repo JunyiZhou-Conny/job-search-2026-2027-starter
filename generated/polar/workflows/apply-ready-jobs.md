@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-16.apply-runtime-convergence+67de2afa2aa1
+workflow_version: 2026-09-16.apply-runtime-convergence+9508a1910216
 status: production
 enabled: true
 needs_browser_lock: false
@@ -79,9 +79,10 @@ A stale polar_browser owner_run_id must not stop this workflow.
 Unrelated Polar workflows may already be using their own browser surfaces.
 
 Mint run_id first. Then QUERY run_log for a live apply: workflow in apply-ready-jobs, grok-apply-jobs; result PARTIAL; ended_at blank. polar_policy.start_apply_run_action.
-Do not read every historical run_log row.
+A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical run_log row.
 If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.
-One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-ready-jobs or grok-apply-jobs.
+If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.
+One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-ready-jobs or grok-apply-jobs while another apply is live.
 Do not acquire polar_browser. Do not create grok_browser.
 
 Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.

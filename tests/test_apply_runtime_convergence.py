@@ -19,9 +19,12 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from polar_policy import (  # noqa: E402
     APPLY_WORKFLOW_NAMES,
     DUPLICATE_JOB_KEY_REPEAT_KEY,
+    STALE_APPLY_CLOSE_NOTE,
+    STALE_APPLY_CLOSE_RESULT,
     SHEET_QUERY_NA_REPEAT_KEY,
     TELEMETRY_INCONSISTENCY,
     apply_run_is_live,
+    apply_run_is_stale,
     attempt_claim_job,
     capability_reprove_permitted,
     cheap_skip_claims_in_progress,
@@ -44,6 +47,7 @@ from polar_policy import (  # noqa: E402
     scratch_tab_permitted,
     sheet_query_failure_action,
     skip_path_action,
+    stale_apply_close_fields,
     start_apply_run_action,
     tab_is_forbidden_scratch,
     telemetry_duration_status,
@@ -191,44 +195,80 @@ class TestStateConcurrency(unittest.TestCase):
             "run_id": "R-20260915-0816",
             "workflow": "apply-ready-jobs",
             "result": "PARTIAL",
+            "started_at": "2026-09-15T09:16:00-04:00",
             "ended_at": "",
         }
-        self.assertTrue(apply_run_is_live(live))
-        self.assertEqual(start_apply_run_action([live]), "NO_WORK")
+        self.assertTrue(apply_run_is_live(live, now=NOW))
+        self.assertFalse(apply_run_is_stale(live, now=NOW))
+        self.assertEqual(start_apply_run_action([live], now=NOW), "NO_WORK")
         self.assertEqual(
-            start_apply_run_action([live], this_run_id="R-20260915-0816"),
+            start_apply_run_action([live], this_run_id="R-20260915-0816", now=NOW),
             "continue",
         )
         grok_live = {
             "run_id": "G-20260915-105000",
             "workflow": "grok-apply-jobs",
             "result": "PARTIAL",
+            "started_at": "2026-09-15T09:50:00-04:00",
             "ended_at": "",
         }
-        self.assertEqual(start_apply_run_action([grok_live]), "NO_WORK")
-        self.assertEqual(live_apply_run_id([grok_live]), "G-20260915-105000")
+        self.assertEqual(start_apply_run_action([grok_live], now=NOW), "NO_WORK")
+        self.assertEqual(live_apply_run_id([grok_live], now=NOW), "G-20260915-105000")
         closed_partial = {
             "run_id": "R-20260914-1631",
             "workflow": "apply-ready-jobs",
             "result": "PARTIAL",
+            "started_at": "2026-09-14T16:31:00-04:00",
             "ended_at": "2026-09-14T17:02:08-04:00",
         }
-        self.assertFalse(apply_run_is_live(closed_partial))
-        self.assertEqual(start_apply_run_action([closed_partial]), "continue")
+        self.assertFalse(apply_run_is_live(closed_partial, now=NOW))
+        self.assertEqual(start_apply_run_action([closed_partial], now=NOW), "continue")
         discover = {
             "run_id": "R-20260913-180123",
             "workflow": "discover-jobs-hourly",
             "result": "PARTIAL",
+            "started_at": "2026-09-13T18:01:23-04:00",
             "ended_at": "",
         }
-        self.assertFalse(apply_run_is_live(discover))
+        self.assertFalse(apply_run_is_live(discover, now=NOW))
         success = {
             "run_id": "R-20260915-0920",
             "workflow": "apply-ready-jobs",
             "result": "SUCCESS",
             "ended_at": "2026-09-15T09:52:00-04:00",
         }
-        self.assertEqual(start_apply_run_action([success]), "continue")
+        self.assertEqual(start_apply_run_action([success], now=NOW), "continue")
+
+    def test_stale_partial_closes_so_recovery_can_run(self):
+        crashed = {
+            "run_id": "R-20260915-0620",
+            "workflow": "apply-ready-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T06:20:00-04:00",
+            "ended_at": "",
+            "notes": "browser disconnect",
+        }
+        self.assertTrue(apply_run_is_stale(crashed, now=NOW))
+        self.assertFalse(apply_run_is_live(crashed, now=NOW))
+        self.assertEqual(start_apply_run_action([crashed], now=NOW), "stale_close")
+        fields = stale_apply_close_fields(crashed, now=NOW)
+        self.assertEqual(fields["result"], STALE_APPLY_CLOSE_RESULT)
+        self.assertEqual(fields["ended_at"], "2026-09-15T10:20:00-04:00")
+        self.assertEqual(fields["duration_minutes"], "240")
+        self.assertIn(STALE_APPLY_CLOSE_NOTE, fields["notes"])
+        closed = {**crashed, **fields}
+        self.assertFalse(apply_run_is_live(closed, now=NOW))
+        self.assertFalse(apply_run_is_stale(closed, now=NOW))
+        self.assertEqual(start_apply_run_action([closed], now=NOW), "continue")
+        missing_start = {
+            "run_id": "R-crash-no-start",
+            "workflow": "apply-ready-jobs",
+            "result": "PARTIAL",
+            "started_at": "",
+            "ended_at": "",
+        }
+        self.assertTrue(apply_run_is_stale(missing_start, now=NOW))
+        self.assertEqual(start_apply_run_action([missing_start], now=NOW), "stale_close")
 
     def test_foreign_per_row_claim_still_holds_when_key_is_unique(self):
         row = {
@@ -360,7 +400,14 @@ class TestLogging(unittest.TestCase):
         self.assertIn("Do not acquire polar_browser. Do not create grok_browser.", apply)
         grok = grok_apply_text()
         self.assertIn("polar_policy.start_apply_run_action", grok)
+        self.assertIn("polar_policy.stale_apply_close_fields", grok)
         self.assertIn("polar_policy.run_duration_minutes(started_at, ended_at)", grok)
+        learning = compile_grok()["workflows/grok-production-learning-daily.md"]
+        self.assertIn("This routine is not an apply. Do not run polar_policy.start_apply_run_action.", learning)
+        self.assertEqual(learning.count("start_apply_run_action"), 1)
+        self.assertNotIn("If NO_WORK, write this run_id as NO_WORK", learning)
+        self.assertIn("stale_apply_close_fields", apply)
+        self.assertIn("stale_close", apply)
 
 
 if __name__ == "__main__":

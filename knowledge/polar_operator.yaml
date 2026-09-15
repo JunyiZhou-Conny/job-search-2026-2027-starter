@@ -208,6 +208,8 @@ skip_path:
 concurrency:
   one_job_key_one_row: true
   one_live_apply: true
+  live_apply_ttl: work_claim.ttl_minutes
+  stale_partial: close_then_continue
   executors:
     - polar
     - grok
