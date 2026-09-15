@@ -1155,6 +1155,12 @@ def consider_jobright_card(
     hard_fact_conflict: bool = False,
     ats_prior_submission: bool = False,
 ) -> ConsiderDecision:
+    """Admit or skip a Jobright card.
+
+    REVIEW_READY is a hold. Fill-only success leaves those cards un-acked,
+    so re-seeing them is not a new consideration and must not consume the
+    per-run budget.
+    """
     status = normalize_text(sheet_status)
     if ats_prior_submission:
         return ConsiderDecision(
@@ -1168,7 +1174,11 @@ def consider_jobright_card(
         return ConsiderDecision("skip_blocked", True, True, "sheet blocked memory")
     if section_k_hit or requisition_blocked:
         return ConsiderDecision("skip_duplicate", True, True, "historical or requisition dup")
-    if status in {"in_progress", "submission_unknown", "review_ready", "skip"}:
+    if status == "review_ready":
+        return ConsiderDecision(
+            "skip_review_ready", False, True, f"sheet status {sheet_status}"
+        )
+    if status in {"in_progress", "submission_unknown", "skip"}:
         return ConsiderDecision("skip_duplicate", True, True, f"sheet status {sheet_status}")
     if hard_fact_conflict:
         return ConsiderDecision("skip_hard_fact", True, True, "hard fact conflict")
