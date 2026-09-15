@@ -419,7 +419,11 @@ ttl_minutes: 180
 same_requisition: one logical owner across executors
 
 Both executors claim through the same column. Polar writes R- ids, this Bot writes G- ids. polar_policy.executor_from_run_id reads the prefix. No new column, no mutex row, no Grok tab. A Sheet claim is required before any apply work on either Jobright surface.
-Claim one job close to execution. Remember the current status and attempt_count. Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, updated_at now with datetime.isoformat. polar_policy.attempt_claim_job.
+job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Zero rows: append once. One row: update that row. Two or more: abort that job. Incident repeat_key duplicate_job_key. Do not claim. Do not Submit. Do not guess.
+One live apply across Polar and this Bot. QUERY run_log for workflow in apply-ready-jobs, grok-apply-jobs with result PARTIAL and blank ended_at. polar_policy.start_apply_run_action. NO_WORK if another apply is live. Do not create grok_browser or any browser mutex control key.
+Do not create scratch tabs. If a QUERY returns #N/A or #REF!, treat as miss. Incident repeat_key sheet_query_na.
+Cheap SKIP before Add, Apply Now, or Start. polar_policy.skip_path_action. Do not generate a resume or open ATS to record a card-level skip.
+Claim one job close to execution. Remember the current status and attempt_count. Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, updated_at now with datetime.isoformat. polar_policy.claim_job_key.
 Read back job_key, status, last_stage, claim_run_id. polar_policy.confirm_claim_readback. If claim_run_id is not this run_id, the write lost. Incident repeat_key work_already_claimed. Skip that job on the Agent surface. Do not consume the budget.
 Never recover a live claim owned by another run id, R- or G-. Recover only this executor's abandoned rows: empty claim_run_id, owner run_log result not PARTIAL, or updated_at older than 180 minutes. Incident repeat_key work_claim_recovered. Do not bump attempt_count again.
 If the live queue header has no claim_run_id, do not append it. Incident repeat_key missing_claim_column. Write OWNER_ACTION_REQUIRED and end the run. Polar's polar-sheet-migration is the only schema mutator.

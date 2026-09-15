@@ -309,7 +309,7 @@ class TestLearningAndDiscoverPath(unittest.TestCase):
         self.assertIn("sheet_queue_is_prerequisite: false", apply)
         self.assertNotIn("Never click Jobright APPLY WITH AUTOFILL.", apply)
         self.assertIn("Apply with Autofill", apply)
-        self.assertIn("Skip closed, duplicate, Applied, or hard-fact-conflict. Count considered. Continue.", apply)
+        self.assertIn("Skip closed, duplicate, Applied, Sheet memory, or hard-fact visible on the card. Count considered. Continue.", apply)
         self.assertIn(
             "If confirm_claim_readback is not CLAIMED, add the key to seen and continue. That miss does not consume considered.",
             apply,

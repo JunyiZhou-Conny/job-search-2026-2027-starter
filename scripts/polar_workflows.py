@@ -8,8 +8,12 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from polar_resume_attach import workflow_lines as resume_workflow_lines
 from polar_policy import (
     APPLY_URL_CONFIDENCE,
+    APPLY_WORKFLOW_NAMES,
     CLAIM_REPEAT_ALREADY,
     CLAIM_REPEAT_RECOVERED,
+    DUPLICATE_JOB_KEY_REPEAT_KEY,
+    SHEET_QUERY_NA_REPEAT_KEY,
+    TELEMETRY_INCONSISTENCY,
     REQUISITION_REPEAT,
     CONTROL_COLUMNS,
     CONTROL_REQUIRED_READBACK,
@@ -289,6 +293,7 @@ def _preferences_reconcile_block(*, filesystem_optional: bool = False) -> str:
             "Allocate a new pref_YYYYMMDD_NNN from pending ids, keep_local ids, and section P resolution ids.",
             "Use max(used numbers for that date) + 1. Never fill gaps. Never reuse an id.",
             "If there are no pending ids or no new main rows, write nothing.",
+            "polar_policy.preferences_reconcile_action is noop in that case. Do not reread the file looking for work. Do not rewrite the inbox.",
             "The rewrite is idempotent. Do not create a preferences-cleanup workflow.",
             "",
         ]
@@ -321,6 +326,19 @@ def _lease_block(name: str) -> str:
         "",
     ]
     if name in ("discover-jobs-hourly", "apply-ready-jobs"):
+        if name == "apply-ready-jobs":
+            lines.extend(
+                [
+                    "Mint run_id first. Then QUERY run_log for a live apply: workflow in "
+                    + ", ".join(sorted(APPLY_WORKFLOW_NAMES))
+                    + "; result PARTIAL; ended_at blank. polar_policy.start_apply_run_action.",
+                    "Do not read every historical run_log row.",
+                    "If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.",
+                    "One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-ready-jobs or grok-apply-jobs.",
+                    "Do not acquire polar_browser. Do not create grok_browser.",
+                    "",
+                ]
+            )
         lines.extend(
             [
                 "Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.",
@@ -341,6 +359,8 @@ def _lease_block(name: str) -> str:
                 "claim_one_at_a_time: true",
                 "schema_mutator: polar-sheet-migration",
                 "",
+                "job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Zero rows: append once. One row: update that row. Two or more: abort that job. Incident "
+                f"repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}. Do not claim. Do not Submit. Do not guess.",
                 "This run is one worker. Claim one job close to execution. Do not pre-claim a list.",
                 "If the live queue header has no claim_run_id, do not append it from this workflow.",
                 f"Note missing_claim_column. Incident repeat_key {CLAIM_REPEAT_MISSING_COLUMN}.",
@@ -404,7 +424,10 @@ def _sheet_write_contract() -> str:
             "These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.",
             "",
             "Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.",
-            "Named writes are the fix. Prose that says remember column I is not the fix.",
+            "Named writes are the fix. Prose that says remember column I is not the fix. Column index is not architecture.",
+            "Do not create a Sheet tab named scratch, scratch2, or scratch_*. Do not copy the queue into a new tab to look it up.",
+            "If a QUERY returns #N/A, #REF!, or another error token, polar_policy.sheet_query_failure_action is treat_as_miss_no_scratch. "
+            f"Incident repeat_key {SHEET_QUERY_NA_REPEAT_KEY}. Continue. Do not invent an index tab.",
             "",
         ]
     )
@@ -420,7 +443,9 @@ def _telemetry_block(include_incidents: bool = True) -> str:
         "Record started_at when you acquire work. Record ended_at before you exit.",
         "Both timestamps use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset. Do not write EDT or EST.",
         "The row is not final until polar_policy.run_log_row_is_final is true.",
-        "duration_minutes is coarse. Use whole minutes.",
+        "duration_minutes is polar_policy.run_duration_minutes(started_at, ended_at). Same clock. Whole minutes.",
+        "Do not use chat wall-clock. Do not invent a duration that disagrees with ended_at minus started_at.",
+        f"If a previous write disagrees, record {TELEMETRY_INCONSISTENCY} in notes and incident category PERFORMANCE. Keep the computed duration.",
         "result is " + ", ".join(RUN_LOG_RESULTS) + ".",
         "SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.",
         "",
@@ -559,7 +584,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "Recovery does not consume considered.",
             "A skip of closed, duplicate, Applied, or hard-fact-conflict consumes considered and continues.",
             "Stop new Jobright cards when polar_policy.considered_budget_exhausted is true.",
-            "Another apply-ready-jobs run has its own budget. Do not start a second Polar apply.",
+            "Another apply-ready-jobs run does not get its own live window. polar_policy.start_apply_run_action. One live apply across R- and G-.",
             "Weight is writing-depth metadata. It is not a slot reservation.",
             "",
             "## Autofill",
@@ -584,8 +609,11 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "Lookup by job_key, then company+role+location, then status in "
             + ", ".join(TARGETED_QUEUE_STATUSES)
             + ".",
-            "Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. READY_* stays inventory/archive, not apply FIFO.",
-            "Blocked-job memory stays. Jobright can re-surface a blocked card. Skip it.",
+            "A job_key QUERY must return every visible row with that key. polar_policy.plan_queue_upsert_by_job_key.",
+            "Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Do not scan SKIP or READY inventory.",
+            "incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. Do not read every historical incident row.",
+            "READY_* stays inventory/archive, not apply FIFO.",
+            "Blocked-job memory stays. Jobright can re-surface a blocked card. Cheap SKIP. Leave the existing row.",
             "Do not increment simplify_attempted or simplify_fallback_count. Leave those historical columns blank.",
             "",
             "## Post-autofill",
@@ -642,6 +670,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "Do not skip a line that only says the student must be enrolled in a degree.",
             "Master's study is not PhD and is not undergraduate-only.",
             "If the posting matches a skip phrase, status SKIP. Do not authenticate. Do not fill.",
+            "Decide that skip on the Jobright card or employer JD before expensive form work.",
             f"Incident repeat_key is {DEGREE_LEVEL_REPEAT_KEY}. Category TRIAGE.",
             "Also skip a 2026 role or start, employment start before 2027-02-16,",
             "a non-US work location, or an incompatible TS-SCI or polygraph requirement.",
@@ -686,7 +715,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.",
             "If it is duplicate, abort.",
             "",
-            "Recover first. Filter SUBMISSION_UNKNOWN and IN_PROGRESS only. Loop select_next_apply_job with exclude_keys=seen.",
+            "Recover first. Filter SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Loop select_next_apply_job with exclude_keys=seen.",
             "Process each recovery job with the employer finish rules below. Recovery does not consume considered.",
             "Do not Jobright-ack a recovery unless this run submitted and the employer confirmed.",
             "",
@@ -697,16 +726,25 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "",
             "For each Jobright card:",
             "1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.",
-            "2. Targeted Sheet + section K lookup. polar_policy.consider_jobright_card against Applied, Sheet status including BLOCKED, requisition identity, closed, and hard-fact conflict.",
-            "   Skip closed, duplicate, Applied, or hard-fact-conflict. Count considered. Continue.",
-            "3. Upsert a queue row if missing. NEW is claimable. Claim with polar_policy.attempt_claim_job.",
+            "2. Targeted Sheet + section K lookup. QUERY that job_key. If the QUERY returns #N/A or #REF!, treat as miss. "
+            f"Incident repeat_key {SHEET_QUERY_NA_REPEAT_KEY}. Do not create scratch_*.",
+            "   If polar_policy.plan_queue_upsert_by_job_key returns abort, do not claim, do not Submit, "
+            f"incident repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}, add the key to seen, continue.",
+            "   polar_policy.consider_jobright_card against Applied, Sheet status including BLOCKED, requisition identity, closed, and hard-fact conflict.",
+            "3. Cheap SKIP first. Read the Jobright card and its JD. polar_policy.skip_path_action.",
+            "   Skip closed, duplicate, Applied, Sheet memory, or hard-fact visible on the card. Count considered. Continue.",
+            "   polar_policy.cheap_skip_write_action: leave a terminal Sheet row; otherwise write one SKIP row.",
+            "   Do not claim IN_PROGRESS. Do not Generate My Resume. Do not Apply Now. Do not open the employer ATS. Close extra tabs.",
+            "   If the card JD cannot decide eligibility, polar_policy.eligibility_surface_action is open_employer_jd_only. Read that JD. Still no Generate Resume, no Apply Now, no login.",
+            "   After an employer-JD-only skip, write SKIP and continue.",
+            "4. Only if still eligible: upsert one queue row if missing. NEW is claimable. Claim with polar_policy.claim_job_key.",
             "   Read back job_key, status, last_stage, and claim_run_id.",
             "   If confirm_claim_readback is not CLAIMED, add the key to seen and continue. That miss does not consume considered.",
             "   After a successful new-card claim, increment considered.",
-            "4. Labels only. Do not invent selectors: Apply with Autofill. Quick Edit. Select All. Generate My Resume. Apply Now.",
-            "5. Confirm company and title. If they do not match, SKIP or BLOCKED. Continue.",
-            "6. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.",
-            "7. Read the employer JD. Run apply-time hard eligibility before expensive form work.",
+            "5. Labels only. Do not invent selectors: Apply with Autofill. Quick Edit. Select All. Generate My Resume. Apply Now.",
+            "   These labels are the application path. They are not the SKIP path.",
+            "6. Confirm company and title. If they do not match, SKIP or BLOCKED. Continue.",
+            "7. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.",
             "8. Capture employer identity and run requisition dedupe. Continue only if still eligible.",
             "9. Authenticate with ordinary browser flows when asked. Account creation is normal work.",
             "   polar_policy.page_surface distinguishes landing, login, apply CTA, and form.",

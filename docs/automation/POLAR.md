@@ -206,7 +206,7 @@ Initial canary caps live in `knowledge/polar_operator.yaml` and `config/submit_g
 
 - 3 considered candidates per `apply-ready-jobs` run (not 3 submissions)
 - No priority-slot reservation. Jobright ranks.
-- No shared daily regular submission pool. Do not start a second Polar apply.
+- No shared daily regular submission pool. One live apply across Polar and Grok: `start_apply_run_action` exits `NO_WORK` when any apply `run_log` is `PARTIAL` with blank `ended_at`. Do not acquire `polar_browser`.
 
 Junyi can raise the per-run budget after production evidence is good.
 
