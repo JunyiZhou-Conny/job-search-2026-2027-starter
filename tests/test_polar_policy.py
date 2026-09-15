@@ -745,20 +745,20 @@ class TestVisibleFormTruth(unittest.TestCase):
 
     def test_copilot_login_page_defers(self):
         self.assertEqual(copilot_preflight_scope("login_signup"), "defer")
-        self.assertEqual(copilot_preflight_scope("application_form"), "judge")
+        self.assertEqual(copilot_preflight_scope("application_form"), "ignore")
 
-    def test_copilot_after_auth_missing_still_stops(self):
+    def test_copilot_after_auth_never_stops_apply(self):
         self.assertEqual(
             copilot_after_auth_action("login_signup", "missing"),
             "defer",
         )
         self.assertEqual(
             copilot_after_auth_action("application_form", "missing"),
-            "owner_action_required",
+            "continue",
         )
         self.assertEqual(
             copilot_after_auth_action("application_form", "unknown"),
-            "owner_action_required",
+            "continue",
         )
         self.assertEqual(
             copilot_after_auth_action("application_form", "present"),

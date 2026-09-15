@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-14.jobright-first+e60ae9fe705a
+workflow_version: 2026-09-15.jobright-era+e60ae9fe705a
 status: manual_canary
 enabled: false
 needs_browser_lock: false

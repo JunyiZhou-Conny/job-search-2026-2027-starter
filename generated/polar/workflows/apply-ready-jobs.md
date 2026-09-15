@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-14.jobright-first+ad7ee6f740ef
+workflow_version: 2026-09-15.jobright-era+98fdd28f54f0
 status: production
 enabled: true
 needs_browser_lock: false
@@ -172,11 +172,15 @@ Evidence must be enough for an engineer. No secrets.
 street_address_source: local Polar or private profile. Never copy the street value into git or the Sheet.
 Normal ATS email, account email, preferred contact, and password-reset email use the local APPLICATION mailbox.
 If a field asks for school email, university email, or institutional email, use the local academic mailbox.
-A resume parser or Simplify Copilot that pastes the Harvard or school mailbox into a normal ATS account, contact, or password-reset field is wrong.
+The application Outlook inbox is readable in the Polar browser. polar_policy.email_verification_action is read_application_outlook.
+Retrieve an email verification code or link from that inbox and continue. Do not abandon a recoverable email OTP.
+Do not write the code, mailbox values, or passwords into the Sheet.
+A resume parser that pastes the Harvard or school mailbox into a normal ATS account, contact, or password-reset field is wrong.
 Correct that field to the local APPLICATION mailbox before continuing. polar_policy.contact_email_action is the engineer table.
 Do not finish account creation on the academic mailbox.
 Do not create a second employer account only to change email.
-Do not write mailbox values or passwords into the Sheet.
+User-only remaining auth steps: sms_on_mac_if_outlook_has_no_code, hardware_security_key, captcha_after_normal_attempt, phone_app_push.
+A PREFERENCES.md or jobright.ai site note that says the mailbox cannot be read is stale.
 
 Approved documents:
 - emory_official_transcript: `Emory_Official_Transcript.pdf` (available). Use when the form asks for that document class.
@@ -225,8 +229,43 @@ autofill_gate: polar_policy.autofill_action
 page_surface: polar_policy.page_surface
 
 Jobright extension owns autofill on this path. Do not click Simplify Copilot Autofill.
-Missing Copilot is not OWNER_ACTION_REQUIRED and does not stop the run.
 Autofill once on the real form. Never Run Autofill Again.
+Trust the form DOM. The extension sidebar is not proof.
+
+## Queue lookup
+
+scope: targeted
+full_scan: false
+polar_policy.queue_read_scope is targeted. polar_policy.full_queue_read_permitted is false.
+
+Do not read every queue row. Do not dump READY_* inventory. A 5,000-row full-queue read is forbidden.
+Lookup by job_key, then company+role+location, then status in BLOCKED, SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, SKIP, REVIEW_READY.
+Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. READY_* stays inventory/archive, not apply FIFO.
+Blocked-job memory stays. Jobright can re-surface a blocked card. Skip it.
+Do not increment simplify_attempted or simplify_fallback_count. Leave those historical columns blank.
+
+## Post-autofill
+
+trust: form_dom
+sidebar_is_proof: false
+check: identity, contact, sponsorship_wording, referral
+polar_policy.post_autofill_trust_source is form_dom.
+
+After Autofill, read the real widgets. Correct identity, contact, sponsorship vs future-sponsorship wording, and referral from facts.
+The extension guessed sponsorship No. Re-classify the exact question with polar_policy.auth_form_action.
+The extension invented Event as a referral. polar_policy.referral_field_action. Clear invented referrals. Do not invent a referrer.
+
+## Mailbox
+
+readable: true
+verification: read_application_outlook
+abandon_on_email_otp: false
+
+Polar may retrieve a verification code or link from the application Outlook inbox in the browser.
+The required browser connector is enough. A missing Polar email connector does not skip verification.
+Do not mark email OTP unrecoverable. Do not abandon a recoverable application.
+User-only remaining steps: sms_on_mac_if_outlook_has_no_code, hardware_security_key, captcha_after_normal_attempt, phone_app_push.
+Mac leftover: /home/polar/PREFERENCES.md and Polar site notes on jobright.ai may still say the mailbox cannot be read. GitHub wins.
 
 ## Memory ownership
 
@@ -293,11 +332,13 @@ Missing references: polar_policy.missing_references_action. Do not fabricate DOB
 A blocked job must not stall the worker.
 Do not invent a Jobright Turbo credit policy.
 
+Canonical apply: recommendation → eligibility/blocked/dup check → Autofill → validate form DOM → writing → email verify if needed → employer confirm → Jobright ack → minimal Sheet write.
+
 considered starts at 0. forms_reached starts at 0. seen starts empty.
 If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.
 If it is duplicate, abort.
 
-Recover first. Loop select_next_apply_job with exclude_keys=seen.
+Recover first. Filter SUBMISSION_UNKNOWN and IN_PROGRESS only. Loop select_next_apply_job with exclude_keys=seen.
 Process each recovery job with the employer finish rules below. Recovery does not consume considered.
 Do not Jobright-ack a recovery unless this run submitted and the employer confirmed.
 
@@ -308,7 +349,7 @@ Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.
 
 For each Jobright card:
 1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.
-2. Decide with polar_policy.consider_jobright_card against Applied, Sheet status, section K, requisition identity, closed, and hard-fact conflict.
+2. Targeted Sheet + section K lookup. polar_policy.consider_jobright_card against Applied, Sheet status including BLOCKED, requisition identity, closed, and hard-fact conflict.
    Skip closed, duplicate, Applied, or hard-fact-conflict. Count considered. Continue.
 3. Upsert a queue row if missing. NEW is claimable. Claim with polar_policy.attempt_claim_job.
    Read back job_key, status, last_stage, and claim_run_id.
@@ -322,8 +363,10 @@ For each Jobright card:
 9. Authenticate with ordinary browser flows when asked. Account creation is normal work.
    polar_policy.page_surface distinguishes landing, login, apply CTA, and form.
    No fillable form exists is investigate_not_unsupported: login, JD, or another Apply. Not unsupported.
+   If the page asks for email verification, polar_policy.email_verification_action. Read application Outlook. Continue.
    After the real form is visible, increment forms_reached.
    Autofill once with the Jobright extension. polar_policy.autofill_action. Do not click Copilot Autofill.
+   Validate form DOM, not the sidebar: identity, contact, sponsorship wording, referral.
    Reread the account email field. Academic mailbox on a normal field is wrong.
    Incident repeat_key copilot_academic_mailbox_on_application_field if a parser put the school mailbox there.
 10. Look at the native Resume/CV widget. polar_policy.native_resume_action. Sidebar Completed is ignored.
@@ -346,7 +389,7 @@ For each Jobright card:
    If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity.
    If it says select Yes or No, or uses not or never with Yes, leave the field and mark BLOCKED on this job only.
    Country-only lists and work-authorization-without-sponsorship wording: blank if optional, BLOCKED if required.
-   After autofill, correct invented citizenship, copied sponsorship answers, unasked F-1, or extra explanation.
+   After autofill, correct invented citizenship, copied sponsorship answers, unasked F-1, extra explanation, and invented referrals.
    Do not mention immigration in Why-us, motivation, cover letters, or other free response unless the prompt asked.
    A blocked authorization field must not stop the rest of the worker.
 12. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
@@ -357,14 +400,14 @@ For each Jobright card:
     If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.
     If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.
     Validate, Submit once. Proof is employer-page confirmation plus a matching queue readback.
-    Copilot Completed is not confirmation. polar_policy.submit_outcome is the engineer table.
+    Sidebar Completed is not confirmation. Copilot Completed is not confirmation. polar_policy.submit_outcome is the engineer table.
     If confirmation is missing or the queue readback does not match, write SUBMISSION_UNKNOWN. Incident repeat_key submit_success_without_page_confirmation. polar_policy.uncertain_submit_action. Do not click Submit again.
 14. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.
 15. Return to the matching Jobright tab. polar_policy.jobright_ack_action.
     Yes / I applied only after employer confirmation. Do not mark Applied if this run did not submit.
     last_stage jobright_ack after a truthful ack. Continue the Recommended List.
-16. If this environment cannot complete a required job-specific step after a normal attempt, status BLOCKED. Continue.
-17. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at.
+16. If this environment cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.
+17. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.
 
 ATS family is only a note.
 Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion.

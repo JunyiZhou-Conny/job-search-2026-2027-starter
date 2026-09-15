@@ -1,5 +1,9 @@
 # Polar reconciles /home/polar/PREFERENCES.md against these rows only after
 # they are on main. An open PR is not canonical. Match candidate_id only.
+# /home/polar/PREFERENCES.md is Mac-only. Polar site notes on jobright.ai
+# are also Mac-only. A local line that says the application mailbox cannot
+# be read, or that a verification-code gate is unrecoverable, is stale.
+# GitHub: Polar may retrieve codes via the application Outlook inbox.
 resolutions:
   - candidate_id: pref_20260911_005
     outcome: PROMOTE

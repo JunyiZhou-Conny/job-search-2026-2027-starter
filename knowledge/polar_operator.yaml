@@ -1,16 +1,56 @@
-last_updated: "2026-09-14"
-policy_revision: "2026-09-14.jobright-first"
-source: "Owner 2026-09-14. Apply entry is authenticated Jobright recommendations. Jobright extension owns autofill. GitHub owns durable behavior. PREFERENCES stays thin. Local Polar bootstrap is owner trust delegation to exact GitHub main paths. Independent Polar workflows may use their own browser surfaces. Each apply-ready-jobs run is one worker with a per-run considered-candidate budget. There is no shared daily regular submission pool. Ownership is per job and requisition, not a global browser lease."
+last_updated: "2026-09-15"
+policy_revision: "2026-09-15.jobright-era"
+source: "Owner 2026-09-15. Jobright-era apply. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar validates the form DOM, finishes remaining fields, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Sheet blocked/submitted/unknown memory stays. Full-queue reads and Copilot-as-autofill do not. PREFERENCES stays thin."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
 autofill:
   owner: jobright_extension
   max_attempts_per_form: 1
   do_not_use_simplify_copilot: true
+  trust: form_dom
+  sidebar_is_proof: false
+  post_autofill_checks:
+    - identity
+    - contact
+    - sponsorship_wording
+    - referral
 legacy_ready_rows:
   disposition: inventory_only
   owner: polar_policy.legacy_ready_disposition
-  removal_condition: "Remove this shim after Jobright-first apply is the loaded main compile and no run treats READY_* as silent FIFO."
+  removal_condition: "Remove this shim after Jobright-era apply is the loaded main compile and no run treats READY_* as silent FIFO."
+queue_read:
+  default: targeted
+  full_scan: false
+  lookup:
+    - job_key
+    - company_role_location
+    - status_blocked_submitted_unknown
+  recovery_filter:
+    - SUBMISSION_UNKNOWN
+    - IN_PROGRESS
+  do_not_dump_ready_backlog: true
+application_mailbox:
+  readable: true
+  source: browser_outlook_application_inbox
+  verification_codes: retrieve_and_continue
+  abandon_on_email_otp: false
+  user_only_steps:
+    - sms_on_mac_if_outlook_has_no_code
+    - hardware_security_key
+    - captcha_after_normal_attempt
+    - phone_app_push
+  stale_local_sources:
+    - /home/polar/PREFERENCES.md
+    - Polar site notes on jobright.ai
+learning:
+  current_era: jobright
+  fence_pre_jobright_incidents: true
+  fence:
+    - simplify_probe_or_fallback
+    - copilot_as_autofill
+    - ready_fifo
+    - ibm_funnel_jobs_jobright_does_not_recommend
+  do_not_paste_architecture_audit: true
 
 writing_observation_mode: true
 
@@ -29,16 +69,18 @@ work_claim:
   ttl_minutes: 180
 
 simplify:
-  role: required_precondition
-  proof: employer_page_copilot_ui
+  role: retired_from_apply_path
+  proof: not_an_apply_gate
   not_proof:
     - simplify_jobs_website_login
     - simplify_jobs_api
-  max_attempts_per_application: 1
+    - copilot_sidebar
+  max_attempts_per_application: 0
   silent_manual_fallback: false
-  missing_action: owner_action_required
+  missing_action: continue
   consume_job: false
   control_key: env_simplify_copilot
+  control_key_disposition: archive
   states:
     - PRESENT
     - MISSING
@@ -289,7 +331,11 @@ repeat_keys:
   native_resume_empty:
     meaning: "Employer native resume widget is empty and Perfect Resume could not be attached from Polar/Simplify or the identified file. Copilot sidebar Completed is not proof."
   copilot_academic_mailbox_on_application_field:
-    meaning: "Simplify Copilot or a resume parser put the academic mailbox on a normal ATS account or contact field."
+    meaning: "A parser put the academic mailbox on a normal ATS account or contact field. Historical Copilot name. Jobright-era apply still corrects the field."
+  invented_referral:
+    meaning: "Autofill invented a referral source such as Event. Clear it. Do not invent a referral."
+  mailbox_unreadable_stale:
+    meaning: "A local PREFERENCES or jobright.ai site note still says the application mailbox cannot be read. GitHub says Polar may retrieve verification codes via the application Outlook inbox."
   submit_success_without_page_confirmation:
     meaning: "A run claimed SUCCESS or SUBMITTED without employer-page confirmation plus matching queue readback."
 

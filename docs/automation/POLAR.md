@@ -38,10 +38,11 @@ The root loop is:
 
 ```text
 Jobright recommendation
-  -> skip Applied / Sheet dup / closed / hard-fact conflict
+  -> skip Applied / Sheet dup / blocked / closed / hard-fact conflict
   -> Apply with Autofill, generate resume, Apply Now
   -> Jobright extension autofill once on the real form
-  -> Polar finishes remaining required fields
+  -> Polar reads the form DOM (not the sidebar) and finishes remaining fields
+  -> email verify via application Outlook if asked
   -> submit and confirm on the employer page
   -> Jobright Yes / I applied
   -> persist state and continue
@@ -163,9 +164,15 @@ A required new application account is normal execution.
 
 Attempt ordinary user-facing completion for account creation, a browser-generated strong password, saved credentials, forgot-password, email verification, email OTP, SMS on the Mac, ordinary consent, multi-page forms, unknown widgets, and required writing.
 
+The application Outlook inbox is readable in the Polar browser. Polar may retrieve a verification code or link and continue. Do not mark email OTP unrecoverable. Do not abandon a recoverable application. Do not write the code into the Sheet.
+
+User-only remaining steps: SMS on the Mac when Outlook has no code, hardware security key, CAPTCHA after a normal browser attempt, and phone-app push.
+
+`/home/polar/PREFERENCES.md` is Mac-only. Polar site notes on `jobright.ai` are also Mac-only. A local line that says the mailbox cannot be read is stale. GitHub wins.
+
 Use only normal browser flows for security or anti-abuse challenges. Do not implement CAPTCHA-bypass services, fingerprint spoofing, or anti-abuse evasion.
 
-Escalate to `BLOCKED` only after this local environment cannot complete a required step. Persist the blocker. Continue to the next READY job.
+Escalate to `BLOCKED` only after this local environment cannot complete a required step that is not a recoverable Outlook code. Persist the blocker. Continue to the next Jobright card.
 
 ## Two Submit planes
 
@@ -237,7 +244,8 @@ Cloud Computer Use still uses `scripts/compile_cu_task.py` on cloud Chrome. Do n
 |---|---|---|
 | Polar runs locally, logged in as Junyi | owner-observed | Proven 2026-09-04 |
 | Polar can start from a Jobright URL, use Original Job Post, and reach employer applications | owner-observed | Proven across several jobs |
-| Polar filled one real application in the first pilot | owner-observed | Proven 2026-09-04 |
+| Polar filled one real application in the first pilot | Polar report, 2026-09-04 | Proven 2026-09-04 |
+| Polar browser sign-in to the application Outlook inbox works | Polar observed 2026-09-15 | Proven as mailbox-read for verification codes. Email OTP is recoverable. |
 | Polar filled Quantbot Greenhouse and stopped before Submit | Polar report, 2026-09-04 | Proven. About 6 minutes. No CAPTCHA. |
 | Polar reached Rakuten Rewards Workday | Polar report P-20260904-002 | Proven land. Create Account wall. submitted=no. |
 | Polar filled Solidigm SmartRecruiters and stopped before Submit | Polar report P-20260906-001 | Proven. Guest Easy Apply. About 6 minutes. submitted=no. P1 open. |

@@ -29,7 +29,7 @@ REQUIRED_HEADINGS = [
     "## M. Browser lease",
     "## N. Run and incident telemetry",
     "## O. Employer requisition identity",
-    "## P. Memory ownership and Copilot preflight",
+    "## P. Memory ownership and autofill",
 ]
 
 STATUSES = [
@@ -123,6 +123,9 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("github_write_canary must not overwrite polar_browser", text)
         self.assertIn("clearly says answer Yes or answer No", text)
         self.assertIn("Jobright extension owns autofill", text)
+        self.assertIn("The application Outlook inbox is readable", text)
+        self.assertIn("Queue reads are targeted", text)
+        self.assertIn("Trust the form, not the extension sidebar", text)
         self.assertNotIn("Simplify Copilot is a required apply precondition.", text)
         self.assertIn("Do not click Simplify Copilot Autofill", text)
         self.assertNotIn("optional_accelerator", text)

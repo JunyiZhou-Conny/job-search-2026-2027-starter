@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-14.jobright-first+be870e38214a
+workflow_version: 2026-09-15.jobright-era+be870e38214a
 status: retired_from_apply_path
 enabled: false
 needs_browser_lock: false
