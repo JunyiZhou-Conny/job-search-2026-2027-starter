@@ -9,29 +9,48 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from grokbot_policy import GROK_WORKFLOW_NAMES, grok_bootstrap_prompt  # noqa: E402
 from polar_policy import TRUSTED_WORKFLOW_NAMES, bootstrap_prompt  # noqa: E402
+
+EXECUTORS = {
+    "polar": (TRUSTED_WORKFLOW_NAMES, bootstrap_prompt),
+    "grokbot": (GROK_WORKFLOW_NAMES, grok_bootstrap_prompt),
+}
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Print the Polar trust-delegation bootstrap for one saved Workflow."
+        description=(
+            "Print the trust-delegation bootstrap for one saved Polar Workflow "
+            "or one Grok Bot routine."
+        )
     )
     parser.add_argument("--list", action="store_true", help="Print workflow names.")
     parser.add_argument(
+        "--executor",
+        choices=sorted(EXECUTORS),
+        default="polar",
+        help="polar (saved Polar Workflow, default) or grokbot (Grok Bot routine).",
+    )
+    parser.add_argument(
         "workflow",
         nargs="?",
-        choices=TRUSTED_WORKFLOW_NAMES,
-        help="Saved Polar Workflow name.",
+        help="Workflow name for the chosen executor.",
     )
     args = parser.parse_args(argv)
+    names, render = EXECUTORS[args.executor]
     if args.list:
-        for name in TRUSTED_WORKFLOW_NAMES:
+        for name in names:
             print(name)
         return 0
     if not args.workflow:
         parser.print_help()
         return 2
-    sys.stdout.write(bootstrap_prompt(args.workflow))
+    if args.workflow not in names:
+        parser.error(
+            f"unknown {args.executor} workflow {args.workflow!r}; choose from {', '.join(names)}"
+        )
+    sys.stdout.write(render(args.workflow))
     return 0
 
 
