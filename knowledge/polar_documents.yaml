@@ -25,6 +25,8 @@ documents:
     purpose: only production resume for every application
     stored_name: Perfect Resume
     selector: polar_simplify_stored_name
+    # Compile input. Path stays until the sponsorship Polar recompile.
+    # Owner file is resumes/Perfect Resume/JZ_Resume_2027.pdf (same bytes).
     approved_path: resumes/Perfect Resume/perfect_resume.pdf
     expected_filename: perfect_resume.pdf
     use_when:

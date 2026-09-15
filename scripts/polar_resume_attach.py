@@ -10,8 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 ATTACH_PATH = ROOT / "knowledge" / "polar_resume_attach.yaml"
 
 PRODUCTION_RESUME_STORED_NAME = "Perfect Resume"
-PRODUCTION_RESUME_REPO_PATH = "resumes/Perfect Resume/perfect_resume.pdf"
-IDENTIFIED_MAC_RESUME_PATH = "/Users/conny/Desktop/JZ_Resume_911.pdf"
+PRODUCTION_RESUME_REPO_PATH = "resumes/Perfect Resume/JZ_Resume_2027.pdf"
+POLAR_COMPILE_ALIAS_REPO_PATH = "resumes/Perfect Resume/perfect_resume.pdf"
+IDENTIFIED_MAC_RESUME_PATH = ""
 FAMILY_RESUME_EXPORT_PATH = "generated/resumes/export/ai_infra_v1.pdf"
 SANITIZED_FAMILY_RESUME_PATH = "resumes/families/ai_infra/ai_infra_v1.pdf"
 TWO_PAGE_MASTER_PATH = "resumes/base/JZ_resume.pdf"
