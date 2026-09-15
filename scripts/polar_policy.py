@@ -1155,13 +1155,20 @@ def consider_jobright_card(
     requisition_blocked: bool = False,
     hard_fact_conflict: bool = False,
     ats_prior_submission: bool = False,
+    executor: str = EXECUTOR_POLAR,
 ) -> ConsiderDecision:
     """Admit or skip a Jobright card.
 
-    REVIEW_READY is a hold. Fill-only success leaves those cards un-acked,
-    so re-seeing them is not a new consideration and must not consume the
-    per-run budget.
+    Polar Local (the default executor) keeps its production table: every
+    Sheet-status skip, REVIEW_READY included, counts considered.
+
+    On the grok executor a REVIEW_READY row is a fill-only hold this Bot
+    wrote on the closed grok_cloud gate without a Jobright ack, so the same
+    card is re-offered on the Agent. Re-seeing it is not a new
+    consideration and must not consume the per-run budget.
     """
+    if executor not in RUN_ID_PREFIXES:
+        raise ValueError(f"unknown executor {executor!r}")
     status = normalize_text(sheet_status)
     if ats_prior_submission:
         return ConsiderDecision(
@@ -1175,11 +1182,11 @@ def consider_jobright_card(
         return ConsiderDecision("skip_blocked", True, True, "sheet blocked memory")
     if section_k_hit or requisition_blocked:
         return ConsiderDecision("skip_duplicate", True, True, "historical or requisition dup")
-    if status == "review_ready":
+    if status == "review_ready" and executor == EXECUTOR_GROK:
         return ConsiderDecision(
             "skip_review_ready", False, True, f"sheet status {sheet_status}"
         )
-    if status in {"in_progress", "submission_unknown", "skip"}:
+    if status in {"in_progress", "submission_unknown", "review_ready", "skip"}:
         return ConsiderDecision("skip_duplicate", True, True, f"sheet status {sheet_status}")
     if hard_fact_conflict:
         return ConsiderDecision("skip_hard_fact", True, True, "hard fact conflict")
