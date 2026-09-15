@@ -611,6 +611,8 @@ If the visible row has a different key, or no key, abort. github_write_canary mu
 After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.
 Commit the edit, then reread key, owner_run_id, and notes. Looking correct is not persistence.
 Do not increment simplify_attempted or simplify_fallback_count. Those columns are historical.
+google_sheets means the Google connector can read and write Polar Jobs. Drive Find-file and Sheets tools count. A connector named google_sheets is not required.
+Browser sheets.google.com is not google_sheets. Do not ask the owner to add a connector when Google connector tools already exist.
 
 ## M. Browser lease
 

@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-15.jobright-era+13a34e0e32e0
+workflow_version: 2026-09-15.sheets-capability+5c3a0974625f
 status: production
 enabled: true
 needs_browser_lock: false
@@ -30,15 +30,18 @@ If an optional capability is missing, skip the supporting step that needs it.
 Report the degraded capability in run telemetry when possible.
 Continue the primary work. This is not TRUST_FAILURE.
 This is not a required CAPABILITY_MISSING stop.
-These names are Polar session connectors, not Sheet tab names.
+These names are capabilities, not Sheet tab names and not required connector titles.
+google_sheets means this session can read and write Polar Jobs through the Google connector.
+Drive Find-file and Sheets tools count. A connector named google_sheets is not required.
+If Google connector tools exist, use them. Do not ask the owner to add a connector on that naming miss.
+Browser access to sheets.google.com is not google_sheets. If the Google connector cannot reach the Sheet, that is still CAPABILITY_MISSING.
 queue, run_log, incident_log, control, writing_log, heartbeat, and learning_reports are Google Sheet tabs. They are reached through google_sheets.
 A missing tab is a polar-sheet-migration data issue, not CAPABILITY_MISSING, unless google_sheets itself is missing.
-Inspect whether this Polar session actually has each required connector.
-If all required connectors are available, execute this workflow.
-If any required connector is unavailable, report ENVIRONMENT / CAPABILITY_MISSING in this run's own output.
+If all required capabilities are available, execute this workflow.
+If any required capability is unavailable, report ENVIRONMENT / CAPABILITY_MISSING in this run's own output.
 Name the missing capability. Stop. Do not invent execution.
 Write an incident_log row only if google_sheets is available.
-A missing connector is not TRUST_FAILURE.
+A missing capability is not TRUST_FAILURE.
 TRUST_FAILURE is only for a GitHub or raw.githubusercontent.com URL outside this run's two-file load set.
 
 ## Open these files

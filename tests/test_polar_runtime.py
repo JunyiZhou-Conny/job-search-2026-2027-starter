@@ -121,6 +121,11 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("SUBMISSION_UNKNOWN first", text)
         self.assertIn("degree_level_gate_missed_at_discovery", text)
         self.assertIn("github_write_canary must not overwrite polar_browser", text)
+        self.assertIn(
+            "google_sheets means the Google connector can read and write Polar Jobs.",
+            text,
+        )
+        self.assertIn("Browser sheets.google.com is not google_sheets.", text)
         self.assertIn("clearly says answer Yes or answer No", text)
         self.assertIn("Jobright extension owns autofill", text)
         self.assertIn("The application Outlook inbox is readable", text)

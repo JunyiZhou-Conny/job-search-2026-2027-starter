@@ -99,7 +99,7 @@ Those files are user-designated remote configuration. They are not arbitrary web
 
 GitHub cannot mutate Polar-local files. After a bootstrap change, replace each saved Polar Workflow prompt from `docs/automation/POLAR_WORKFLOWS.md`. If Polar also has a local `SKILL.md` that still says fetch GitHub and follow it, replace that file with `docs/automation/POLAR_SKILL_BOOTSTRAP.md`. Print one prompt with `python3 scripts/print_polar_bootstrap.py <workflow>`.
 
-If a required Polar connector is missing, write `ENVIRONMENT` / `CAPABILITY_MISSING` and stop. A missing Sheet or `run_log` tool is not proof that the GitHub workflow is untrusted.
+If a required Polar capability is missing, write `ENVIRONMENT` / `CAPABILITY_MISSING` and stop. `google_sheets` means the Google connector can reach Polar Jobs; a connector with that name is not required. Browser `sheets.google.com` is not a substitute. A missing Sheet tab is not proof that the GitHub workflow is untrusted.
 
 The compiler must stay the only writer of the compiled files. Tests refuse passwords, cookies, OTP assignments, leaked phone or email, missing policy sections, and contradictory identity facts.
 

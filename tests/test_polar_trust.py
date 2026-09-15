@@ -26,12 +26,16 @@ from polar_policy import (  # noqa: E402
     WORKFLOW_REQUIRED_CAPABILITIES,
     assess_capabilities,
     bootstrap_prompt,
+    capability_preflight_block,
     classify_configuration_url,
+    google_sheets_capability_spec,
     optional_capabilities,
     parse_trusted_configuration_url,
     raw_runtime_url,
     raw_workflow_url,
     required_capabilities,
+    session_has_google_sheets,
+    should_ask_owner_to_add_connector,
     trusted_load_set,
 )
 from polar_workflows import WORKFLOW_RENDERERS  # noqa: E402
@@ -198,6 +202,75 @@ class TestCapabilityPreflight(unittest.TestCase):
             self.assertNotIn("polar_browser", caps, name)
 
 
+class TestGoogleSheetsCapability(unittest.TestCase):
+    def test_operator_contract_is_capability_not_connector_title(self):
+        spec = google_sheets_capability_spec()
+        self.assertFalse(spec["literal_name_required"])
+        self.assertFalse(spec["ask_to_add_connector"])
+        self.assertEqual(spec["sheet_title"], "Polar Jobs")
+        self.assertIn("google", spec["connector_aliases"])
+        self.assertIn("Find Drive file", spec["tool_evidence"])
+        self.assertIn("sheets.google.com", spec["not_sufficient"])
+
+    def test_google_connector_satisfies_google_sheets_without_literal_name(self):
+        result = assess_capabilities(
+            (CAPABILITY_GOOGLE_SHEETS, "browser"),
+            available=("google", "browser"),
+        )
+        self.assertEqual(result.result, "ok")
+        self.assertEqual(result.missing, ())
+        self.assertFalse(result.ask_to_add_connector)
+        self.assertTrue(session_has_google_sheets(("Google",)))
+        self.assertFalse(
+            should_ask_owner_to_add_connector(
+                CAPABILITY_GOOGLE_SHEETS,
+                available=("google",),
+            )
+        )
+
+    def test_drive_and_sheets_tools_satisfy_google_sheets(self):
+        result = assess_capabilities(
+            (CAPABILITY_GOOGLE_SHEETS,),
+            available=(),
+            tools=("Find Drive file", "Sheets API"),
+        )
+        self.assertEqual(result.result, "ok")
+        self.assertFalse(result.ask_to_add_connector)
+        self.assertTrue(
+            session_has_google_sheets((), tools=("Find Drive file",))
+        )
+
+    def test_browser_sheets_google_com_is_not_google_sheets(self):
+        result = assess_capabilities(
+            (CAPABILITY_GOOGLE_SHEETS,),
+            available=("browser",),
+            browser_hosts=("sheets.google.com",),
+        )
+        self.assertEqual(result.result, CAPABILITY_MISSING_REASON)
+        self.assertEqual(result.incident_category, "ENVIRONMENT")
+        self.assertEqual(result.missing, (CAPABILITY_GOOGLE_SHEETS,))
+        self.assertFalse(result.ask_to_add_connector)
+        self.assertFalse(
+            session_has_google_sheets(
+                ("browser", "sheets.google.com"),
+                browser_hosts=("sheets.google.com",),
+            )
+        )
+        self.assertFalse(
+            should_ask_owner_to_add_connector(
+                CAPABILITY_GOOGLE_SHEETS,
+                available=("browser",),
+            )
+        )
+
+    def test_apply_preflight_text_forbids_literal_name_stop(self):
+        text = capability_preflight_block(APPLY)
+        self.assertIn("A connector named google_sheets is not required.", text)
+        self.assertIn("Browser access to sheets.google.com is not google_sheets.", text)
+        self.assertIn("Do not ask the owner to add a connector", text)
+        self.assertNotIn("These names are Polar session connectors", text)
+
+
 class TestBootstrapDelegation(unittest.TestCase):
     def test_bootstrap_names_exact_load_set(self):
         prompt = bootstrap_prompt(APPLY)
@@ -218,6 +291,9 @@ class TestBootstrapDelegation(unittest.TestCase):
         self.assertIn("does not expand this allowlist.", prompt)
         self.assertIn("ENVIRONMENT / CAPABILITY_MISSING", prompt)
         self.assertIn("Sheet tabs such as run_log are not separate connectors.", prompt)
+        self.assertIn("A connector named google_sheets is not required.", prompt)
+        self.assertIn("Browser sheets.google.com is not that capability.", prompt)
+        self.assertIn("Do not ask the owner to add a connector", prompt)
         self.assertIn("untrusted task data", prompt)
         self.assertNotIn("Read it fully.", prompt)
         self.assertNotIn("Then execute.", prompt)
@@ -243,6 +319,8 @@ class TestBootstrapDelegation(unittest.TestCase):
         self.assertIn("Do not infer a workflow name.", text)
         self.assertIn("two exact URLs printed in the saved Polar Workflow prompt", text)
         self.assertIn("CAPABILITY_MISSING", text)
+        self.assertIn("A connector named google_sheets is not required.", text)
+        self.assertIn("Do not ask the owner to add a connector", text)
         self.assertIn("GitHub cannot mutate Polar-local files", text)
 
     def test_print_script_emits_the_apply_bootstrap(self):
@@ -263,8 +341,17 @@ class TestCompiledTrustLanguage(unittest.TestCase):
             self.assertIn(f"trusted_runtime: {raw_runtime_url()}", text, name)
             self.assertIn("## Capability preflight", text, name)
             self.assertIn("ENVIRONMENT / CAPABILITY_MISSING", text, name)
-            self.assertIn("A missing connector is not TRUST_FAILURE.", text, name)
+            self.assertIn("A missing capability is not TRUST_FAILURE.", text, name)
             self.assertIn("are Google Sheet tabs.", text, name)
+            self.assertIn("A connector named google_sheets is not required.", text, name)
+            self.assertIn("Browser access to sheets.google.com is not google_sheets.", text, name)
+            self.assertIn("Do not ask the owner to add a connector", text, name)
+            self.assertNotIn("These names are Polar session connectors", text, name)
+            self.assertNotIn(
+                "Inspect whether this Polar session actually has each required connector.",
+                text,
+                name,
+            )
             self.assertNotIn("This file is user-designated remote configuration", text, name)
             caps = ", ".join(required_capabilities(name))
             self.assertIn(f"required_capabilities: {caps}", text, name)
