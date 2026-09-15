@@ -29,7 +29,7 @@ Essay: `docs/automation/GROKBOT.md`. Queue reference: `docs/automation/POLAR_QUE
 
 | Routine | Eastern Time | Bot | Mode |
 |---|---|---|---|
-| `grok-apply-jobs` | `50 */2 * * *`, `Active` off until the four proofs | `jobright-applier` | Jobright Agent entry. Sheet claim with a `G-` id before any apply work. Fill-only while `grok_cloud.submit_enabled` is false. |
+| `grok-apply-jobs` | `50 0-20/2 * * *`, `Active` off until the four proofs | `jobright-applier` | Jobright Agent entry. Sheet claim with a `G-` id before any apply work. Fill-only while `grok_cloud.submit_enabled` is false. |
 | `grok-production-learning-daily` | `40 21 * * *`, `Active` off until the Sheet proof | `jobright-applier` | Finalize non-final `G-` `run_log` rows, write Grok environment incidents. No packet. No application clicks. |
 
 Both routines run on the same applier Bot. Do not create a third Bot,
