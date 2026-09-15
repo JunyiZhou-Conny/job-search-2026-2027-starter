@@ -273,7 +273,7 @@ class TestGrokSubmitGate(unittest.TestCase):
         text = runtime()
         self.assertIn("submit_enabled: false", text)
         self.assertIn("REVIEW_READY with blocker grok_submit_gate_closed", text)
-        self.assertIn("skip it without consuming considered, add its key to seen, and never ack it. Polar's own table is unchanged.", text)
+        self.assertIn("A skip decided from Sheet memory alone does not consume considered: add the key to seen, never ack it, never touch its row. Polar's own table is unchanged.", text)
         self.assertIn("polar_policy.consider_jobright_card with executor grok", text)
         self.assertIn("A routine run cannot open it.", text)
         self.assertIn("Blocker prioritized_not_open_on_grok_cloud", text)
@@ -282,8 +282,8 @@ class TestGrokSubmitGate(unittest.TestCase):
         self.assertIn("enabled: false", apply)
         self.assertIn("The gate is closed.", apply)
         self.assertIn("Do not ack Jobright. Continue.", apply)
-        self.assertIn("A REVIEW_READY sheet row is already held. Skip it without consuming considered and without a Jobright ack.", apply)
-        self.assertIn("REVIEW_READY does not consume considered; add its key to seen and do not ack it.", apply)
+        self.assertIn("is a leftover the Agent re-offers. Skip it without consuming considered and without a Jobright ack.", apply)
+        self.assertIn("A Sheet-status skip (REVIEW_READY, BLOCKED, IN_PROGRESS, SUBMISSION_UNKNOWN, SKIP) does not consume considered", apply)
         self.assertNotIn("Skip consumes considered. Continue.", apply)
         self.assertIn("Never ack a REVIEW_READY row.", apply)
 
@@ -294,17 +294,32 @@ class TestGrokSubmitGate(unittest.TestCase):
         self.assertEqual(held.action, "skip_review_ready")
         self.assertFalse(held.consume_considered)
         self.assertTrue(held.continue_run)
-        consumed = sum(
-            1
-            for _ in range(3)
-            if consider_jobright_card(sheet_status="REVIEW_READY", executor="grok").consume_considered
-        )
+        # Every Sheet-memory leftover the Agent re-offers is free on grok:
+        # fill-only holds, owner-policy BLOCKED gaps, Polar's live claims,
+        # unknown submissions, and SKIP memory.
+        leftovers = ("REVIEW_READY", "BLOCKED", "IN_PROGRESS", "SUBMISSION_UNKNOWN", "SKIP")
+        expected_action = {
+            "REVIEW_READY": "skip_review_ready",
+            "BLOCKED": "skip_blocked",
+            "IN_PROGRESS": "skip_duplicate",
+            "SUBMISSION_UNKNOWN": "skip_duplicate",
+            "SKIP": "skip_duplicate",
+        }
+        consumed = 0
+        for status in leftovers:
+            decision = consider_jobright_card(sheet_status=status, executor="grok")
+            self.assertEqual(decision.action, expected_action[status], status)
+            self.assertFalse(decision.consume_considered, status)
+            self.assertTrue(decision.continue_run, status)
+            consumed += int(decision.consume_considered)
         self.assertEqual(consumed, 0)
         self.assertFalse(considered_budget_exhausted(consumed, max_considered=3))
         # Polar's default table is untouched by the grok branch.
-        polar = consider_jobright_card(sheet_status="REVIEW_READY")
-        self.assertEqual(polar.action, "skip_duplicate")
-        self.assertTrue(polar.consume_considered)
+        for status in leftovers:
+            polar = consider_jobright_card(sheet_status=status)
+            self.assertTrue(polar.consume_considered, status)
+        self.assertEqual(consider_jobright_card(sheet_status="REVIEW_READY").action, "skip_duplicate")
+        self.assertEqual(consider_jobright_card(sheet_status="BLOCKED").action, "skip_blocked")
         with self.assertRaises(ValueError):
             consider_jobright_card(sheet_status="REVIEW_READY", executor="cloud")
         # The re-offered card is never acked as applied.
@@ -312,6 +327,13 @@ class TestGrokSubmitGate(unittest.TestCase):
             jobright_ack_action(employer_page_confirmation=False, submit_clicked=False),
             "do_not_ack",
         )
+        apply = workflow(GROK_APPLY_WORKFLOW)
+        self.assertIn(
+            "A Sheet-status skip (REVIEW_READY, BLOCKED, IN_PROGRESS, SUBMISSION_UNKNOWN, SKIP) does not consume considered; add its key to seen, do not ack it, do not touch its row.",
+            apply,
+        )
+        self.assertIn("Three leftovers must leave the whole budget for new claims.", apply)
+        self.assertIn("A skip decided from Sheet memory alone does not consume considered", runtime())
 
     def test_grok_submit_action(self):
         self.assertEqual(grok_submit_action(weight="regular", root=ROOT), ("review_ready_stop_before_submit", "grok_submit_gate_closed"))
