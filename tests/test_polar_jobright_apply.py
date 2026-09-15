@@ -117,6 +117,18 @@ class TestSkipAndContinue(unittest.TestCase):
         self.assertTrue(blocked.consume_considered)
         self.assertTrue(blocked.continue_run)
 
+        held = consider_jobright_card(sheet_status="REVIEW_READY")
+        self.assertEqual(held.action, "skip_review_ready")
+        self.assertFalse(held.consume_considered)
+        self.assertTrue(held.continue_run)
+
+        leftover = 0
+        for _ in range(3):
+            decision = consider_jobright_card(sheet_status="REVIEW_READY")
+            if decision.consume_considered:
+                leftover += 1
+        self.assertFalse(considered_budget_exhausted(leftover, max_considered=3))
+
         admit = consider_jobright_card()
         self.assertEqual(admit.action, "admit")
         self.assertFalse(admit.consume_considered)

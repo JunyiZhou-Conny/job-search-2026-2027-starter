@@ -267,6 +267,7 @@ class TestGrokSubmitGate(unittest.TestCase):
         text = runtime()
         self.assertIn("submit_enabled: false", text)
         self.assertIn("REVIEW_READY with blocker grok_submit_gate_closed", text)
+        self.assertIn("REVIEW_READY does not consume considered.", text)
         self.assertIn("A routine run cannot open it.", text)
         self.assertIn("Blocker prioritized_not_open_on_grok_cloud", text)
         apply = workflow(GROK_APPLY_WORKFLOW)
@@ -274,6 +275,9 @@ class TestGrokSubmitGate(unittest.TestCase):
         self.assertIn("enabled: false", apply)
         self.assertIn("The gate is closed.", apply)
         self.assertIn("Do not ack Jobright. Continue.", apply)
+        self.assertIn("A REVIEW_READY sheet row is already held. Skip it without consuming considered.", apply)
+        self.assertIn("REVIEW_READY does not consume considered.", apply)
+        self.assertNotIn("Skip consumes considered. Continue.", apply)
 
     def test_grok_submit_action(self):
         self.assertEqual(grok_submit_action(weight="regular", root=ROOT), ("review_ready_stop_before_submit", "grok_submit_gate_closed"))

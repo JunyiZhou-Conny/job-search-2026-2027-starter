@@ -68,7 +68,7 @@ A different Jobright surface does not remove collision. Polar and this Bot share
 Never click Add All. It adds every matched job to an account-scoped queue that Polar cannot see in advance.
 Claim a job in the Sheet before adding it to the Agent queue or clicking Apply Now, whichever comes first. Add at most the per-run budget of jobs this run has already claimed, then press Start.
 If the Agent surfaces a job this run did not claim, claim it first. A lost claim means Skip that job on the Agent surface. A lost claim does not consume the considered budget.
-Jobright Applied state is a skip before any expensive work. Sheet SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, REVIEW_READY, BLOCKED, and SKIP are skips. polar_policy.consider_jobright_card.
+Jobright Applied state is a skip before any expensive work. Sheet SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, REVIEW_READY, BLOCKED, and SKIP are skips. polar_policy.consider_jobright_card. REVIEW_READY does not consume considered.
 
 Agent surface blockers and the allowed response. Labels only. Do not invent selectors.
 - Resume confirmation: Confirm the Jobright-generated resume. Do not upload the two-page master or any ai_infra file.
