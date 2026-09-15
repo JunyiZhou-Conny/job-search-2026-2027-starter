@@ -145,7 +145,16 @@ class TestGrokSecretAndPathBans(unittest.TestCase):
                     continue
                 self.assertNotRegex(line, r"\bCopilot\b", f"{rel}: {line}")
                 self.assertNotRegex(line, r"\bSimplify\b", f"{rel}: {line}")
-        self.assertIn("read it as the autofill tool on this computer, the Jobright extension", runtime())
+        self.assertIn("These lines are shared byte-for-byte with the Polar render.", runtime())
+
+    def test_grok_keeps_phase_one_post_autofill_read(self):
+        from grokbot_policy import GROK_POST_AUTOFILL_CHECKS
+
+        self.assertEqual(GROK_POST_AUTOFILL_CHECKS, ("identity", "contact", "sponsorship_wording", "referral"))
+        self.assertIn("After Autofill, read the form DOM: identity, contact, sponsorship_wording, referral.", runtime())
+        self.assertIn("check: identity, contact, sponsorship_wording, referral", workflow(GROK_APPLY_WORKFLOW))
+        for token in ("Fast validation pass passes (section P)", "fast-validation class (section P)", "full-form auditor"):
+            self.assertNotIn(token, runtime(), token)
 
     def test_add_all_is_only_ever_forbidden(self):
         for rel, text in compiled().items():

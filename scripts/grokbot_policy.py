@@ -62,6 +62,15 @@ GROK_RESOURCE_RUNS = f"{GROK_RESOURCE_ROOT}/runs"
 _CONFIG_HOSTS = frozenset({TRUSTED_HOST, "github.com", "www.github.com"})
 
 GROK_REQUIRED_CAPABILITIES = ("browser", "google_sheets")
+# Grok Phase 1 post-Autofill read. Frozen on purpose: Polar's fast
+# validation pass (polar_policy.POST_AUTOFILL_CHECKS, PR #141) is a Polar
+# throughput change and is ported to Grok only after Polar proves it.
+GROK_POST_AUTOFILL_CHECKS = (
+    "identity",
+    "contact",
+    "sponsorship_wording",
+    "referral",
+)
 GROK_WORKFLOW_REQUIRED_CAPABILITIES: Dict[str, Tuple[str, ...]] = {
     GROK_APPLY_WORKFLOW: GROK_REQUIRED_CAPABILITIES,
     GROK_LEARNING_WORKFLOW: ("google_sheets",),
