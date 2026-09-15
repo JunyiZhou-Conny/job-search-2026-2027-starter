@@ -127,12 +127,15 @@ class TestSkipAndContinue(unittest.TestCase):
             consider_jobright_card(sheet_status="REVIEW_READY", executor="polar"),
             held,
         )
-        for status in ("SUBMITTED", "BLOCKED", "IN_PROGRESS", "SUBMISSION_UNKNOWN", "SKIP"):
+        for status in ("SUBMITTED", "SUBMISSION_UNKNOWN", "SKIP"):
             polar = consider_jobright_card(sheet_status=status)
             self.assertTrue(polar.consume_considered, status)
             self.assertEqual(
                 consider_jobright_card(sheet_status=status, executor="grok"), polar, status
             )
+        for status in ("BLOCKED", "IN_PROGRESS"):
+            polar = consider_jobright_card(sheet_status=status)
+            self.assertTrue(polar.consume_considered, status)
 
         admit = consider_jobright_card()
         self.assertEqual(admit.action, "admit")

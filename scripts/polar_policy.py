@@ -1161,10 +1161,10 @@ def consider_jobright_card(
     Polar Local (the default executor) keeps its production table: every
     Sheet-status skip, REVIEW_READY included, counts considered.
 
-    On the grok executor a REVIEW_READY row is a fill-only hold this Bot
-    wrote on the closed grok_cloud gate without a Jobright ack, so the same
-    card is re-offered on the Agent. Re-seeing it is not a new
-    consideration and must not consume the per-run budget.
+    On the grok executor a REVIEW_READY, BLOCKED, or IN_PROGRESS row is a
+    leftover the Agent re-offers because those statuses are never
+    Jobright-acked. Re-seeing it is not a new consideration and must not
+    consume the per-run budget.
     """
     if executor not in RUN_ID_PREFIXES:
         raise ValueError(f"unknown executor {executor!r}")
@@ -1177,13 +1177,16 @@ def consider_jobright_card(
         return ConsiderDecision("skip_applied", True, True, "already applied")
     if closed:
         return ConsiderDecision("skip_closed", True, True, "closed posting")
+    if status == "blocked" and executor == EXECUTOR_GROK:
+        return ConsiderDecision("skip_blocked", False, True, "sheet blocked memory")
     if status == "blocked":
         return ConsiderDecision("skip_blocked", True, True, "sheet blocked memory")
     if section_k_hit or requisition_blocked:
         return ConsiderDecision("skip_duplicate", True, True, "historical or requisition dup")
-    if status == "review_ready" and executor == EXECUTOR_GROK:
+    if status in {"review_ready", "in_progress"} and executor == EXECUTOR_GROK:
+        action = "skip_review_ready" if status == "review_ready" else "skip_duplicate"
         return ConsiderDecision(
-            "skip_review_ready", False, True, f"sheet status {sheet_status}"
+            action, False, True, f"sheet status {sheet_status}"
         )
     if status in {"in_progress", "submission_unknown", "review_ready", "skip"}:
         return ConsiderDecision("skip_duplicate", True, True, f"sheet status {sheet_status}")
