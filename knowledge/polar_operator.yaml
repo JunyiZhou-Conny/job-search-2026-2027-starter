@@ -1,6 +1,6 @@
 last_updated: "2026-09-15"
-policy_revision: "2026-09-15.apply-runtime-convergence"
-source: "Owner 2026-09-15. Jobright-era apply. Standard future-sponsorship widget is No from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
+policy_revision: "2026-09-15.apply-runtime-archive"
+source: "Owner 2026-09-15. Jobright-era apply. Standard future-sponsorship widget is No from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Heartbeat retired. READY_* archive is copy-not-delete. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
 autofill:
@@ -187,6 +187,9 @@ queue_read:
   unique_job_key: true
   scratch_tabs: false
   sheet_error_is_miss: true
+  chatty_io: false
+  repeat_lookup_same_key: false
+  run_log_full_history: false
   live_apply_query:
     workflows:
       - apply-ready-jobs
@@ -207,6 +210,7 @@ concurrency:
   one_live_apply: true
   live_apply_ttl: work_claim.ttl_minutes
   stale_partial: close_then_continue
+  ready_fifo: false
   executors:
     - polar
     - grok
@@ -215,6 +219,19 @@ concurrency:
     - polar_browser
     - grok_browser
     - scratch_tabs
+archive_queue:
+  tab: archive_queue
+  same_headers_as: queue
+  deletes_live: false
+  live_apply_blocks_copy: true
+  owner: polar_policy.archive_queue_row_action
+heartbeat_tab:
+  apply_proof: false
+  writes: false
+incident_write:
+  unique_id: true
+  overwrite: false
+  append_only: true
 application_mailbox:
   readable: true
   source: browser_outlook_application_inbox
@@ -334,10 +351,10 @@ schedules:
   scheduler_heartbeat:
     workflow: polar-scheduler-heartbeat
     cron_et: "5 * * * *"
-    meaning: "Harmless locked-screen proof. Every hour at minute 05 Eastern Time until the owner records a result."
-    enabled: true
+    meaning: "Retired. Sep 14-15 apply run_log already proves the scheduler. Do not write heartbeat as apply proof."
+    enabled: false
     needs_browser_lock: false
-    polar_mode: "Saved Polar Workflow. Open a harmless page. Write one Sheet row. Never apply."
+    polar_mode: "Saved Polar Workflow, retired. If it still starts, write run_log NO_WORK and exit. Never apply."
   polar_github_write_canary:
     workflow: polar-github-write-canary
     cron_et: ""
@@ -365,7 +382,7 @@ schedules:
     meaning: "One-time Sheet tab and header migration."
     enabled: false
     needs_browser_lock: false
-    polar_mode: "Manual once. Preserve existing queue, writing_log, and heartbeat rows."
+    polar_mode: "Manual once. Preserve existing queue, writing_log, and heartbeat rows. Create archive_queue if missing. Copy READY_* / leftover NEW / pre-2026-09-14 SKIP only when no apply is live. Do not delete live rows."
 
 statuses:
   - NEW

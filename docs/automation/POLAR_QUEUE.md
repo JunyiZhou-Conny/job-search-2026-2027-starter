@@ -13,6 +13,7 @@ Import the header rows from:
 - `generated/polar/incident_log_schema.csv`
 - `generated/polar/control_schema.csv`
 - `generated/polar/learning_reports_schema.csv`
+- `generated/polar/archive_queue_schema.csv`
 
 Canonical field lists live in `knowledge/polar_operator.yaml`.
 
@@ -22,7 +23,8 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 |---|---|
 | `queue` | KEEP. One row per discovered job. Targeted lookups only. Not apply FIFO. |
 | `writing_log` | KEEP. One row per nontrivial free-response answer while `writing_observation_mode` is true. |
-| `heartbeat` | KEEP. Locked-screen scheduler proof. Not a job row. |
+| `heartbeat` | RETIRED. Do not write. Historical rows stay. Missing today is not a failure. |
+| `archive_queue` | OPTIONAL. Same headers as `queue`. Copy READY_* / leftover NEW / pre-2026-09-14 SKIP when no apply is live. Do not delete live. |
 | `run_log` | KEEP. One row per workflow invocation. `simplify_attempted` / `simplify_fallback_count` are ARCHIVE: leave blank. |
 | `incident_log` | KEEP. One row per material event. Fence `pre_jobright` as history, not current reliability. |
 | `control` | SIMPLIFY. KEEP `github_write_canary`. ARCHIVE `polar_browser` mutex and `env_simplify_copilot`. Do not delete those rows. |

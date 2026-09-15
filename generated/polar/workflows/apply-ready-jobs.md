@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-15.apply-runtime-convergence+4b16869e5292
+workflow_version: 2026-09-15.apply-runtime-archive+2cf9de281720
 status: production
 enabled: true
 needs_browser_lock: false
@@ -104,7 +104,7 @@ If the live queue header has no claim_run_id, do not append it from this workflo
 Note missing_claim_column. Incident repeat_key missing_claim_column.
 Write OWNER_ACTION_REQUIRED. Exit. Run polar-sheet-migration once after merge.
 If claim_run_id appears more than once, abort. Do not guess which column.
-Remember the current NEW, READY_REGULAR, READY_PRIORITY, or IN_PROGRESS status and attempt_count.
+Remember the current status and attempt_count. READY_* is claimable only when this job_key is on the Jobright card. polar_policy.ready_fifo_permitted is false. Do not pick the next READY row from the Sheet.
 Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, and updated_at now.
 Read back job_key, status, last_stage, and claim_run_id.
 If claim_run_id is not this run_id, the write lost. Note already_claimed. Incident repeat_key work_already_claimed.
@@ -260,7 +260,8 @@ Do not read every queue row. Do not dump READY_* inventory. A 5,000-row full-que
 Lookup by job_key, then company+role+location, then status in BLOCKED, SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, SKIP, REVIEW_READY.
 A job_key QUERY must return every visible row with that key. polar_policy.plan_queue_upsert_by_job_key.
 Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Do not scan SKIP or READY inventory.
-incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. Do not read every historical incident row.
+incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. polar_policy.plan_incident_log_write. Existing id → abort and mint next_incident_id. Append only. Do not overwrite. Do not read every historical incident row.
+Do not QUERY the same job_key twice in one card. polar_policy.sheet_io_repeat_lookup_permitted. Do not reread the full run_log after the start query. polar_policy.chatty_sheet_io_permitted is false. polar_policy.run_log_full_history_permitted is false.
 READY_* stays inventory/archive, not apply FIFO.
 Blocked-job memory stays. Jobright can re-surface a blocked card. Cheap SKIP. Leave the existing row.
 Do not increment simplify_attempted or simplify_fallback_count. Leave those historical columns blank.
