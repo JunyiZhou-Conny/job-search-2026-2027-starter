@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 from urllib.parse import urlparse
@@ -474,6 +474,19 @@ LEARNING_REPORTS_COLUMNS = [
     "notes",
 ]
 
+ARCHIVE_QUEUE_TAB = "archive_queue"
+ARCHIVE_QUEUE_COLUMNS = QUEUE_COLUMNS
+JOBRIGHT_ERA_START = date(2026, 9, 14)
+LIVE_KEEP_STATUSES = frozenset(
+    {
+        "IN_PROGRESS",
+        "SUBMITTED",
+        "SUBMISSION_UNKNOWN",
+        "BLOCKED",
+        "REVIEW_READY",
+    }
+)
+
 SCHEMA_TABS = {
     "queue": QUEUE_COLUMNS,
     "writing_log": WRITING_LOG_COLUMNS,
@@ -482,6 +495,7 @@ SCHEMA_TABS = {
     "incident_log": INCIDENT_LOG_COLUMNS,
     "control": CONTROL_COLUMNS,
     "learning_reports": LEARNING_REPORTS_COLUMNS,
+    ARCHIVE_QUEUE_TAB: ARCHIVE_QUEUE_COLUMNS,
 }
 
 EMAIL_RE = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
@@ -1357,6 +1371,112 @@ def start_apply_run_action(
     ):
         return "stale_close"
     return "continue"
+
+
+def ready_fifo_permitted() -> bool:
+    return False
+
+
+def sheet_ready_is_apply_admission() -> bool:
+    return False
+
+
+def run_log_full_history_permitted() -> bool:
+    return False
+
+
+def heartbeat_is_apply_proof() -> bool:
+    return False
+
+
+def heartbeat_writes_permitted() -> bool:
+    return False
+
+
+def lock_result_carries_meaning() -> bool:
+    return False
+
+
+def incident_overwrite_permitted() -> bool:
+    return False
+
+
+def plan_incident_log_write(
+    rows: Sequence[Mapping[str, Any]],
+    incident_id: str,
+) -> ControlWritePlan:
+    """Append-only. Duplicate incident_id aborts; mint next_incident_id."""
+    try:
+        index = locate_row_by_key(rows, incident_id, "incident_id")
+    except ValueError:
+        return ControlWritePlan(
+            "abort",
+            None,
+            incident_id,
+            "duplicate incident_id",
+        )
+    if index is not None:
+        return ControlWritePlan(
+            "abort",
+            index,
+            incident_id,
+            "incident_id already exists",
+        )
+    return ControlWritePlan("append", None, incident_id, "append new incident")
+
+
+def _sheet_row_date(row: Mapping[str, Any], *fields: str) -> Optional[date]:
+    for field in fields:
+        raw = str(row.get(field) or "").strip()
+        if not raw:
+            continue
+        parsed = parse_timestamp(raw)
+        if parsed is not None:
+            return parsed.date()
+        if len(raw) >= 10:
+            try:
+                return date.fromisoformat(raw[:10])
+            except ValueError:
+                continue
+    return None
+
+
+def archive_queue_deletes_live() -> bool:
+    return False
+
+
+def archive_queue_copy_permitted(*, apply_is_live: bool) -> bool:
+    return not apply_is_live
+
+
+def archive_queue_row_action(row: Mapping[str, Any]) -> str:
+    status = str(row.get("status") or "").strip()
+    if status in READY_STATUSES or status == "NEW":
+        return "archive"
+    if status in LIVE_KEEP_STATUSES:
+        return "keep_live"
+    if status == "SKIP":
+        day = _sheet_row_date(row, "updated_at", "discovered_at", "submitted_at")
+        if day is None or day < JOBRIGHT_ERA_START:
+            return "archive"
+        return "keep_live"
+    return "keep_live"
+
+
+def plan_archive_queue_copy(rows: Sequence[Mapping[str, Any]]) -> Tuple[int, ...]:
+    return tuple(
+        index
+        for index, row in enumerate(rows)
+        if archive_queue_row_action(row) == "archive"
+    )
+
+
+def sheet_io_repeat_lookup_permitted(*, already_queried_this_key: bool) -> bool:
+    return not already_queried_this_key
+
+
+def chatty_sheet_io_permitted() -> bool:
+    return False
 
 
 def scratch_tab_permitted() -> bool:

@@ -1,9 +1,9 @@
 # polar-scheduler-heartbeat
 
 workflow: polar-scheduler-heartbeat
-workflow_version: 2026-09-15.apply-runtime-convergence+9ca7c8e248e1
-status: production
-enabled: true
+workflow_version: 2026-09-15.apply-runtime-archive+23f30101c803
+status: retired
+enabled: false
 needs_browser_lock: false
 schedule: 5 * * * * America/New_York
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
@@ -51,20 +51,12 @@ Do not browse the rest of GitHub as configuration.
 
 ## Work order
 
-Mode: saved Workflow on the named local profile.
+Mode: saved Workflow on the named local profile. Retired.
 This workflow does not claim queue jobs and does not treat polar_browser as a mutex.
+polar_policy.heartbeat_writes_permitted is false. polar_policy.heartbeat_is_apply_proof is false.
+Sep 14-15 apply run_log already proves the scheduler can write the Sheet.
 
-Open https://example.com
-Confirm the page title contains Example Domain.
-Open the Polar Jobs Google Sheet tab heartbeat through the Google connector.
-Find Drive file counts. Do not use the browser as the Sheet API.
-Append one named row:
-- recorded_at: now, America/New_York
-- workflow: polar-scheduler-heartbeat
-- result: success
-- page_opened: https://example.com
-- notes: screen lock unknown to you. Write only what you can observe.
-
-If you cannot open the page or the Sheet, append result failure and a short note.
-Also write one run_log row with lock_result NOT_REQUIRED.
+If this workflow still starts, write this run_id as finalized NO_WORK with started_at and ended_at now.
+Do not append a heartbeat row. Do not open example.com to prove apply.
+lock_result is NOT_REQUIRED. polar_policy.lock_result_carries_meaning is false.
 Never apply. Never open Jobright. Never include secrets.

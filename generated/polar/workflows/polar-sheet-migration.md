@@ -1,7 +1,7 @@
 # polar-sheet-migration
 
 workflow: polar-sheet-migration
-workflow_version: 2026-09-15.apply-runtime-convergence+182369fbb714
+workflow_version: 2026-09-15.apply-runtime-archive+5d7b0b01cf33
 status: manual_once
 enabled: false
 needs_browser_lock: false
@@ -95,8 +95,13 @@ If a QUERY returns #N/A, #REF!, or another error token, polar_policy.sheet_query
 This is a one-time setup. Do not schedule it.
 Open the existing Polar Jobs Google Sheet through the Google connector.
 Find Drive file counts. Do not use the browser as the Sheet API.
-Preserve every current queue, writing_log, and heartbeat row.
+Preserve every current queue, writing_log, and heartbeat row. Do not delete live rows.
 Do not rewrite existing cells except to add missing headers.
+
+Create archive_queue only when that tab is missing. Headers must match queue exactly.
+Copy READY_*, leftover NEW, and pre-2026-09-14 SKIP only when polar_policy.archive_queue_copy_permitted is true.
+If an apply PARTIAL is live, stop. Do not copy. polar_policy.archive_queue_row_action chooses each row.
+polar_policy.archive_queue_deletes_live is false. Live queue keeps the copied rows until a later Junyi-run hide.
 
 Create a tab only when it is missing. The required tabs and exact headers are:
 
@@ -107,6 +112,7 @@ Create a tab only when it is missing. The required tabs and exact headers are:
 - incident_log: incident_id, run_id, job_key, company, stage, category, time_lost_category, severity, summary, evidence, minutes_lost, resolved_in_run, repeat_key, durable_candidate, recorded_at
 - control: key, owner_run_id, workflow, acquired_at, expires_at, notes
 - learning_reports: report_date, recorded_at, workflow_version, body_markdown, publish_status, github_url, notes
+- archive_queue: job_key, discovered_at, company, role, location, track, source_url, apply_url, apply_url_confidence, weight, priority_reason, lane, resume_cluster, status, last_stage, attempt_count, blocker, writing_summary, submitted_at, confirmation, updated_at, employer_requisition_id, ats_job_id, claim_run_id
 
 If queue already has rows, keep them.
 Read the live queue header first. polar_policy.plan_claim_header_migration is the decision.

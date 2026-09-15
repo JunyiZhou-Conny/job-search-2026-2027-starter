@@ -367,7 +367,7 @@ def _lease_block(name: str) -> str:
                 f"Note missing_claim_column. Incident repeat_key {CLAIM_REPEAT_MISSING_COLUMN}.",
                 "Write OWNER_ACTION_REQUIRED. Exit. Run polar-sheet-migration once after merge.",
                 "If claim_run_id appears more than once, abort. Do not guess which column.",
-                "Remember the current NEW, READY_REGULAR, READY_PRIORITY, or IN_PROGRESS status and attempt_count.",
+                "Remember the current status and attempt_count. READY_* is claimable only when this job_key is on the Jobright card. polar_policy.ready_fifo_permitted is false. Do not pick the next READY row from the Sheet.",
                 "Write status IN_PROGRESS, claim_run_id this run_id, bump attempt_count, and updated_at now.",
                 "Read back job_key, status, last_stage, and claim_run_id.",
                 "If claim_run_id is not this run_id, the write lost. Note already_claimed. "
@@ -612,7 +612,8 @@ def render_apply(operator: Dict[str, Any]) -> str:
             + ".",
             "A job_key QUERY must return every visible row with that key. polar_policy.plan_queue_upsert_by_job_key.",
             "Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Do not scan SKIP or READY inventory.",
-            "incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. Do not read every historical incident row.",
+            "incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. polar_policy.plan_incident_log_write. Existing id → abort and mint next_incident_id. Append only. Do not overwrite. Do not read every historical incident row.",
+            "Do not QUERY the same job_key twice in one card. polar_policy.sheet_io_repeat_lookup_permitted. Do not reread the full run_log after the start query. polar_policy.chatty_sheet_io_permitted is false. polar_policy.run_log_full_history_permitted is false.",
             "READY_* stays inventory/archive, not apply FIFO.",
             "Blocked-job memory stays. Jobright can re-surface a blocked card. Cheap SKIP. Leave the existing row.",
             "Do not increment simplify_attempted or simplify_fallback_count. Leave those historical columns blank.",
@@ -814,7 +815,8 @@ def render_summary(operator: Dict[str, Any]) -> str:
             "Never apply. Never click Submit.",
             "Do not open employer forms unless you need to verify a SUBMISSION_UNKNOWN row already in the digest.",
             "",
-            "Read today's America/New_York rows from queue, writing_log, heartbeat, run_log, and incident_log.",
+            "Read today's America/New_York rows from queue, writing_log, run_log, and incident_log.",
+            "heartbeat is retired. Mention a today heartbeat row only if one exists. A missing heartbeat is not a failure.",
             "Filter by today's dates. Do not dump every READY_* row.",
             "Email Junyi one digest for America/New_York today.",
             "",
@@ -834,7 +836,6 @@ def render_summary(operator: Dict[str, Any]) -> str:
             "- SKIP or closed rows",
             "- new account or auth friction, without secrets",
             "- writing used, as a short list plus the most important examples",
-            "- heartbeat success or failure if a heartbeat row exists today",
             "- SKIPPED_LOCKED runs, if any",
             "",
             "Subject line: Polar daily job summary YYYY-MM-DD.",
@@ -925,22 +926,14 @@ def render_heartbeat(operator: Dict[str, Any]) -> str:
             _open_files("polar-scheduler-heartbeat"),
             "## Work order",
             "",
-            "Mode: saved Workflow on the named local profile.",
+            "Mode: saved Workflow on the named local profile. Retired.",
             "This workflow does not claim queue jobs and does not treat polar_browser as a mutex.",
+            "polar_policy.heartbeat_writes_permitted is false. polar_policy.heartbeat_is_apply_proof is false.",
+            "Sep 14-15 apply run_log already proves the scheduler can write the Sheet.",
             "",
-            "Open https://example.com",
-            "Confirm the page title contains Example Domain.",
-            "Open the Polar Jobs Google Sheet tab heartbeat through the Google connector.",
-            "Find Drive file counts. Do not use the browser as the Sheet API.",
-            "Append one named row:",
-            "- recorded_at: now, America/New_York",
-            "- workflow: polar-scheduler-heartbeat",
-            "- result: success",
-            "- page_opened: https://example.com",
-            "- notes: screen lock unknown to you. Write only what you can observe.",
-            "",
-            "If you cannot open the page or the Sheet, append result failure and a short note.",
-            "Also write one run_log row with lock_result NOT_REQUIRED.",
+            "If this workflow still starts, write this run_id as finalized NO_WORK with started_at and ended_at now.",
+            "Do not append a heartbeat row. Do not open example.com to prove apply.",
+            "lock_result is NOT_REQUIRED. polar_policy.lock_result_carries_meaning is false.",
             "Never apply. Never open Jobright. Never include secrets.",
             "",
         ]
@@ -1062,8 +1055,13 @@ def render_migration(operator: Dict[str, Any]) -> str:
             "This is a one-time setup. Do not schedule it.",
             "Open the existing Polar Jobs Google Sheet through the Google connector.",
             "Find Drive file counts. Do not use the browser as the Sheet API.",
-            "Preserve every current queue, writing_log, and heartbeat row.",
+            "Preserve every current queue, writing_log, and heartbeat row. Do not delete live rows.",
             "Do not rewrite existing cells except to add missing headers.",
+            "",
+            "Create archive_queue only when that tab is missing. Headers must match queue exactly.",
+            "Copy READY_*, leftover NEW, and pre-2026-09-14 SKIP only when polar_policy.archive_queue_copy_permitted is true.",
+            "If an apply PARTIAL is live, stop. Do not copy. polar_policy.archive_queue_row_action chooses each row.",
+            "polar_policy.archive_queue_deletes_live is false. Live queue keeps the copied rows until a later Junyi-run hide.",
             "",
             "Create a tab only when it is missing. The required tabs and exact headers are:",
             "",
@@ -1102,6 +1100,8 @@ def render_workflow(name: str, operator: Dict[str, Any]) -> str:
     status = "production" if enabled else "disabled_until_proven"
     if name == "discover-jobs-hourly" and not enabled:
         status = "retired_from_apply_path"
+    if name == "polar-scheduler-heartbeat" and not enabled:
+        status = "retired"
     if name == "polar-github-write-canary":
         status = "manual_canary"
     if name == "polar-sheet-migration":
@@ -1154,6 +1154,7 @@ def write_schema_csvs(root: Path = ROOT) -> List[Path]:
         "incident_log_schema.csv": INCIDENT_LOG_COLUMNS,
         "control_schema.csv": CONTROL_COLUMNS,
         "learning_reports_schema.csv": LEARNING_REPORTS_COLUMNS,
+        "archive_queue_schema.csv": QUEUE_COLUMNS,
     }
     for filename, columns in mapping.items():
         path = out_dir / filename

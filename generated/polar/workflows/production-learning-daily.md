@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-15.apply-runtime-convergence+941eea23b3ea
+workflow_version: 2026-09-15.apply-runtime-archive+941eea23b3ea
 status: production
 enabled: true
 needs_browser_lock: false

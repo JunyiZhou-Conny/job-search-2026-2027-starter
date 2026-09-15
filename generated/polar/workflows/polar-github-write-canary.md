@@ -1,7 +1,7 @@
 # polar-github-write-canary
 
 workflow: polar-github-write-canary
-workflow_version: 2026-09-15.apply-runtime-convergence+bba5e8fa6b8c
+workflow_version: 2026-09-15.apply-runtime-archive+bba5e8fa6b8c
 status: manual_canary
 enabled: false
 needs_browser_lock: false

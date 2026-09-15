@@ -1,7 +1,7 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-15.apply-runtime-convergence+11e1f7eaaefe
+workflow_version: 2026-09-15.apply-runtime-archive+11e1f7eaaefe
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
