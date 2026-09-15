@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-14.jobright-first+2a2c53ed1aec
+workflow_version: 2026-09-15.jobright-era+13a34e0e32e0
 status: production
 enabled: true
 needs_browser_lock: false
@@ -145,8 +145,13 @@ This workflow does not change GitHub policy.
 It does not apply. It does not click Submit.
 Do not recommend restoring discover-jobs-hourly as apply entry.
 Apply entry is Jobright recommendations. READY_* inventory is not apply admission.
+Do not treat polar_policy.incident_learning_era=pre_jobright as current reliability evidence.
+Fence Simplify probe/fallback, Copilot-as-autofill, READY_* FIFO, and IBM-funnel jobs Jobright does not recommend.
+Those rows stay history. Do not paste architecture audits into this report.
+Do not recommend restoring Copilot as autofill owner or queue-first apply.
 
 Read today's America/New_York rows from run_log, incident_log, writing_log, and queue.
+Filter by date and status. Do not dump the READY_* backlog.
 Group incidents by repeat_key.
 Write one sanitized Markdown report that covers:
 - repeated incidents

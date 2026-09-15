@@ -61,7 +61,7 @@ class TestCopilotPreflight(unittest.TestCase):
         self.assertEqual(state, "PRESENT")
         self.assertTrue(copilot_allows_apply(state))
 
-    def test_missing_ui_forbids_manual_fallback(self):
+    def test_missing_ui_does_not_stop_jobright_apply(self):
         state = copilot_state(
             CopilotObservation(
                 employer_page_copilot_ui=False,
@@ -70,7 +70,7 @@ class TestCopilotPreflight(unittest.TestCase):
             )
         )
         self.assertEqual(state, "MISSING")
-        self.assertFalse(copilot_allows_apply(state))
+        self.assertTrue(copilot_allows_apply(state))
 
     def test_simplify_jobs_login_is_not_proof(self):
         self.assertFalse(simplify_jobs_session_is_copilot_proof(True))
@@ -85,9 +85,9 @@ class TestCopilotPreflight(unittest.TestCase):
             )
         )
         self.assertEqual(state, "UNKNOWN")
-        self.assertFalse(copilot_allows_apply(state))
+        self.assertTrue(copilot_allows_apply(state))
 
-    def test_missing_is_environment_blocker_not_job_block(self):
+    def test_missing_copilot_does_not_stop_apply(self):
         restore = restore_queue_after_copilot_miss(
             ready_status="READY_PRIORITY",
             attempt_count_before_run=2,
@@ -95,7 +95,7 @@ class TestCopilotPreflight(unittest.TestCase):
         self.assertEqual(restore.status, "READY_PRIORITY")
         self.assertEqual(restore.attempt_count, 2)
         self.assertFalse(restore.consume_job)
-        self.assertEqual(missing_copilot_run_result(), "OWNER_ACTION_REQUIRED")
+        self.assertEqual(missing_copilot_run_result(), "CONTINUE")
         self.assertIn("OWNER_ACTION_REQUIRED", RUN_LOG_RESULTS)
         self.assertEqual(restore.claim_run_id, "")
         self.assertEqual(COPILOT_REPEAT_KEY, "simplify_copilot_missing")
@@ -163,7 +163,7 @@ class TestCopilotPreflight(unittest.TestCase):
             )
         )
         self.assertEqual(missed, "MISSING")
-        self.assertFalse(copilot_allows_apply(missed))
+        self.assertTrue(copilot_allows_apply(missed))
         recovered = copilot_state(
             CopilotObservation(
                 employer_page_copilot_ui=True,

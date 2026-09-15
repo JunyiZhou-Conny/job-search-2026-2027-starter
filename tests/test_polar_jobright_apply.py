@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from polar_policy import (  # noqa: E402
+    abandon_application_on_email_otp,
     after_confirm_persistence_action,
     apply_entry_source,
     apply_run_caps,
@@ -22,15 +23,24 @@ from polar_policy import (  # noqa: E402
     considered_budget_exhausted,
     discover_is_apply_entry,
     do_not_use_simplify_copilot_autofill,
+    email_verification_action,
+    full_queue_read_permitted,
+    incident_learning_era,
     jobright_ack_action,
     legacy_ready_disposition,
+    mailbox_unreadable_is_blocker,
     missing_references_action,
     missing_required_fact_action,
     native_resume_action,
     page_surface,
+    post_autofill_sidebar_is_proof,
+    post_autofill_trust_source,
+    queue_read_scope,
+    referral_field_action,
     select_apply_batch,
     select_next_apply_job,
     uncertain_submit_action,
+    user_only_auth_steps,
 )
 from polar_workflows import render_workflow  # noqa: E402
 
@@ -94,6 +104,11 @@ class TestSkipAndContinue(unittest.TestCase):
         self.assertEqual(conflict.action, "skip_hard_fact")
         self.assertTrue(conflict.consume_considered)
         self.assertTrue(conflict.continue_run)
+
+        blocked = consider_jobright_card(sheet_status="BLOCKED")
+        self.assertEqual(blocked.action, "skip_blocked")
+        self.assertTrue(blocked.consume_considered)
+        self.assertTrue(blocked.continue_run)
 
         admit = consider_jobright_card()
         self.assertEqual(admit.action, "admit")
@@ -245,6 +260,9 @@ class TestLearningAndDiscoverPath(unittest.TestCase):
         learning = render_workflow("production-learning-daily", operator)
         self.assertIn("run_log, incident_log, writing_log, and queue", learning)
         self.assertIn("Do not recommend restoring discover-jobs-hourly as apply entry.", learning)
+        self.assertIn("Fence Simplify probe/fallback, Copilot-as-autofill, READY_* FIFO", learning)
+        self.assertIn("Do not paste architecture audits into this report.", learning)
+        self.assertIn("Do not dump the READY_* backlog.", learning)
         discover = render_workflow("discover-jobs-hourly", operator)
         self.assertIn("retired_from_apply_path", discover)
         self.assertIn("apply_path: false", discover)
@@ -265,6 +283,62 @@ class TestLearningAndDiscoverPath(unittest.TestCase):
             apply,
         )
         self.assertFalse(operator["schedules"]["discover_jobs_hourly"]["enabled"])
+        self.assertIn("scope: targeted", apply)
+        self.assertIn("full_scan: false", apply)
+        self.assertIn("trust: form_dom", apply)
+        self.assertIn("readable: true", apply)
+        self.assertIn("read_application_outlook", apply)
+        self.assertIn("abandon_on_email_otp: false", apply)
+        self.assertNotIn("Missing Copilot is not OWNER_ACTION_REQUIRED", apply)
+        self.assertNotIn("simplify_attempted or simplify_fallback_count. Increment", apply)
+
+
+class TestJobrightEraContract(unittest.TestCase):
+    def test_queue_reads_are_targeted(self):
+        self.assertEqual(queue_read_scope(), "targeted")
+        self.assertFalse(full_queue_read_permitted())
+
+    def test_form_dom_beats_sidebar(self):
+        self.assertEqual(post_autofill_trust_source(), "form_dom")
+        self.assertFalse(post_autofill_sidebar_is_proof())
+        self.assertEqual(referral_field_action(filled_value="Event"), "clear_invented")
+        self.assertEqual(referral_field_action(filled_value=""), "leave_blank")
+
+    def test_outlook_mailbox_is_recoverable(self):
+        self.assertEqual(email_verification_action(), "read_application_outlook")
+        self.assertFalse(mailbox_unreadable_is_blocker())
+        self.assertFalse(abandon_application_on_email_otp())
+        self.assertIn("sms_on_mac_if_outlook_has_no_code", user_only_auth_steps())
+
+    def test_simplify_counters_stay_blank(self):
+        fields = apply_run_counters(considered=1, forms_reached=1)
+        self.assertEqual(fields["simplify_attempted"], "")
+        self.assertEqual(fields["simplify_fallback_count"], "")
+
+    def test_pre_jobright_incidents_are_fenced(self):
+        self.assertEqual(
+            incident_learning_era(repeat_key="simplify_copilot_missing"),
+            "pre_jobright",
+        )
+        self.assertEqual(
+            incident_learning_era(time_lost_category="SIMPLIFY"),
+            "pre_jobright",
+        )
+        self.assertEqual(
+            incident_learning_era(summary="IBM funnel probe on old discovery"),
+            "pre_jobright",
+        )
+        self.assertEqual(
+            incident_learning_era(workflow_version="2026-09-14.perfect-resume+abc"),
+            "pre_jobright",
+        )
+        self.assertEqual(
+            incident_learning_era(
+                summary="Jobright extension invented Event referral",
+                workflow_version="2026-09-15.jobright-era+abc",
+            ),
+            "jobright",
+        )
 
 
 if __name__ == "__main__":

@@ -1,12 +1,23 @@
 # Form-answer rules Junyi confirmed. Not a second ATS.
-# Copilot = Simplify Copilot (Chrome extension). It will not read this file.
-# Cursor / computer-use must apply these after Copilot, or Junyi types them.
+# Polar Local: Jobright extension autofills. Trust the form DOM, not the
+# extension sidebar. Cloud computer-use still uses Simplify Copilot.
 # Submit is governed by docs/policy/SUBMIT_ROLLOUT.md.
 
-last_updated: "2026-09-10"
+last_updated: "2026-09-15"
 source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules; Junyi 2026-08-25 work-auth / GPA / website / discipline; Junyi leftover rules after Advanced Space redo 2026-08-25"
 
 always:
+  how_heard_or_referral:
+    decided: "2026-09-15"
+    form_answer: ""
+    execution: leave_blank_unless_fact
+    when: "How did you hear about this role / referral source / Event"
+    reason: >
+      Jobright-era apply observed the extension invent Event as a
+      referral. There is no verified referral fact. Leave blank.
+      Do not invent Event, Career Fair, or a similar source.
+    do_not: "Accept an invented referral. Do not fabricate a referrer."
+
   employed_by_this_company_before:
     decided: "2026-08-23"
     form_answer: "No"
@@ -409,14 +420,19 @@ later_not_this_run:
     always.personal_website https://connyzhou.com. Old rule was
     empty until a live URL exists.
 
-# Trust the visible form, not the Copilot sidebar (Lila 2026-08-23 evening)
+# Trust the visible form, not the extension sidebar.
+# Jobright-era Polar: Jobright extension sidebar lied. Copilot sidebar
+# also lied (Lila 2026-08-23). Same rule for both.
 copilot_sidebar_is_not_the_form:
   decided: "2026-08-23"
+  revised: "2026-09-15"
   rule: >
-    "Completed" on phone / phone-country / resume does not mean the
-    Greenhouse widget has a number or a file. Look at the page.
-    After any Run Autofill Again, re-check those three before anything
-    else — Autofill can clear them while the sidebar stays green.
+    "Completed" on phone / phone-country / resume / progress does not
+    mean the widget has a value. Look at the form DOM. After Autofill,
+    re-check identity, contact, sponsorship vs future-sponsorship
+    wording, and referral. The extension guessed sponsorship No and
+    invented Event as a referral. Correct from facts. Never invent
+    a referral. Do not Run Autofill Again.
   especially_on: prioritized
   do_not: "Mark identity complete from the sidebar alone."
 

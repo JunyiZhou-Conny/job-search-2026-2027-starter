@@ -1,7 +1,7 @@
 # polar-scheduler-heartbeat
 
 workflow: polar-scheduler-heartbeat
-workflow_version: 2026-09-14.jobright-first+b53185a9688a
+workflow_version: 2026-09-15.jobright-era+b53185a9688a
 status: production
 enabled: true
 needs_browser_lock: false

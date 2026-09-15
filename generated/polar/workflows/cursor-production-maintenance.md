@@ -1,7 +1,7 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-14.jobright-first+465201631783
+workflow_version: 2026-09-15.jobright-era+465201631783
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false

@@ -197,6 +197,40 @@ CONTROL_KEY_DUPLICATE_REPEAT_KEY = "control_key_duplicate"
 NATIVE_RESUME_REPEAT_KEY = "native_resume_empty"
 COPILOT_EMAIL_REPEAT_KEY = "copilot_academic_mailbox_on_application_field"
 SUBMIT_PROOF_REPEAT_KEY = "submit_success_without_page_confirmation"
+POST_AUTOFILL_TRUST_SOURCE = "form_dom"
+POST_AUTOFILL_CHECKS = (
+    "identity",
+    "contact",
+    "sponsorship_wording",
+    "referral",
+)
+QUEUE_READ_SCOPE = "targeted"
+TARGETED_QUEUE_STATUSES = (
+    "BLOCKED",
+    "SUBMITTED",
+    "SUBMISSION_UNKNOWN",
+    "IN_PROGRESS",
+    "SKIP",
+    "REVIEW_READY",
+)
+INCIDENT_ERA_CURRENT = "jobright"
+INCIDENT_ERA_FENCED = "pre_jobright"
+FENCED_REPEAT_KEYS = frozenset(
+    {
+        COPILOT_REPEAT_KEY,
+        "simplify_fallback",
+        "simplify_probe",
+        "ready_fifo",
+        "ibm_funnel",
+    }
+)
+USER_ONLY_AUTH_STEPS = (
+    "sms_on_mac_if_outlook_has_no_code",
+    "hardware_security_key",
+    "captcha_after_normal_attempt",
+    "phone_app_push",
+)
+APPLICATION_OUTLOOK_ACTION = "read_application_outlook"
 PRODUCTION_RESUME_EXPORT_PATH = FAMILY_RESUME_EXPORT_PATH
 TELEMETRY_TZ_NAME = "America/New_York"
 TELEMETRY_TZ = ZoneInfo(TELEMETRY_TZ_NAME)
@@ -1061,9 +1095,11 @@ def consider_jobright_card(
         return ConsiderDecision("skip_applied", True, True, "already applied")
     if closed:
         return ConsiderDecision("skip_closed", True, True, "closed posting")
+    if status == "blocked":
+        return ConsiderDecision("skip_blocked", True, True, "sheet blocked memory")
     if section_k_hit or requisition_blocked:
         return ConsiderDecision("skip_duplicate", True, True, "historical or requisition dup")
-    if status in {"in_progress", "submission_unknown", "review_ready", "blocked", "skip"}:
+    if status in {"in_progress", "submission_unknown", "review_ready", "skip"}:
         return ConsiderDecision("skip_duplicate", True, True, f"sheet status {sheet_status}")
     if hard_fact_conflict:
         return ConsiderDecision("skip_hard_fact", True, True, "hard fact conflict")
@@ -1138,6 +1174,8 @@ def apply_run_counters(
         "skipped": str(skipped),
         "blocked": str(blocked),
         "submission_unknown": str(submission_unknown),
+        "simplify_attempted": "",
+        "simplify_fallback_count": "",
     }
 
 
@@ -1153,18 +1191,102 @@ def considered_budget_exhausted(
 def copilot_preflight_scope(page_kind: str) -> str:
     kind = normalize_text(page_kind)
     if kind == "application_form":
-        return "judge"
+        return "ignore"
     return "defer"
 
 
 def copilot_after_auth_action(page_kind: str, copilot_state: str) -> str:
-    """After login, judge Copilot on the real form. A login-page defer is not PRESENT."""
-    if copilot_preflight_scope(page_kind) != "judge":
+    """Retired Copilot gate. Jobright extension owns autofill. Missing Copilot continues."""
+    del copilot_state
+    if copilot_preflight_scope(page_kind) != "ignore":
         return "defer"
-    state = normalize_text(copilot_state)
-    if state == "present":
-        return "continue"
-    return "owner_action_required"
+    return "continue"
+
+
+def queue_read_scope() -> str:
+    return QUEUE_READ_SCOPE
+
+
+def full_queue_read_permitted() -> bool:
+    return False
+
+
+def targeted_queue_statuses() -> Tuple[str, ...]:
+    return TARGETED_QUEUE_STATUSES
+
+
+def recovery_queue_filter(row: Mapping[str, Any]) -> bool:
+    status = str(row.get("status") or "").strip()
+    return status in {"SUBMISSION_UNKNOWN", "IN_PROGRESS"}
+
+
+def post_autofill_trust_source() -> str:
+    return POST_AUTOFILL_TRUST_SOURCE
+
+
+def post_autofill_sidebar_is_proof() -> bool:
+    return False
+
+
+def post_autofill_checks() -> Tuple[str, ...]:
+    return POST_AUTOFILL_CHECKS
+
+
+def referral_field_action(*, filled_value: str, fact_has_referral: bool = False) -> str:
+    if fact_has_referral:
+        return "keep_fact"
+    token = normalize_text(filled_value)
+    if not token:
+        return "leave_blank"
+    return "clear_invented"
+
+
+def email_verification_action() -> str:
+    return APPLICATION_OUTLOOK_ACTION
+
+
+def mailbox_unreadable_is_blocker() -> bool:
+    return False
+
+
+def abandon_application_on_email_otp() -> bool:
+    return False
+
+
+def user_only_auth_steps() -> Tuple[str, ...]:
+    return USER_ONLY_AUTH_STEPS
+
+
+def incident_learning_era(
+    *,
+    repeat_key: str = "",
+    time_lost_category: str = "",
+    summary: str = "",
+    recorded_at: str = "",
+    workflow_version: str = "",
+) -> str:
+    key = canonical_repeat_key(repeat_key)
+    version = normalize_text(workflow_version)
+    blob = normalize_text(f"{summary} {repeat_key}")
+    lost = normalize_text(time_lost_category)
+    if key in FENCED_REPEAT_KEYS or key.startswith("simplify_"):
+        return INCIDENT_ERA_FENCED
+    if lost == "simplify":
+        return INCIDENT_ERA_FENCED
+    if "perfect-resume" in version or "queue-first" in version:
+        return INCIDENT_ERA_FENCED
+    day = str(recorded_at or "").strip()[:10]
+    if len(day) == 10 and day < "2026-09-14":
+        return INCIDENT_ERA_FENCED
+    if "ibm" in blob and ("funnel" in blob or "probe" in blob):
+        return INCIDENT_ERA_FENCED
+    if "ready_" in blob and "fifo" in blob:
+        return INCIDENT_ERA_FENCED
+    if "copilot" in blob and (
+        "autofill" in blob or "precondition" in blob or "preflight" in blob
+    ):
+        return INCIDENT_ERA_FENCED
+    return INCIDENT_ERA_CURRENT
 
 
 def incident_ids_are_unique(existing: Sequence[str]) -> bool:
@@ -2159,11 +2281,13 @@ def simplify_jobs_session_is_copilot_proof(_session_ok: bool) -> bool:
 
 
 def copilot_allows_apply(state: str) -> bool:
-    return state == "PRESENT"
+    """Retired apply gate. Jobright extension owns autofill. Missing Copilot continues."""
+    del state
+    return True
 
 
 def missing_copilot_run_result() -> str:
-    return "OWNER_ACTION_REQUIRED"
+    return "CONTINUE"
 
 
 def restore_queue_after_copilot_miss(

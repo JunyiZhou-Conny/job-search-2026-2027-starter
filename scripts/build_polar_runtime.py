@@ -18,7 +18,6 @@ from js_lib import (
     read_rows,
 )
 from polar_policy import (
-    COPILOT_STATES,
     DEGREE_LEVEL_REPEAT_KEY,
     JOBRIGHT_ONBOARDING_REPEAT_KEY,
     CONTROL_KEY_DUPLICATE_REPEAT_KEY,
@@ -94,7 +93,7 @@ SECTION_ORDER = [
     ("M. Browser lease", "section_m"),
     ("N. Run and incident telemetry", "section_n"),
     ("O. Employer requisition identity", "section_o"),
-    ("P. Memory ownership and Copilot preflight", "section_p"),
+            ("P. Memory ownership and autofill", "section_p"),
 ]
 
 
@@ -370,11 +369,14 @@ def compile_sections() -> Dict[str, str]:
 
     section_a = "\n".join(
         [
-            "Phone numbers live in the local Polar profile and in Simplify. They are not compiled here.",
+            "Phone numbers live in the local Polar profile. They are not compiled here.",
             "Normal ATS email, candidate account email, preferred application contact, and password-reset email",
-            "use the dedicated local APPLICATION mailbox from Polar, Simplify, or the browser profile.",
+            "use the dedicated local APPLICATION mailbox from Polar or the browser profile.",
             "If a field asks for school email, university email, or institutional email, use the local academic mailbox.",
-            "A resume parser or Simplify Copilot that fills the Harvard or school mailbox into a normal ATS account, contact, or password-reset field is wrong.",
+            "The application Outlook inbox is readable in the Polar browser. polar_policy.email_verification_action is read_application_outlook.",
+            "Retrieve an email verification code or link from that inbox and continue. Do not abandon a recoverable email OTP.",
+            "Do not write the code into the Sheet, git, or a report.",
+            "A resume parser that fills the Harvard or school mailbox into a normal ATS account, contact, or password-reset field is wrong.",
             "Correct that field to the local APPLICATION mailbox before continuing. Do not finish account creation on the academic mailbox.",
             "Do not create a second employer account only to change email.",
             "polar_policy.contact_email_action is the engineer table for that reread.",
@@ -617,14 +619,18 @@ def compile_sections() -> Dict[str, str]:
         [
             "A required new application account is normal work, not a blocker by default.",
             "Attempt ordinary user-facing completion for account creation, a browser-generated strong password, saved credentials, forgot-password, email verification, email OTP, SMS on the Mac, ordinary consent, multi-page forms, unknown widgets, and required writing.",
+            "Email OTP and verification links are recoverable. Polar may open the application Outlook inbox in the browser and continue. polar_policy.email_verification_action.",
+            "Do not mark a verification-code gate unrecoverable. Do not abandon a recoverable application.",
+            "User-only remaining steps: SMS on the Mac when Outlook has no code, hardware security key, CAPTCHA after a normal browser attempt, and phone-app push.",
+            "A PREFERENCES.md or Polar site note on jobright.ai that says the mailbox cannot be read is stale. GitHub wins.",
             "Use only normal browser flows for security or anti-abuse challenges.",
             "Do not implement CAPTCHA-bypass services, fingerprint spoofing, or anti-abuse evasion.",
-            "Escalate to BLOCKED only after this local environment cannot complete a required step.",
+            "Escalate to BLOCKED only after this local environment cannot complete a required step, and that step is not a recoverable Outlook code.",
             "A blocked job must not stall the worker. Persist the blocker and continue to the next Jobright card.",
             "ATS family is diagnostic metadata only. Do not organize work by ATS worker class.",
-            "Jobright extension owns autofill. See section P.",
+            "Jobright extension owns autofill. Trust the form DOM. See section P.",
             "Do not click Simplify Copilot Autofill on this path.",
-            "Missing Copilot does not stop the run.",
+            "Do not read every queue row. polar_policy.queue_read_scope is targeted.",
         ]
     )
 
@@ -651,8 +657,9 @@ def compile_sections() -> Dict[str, str]:
                     "Duplicate check passes against the Sheet and section K.",
                     "Company and title on the page match the queue row.",
                     resume_submit_check() or "Approved production resume is Perfect Resume. Do not upload the two-page master or any ai_infra file.",
-                    "Identity fields are correct after a visible read-back.",
+                    "Identity fields are correct after a visible form DOM read-back. Extension sidebar progress is not proof.",
                     "Normal account and contact email fields show the APPLICATION mailbox, not the academic mailbox.",
+                    "Referral / how-heard is blank unless a verified fact exists. Clear invented Event referrals.",
                     "Required factual fields are resolved from this runtime or left for Junyi.",
                     "No unsupported claim was invented.",
                     "Writing is evidence-grounded.",
@@ -692,7 +699,8 @@ def compile_sections() -> Dict[str, str]:
             ),
             "",
             "If a required fact is missing, leave the widget and mark needs_human or BLOCKED.",
-            "Copilot Completed is not proof a widget has a value. Look at the page.",
+            "Extension sidebar Completed is not proof a widget has a value. Look at the form DOM.",
+            "Copilot Completed is not proof a widget has a value.",
         ]
     )
 
@@ -732,8 +740,10 @@ def compile_sections() -> Dict[str, str]:
             "discover-jobs-hourly is retired from apply admission. It never applies.",
             "apply-ready-jobs inspects SUBMISSION_UNKNOWN first, then abandoned or self-owned IN_PROGRESS.",
             "New work comes from Jobright recommendations. READY_* is inventory only.",
+            "Queue reads are targeted. Do not dump READY_* backlog as apply FIFO.",
             "daily-job-summary never includes passwords, OTP codes, or cookies.",
             "production-learning-daily writes a sanitized report and does not change GitHub policy.",
+            "Fence pre_jobright incidents. polar_policy.incident_learning_era. Do not treat Simplify/Copilot/READY FIFO/IBM-funnel as current reliability evidence.",
         ]
     )
 
@@ -757,15 +767,16 @@ def compile_sections() -> Dict[str, str]:
             "If the visible row has a different key, or no key, abort. github_write_canary must not overwrite polar_browser.",
             "After a canary write, reread polar_browser key, owner_run_id, acquired_at, and expires_at.",
             "Commit the edit, then reread key, owner_run_id, and notes. Looking correct is not persistence.",
+            "Do not increment simplify_attempted or simplify_fallback_count. Those columns are historical.",
         ]
     )
     section_m = "\n".join(
         [
             f"Historical control key: {lease.get('key') or LEASE_KEY} on tab {lease.get('tab') or 'control'}.",
-            "polar_browser is not a production mutex. Do not acquire it.",
+            "polar_browser is not a production mutex. Do not acquire it. Do not run a claim-race on that row.",
             "Do not write run_log result SKIPPED_LOCKED because that row looks held.",
             "Independent Polar workflows may use their own browser surfaces at the same time.",
-            "Apply ownership is queue.claim_run_id on one job_key.",
+            "Apply ownership is queue.claim_run_id on one job_key. That is the live claim, not a browser lease.",
             "Each apply-ready-jobs run claims one job at a time until its considered budget is used.",
             "The same employer requisition has one canonical owner via pick_canonical_requisition_row.",
             "Two live sibling claims do not both back off.",
@@ -796,6 +807,7 @@ def compile_sections() -> Dict[str, str]:
             "If time was lost, set time_lost_category so later review can explain a 35 minute run versus a 105 minute run.",
             "Do not count every click. Coarse stage timing is enough.",
             "production-learning-daily aggregates today's telemetry into a sanitized Markdown report.",
+            "Fence polar_policy.incident_learning_era=pre_jobright. Do not optimize current apply around Simplify or Copilot-as-autofill.",
             "Do not put secrets in telemetry.",
         ]
     )
@@ -837,10 +849,12 @@ def compile_sections() -> Dict[str, str]:
             "Do not click Simplify Copilot Autofill. Do not let Copilot fight the Jobright extension.",
             "polar_policy.page_surface and polar_policy.autofill_action are the engineer tables.",
             "login, JD landing, apply CTA, and No fillable form exists are investigate_not_unsupported.",
-            "Autofill once on the real application form. Then Polar finishes remaining required fields from facts.",
-            "Missing Copilot is not OWNER_ACTION_REQUIRED and does not stop the run.",
-            "states (observational only): " + ", ".join(COPILOT_STATES) + ".",
+            "Autofill once on the real application form. Then Polar reads the form DOM: identity, contact, sponsorship wording, referral.",
+            "Trust the form, not the extension sidebar. polar_policy.post_autofill_trust_source.",
+            "Clear invented referrals. Re-classify sponsorship vs future-sponsorship. polar_policy.referral_field_action.",
+            "Missing Copilot does not stop the run. Copilot is not the autofill owner.",
             f"Historical control_key {ENV_SIMPLIFY_KEY} is not an apply gate. Never overwrite polar_browser.",
+            "The application Outlook inbox is readable. Do not treat mailbox access as a hard blocker.",
         ]
     )
 

@@ -20,13 +20,13 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 
 | Tab | Purpose |
 |---|---|
-| `queue` | One row per discovered job. Recovery reads this tab. |
-| `writing_log` | One row per nontrivial free-response answer while `writing_observation_mode` is true. |
-| `heartbeat` | Locked-screen scheduler proof. Not a job row. |
-| `run_log` | One row per workflow invocation. |
-| `incident_log` | One row per material event. No secrets. |
-| `control` | Historical `polar_browser` row, GitHub write canary, and `env_simplify_copilot`. |
-| `learning_reports` | Sanitized daily production-learning Markdown. |
+| `queue` | KEEP. One row per discovered job. Targeted lookups only. Not apply FIFO. |
+| `writing_log` | KEEP. One row per nontrivial free-response answer while `writing_observation_mode` is true. |
+| `heartbeat` | KEEP. Locked-screen scheduler proof. Not a job row. |
+| `run_log` | KEEP. One row per workflow invocation. `simplify_attempted` / `simplify_fallback_count` are ARCHIVE: leave blank. |
+| `incident_log` | KEEP. One row per material event. Fence `pre_jobright` as history, not current reliability. |
+| `control` | SIMPLIFY. KEEP `github_write_canary`. ARCHIVE `polar_browser` mutex and `env_simplify_copilot`. Do not delete those rows. |
+| `learning_reports` | KEEP. Sanitized daily production-learning Markdown. |
 
 ## `queue` columns
 
@@ -77,11 +77,12 @@ Canonical field lists live in `knowledge/polar_operator.yaml`.
 
 ## Recovery
 
-Read the Sheet. Do not trust a leftover browser tab.
+Read targeted Sheet rows. Do not dump every READY_* row. Do not trust a leftover browser tab.
 
-1. Inspect every `SUBMISSION_UNKNOWN` row. Open the employer portal, confirmation page, or mail. Never blindly resubmit.
+1. Filter `SUBMISSION_UNKNOWN`. Open the employer portal, confirmation page, or application Outlook. Never blindly resubmit.
 2. Resume abandoned or self-owned `IN_PROGRESS` rows. Do not steal a live foreign claim.
 3. Do not FIFO `READY_*`. New work comes from Jobright recommendations. `legacy_ready_disposition` is `inventory_only`.
+4. Lookup `BLOCKED` / `SUBMITTED` / unknown by `job_key` or company+role+location. Jobright can re-surface a blocked card. Skip it.
 
 ## Schema-safe writes
 
@@ -107,9 +108,9 @@ If the Mac slept while Job 6 was `IN_PROGRESS` and the claim is abandoned or sel
 
 ## Autofill owner
 
-Jobright extension owns autofill on the apply path. Do not click Simplify Copilot Autofill. Missing Copilot does not stop the run.
+Jobright extension owns autofill on the apply path. Do not click Simplify Copilot Autofill. Missing Copilot does not stop the run. After Autofill, read the form DOM: identity, contact, sponsorship vs future-sponsorship, referral. Trust the form, not the extension sidebar.
 
-`env_simplify_copilot` is historical observational state, not an apply gate. Locate control rows by key. Never write these fields into the `polar_browser` row.
+`env_simplify_copilot` is ARCHIVE observational state, not an apply gate. Locate control rows by key. Never write these fields into the `polar_browser` row.
 
 ## Dedup
 

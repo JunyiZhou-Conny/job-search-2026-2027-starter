@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-14.jobright-first+ada304bee755
+workflow_version: 2026-09-15.jobright-era+586a0063c572
 status: production
 enabled: true
 needs_browser_lock: false
@@ -108,7 +108,8 @@ SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.
 Never apply. Never click Submit.
 Do not open employer forms unless you need to verify a SUBMISSION_UNKNOWN row already in the digest.
 
-Read today's rows from queue, writing_log, heartbeat, run_log, and incident_log.
+Read today's America/New_York rows from queue, writing_log, heartbeat, run_log, and incident_log.
+Filter by today's dates. Do not dump every READY_* row.
 Email Junyi one digest for America/New_York today.
 
 The first visible section must be:
