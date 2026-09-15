@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-15.apply-runtime-archive+2cf9de281720
+workflow_version: 2026-09-15.apply-runtime-sheet-io+32a1df2d13b4
 status: production
 enabled: true
 needs_browser_lock: false
@@ -78,7 +78,7 @@ Do not acquire it. Do not write run_log result SKIPPED_LOCKED because that row i
 A stale polar_browser owner_run_id must not stop this workflow.
 Unrelated Polar workflows may already be using their own browser surfaces.
 
-Mint run_id first. Then QUERY run_log for every open apply PARTIAL: workflow in apply-ready-jobs, grok-apply-jobs; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.
+Mint run_id first. Then one QUERY of run_log for every open apply PARTIAL: workflow in apply-ready-jobs, grok-apply-jobs; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. Do not repeat this QUERY later in the run. polar_policy.start_apply_run_action classifies live versus stale. polar_policy.live_apply_query_is_batched.
 A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical ended run_log row.
 If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.
 If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.
@@ -122,13 +122,16 @@ Do not write job checkpoints into the polar_browser control row.
 ## Sheet write contract
 
 mode: named_header_mapping
+batch: required
+write_mode: named_header_batch
+one_cell_then_reread: false
 required_readback: job_key, status, last_stage, claim_run_id
 blank_policy: write_explicit_blank
 never_omit: apply_url_confidence
 
 1. Read the actual header row of the tab you are writing.
 2. Build a field-name to column mapping from those headers.
-3. Write fields by header name, not by remembered position.
+3. Write fields by header name, not by remembered position. One named-header batch per row mutation. Do not write one cell, reread, then write the next cell.
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
 6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
@@ -254,14 +257,26 @@ Trust the form DOM. The extension sidebar is not proof.
 
 scope: targeted
 full_scan: false
+batching: required
 polar_policy.queue_read_scope is targeted. polar_policy.full_queue_read_permitted is false.
 
 Do not read every queue row. Do not dump READY_* inventory. A 5,000-row full-queue read is forbidden.
-Lookup by job_key, then company+role+location, then status in BLOCKED, SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, SKIP, REVIEW_READY.
+Lookup by job_key, then company+role+location only on a job_key miss, then status in BLOCKED, SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, SKIP, REVIEW_READY.
 A job_key QUERY must return every visible row with that key. polar_policy.plan_queue_upsert_by_job_key.
-Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Do not scan SKIP or READY inventory.
+Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. One QUERY covers both. Do not scan SKIP or READY inventory.
 incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. polar_policy.plan_incident_log_write. Existing id → abort and mint next_incident_id. Append only. Do not overwrite. Do not read every historical incident row.
 Do not QUERY the same job_key twice in one card. polar_policy.sheet_io_repeat_lookup_permitted. Do not reread the full run_log after the start query. polar_policy.chatty_sheet_io_permitted is false. polar_policy.run_log_full_history_permitted is false.
+Start Sheet I/O is two QUERYs, then stop: one live-apply PARTIAL with blank ended_at, and one recovery QUERY for SUBMISSION_UNKNOWN and IN_PROGRESS together.
+polar_policy.sheet_query_plan(phase='apply_start'). polar_policy.recovery_query_is_batched is true. polar_policy.live_apply_query_is_batched is true.
+Do not repeat the live-apply QUERY later in the run. Do not split recovery into two status scans.
+incident_id: one QUERY of today's INC-YYYYMMDD- prefix when minting. polar_policy.sheet_query_plan(phase='incident').
+polar_policy.sheet_io_batching_required is true. polar_policy.full_queue_scan_permitted is false.
+Writes use polar_policy.sheet_write_mode named_header_batch. polar_policy.one_cell_then_reread_permitted is false.
+Do not re-prove google_sheets, browser, or local_filesystem mid-run. polar_policy.capability_reprove_mid_run_permitted is false.
+Do not dump READY_* inventory. polar_policy.dump_ready_inventory_permitted is false.
+Per card: one job_key QUERY, then stop. company+role+location only on a job_key miss. polar_policy.company_role_location_query_permitted.
+Named-field readback after a batched write is not a second job_key QUERY. polar_policy.sheet_write_readback_is_repeat_query is false.
+Do not QUERY the same job_key after claim. polar_policy.sheet_query_after_claim_permitted is false.
 READY_* stays inventory/archive, not apply FIFO.
 Blocked-job memory stays. Jobright can re-surface a blocked card. Cheap SKIP. Leave the existing row.
 Do not increment simplify_attempted or simplify_fallback_count. Leave those historical columns blank.
@@ -395,7 +410,7 @@ considered starts at 0. forms_reached starts at 0. seen starts empty.
 If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.
 If it is duplicate, abort.
 
-Recover first. Filter SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Loop select_next_apply_job with exclude_keys=seen.
+Recover first. One QUERY for SUBMISSION_UNKNOWN and IN_PROGRESS together. polar_policy.recovery_query_is_batched. Loop select_next_apply_job with exclude_keys=seen. Do not repeat that recovery QUERY per card.
 Process each recovery job with the employer finish rules below. Recovery does not consume considered.
 Do not Jobright-ack a recovery unless this run submitted and the employer confirmed.
 
@@ -406,7 +421,7 @@ Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.
 
 For each Jobright card:
 1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.
-2. Targeted Sheet + section K lookup. QUERY that job_key. If the QUERY returns #N/A or #REF!, treat as miss. Incident repeat_key sheet_query_na. Do not create scratch_*.
+2. Targeted Sheet + section K lookup. One QUERY of that job_key, then stop. If the QUERY returns #N/A or #REF!, treat as miss. Incident repeat_key sheet_query_na. Do not create scratch_*.
    If polar_policy.plan_queue_upsert_by_job_key returns abort, do not claim, do not Submit, incident repeat_key duplicate_job_key, add the key to seen, continue.
    polar_policy.consider_jobright_card against Applied, Sheet status including BLOCKED, requisition identity, closed, and hard-fact conflict.
 3. Cheap SKIP first. Read the Jobright card and its JD. polar_policy.skip_path_action.
@@ -472,7 +487,7 @@ For each Jobright card:
     Yes / I applied only after employer confirmation. Do not mark Applied if this run did not submit.
     last_stage jobright_ack after a truthful ack. Continue the Recommended List.
 16. If this environment cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.
-17. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.
+17. Update the Sheet after every meaningful stage with one named-header batch. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only. Named-field readback is not a second job_key QUERY.
     Reach Polar Jobs through the Google connector. Find Drive file counts. Do not use the browser as the Sheet API.
 
 ATS family is only a note.

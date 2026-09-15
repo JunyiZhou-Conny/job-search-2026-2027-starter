@@ -2,7 +2,7 @@
 
 COMPILED ARTIFACT. Not canonical.
 
-policy_revision: 2026-09-15.apply-runtime-archive
+policy_revision: 2026-09-15.apply-runtime-sheet-io
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 | Workflow | Status | Lock | Raw URL |
@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the trust-delegation bootstrap from docs/automation/POLAR_WORKFLOWS.md.
 They load the two owner-designated raw main files on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-15.apply-runtime-archive+afbe02db66f5`
-- `apply-ready-jobs` workflow_version `2026-09-15.apply-runtime-archive+2cf9de281720`
-- `daily-job-summary` workflow_version `2026-09-15.apply-runtime-archive+6f12d9639792`
-- `production-learning-daily` workflow_version `2026-09-15.apply-runtime-archive+941eea23b3ea`
-- `polar-scheduler-heartbeat` workflow_version `2026-09-15.apply-runtime-archive+23f30101c803`
-- `polar-github-write-canary` workflow_version `2026-09-15.apply-runtime-archive+bba5e8fa6b8c`
-- `chatgpt-production-review` workflow_version `2026-09-15.apply-runtime-archive+b40c7e78b50a`
-- `cursor-production-maintenance` workflow_version `2026-09-15.apply-runtime-archive+11e1f7eaaefe`
-- `polar-sheet-migration` workflow_version `2026-09-15.apply-runtime-archive+5d7b0b01cf33`
+- `discover-jobs-hourly` workflow_version `2026-09-15.apply-runtime-sheet-io+9300fdc45ae2`
+- `apply-ready-jobs` workflow_version `2026-09-15.apply-runtime-sheet-io+32a1df2d13b4`
+- `daily-job-summary` workflow_version `2026-09-15.apply-runtime-sheet-io+2a65980a5b3f`
+- `production-learning-daily` workflow_version `2026-09-15.apply-runtime-sheet-io+78e01de18500`
+- `polar-scheduler-heartbeat` workflow_version `2026-09-15.apply-runtime-sheet-io+23f30101c803`
+- `polar-github-write-canary` workflow_version `2026-09-15.apply-runtime-sheet-io+5416bf089d50`
+- `chatgpt-production-review` workflow_version `2026-09-15.apply-runtime-sheet-io+b40c7e78b50a`
+- `cursor-production-maintenance` workflow_version `2026-09-15.apply-runtime-sheet-io+11e1f7eaaefe`
+- `polar-sheet-migration` workflow_version `2026-09-15.apply-runtime-sheet-io+5f5cc8b42b2b`
