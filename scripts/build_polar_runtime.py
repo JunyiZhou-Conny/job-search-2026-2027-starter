@@ -43,7 +43,7 @@ from polar_policy import (
 )
 from polar_resume_attach import runtime_lines as resume_runtime_lines
 from polar_resume_attach import submit_check as resume_submit_check
-from polar_workflows import write_schema_csvs, write_workflows
+from polar_workflows import fast_validation_lines, write_schema_csvs, write_workflows
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_DEFAULT = ROOT / "generated" / "polar" / "runtime" / "POLAR_RUNTIME.md"
@@ -432,7 +432,8 @@ def compile_sections() -> Dict[str, str]:
                 ]
             ),
             "",
-            "Standing widget answers (owner-confirmed). Apply them verbatim.",
+            "Standing widget answers (owner-confirmed). Apply them verbatim when you fill a widget that is empty, in error, or in a fast-validation class (section P).",
+            "This list is a fill table. Do not walk it against every populated widget after Autofill.",
             "",
             bullet(standing),
         ]
@@ -638,6 +639,7 @@ def compile_sections() -> Dict[str, str]:
             "A blocked job must not stall the worker. Persist the blocker and continue to the next Jobright card.",
             "ATS family is diagnostic metadata only. Do not organize work by ATS worker class.",
             "Jobright extension owns autofill. Trust the form DOM. See section P.",
+            "Jobright Autofill is the default filler. Polar is anomaly detection and targeted repair, not a full-form auditor.",
             "Do not click Simplify Copilot Autofill on this path.",
             "Do not read every queue row. polar_policy.queue_read_scope is targeted.",
         ]
@@ -666,14 +668,14 @@ def compile_sections() -> Dict[str, str]:
                     "Duplicate check passes against the Sheet and section K.",
                     "Company and title on the page match the queue row.",
                     resume_submit_check() or "Approved production resume is Perfect Resume. Do not upload the two-page master or any ai_infra file.",
-                    "Identity fields are correct after a visible form DOM read-back. Extension sidebar progress is not proof.",
+                    "Identity fields (First Name, Last Name, application email) are correct after a visible form DOM read-back. Extension sidebar progress is not proof.",
                     "Normal account and contact email fields show the APPLICATION mailbox, not the academic mailbox.",
                     "Referral / how-heard is blank unless a verified fact exists. Clear invented Event referrals.",
                     "Required factual fields are resolved from this runtime or left for Junyi.",
                     "No unsupported claim was invented.",
                     "Writing is evidence-grounded.",
                     "application_weight is regular.",
-                    "Final review of visible widgets passes.",
+                    "Fast validation pass passes (section P): identity, work authorization, eligibility-critical, required-empty-or-error, required legal/compliance. Populated routine widgets with no error and no known failure class are trusted, not re-read.",
                     "One final Submit is used.",
                     "Employer-page confirmation text is visible. Copilot Completed is not confirmation.",
                     "Queue confirmation, submitted_at, and the visible resume filename match that page. polar_policy.submit_outcome is the engineer table.",
@@ -710,6 +712,7 @@ def compile_sections() -> Dict[str, str]:
             "If a required fact is missing, leave the widget and mark needs_human or BLOCKED.",
             "Extension sidebar Completed is not proof a widget has a value. Look at the form DOM.",
             "Copilot Completed is not proof a widget has a value.",
+            "That sidebar rule catches required widgets that are still empty. It is not a license to re-read every populated widget. Section P scopes the pass.",
         ]
     )
 
@@ -860,12 +863,16 @@ def compile_sections() -> Dict[str, str]:
             "Do not click Simplify Copilot Autofill. Do not let Copilot fight the Jobright extension.",
             "polar_policy.page_surface and polar_policy.autofill_action are the engineer tables.",
             "login, JD landing, apply CTA, and No fillable form exists are investigate_not_unsupported.",
-            "Autofill once on the real application form. Then Polar reads the form DOM: identity, contact, sponsorship wording, referral.",
+            "Autofill once on the real application form. Then Polar runs the fast validation pass on the form DOM.",
             "Trust the form, not the extension sidebar. polar_policy.post_autofill_trust_source.",
             "Clear invented referrals. Re-classify sponsorship vs future-sponsorship. polar_policy.referral_field_action.",
             "Missing Copilot does not stop the run. Copilot is not the autofill owner.",
             f"Historical control_key {ENV_SIMPLIFY_KEY} is not an apply gate. Never overwrite polar_browser.",
             "The application Outlook inbox is readable. Do not treat mailbox access as a hard blocker.",
+            "",
+            "Fast validation pass after Autofill:",
+            "",
+            *fast_validation_lines(operator, profile if isinstance(profile, dict) else {}),
         ]
     )
 

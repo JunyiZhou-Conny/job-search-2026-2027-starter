@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from polar_resume_attach import workflow_lines as resume_workflow_lines
 from polar_policy import (
@@ -20,6 +20,10 @@ from polar_policy import (
     COPILOT_EMAIL_REPEAT_KEY,
     SUBMIT_PROOF_REPEAT_KEY,
     POST_AUTOFILL_CHECKS,
+    POST_AUTOFILL_TRUSTED_CLASSES,
+    KNOWN_AUTOFILL_FAILURE_CLASSES,
+    FORM_COMPLEXITY_SIGNALS,
+    AUTOFILL_CORRECTIONS_NOTE_TOKEN,
     TARGETED_QUEUE_STATUSES,
     USER_ONLY_AUTH_STEPS,
     APPLICATION_OUTLOOK_ACTION,
@@ -51,6 +55,7 @@ from polar_policy import (
     capability_preflight_block,
     csv_header,
     document_availability,
+    load_yaml,
     raw_runtime_url,
     work_claim_ttl_minutes,
     raw_workflow_url,
@@ -62,6 +67,121 @@ WORKFLOW_DIR = ROOT / "generated" / "polar" / "workflows"
 SCHEMA_DIR = ROOT / "generated" / "polar"
 
 WORKFLOW_RENDERERS: Dict[str, Callable[[Dict[str, Any]], str]] = {}
+
+
+def _clean(value: Any) -> str:
+    text = "" if value is None else str(value).strip()
+    return " ".join(text.split())
+
+
+def _tokens(values: Any) -> str:
+    if not isinstance(values, (list, tuple)):
+        return _clean(values)
+    return ", ".join(_clean(x) for x in values if _clean(x))
+
+
+def legal_name_parts(profile: Dict[str, Any]) -> Tuple[str, str]:
+    legal = _clean(profile.get("legal_name") or profile.get("name"))
+    parts = legal.split()
+    if len(parts) < 2:
+        return legal, ""
+    return parts[0], parts[-1]
+
+
+def fast_validation_contract(operator: Dict[str, Any]) -> Dict[str, Any]:
+    autofill = operator.get("autofill") or {}
+    checks = tuple(str(x) for x in autofill.get("post_autofill_checks") or ())
+    if checks != POST_AUTOFILL_CHECKS:
+        raise SystemExit("autofill.post_autofill_checks in polar_operator.yaml does not match polar_policy.POST_AUTOFILL_CHECKS")
+    if autofill.get("full_form_audit") is not False:
+        raise SystemExit("autofill.full_form_audit must be false")
+    pass_block = autofill.get("fast_validation_pass")
+    if not isinstance(pass_block, dict):
+        raise SystemExit("autofill.fast_validation_pass is required")
+    trusted = tuple(str(x) for x in pass_block.get("trust_when_populated_no_error_no_known_failure") or ())
+    if trusted != POST_AUTOFILL_TRUSTED_CLASSES:
+        raise SystemExit("fast_validation_pass trust list does not match polar_policy.POST_AUTOFILL_TRUSTED_CLASSES")
+    failures = pass_block.get("known_failure_classes") or {}
+    if tuple(failures.keys()) != KNOWN_AUTOFILL_FAILURE_CLASSES:
+        raise SystemExit("fast_validation_pass.known_failure_classes does not match polar_policy.KNOWN_AUTOFILL_FAILURE_CLASSES")
+    signals = tuple(str(x) for x in (pass_block.get("form_complexity") or {}).get("complex_signals") or ())
+    if signals != FORM_COMPLEXITY_SIGNALS:
+        raise SystemExit("fast_validation_pass.form_complexity.complex_signals does not match polar_policy.FORM_COMPLEXITY_SIGNALS")
+    token = (pass_block.get("corrections_log") or {}).get("run_log_notes_token")
+    if token != AUTOFILL_CORRECTIONS_NOTE_TOKEN:
+        raise SystemExit("fast_validation_pass.corrections_log.run_log_notes_token does not match polar_policy")
+    return pass_block
+
+
+def fast_validation_lines(operator: Dict[str, Any], profile: Optional[Dict[str, Any]] = None) -> List[str]:
+    """Render the post-Autofill fast validation pass. Same text in POLAR_RUNTIME P and apply-ready-jobs."""
+    pass_block = fast_validation_contract(operator)
+    prof = profile if profile is not None else load_yaml(ROOT / "config" / "profile.yaml")
+    first, last = legal_name_parts(prof if isinstance(prof, dict) else {})
+    verify = pass_block.get("verify") or {}
+    lines: List[str] = [
+        "Jobright Autofill is the default filler. Polar is anomaly detection and targeted repair.",
+        "Full-form audit is off. polar_policy.full_form_audit_permitted is false.",
+        "Verify only these five classes on the employer form DOM. polar_policy.post_autofill_checks. polar_policy.post_autofill_field_action is the engineer table.",
+    ]
+    identity_extra = f" Legal first name {first}. Legal last name {last}." if first and last else ""
+    for name in POST_AUTOFILL_CHECKS:
+        block = verify.get(name) or {}
+        widgets = _tokens(block.get("widgets") or block.get("signals"))
+        rule = _clean(block.get("rule"))
+        extra = identity_extra if name == "identity" else ""
+        lines.append(f"- {name}: {widgets}. {rule}{extra}".rstrip())
+    lines.extend(
+        [
+            "",
+            "Trust when populated, no validation error, no known failure class: "
+            + ", ".join(POST_AUTOFILL_TRUSTED_CLASSES)
+            + ". Do not re-read those widgets.",
+            "Trust exception: " + _clean(pass_block.get("trust_exception")),
+            "",
+            "Do not:",
+        ]
+    )
+    for item in pass_block.get("do_not") or []:
+        lines.append(f"- {_clean(item)}")
+    lines.extend(["", "Known failure classes. Repair from facts. Note the class:"])
+    failures = pass_block.get("known_failure_classes") or {}
+    for name in KNOWN_AUTOFILL_FAILURE_CLASSES:
+        block = failures.get(name) or {}
+        bits = [f"{name}:"]
+        wrong = _clean(block.get("wrong_value"))
+        if wrong:
+            bits.append(f"wrong value {wrong}.")
+        repair = _clean(block.get("repair"))
+        if repair:
+            bits.append(f"Repair: {repair}")
+        upstream = _clean(block.get("upstream_candidate"))
+        if upstream:
+            bits.append(
+                f"Upstream candidate: {upstream} Status {_clean(block.get('upstream_status') or 'unknown')}. Do not assume the profile was fixed."
+            )
+        key = _clean(block.get("repeat_key"))
+        if key:
+            bits.append(f"repeat_key {key}.")
+        observed = _clean(block.get("observed"))
+        if observed:
+            bits.append(f"Observed: {observed}.")
+        lines.append("- " + " ".join(bits))
+    complexity = pass_block.get("form_complexity") or {}
+    timing = pass_block.get("timing") or {}
+    lines.extend(
+        [
+            "",
+            "Routine forms are the default path. Complex signals: " + ", ".join(FORM_COMPLEXITY_SIGNALS) + ".",
+            _clean(complexity.get("rule")) + " polar_policy.form_complexity.",
+            f"Timing: a routine form is {_clean(timing.get('routine_form_minutes'))} minutes. "
+            f"Three routine applications in {_clean(timing.get('three_routine_apps_minutes'))} minutes is the evaluation target, not a timeout. "
+            f"Baseline {_clean(timing.get('baseline'))}.",
+            f"Corrections log: note meaningful Autofill corrections in run_log notes as {AUTOFILL_CORRECTIONS_NOTE_TOKEN}=<class tokens>. polar_policy.autofill_corrections_note.",
+            "One incident_log row per repeated correction class per run with the canonical repeat_key. Not one row per widget. No heavier telemetry.",
+        ]
+    )
+    return lines
 
 
 def _register(name: str) -> Callable[[Callable[[Dict[str, Any]], str]], Callable[[Dict[str, Any]], str]]:
@@ -463,10 +583,14 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "",
             "trust: form_dom",
             "sidebar_is_proof: false",
+            "full_form_audit: false",
+            "mode: fast_validation_pass",
             "check: " + ", ".join(POST_AUTOFILL_CHECKS),
+            "trust_when_populated_no_error_no_known_failure: " + ", ".join(POST_AUTOFILL_TRUSTED_CLASSES),
             "polar_policy.post_autofill_trust_source is form_dom.",
             "",
-            "After Autofill, read the real widgets. Correct identity, contact, sponsorship vs future-sponsorship wording, and referral from facts.",
+            *fast_validation_lines(operator),
+            "",
             "The extension guessed sponsorship No. Re-classify the exact question with polar_policy.auth_form_action.",
             "The extension invented Event as a referral. polar_policy.referral_field_action. Clear invented referrals. Do not invent a referrer.",
             "",
@@ -547,7 +671,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "A blocked job must not stall the worker.",
             "Do not invent a Jobright Turbo credit policy.",
             "",
-            "Canonical apply: recommendation → eligibility/blocked/dup check → Autofill → validate form DOM → writing → email verify if needed → employer confirm → Jobright ack → minimal Sheet write.",
+            "Canonical apply: recommendation → eligibility/blocked/dup check → Autofill → fast validation pass on the form DOM (five classes) → targeted repair → writing → email verify if needed → employer confirm → Jobright ack → minimal Sheet write.",
             "",
             "considered starts at 0. forms_reached starts at 0. seen starts empty.",
             "If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.",
@@ -581,13 +705,14 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "   If the page asks for email verification, polar_policy.email_verification_action. Read application Outlook. Continue.",
             "   After the real form is visible, increment forms_reached.",
             "   Autofill once with the Jobright extension. polar_policy.autofill_action. Do not click Copilot Autofill.",
-            "   Validate form DOM, not the sidebar: identity, contact, sponsorship wording, referral.",
+            "   Fast validation pass on the form DOM, not the sidebar: First Name, Last Name, application email; work-authorization widgets; eligibility-critical widgets; required-but-empty or error widgets; required legal attestations.",
+            "   Trust populated routine widgets with no error and no known failure class. Do not re-read the whole form.",
             "   Reread the account email field. Academic mailbox on a normal field is wrong.",
             f"   Incident repeat_key {COPILOT_EMAIL_REPEAT_KEY} if a parser put the school mailbox there.",
             "10. Look at the native Resume/CV widget. polar_policy.native_resume_action. Sidebar Completed is ignored.",
             *[f"   {line}" for line in resume_workflow_lines()],
             f"   Incident repeat_key {NATIVE_RESUME_REPEAT_KEY} when neither generated nor 911 / Perfect Resume can be attached.",
-            "11. Finish remaining required fields from section A. Authorization widgets use polar_policy.auth_form_action.",
+            "11. Fill required-but-empty widgets from section A. Do not walk section A against populated widgets. Authorization widgets use polar_policy.auth_form_action.",
             "   Classify the exact question. Answer only that semantic. Do not copy one fact into another field.",
             "   If the field is optional, leave it blank. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship.",
             "   Required future-sponsorship widget: Yes. Required H-1B-named widget: No.",
@@ -607,7 +732,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "13. Before Submit, reread this queue row and the live sibling rows.",
             "    If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.",
             "    If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.",
-            "    Validate, Submit once. Proof is employer-page confirmation plus a matching queue readback.",
+            "    Fast validation pass passes, then Submit once. Proof is employer-page confirmation plus a matching queue readback.",
             "    Sidebar Completed is not confirmation. Copilot Completed is not confirmation. polar_policy.submit_outcome is the engineer table.",
             f"    If confirmation is missing or the queue readback does not match, write SUBMISSION_UNKNOWN. Incident repeat_key {SUBMIT_PROOF_REPEAT_KEY}. polar_policy.uncertain_submit_action. Do not click Submit again.",
             "14. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.",
@@ -707,6 +832,7 @@ def render_learning(operator: Dict[str, Any]) -> str:
             "- dedupe problems",
             "- writing observations",
             "- performance bottlenecks, using time_lost_category and minutes_lost",
+            f"- Autofill corrections by class, from {AUTOFILL_CORRECTIONS_NOTE_TOKEN} tokens in run_log notes and the autofill_* repeat keys, so the owner can see whether the Jobright profile is the upstream fix",
             "- Polar Preferences Delta",
             "",
             f"Read {LOCAL_PREFERENCES_PATH} if this Polar environment has that file.",

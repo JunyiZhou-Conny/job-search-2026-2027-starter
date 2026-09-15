@@ -1,19 +1,155 @@
 last_updated: "2026-09-15"
-policy_revision: "2026-09-15.sheets-capability"
-source: "Owner 2026-09-15. Jobright-era apply. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar validates the form DOM, finishes remaining fields, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Sheet blocked/submitted/unknown memory stays. Full-queue reads and Copilot-as-autofill do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
+policy_revision: "2026-09-15.fast-validation"
+source: "Owner 2026-09-15. Jobright-era apply. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Sheet blocked/submitted/unknown memory stays. Full-queue reads, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
 autofill:
   owner: jobright_extension
+  default_filler: jobright_extension
+  polar_role: anomaly_detection_and_targeted_repair
   max_attempts_per_form: 1
   do_not_use_simplify_copilot: true
   trust: form_dom
   sidebar_is_proof: false
+  full_form_audit: false
+  # The five high-risk classes Polar verifies after Autofill. Nothing else
+  # is re-read line by line. polar_policy.POST_AUTOFILL_CHECKS is the same
+  # list for engineers.
   post_autofill_checks:
     - identity
-    - contact
-    - sponsorship_wording
-    - referral
+    - work_authorization
+    - eligibility_critical
+    - required_empty_or_error
+    - required_legal_compliance
+  fast_validation_pass:
+    source: >
+      Owner 2026-09-15 after production run R-20260914-2309 (3/3
+      submitted, about 85 minutes, about 28 minutes per application).
+      The slow part was a post-Autofill full-form audit. Autofill is
+      imperfect (nickname on First Name, sponsorship No, blanks), so
+      Autofill then blind Submit is not allowed either.
+    meaning: >
+      Jobright Autofill is the default filler. Polar is anomaly detection
+      and targeted repair. After Autofill, Polar verifies only the
+      post_autofill_checks classes on the employer form DOM. A populated
+      widget with no validation error and no known failure class is
+      trusted. A routine Greenhouse, Ashby, or SmartRecruiters form
+      should take single-digit to low-teens minutes.
+    verify:
+      identity:
+        widgets: [first_name, last_name, application_email]
+        rule: >
+          Legal first and last name from config/profile.yaml. Normal
+          email fields show the local APPLICATION mailbox. No full
+          profile audit.
+      work_authorization:
+        widgets:
+          - future_sponsorship
+          - h1b_named
+          - citizenship
+          - visa_type
+          - authorized_for_any_employer
+          - currently_authorized
+          - work_authorization_wording
+        rule: >
+          knowledge/work_authorization.yaml stays authoritative. Classify
+          the exact question with polar_policy.auth_form_action. Answer
+          only that semantic.
+      eligibility_critical:
+        widgets:
+          - enrollment_status
+          - graduation_timing
+          - internship_eligibility
+          - work_location_or_relocation
+          - minimum_age
+          - security_clearance
+          - citizenship_when_genuinely_relevant
+        rule: >
+          Only widgets that decide eligibility for this role. Not every
+          generic question.
+      required_empty_or_error:
+        signals:
+          - required_but_empty
+          - validation_error
+          - unanswered_required_radio
+          - required_combobox_left_at_select
+          - jobright_sidebar_complete_but_employer_dom_empty
+        rule: >
+          Employer DOM is truth. Fill from section A facts or leave for
+          Junyi and BLOCK that job only. Never invent.
+      required_legal_compliance:
+        widgets:
+          - required_attestation
+          - required_consent_checkbox
+          - required_export_control
+          - required_automated_script_declaration
+        rule: >
+          Only when the widgets exist and are required on this form. Do
+          not generalize one employer's seven compliance questions to
+          every form.
+    trust_when_populated_no_error_no_known_failure:
+      - eeo_demographics
+      - phone_address_formatting
+      - resume_filename
+      - populated_education_employment
+      - routine_non_material
+    trust_exception: >
+      A visible conflict with known candidate truth, seen in passing, is
+      repaired and noted. Polar does not go looking for one.
+    do_not:
+      - re-read every populated widget after Autofill
+      - re-verify gender, race, ethnicity, veteran, or disability after Autofill
+      - reproduce Jobright profile filling by hand
+      - distrust all Autofill output by default
+      - walk the section A standing-answer list against populated widgets
+    known_failure_classes:
+      nickname_on_legal_first_name:
+        observed: "Owner-observed 2026-09-15, production run R-20260914-2309"
+        wrong_value: "Conny"
+        repair: "First Name is the legal first name from config/profile.yaml."
+        upstream_candidate: "Jobright profile name field or generated resume header. Owner action."
+        upstream_status: unknown
+        repeat_key: autofill_nickname_on_legal_first_name
+      sponsorship_no_on_future_sponsorship_widget:
+        observed: "Jobright-era apply 2026-09-15"
+        wrong_value: "No"
+        repair: "future_sponsorship_required is true. Required widget answer is Yes. polar_policy.auth_form_action."
+        upstream_candidate: "Jobright profile sponsorship setting. Owner action."
+        upstream_status: unknown
+        repeat_key: autofill_sponsorship_no_on_future_sponsorship_widget
+      academic_mailbox_on_application_field:
+        wrong_value: "academic mailbox"
+        repair: "Local APPLICATION mailbox. polar_policy.contact_email_action."
+        repeat_key: copilot_academic_mailbox_on_application_field
+      invented_referral:
+        observed: "Jobright-era apply 2026-09-15"
+        wrong_value: "Event"
+        repair: "Blank unless a verified referral fact exists. polar_policy.referral_field_action."
+        repeat_key: invented_referral
+      citizenship_not_china:
+        observed: "Copilot on Twitch 2026-09-03, pre-Jobright"
+        wrong_value: "United States"
+        repair: "China."
+    form_complexity:
+      routine_is_default: true
+      complex_signals:
+        - account_or_otp_required
+        - workday_or_eightfold_multistep
+        - large_compliance_block
+        - nontrivial_writing
+        - unusual_eligibility
+      rule: >
+        Extra care only when a complex signal is actually on the form.
+        Routine forms take the fast path.
+    timing:
+      routine_form_minutes: "single digits to low teens"
+      three_routine_apps_minutes: "30 to 40"
+      is_timeout: false
+      baseline: "R-20260914-2309: 3/3 submitted in about 85 minutes"
+    corrections_log:
+      run_log_notes_token: autofill_corrections
+      granularity: one_incident_per_class_per_run
+      per_widget_incidents: false
 legacy_ready_rows:
   disposition: inventory_only
   owner: polar_policy.legacy_ready_disposition
@@ -334,6 +470,10 @@ repeat_keys:
     meaning: "A parser put the academic mailbox on a normal ATS account or contact field. Historical Copilot name. Jobright-era apply still corrects the field."
   invented_referral:
     meaning: "Autofill invented a referral source such as Event. Clear it. Do not invent a referral."
+  autofill_nickname_on_legal_first_name:
+    meaning: "Autofill wrote the nickname Conny into a legal First Name field. Repair to the legal first name. Upstream candidate fix is the Jobright profile name field or the generated resume header, an owner action. Do not encode an endless per-form rewrite."
+  autofill_sponsorship_no_on_future_sponsorship_widget:
+    meaning: "Autofill set No on a future-sponsorship widget. The fact is Yes. Upstream candidate fix is the Jobright profile sponsorship setting, an owner action."
   mailbox_unreadable_stale:
     meaning: "A local PREFERENCES or jobright.ai site note still says the application mailbox cannot be read. GitHub says Polar may retrieve verification codes via the application Outlook inbox."
   submit_success_without_page_confirmation:

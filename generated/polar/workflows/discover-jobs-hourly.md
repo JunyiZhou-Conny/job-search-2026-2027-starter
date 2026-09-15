@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-15.sheets-capability+2a458ebb623a
+workflow_version: 2026-09-15.fast-validation+2a458ebb623a
 status: retired_from_apply_path
 enabled: false
 needs_browser_lock: false

@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-15.sheets-capability+5c3a0974625f
+workflow_version: 2026-09-15.fast-validation+76ee67e650b6
 status: production
 enabled: true
 needs_browser_lock: false
@@ -167,6 +167,7 @@ Write one sanitized Markdown report that covers:
 - dedupe problems
 - writing observations
 - performance bottlenecks, using time_lost_category and minutes_lost
+- Autofill corrections by class, from autofill_corrections tokens in run_log notes and the autofill_* repeat keys, so the owner can see whether the Jobright profile is the upstream fix
 - Polar Preferences Delta
 
 Read /home/polar/PREFERENCES.md if this Polar environment has that file.

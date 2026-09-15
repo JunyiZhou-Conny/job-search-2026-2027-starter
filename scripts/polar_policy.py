@@ -197,13 +197,43 @@ CONTROL_KEY_DUPLICATE_REPEAT_KEY = "control_key_duplicate"
 NATIVE_RESUME_REPEAT_KEY = "native_resume_empty"
 COPILOT_EMAIL_REPEAT_KEY = "copilot_academic_mailbox_on_application_field"
 SUBMIT_PROOF_REPEAT_KEY = "submit_success_without_page_confirmation"
+NICKNAME_FIRST_NAME_REPEAT_KEY = "autofill_nickname_on_legal_first_name"
+SPONSORSHIP_NO_REPEAT_KEY = "autofill_sponsorship_no_on_future_sponsorship_widget"
+INVENTED_REFERRAL_REPEAT_KEY = "invented_referral"
 POST_AUTOFILL_TRUST_SOURCE = "form_dom"
+# Fast validation pass. Jobright Autofill is the default filler. Polar
+# verifies only these five high-risk classes on the employer form DOM.
 POST_AUTOFILL_CHECKS = (
     "identity",
-    "contact",
-    "sponsorship_wording",
-    "referral",
+    "work_authorization",
+    "eligibility_critical",
+    "required_empty_or_error",
+    "required_legal_compliance",
 )
+# Populated, no validation error, no known failure class: trusted, not re-read.
+POST_AUTOFILL_TRUSTED_CLASSES = (
+    "eeo_demographics",
+    "phone_address_formatting",
+    "resume_filename",
+    "populated_education_employment",
+    "routine_non_material",
+)
+KNOWN_AUTOFILL_FAILURE_CLASSES = (
+    "nickname_on_legal_first_name",
+    "sponsorship_no_on_future_sponsorship_widget",
+    "academic_mailbox_on_application_field",
+    "invented_referral",
+    "citizenship_not_china",
+)
+FULL_FORM_AUDIT_PERMITTED = False
+FORM_COMPLEXITY_SIGNALS = (
+    "account_or_otp_required",
+    "workday_or_eightfold_multistep",
+    "large_compliance_block",
+    "nontrivial_writing",
+    "unusual_eligibility",
+)
+AUTOFILL_CORRECTIONS_NOTE_TOKEN = "autofill_corrections"
 QUEUE_READ_SCOPE = "targeted"
 TARGETED_QUEUE_STATUSES = (
     "BLOCKED",
@@ -1230,6 +1260,65 @@ def post_autofill_sidebar_is_proof() -> bool:
 
 def post_autofill_checks() -> Tuple[str, ...]:
     return POST_AUTOFILL_CHECKS
+
+
+def post_autofill_trusted_classes() -> Tuple[str, ...]:
+    return POST_AUTOFILL_TRUSTED_CLASSES
+
+
+def known_autofill_failure_classes() -> Tuple[str, ...]:
+    return KNOWN_AUTOFILL_FAILURE_CLASSES
+
+
+def full_form_audit_permitted() -> bool:
+    return FULL_FORM_AUDIT_PERMITTED
+
+
+def post_autofill_field_action(
+    *,
+    field_class: str,
+    required: bool,
+    populated: bool,
+    has_error: bool = False,
+    known_failure: bool = False,
+    conflicts_with_fact: bool = False,
+) -> str:
+    """Fast validation pass decision for one widget after Jobright Autofill.
+
+    Verify classes are read and repaired from facts. Everything else is
+    trusted when populated with no error, unless a known failure class or a
+    visible conflict with candidate truth is on the widget.
+    """
+    klass = normalize_text(field_class).replace(" ", "_")
+    if known_failure or conflicts_with_fact:
+        return "repair_from_facts"
+    if has_error:
+        return "repair_from_facts" if populated else "fill_from_facts_or_block"
+    if not populated:
+        if required:
+            return "fill_from_facts_or_block"
+        return "leave_optional_blank"
+    if klass in POST_AUTOFILL_CHECKS:
+        return "verify_against_facts"
+    return "trust_skip"
+
+
+def form_complexity(*signals: str) -> str:
+    seen = {normalize_text(item).replace(" ", "_") for item in signals if item}
+    if seen & set(FORM_COMPLEXITY_SIGNALS):
+        return "complex"
+    return "routine"
+
+
+def autofill_corrections_note(classes: Sequence[str]) -> str:
+    tokens: List[str] = []
+    for raw in classes:
+        token = normalize_text(raw).replace(" ", "_")
+        if token and token not in tokens:
+            tokens.append(token)
+    if not tokens:
+        return ""
+    return f"{AUTOFILL_CORRECTIONS_NOTE_TOKEN}=" + ",".join(tokens)
 
 
 def referral_field_action(*, filled_value: str, fact_has_referral: bool = False) -> str:
