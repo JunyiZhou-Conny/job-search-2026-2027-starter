@@ -358,6 +358,13 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("- identity: first_name, last_name, application_email.", text)
         self.assertIn("Legal first name Junyi. Legal last name Zhou.", text)
         self.assertIn("No full profile audit.", text)
+        self.assertIn(
+            "- work_authorization: future_sponsorship, sponsorship_to_begin, "
+            "h1b_named, citizenship, visa_type, authorized_for_any_employer, "
+            "currently_authorized, authorization_at_start, ead_possession, "
+            "opt_approval, opt_eligibility, work_authorization_wording.",
+            text,
+        )
         self.assertIn("knowledge/work_authorization.yaml stays authoritative", text)
         self.assertIn("Only widgets that decide eligibility for this role. Not every generic question.", text)
         self.assertIn("jobright_sidebar_complete_but_employer_dom_empty", text)
@@ -415,6 +422,23 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertEqual(tuple(autofill["post_autofill_checks"]), FAST_VALIDATION_CLASSES)
         self.assertEqual(autofill["polar_role"], "anomaly_detection_and_targeted_repair")
         self.assertEqual(autofill["default_filler"], "jobright_extension")
+        self.assertEqual(
+            tuple(autofill["fast_validation_pass"]["verify"]["work_authorization"]["widgets"]),
+            (
+                "future_sponsorship",
+                "sponsorship_to_begin",
+                "h1b_named",
+                "citizenship",
+                "visa_type",
+                "authorized_for_any_employer",
+                "currently_authorized",
+                "authorization_at_start",
+                "ead_possession",
+                "opt_approval",
+                "opt_eligibility",
+                "work_authorization_wording",
+            ),
+        )
         known = autofill["fast_validation_pass"]["known_failure_classes"]
         self.assertEqual(known["nickname_on_legal_first_name"]["wrong_value"], "Conny")
         self.assertEqual(known["nickname_on_legal_first_name"]["upstream_status"], "unknown")

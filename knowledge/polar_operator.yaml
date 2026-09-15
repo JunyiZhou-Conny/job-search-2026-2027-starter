@@ -45,11 +45,16 @@ autofill:
       work_authorization:
         widgets:
           - future_sponsorship
+          - sponsorship_to_begin
           - h1b_named
           - citizenship
           - visa_type
           - authorized_for_any_employer
           - currently_authorized
+          - authorization_at_start
+          - ead_possession
+          - opt_approval
+          - opt_eligibility
           - work_authorization_wording
         rule: >
           knowledge/work_authorization.yaml stays authoritative. Classify
