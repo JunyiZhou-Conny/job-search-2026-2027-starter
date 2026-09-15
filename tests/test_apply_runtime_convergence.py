@@ -409,6 +409,43 @@ class TestLogging(unittest.TestCase):
         self.assertIn("stale_apply_close_fields", apply)
         self.assertIn("stale_close", apply)
 
+    def test_grok_apply_upserts_partial_after_stale_close(self):
+        grok = grok_apply_text()
+        self.assertNotIn("Otherwise upsert", grok)
+        self.assertIn("Do not filter this QUERY to young started_at", grok)
+        self.assertIn("every open apply PARTIAL with blank ended_at", grok)
+        self.assertIn("including after stale_close", grok)
+        self.assertIn(
+            "Unless this run exited NO_WORK, upsert this run_id as PARTIAL",
+            grok,
+        )
+        runtime = compile_grok()["runtime/GROKBOT_RUNTIME.md"]
+        self.assertNotIn("Otherwise upsert", runtime)
+        self.assertIn("including after stale_close", runtime)
+        self.assertIn("Do not filter this QUERY to young started_at", runtime)
+        learning = compile_grok()["workflows/grok-production-learning-daily.md"]
+        self.assertIn(
+            "This routine is not an apply. Do not run polar_policy.start_apply_run_action.",
+            learning,
+        )
+        self.assertEqual(learning.count("start_apply_run_action"), 1)
+        self.assertNotIn("Otherwise upsert", learning)
+        self.assertNotIn("including after stale_close", learning)
+
+    def test_polar_runtime_queries_all_open_apply_partials(self):
+        polar_rt = (ROOT / "generated" / "polar" / "runtime" / "POLAR_RUNTIME.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("every open apply PARTIAL with blank ended_at", polar_rt)
+        self.assertIn("Do not filter this QUERY to young started_at", polar_rt)
+        self.assertIn("including after stale_close", polar_rt)
+        self.assertNotIn("blank ended_at younger than work_claim.ttl_minutes", polar_rt)
+        self.assertNotIn("grok-apply-jobs", polar_rt)
+        apply = apply_text()
+        self.assertIn("Do not filter this QUERY to young started_at", apply)
+        self.assertIn("every open apply PARTIAL", apply)
+        self.assertIn("Immediately upsert a run_log row", apply)
+
 
 if __name__ == "__main__":
     unittest.main()
