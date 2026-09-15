@@ -161,11 +161,14 @@ schedules:
   grok_apply_jobs:
     workflow: grok-apply-jobs
     bot: jobright-applier
-    # Disjoint minute from Polar :20. Two-hourly to start; hourly only
-    # after usage and incident rate allow (Grok routines can spend a week
-    # of usage in a day on an hourly cadence).
-    cron_et: "50 */2 * * *"
-    meaning: "Every two hours at minute 50 Eastern Time. Routine stays Active off until the four proofs pass."
+    # Disjoint minute from Polar :20. Two-hourly through 20:50 so the
+    # last slot is before Grok finalize (21:40) and Polar's date-based
+    # packet (22:00). A 22:50 run would miss both and drop from the
+    # next day's Polar read. Hourly only after usage and incident rate
+    # allow (Grok routines can spend a week of usage in a day on an
+    # hourly cadence).
+    cron_et: "50 0-20/2 * * *"
+    meaning: "Every two hours at minute 50 Eastern Time from 00:50 through 20:50. Routine stays Active off until the four proofs pass."
     enabled: false
     needs_browser_lock: false
     grok_mode: "Grok routine on the applier Bot. Loads the two-URL trust bootstrap from docs/automation/GROKBOT_WORKFLOWS.md."
@@ -173,8 +176,10 @@ schedules:
     workflow: grok-production-learning-daily
     bot: jobright-applier
     # Before Polar's 22:00 production-learning-daily so finalized G- rows
-    # and environment incidents land in that packet. After the last Grok
-    # apply window has had its 180 minute TTL.
+    # and environment incidents land in that packet. Apply's last slot is
+    # 20:50, so those G- rows stay on today's date for that read. The
+    # 180 minute TTL covers windows through 16:50; 18:50 and 20:50 rows
+    # that already wrote ended_at still land in the same-day packet.
     cron_et: "40 21 * * *"
     meaning: "Once each evening at 21:40 Eastern Time. Finalize non-final G- run_log rows and write Grok environment incidents. No packet. No application clicks. Active off until the Sheet proof passes."
     enabled: false

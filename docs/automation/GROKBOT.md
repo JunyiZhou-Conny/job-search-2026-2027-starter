@@ -100,7 +100,7 @@ employer ATS shows this account already submitted for the requisition, no fill, 
 
 | Routine | Schedule (America/New_York) | Does | Never |
 |---|---|---|---|
-| `grok-apply-jobs` | `50 */2 * * *`, Active off until proofs | claim, Agent queue, Autofill once, form DOM, writing tiers, validate, stop before Submit while the gate is closed (`REVIEW_READY`, blocker `grok_submit_gate_closed`) | Add All, Submit on a closed gate, prioritized rows |
+| `grok-apply-jobs` | `50 0-20/2 * * *`, Active off until proofs | claim, Agent queue, Autofill once, form DOM, writing tiers, validate, stop before Submit while the gate is closed (`REVIEW_READY`, blocker `grok_submit_gate_closed`) | Add All, Submit on a closed gate, prioritized rows |
 | `grok-production-learning-daily` | `40 21 * * *`, Active off until the Sheet proof | Phase 1: finalize non-final `G-` `run_log` rows older than the claim TTL (`FAILED`, `finalized_by=grok-production-learning-daily`), write one incident per day per environment repeat key (`grok_extension_missing`, `grok_cache_checksum_mismatch`, `grok_sheet_unreachable`, `grok_approval_stop`) | application clicks, any packet, any `learning_reports` row, any `R-` row, any GitHub write |
 
 Phase 2 of the learning routine (not compiled): after a Grok GitHub-write canary, the same

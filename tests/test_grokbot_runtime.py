@@ -340,6 +340,9 @@ class TestGrokOwnershipAndLearning(unittest.TestCase):
         self.assertEqual(operator["trust"]["github_writes"]["allowed"], [])
         self.assertEqual(operator["learning"]["packet"], "none")
         self.assertEqual(operator["roster"]["factory"], "dr eggbot")
+        self.assertEqual(operator["schedules"]["grok_apply_jobs"]["cron_et"], "50 0-20/2 * * *")
+        self.assertEqual(operator["schedules"]["grok_production_learning_daily"]["cron_et"], "40 21 * * *")
+        self.assertIn("50 0-20/2 * * *", workflow(GROK_APPLY_WORKFLOW))
 
     def test_applicant_account_rule_is_compiled_for_grok_and_stamped_in_yaml(self):
         import yaml

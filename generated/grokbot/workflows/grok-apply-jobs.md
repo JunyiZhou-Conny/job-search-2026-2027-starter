@@ -8,7 +8,7 @@ enabled: false
 routine_active: false
 bot: jobright-applier
 needs_browser_lock: false
-schedule: 50 */2 * * * America/New_York
+schedule: 50 0-20/2 * * * America/New_York
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/grokbot/runtime/GROKBOT_RUNTIME.md
 COMPILED ARTIFACT. Not canonical.
 
