@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-15.apply-runtime-archive+afbe02db66f5
+workflow_version: 2026-09-15.apply-runtime-sheet-io+9300fdc45ae2
 status: retired_from_apply_path
 enabled: false
 needs_browser_lock: false
@@ -94,13 +94,16 @@ A later crash must still leave that run_log row. Update the same run_id at the e
 ## Sheet write contract
 
 mode: named_header_mapping
+batch: required
+write_mode: named_header_batch
+one_cell_then_reread: false
 required_readback: job_key, status, last_stage, claim_run_id
 blank_policy: write_explicit_blank
 never_omit: apply_url_confidence
 
 1. Read the actual header row of the tab you are writing.
 2. Build a field-name to column mapping from those headers.
-3. Write fields by header name, not by remembered position.
+3. Write fields by header name, not by remembered position. One named-header batch per row mutation. Do not write one cell, reread, then write the next cell.
 4. If a value is empty, still write an explicit blank in that named column.
 5. Do not shorten a row and shift later fields left.
 6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.
@@ -167,7 +170,7 @@ If this workflow is invoked anyway, write inventory for history and dedupe only.
 
 1. Create run_id. Do not read polar_browser as a mutex.
 2. Open Jobright while already logged in only if you are writing inventory.
-3. For each unseen card, write or update one queue row using named header mapping.
+3. For each unseen card, one job_key QUERY then one named-header batch write. Do not scan the full queue.
    If the live header has no claim_run_id, do not append it. Note missing_claim_column.
    If the existing row is IN_PROGRESS, SUBMITTED, SUBMISSION_UNKNOWN, REVIEW_READY, or BLOCKED,
    do not overwrite execution fields. polar_policy.discover_may_overwrite_execution_fields is the check.
@@ -177,6 +180,13 @@ If this workflow is invoked anyway, write inventory for history and dedupe only.
 7. Keep Jobright source_url. last_stage stays discovered.
 8. Always write apply_url_confidence. Use none when apply_url is empty.
 9. Do not open Original Job Post. Do not start apply-ready-jobs work.
+polar_policy.sheet_io_batching_required is true. polar_policy.full_queue_scan_permitted is false.
+Writes use polar_policy.sheet_write_mode named_header_batch. polar_policy.one_cell_then_reread_permitted is false.
+Do not re-prove google_sheets, browser, or local_filesystem mid-run. polar_policy.capability_reprove_mid_run_permitted is false.
+Do not dump READY_* inventory. polar_policy.dump_ready_inventory_permitted is false.
+Per card: one job_key QUERY, then stop. company+role+location only on a job_key miss. polar_policy.company_role_location_query_permitted.
+Named-field readback after a batched write is not a second job_key QUERY. polar_policy.sheet_write_readback_is_repeat_query is false.
+Do not QUERY the same job_key after claim. polar_policy.sheet_query_after_claim_permitted is false.
 
 Stop after a thin inventory pass. Do not infinite-scroll.
 Write the run_log row. lock_result is NOT_REQUIRED.

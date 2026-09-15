@@ -66,11 +66,13 @@ from polar_policy import (
     REQUISITION_REPEAT,
     RUN_LOG_RESULTS,
     SUBMIT_PROOF_REPEAT_KEY,
+    SHEET_WRITE_MODE,
     TARGETED_QUEUE_STATUSES,
     TIME_LOST_CATEGORIES,
     TRUSTED_BRANCH,
     TRUSTED_REPO,
     ApplyRunCaps,
+    sheet_io_batching_lines,
     work_claim_ttl_minutes,
     workflow_version,
 )
@@ -318,8 +320,8 @@ def section_g8(src: RuntimeSources) -> str:
             "Both executors claim through the same column. Polar writes R- ids, this Bot writes G- ids. polar_policy.executor_from_run_id reads the prefix. No new column, no mutex row, no Grok tab. A Sheet claim is required before any apply work on either Jobright surface.",
             "job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Zero rows: append once. One row: update that row. Two or more: abort that job. "
             f"Incident repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}. Do not claim. Do not Submit. Do not guess.",
-            "One live apply across Polar and this Bot. QUERY run_log for every open apply "
-            "PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. "
+            "One live apply across Polar and this Bot. One QUERY of run_log for every open apply "
+            "PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. Do not repeat it later in the run. "
             "polar_policy.start_apply_run_action classifies. NO_WORK if another apply is live "
             "(started_at younger than work_claim.ttl_minutes): write this run finalized NO_WORK "
             "and exit. stale_close if it is older or started_at is unparseable: write ended_at "
@@ -335,7 +337,8 @@ def section_g8(src: RuntimeSources) -> str:
             f"Never recover a live claim owned by another run id, R- or G-. Recover only this executor's abandoned rows: empty claim_run_id, owner run_log result not PARTIAL, or updated_at older than {ttl} minutes. Incident repeat_key {CLAIM_REPEAT_RECOVERED}. Do not bump attempt_count again.",
             f"If the live queue header has no claim_run_id, do not append it. Incident repeat_key {CLAIM_REPEAT_MISSING_COLUMN}. Write OWNER_ACTION_REQUIRED and end the run. Polar's polar-sheet-migration is the only schema mutator.",
             "Before any Submit, reread claim_run_id and rerun polar_policy.requisition_submit_blocked on the live sibling rows. polar_policy.submit_claim_still_held false means do not Submit and do not repair a foreign claim.",
-            "Targeted lookups only: job_key, then company+role+location, then status in " + ", ".join(TARGETED_QUEUE_STATUSES) + ". Do not read every queue row. A full-queue read is forbidden. polar_policy.full_queue_read_permitted is false.",
+            "Targeted lookups only: job_key, then company+role+location only on a job_key miss, then status in " + ", ".join(TARGETED_QUEUE_STATUSES) + ". Do not read every queue row. A full-queue read is forbidden. polar_policy.full_queue_read_permitted is false.",
+            *sheet_io_batching_lines(apply_start=True),
             "Time partition is defense in depth, not the ownership mechanism. Polar runs at minute 20. This routine runs at a disjoint minute. The claim is the mechanism.",
             "",
             section_status(src, GROK),
@@ -573,7 +576,7 @@ def _telemetry_lines(name: str, *, apply_counters: bool, live_apply_gate: bool) 
     )
     if live_apply_gate:
         start_lines = [
-            "QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.",
+            "One QUERY of run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. Do not repeat this QUERY later in the run. polar_policy.start_apply_run_action classifies live versus stale. polar_policy.live_apply_query_is_batched.",
             "If NO_WORK, write this run_id as NO_WORK with both timestamps and exit. Do not upsert this run as PARTIAL. Do not leave a second live PARTIAL.",
             f"If stale_close, close the other apply row with polar_policy.stale_apply_close_fields (`{STALE_APPLY_CLOSE_NOTE}`).",
             "Unless this run exited NO_WORK, upsert this run_id as PARTIAL with blank ended_at on run_log, including after stale_close. Polar upserts after a close. Do the same. Do not start apply work without this row. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.",
@@ -608,6 +611,9 @@ def _sheet_contract_lines(*, tabs_never_touched: str) -> List[str]:
         "## Sheet write contract",
         "",
         "mode: named_header_mapping",
+        "batch: required",
+        f"write_mode: {SHEET_WRITE_MODE}",
+        "one_cell_then_reread: false",
         f"required_readback: {', '.join(REQUIRED_QUEUE_READBACK)}",
         "blank_policy: write_explicit_blank",
         f"never_omit: {APPLY_URL_CONFIDENCE}",
@@ -615,7 +621,7 @@ def _sheet_contract_lines(*, tabs_never_touched: str) -> List[str]:
         "",
         "1. Read the actual header row of the tab you are writing.",
         "2. Build a field-name to column mapping from those headers.",
-        "3. Write fields by header name, not by remembered position.",
+        "3. Write fields by header name, not by remembered position. One named-header batch per row mutation. Do not write one cell, reread, then write the next cell.",
         "4. If a value is empty, still write an explicit blank in that named column.",
         "5. Do not shorten a row and shift later fields left.",
         "6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.",
@@ -648,7 +654,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "",
         "A Sheet claim is required before any apply work. A different Jobright surface does not remove collision with Polar Local.",
         "Mint run_id with polar_policy.mint_run_id(executor=grok). Never mint an R- id.",
-        "QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies. If NO_WORK, write this run_id as NO_WORK and exit. Do not upsert PARTIAL. If stale_close, close that row with polar_policy.stale_apply_close_fields.",
+        "One QUERY of run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. Do not repeat it later in the run. polar_policy.start_apply_run_action classifies. If NO_WORK, write this run_id as NO_WORK and exit. Do not upsert PARTIAL. If stale_close, close that row with polar_policy.stale_apply_close_fields.",
         "Do not create grok_browser or any browser mutex control key.",
         "job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Two rows: abort, "
         f"repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}.",
@@ -663,6 +669,8 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "After each job stage, write last_stage and updated_at on this queue row with datetime.isoformat.",
         "",
         *_sheet_contract_lines(tabs_never_touched=never_touched),
+        *sheet_io_batching_lines(apply_start=True),
+        "",
         *_telemetry_lines(name, apply_counters=True, live_apply_gate=True),
         "## Entry",
         "",
@@ -758,14 +766,14 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "considered starts at 0. forms_reached starts at 0. seen starts empty.",
         "If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED. If it is duplicate, abort.",
         "",
-        "Recover first. Filter this executor's own SUBMISSION_UNKNOWN and abandoned G- IN_PROGRESS rows. Verify on the employer portal or in Outlook. Never blindly resubmit. Recovery does not consume considered.",
+        "Recover first. One QUERY for this executor's own SUBMISSION_UNKNOWN and abandoned G- IN_PROGRESS rows together. polar_policy.recovery_query_is_batched. Verify on the employer portal or in Outlook. Never blindly resubmit. Recovery does not consume considered.",
         "",
         f"Then open {entry.get('url') or GROK_ENTRY_URL} while already logged in.",
         "Do not click Add All. Do not View All and add the list. Work one job at a time.",
         "",
         "For each candidate job:",
         "1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.",
-        "2. Targeted Sheet plus historical-guard lookup. QUERY that job_key. If the QUERY returns #N/A or #REF!, treat as miss. "
+        "2. Targeted Sheet plus historical-guard lookup. One QUERY of that job_key, then stop. If the QUERY returns #N/A or #REF!, treat as miss. "
         f"Incident repeat_key {SHEET_QUERY_NA_REPEAT_KEY}. Do not create scratch_*.",
         f"   If polar_policy.plan_queue_upsert_by_job_key returns abort, Skip on the Agent, incident repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}, continue.",
         "   polar_policy.consider_jobright_card with executor grok against Applied, Sheet status, requisition identity, closed, and hard-fact conflict. A skip of closed, Applied, hard-fact-conflict, ATS prior submission, or a historical or requisition duplicate consumes considered. A Sheet-status skip (REVIEW_READY, BLOCKED, IN_PROGRESS, SUBMISSION_UNKNOWN, SKIP) does not consume considered; add its key to seen, do not ack it, do not touch its row. Continue.",
@@ -790,7 +798,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "17. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.",
         "18. Return to the Jobright Agent. polar_policy.jobright_ack_action. I've Applied only after employer confirmation by this run, or a verified prior ATS submission. Never ack a REVIEW_READY row.",
         "19. If this computer cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.",
-        "20. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.",
+        "20. Update the Sheet after every meaningful stage with one named-header batch. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only. Named-field readback is not a second job_key QUERY.",
         "",
         "Update the same run_id run_log row with polar_policy.apply_run_counters. lock_result is NOT_REQUIRED. Write ended_at.",
         "Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion. ATS family is only a note.",

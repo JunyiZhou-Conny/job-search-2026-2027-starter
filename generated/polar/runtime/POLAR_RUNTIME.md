@@ -601,6 +601,9 @@ Company|role|location:
 Read the actual header row before every Sheet write.
 Build a field-name to column mapping from those headers.
 Write by header name. Write explicit blanks. Do not shorten a positional row.
+Sheet writes are one named-header batch per row mutation. Do not write one cell, reread, then write the next cell.
+Do not re-prove google_sheets mid-run. Prove required capabilities once at start.
+Do not scan the full queue. One job_key QUERY per card. Named-field readback after a write is not a second QUERY.
 apply_url_confidence must stay in its named column even when the value is none or blank.
 After an important queue write, read back job_key, status, last_stage, and claim_run_id.
 If job_key, status, or last_stage do not match, repair those fields.
