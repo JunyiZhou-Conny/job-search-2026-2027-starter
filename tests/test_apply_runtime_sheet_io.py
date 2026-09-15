@@ -144,7 +144,7 @@ class TestSheetIoCompile(unittest.TestCase):
         self.assertIn("write_mode: named_header_batch", text)
         self.assertIn("batch: required", text)
         self.assertIn("one_cell_then_reread: false", text)
-        self.assertIn("One QUERY of run_log for every open apply PARTIAL", text)
+        self.assertIn("one QUERY of run_log for every open apply PARTIAL", text)
         self.assertIn("Do not repeat this QUERY later in the run.", text)
         self.assertIn("One QUERY for SUBMISSION_UNKNOWN and IN_PROGRESS together.", text)
         self.assertIn("One QUERY of that job_key, then stop.", text)
