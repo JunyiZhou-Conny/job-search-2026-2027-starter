@@ -143,8 +143,18 @@ class TestSharedLinesRenderIdentically(unittest.TestCase):
             self.assertIn(line, self.polar, line)
             self.assertIn(line, self.grok, line)
         self.assertIn("- Citizenship country (form and fact): China", self.grok)
-        self.assertIn("- Required future-sponsorship widget: Yes.", self.grok)
         self.assertIn("- Graduation date widget: 2026-12-18", self.grok)
+        # The future-sponsorship answer is owner policy in work_authorization.yaml.
+        # Both renders carry the same compiled value; neither pins its own.
+        auth = load_yaml(ROOT / "knowledge" / "work_authorization.yaml")
+        answer = ((auth.get("form_strategy") or {}).get("visa_sponsorship") or {}).get("form_answer")
+        self.assertIn(answer, ("Yes", "No"))
+        sponsorship_line = next(
+            line for line in self.polar.splitlines()
+            if line.startswith("- Required future-sponsorship widget: ")
+        )
+        self.assertTrue(sponsorship_line.startswith(f"- Required future-sponsorship widget: {answer}."))
+        self.assertIn(sponsorship_line, self.grok)
 
     def test_caps_agree_across_planes(self):
         polar = apply_run_caps(ROOT)

@@ -195,7 +195,13 @@ class TestGrokTrust(unittest.TestCase):
             self.assertRegex(row["sha256"], r"^[0-9a-f]{64}$")
             self.assertIn(row["url"], text)
             self.assertIn(row["sha256"], text)
-        self.assertIn("resumes/Perfect%20Resume/perfect_resume.pdf", text)
+        from polar_resume_attach import PRODUCTION_RESUME_REPO_PATH
+
+        resume_row = next(r for r in document_checksum_rows() if r["id"] == "production_resume_perfect")
+        self.assertEqual(resume_row["approved_path"], PRODUCTION_RESUME_REPO_PATH)
+        self.assertIn(resume_row["url"], text)
+        self.assertIn(f"attach `/workspace/jobright/docs/{resume_row['expected_filename']}`", text)
+        self.assertNotIn("JZ_Resume_911", text)
         self.assertIn("They are not configuration.", text)
 
     def test_url_classification_for_grok_load_set(self):

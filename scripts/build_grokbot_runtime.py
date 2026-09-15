@@ -230,8 +230,11 @@ def section_g5(src: RuntimeSources, operator: Dict[str, Any]) -> str:
     docs_dir = str(resources.get("docs_dir") or GROK_RESOURCE_DOCS)
     runs_dir = str(resources.get("runs_dir") or GROK_RESOURCE_RUNS)
     doc_rows: List[str] = []
+    resume_cache = f"{docs_dir}/{Path(PRODUCTION_RESUME_REPO_PATH).name}"
     for row in document_checksum_rows():
         digest = row["sha256"] or "not in repo; do not fetch"
+        if row["id"] == "production_resume_perfect":
+            resume_cache = f"{docs_dir}/{row['expected_filename']}"
         doc_rows.append(
             f"{row['id']}: {row['purpose']}. Cache file `{docs_dir}/{row['expected_filename']}`. "
             f"Source {row['url']}. sha256 {digest}."
@@ -249,7 +252,7 @@ def section_g5(src: RuntimeSources, operator: Dict[str, Any]) -> str:
                 [
                     "Prefer the just-generated Jobright resume on the Agent path. Confirm it at the Resume confirmation blocker.",
                     "If the native widget already shows a non-forbidden file, including a just-generated Jobright resume, leave it. polar_policy.native_resume_action is the engineer table.",
-                    f"If the widget is empty and no generated resume is available, attach `{docs_dir}/perfect_resume.pdf` after its sha256 matches the production_resume_perfect row above. That file is Perfect Resume, stored name `{PRODUCTION_RESUME_STORED_NAME}`, repo path `{PRODUCTION_RESUME_REPO_PATH}`. The Mac copy JZ_Resume_911.pdf is the same PDF; this computer uses the cache file.",
+                    f"If the widget is empty and no generated resume is available, attach `{resume_cache}` after its sha256 matches the production_resume_perfect row above. That file is Perfect Resume, stored name `{PRODUCTION_RESUME_STORED_NAME}`, repo path `{PRODUCTION_RESUME_REPO_PATH}`. This computer uses the cache file, never a Mac path.",
                     "Do not upload the two-page master, any ai_infra file, or a sanitized PDF next to a family .tex. Do not compile LaTeX. Do not invent a new resume for a job.",
                     "If neither the generated Jobright resume nor Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume and continue the run. Report why.",
                     "Do not invent a Jobright Turbo credit policy. Two executors draw one Jobright credit pool. If Jobright refuses to generate, write a TRIAGE or ENVIRONMENT incident and continue.",

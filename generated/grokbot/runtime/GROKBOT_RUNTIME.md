@@ -115,8 +115,8 @@ street_address_source: none on this computer. If a required street field is empt
 - Citizenship country (form and fact): China
 - Permanent resident elsewhere since citizenship: No
 - Current visa type when asked: F-1
-- Future sponsorship required (standing fact): True
-- Required future-sponsorship widget: Yes. Execution: answer_from_future_sponsorship_required.
+- Future sponsorship required (standing fact): False
+- Required future-sponsorship widget: No. Execution: answer_from_future_sponsorship_required.
 - Answer only the asked semantic. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship on a field that did not ask.
 - Optional identity or status fields stay blank. Required and clear fields get the one matching fact. Required and unclear fields BLOCK that job only.
 - If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.
@@ -145,7 +145,7 @@ These lines are shared byte-for-byte with the Polar render.
 - employed_by_this_company_before: No. When: Have you been employed by [this company] in the past?.
 - open_to_relocating: Yes. When: Are you open to relocating?.
 - h1b_named_question_only: No.
-- visa_sponsorship: Yes. When: Will you now or in the future require visa sponsorship? Answer the future_sponsorship_required fact only. Do not mention F-1, OPT, EAD, or citizenship.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
+- visa_sponsorship: No. When: Will you now or in the future require visa sponsorship? Answer the future_sponsorship_required fact only. Do not mention F-1, OPT, EAD, or citizenship.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
 - citizenship_country: China. When: Country of citizenship / nationality. Also the export-control country widget..
 - permanent_resident_elsewhere: No. When: Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?.
 - eligible_to_begin_employment_immediately: Yes. When: If offered employment, would you be legally eligible to begin employment immediately?.
@@ -331,7 +331,7 @@ Writing tiers. Same decision for both executors. The clicker is not a novelist.
 
 Approved documents. Attach only when the form asks for that document class. Never paste contents. Never copy transcript text into the Sheet, chat, a report, or a file.
 - emory_official_transcript: official undergraduate transcript. Cache file `/workspace/jobright/docs/Emory_Official_Transcript.pdf`. Source https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/Emory_Official_Transcript.pdf. sha256 9bc4e317718656d9e4f48180c06c0ae631a1cd9c88b7323118396b8422bee304.
-- production_resume_perfect: only production resume for every application. Cache file `/workspace/jobright/docs/perfect_resume.pdf`. Source https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/resumes/Perfect%20Resume/perfect_resume.pdf. sha256 ba6c13d73d76489888ed93160d52b601a9187061e82a1636881b6d13b93fdbad.
+- production_resume_perfect: only production resume for every application. Cache file `/workspace/jobright/docs/JZ_Resume_2027.pdf`. Source https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/resumes/Perfect%20Resume/JZ_Resume_2027.pdf. sha256 2ac0791447eef92e48c4b4cd11da1c4cef6cf8ec787ed78a249a2f0568d4238e.
 - harvard_unofficial_transcript: unofficial current-program transcript. Cache file `/workspace/jobright/docs/Harvard_unofficial_transcript.pdf`. Source https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/Harvard_unofficial_transcript.pdf. sha256 0efc60029c4976098211ce25889c517a3ff80cf40fad60c005fe697461c45b02.
 
 Document downloads are resources on the trusted repository and branch. They are not configuration. Verify the sha256 before the first attach after a fetch. A mismatch is MISSING_DOCUMENT for that job, not a fallback to another file.
@@ -340,7 +340,7 @@ Resource cache: `/workspace/jobright/docs` holds only the files above. Refetch w
 Resume:
 - Prefer the just-generated Jobright resume on the Agent path. Confirm it at the Resume confirmation blocker.
 - If the native widget already shows a non-forbidden file, including a just-generated Jobright resume, leave it. polar_policy.native_resume_action is the engineer table.
-- If the widget is empty and no generated resume is available, attach `/workspace/jobright/docs/perfect_resume.pdf` after its sha256 matches the production_resume_perfect row above. That file is Perfect Resume, stored name `Perfect Resume`, repo path `resumes/Perfect Resume/perfect_resume.pdf`. The Mac copy JZ_Resume_911.pdf is the same PDF; this computer uses the cache file.
+- If the widget is empty and no generated resume is available, attach `/workspace/jobright/docs/JZ_Resume_2027.pdf` after its sha256 matches the production_resume_perfect row above. That file is Perfect Resume, stored name `Perfect Resume`, repo path `resumes/Perfect Resume/JZ_Resume_2027.pdf`. This computer uses the cache file, never a Mac path.
 - Do not upload the two-page master, any ai_infra file, or a sanitized PDF next to a family .tex. Do not compile LaTeX. Do not invent a new resume for a job.
 - If neither the generated Jobright resume nor Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume and continue the run. Report why.
 - Do not invent a Jobright Turbo credit policy. Two executors draw one Jobright credit pool. If Jobright refuses to generate, write a TRIAGE or ENVIRONMENT incident and continue.
@@ -375,7 +375,7 @@ Per-run budget: 3 considered candidates, not 3 submissions. Recovery of this exe
 When the gate is open, a regular job may be submitted once only when every item holds:
 - Duplicate check passes against the Sheet and the historical duplicate guard in section G8.
 - Company and title on the page match the queue row.
-- Approved resume is the just-generated Jobright file, or Perfect Resume / identified JZ_Resume_911.pdf. Do not upload the two-page master or any ai_infra file.
+- Approved resume is the just-generated Jobright file, or Perfect Resume / identified JZ_Resume_2027.pdf. Do not upload the two-page master or any ai_infra file.
 - Identity fields (First Name, Last Name, application email) are correct after a visible form DOM read-back. Extension sidebar progress is not proof.
 - Normal account and contact email fields show the APPLICATION mailbox, not the academic mailbox.
 - Referral / how-heard is blank unless a verified fact exists. Clear invented Event referrals.
