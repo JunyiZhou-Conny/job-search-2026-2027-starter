@@ -6,12 +6,13 @@ The older blanket rule "never Submit without explicit confirmation" was a
 stage of experimentation, not a permanent product requirement. It is
 retired as policy. Facts about Junyi are unchanged by this file.
 
-There are two execution planes. Do not mix their gates.
+There are three execution planes. Do not mix their gates.
 
 | Plane | Root rule | Machine file |
 |---|---|---|
 | `cursor_cloud` | ATS-family ladder from the Cloud Computer Use experiments | `config/submit_gates.yaml` `cursor_cloud.gates` |
 | `polar_local` | Capability and policy checks on Junyi's Mac | `config/submit_gates.yaml` `polar_local` and `knowledge/polar_operator.yaml` |
+| `grok_cloud` | Same capability and policy checks on the Grok Bot computer. Closed: `submit_enabled: false`. | `config/submit_gates.yaml` `grok_cloud` and `knowledge/grokbot_operator.yaml` |
 
 The ATS matrix and G0 through G3 evidence stay. They still bind Cloud
 Chrome. They are not the Polar Local root abstraction.
@@ -61,6 +62,35 @@ the facts support it. Prioritized writing must be logged before Submit.
 
 Do not organize this gate by ATS family. A Workday account wall is
 ordinary local auth work until this Mac cannot complete it.
+
+Creating an employer ATS applicant account is ordinary execution for
+Polar Local and Grok Bot under `knowledge/form_strategy.yaml`
+`applicant_account_rule` (owner approved 2026-09-15, churn tolerance
+first). The 2026-08-23 `account_creation_wall` text is `pre_jobright`
+supervised-test history and binds neither production executor.
+
+## Grok Cloud plane (closed)
+
+`grok_cloud` is the Grok Bot sibling executor on the Jobright Agent
+surface. See `docs/automation/GROKBOT.md`. The plane is closed at birth:
+`submit_enabled: false`, `prioritized_auto_submit: false`, cap 3
+considered per run. While closed, `grok-apply-jobs` validates the form,
+stops before Submit, writes `REVIEW_READY` with blocker
+`grok_submit_gate_closed`, and does not ack Jobright.
+
+The regular item list is the Polar Local list above, rendered by the same
+builder into `GROKBOT_RUNTIME.md` section G6. Prioritized rows stay
+`BLOCKED` on this plane until an owner decision after regular Submit is
+proven. The gate opens only after the four proofs in `GROKBOT.md` and an
+owner edit to `config/submit_gates.yaml` on `main`; a routine run cannot
+open it. Regular Submit then needs 10 consecutive verified regular Grok
+submits with zero wrong-fact incidents, mirroring the Cloud G3 bar.
+
+`ats_prior_submission` applies on every plane: when the employer ATS shows
+this applicant account already submitted for the requisition, no fill, no
+Submit, queue `SKIP` with blocker `already_applied_on_ats`, and a truthful
+Jobright ack (`polar_policy.ats_prior_submission_action`, owner decision
+2026-09-15).
 
 ## Cloud ladder
 

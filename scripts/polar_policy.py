@@ -268,6 +268,14 @@ USER_ONLY_AUTH_STEPS = (
     "phone_app_push",
 )
 APPLICATION_OUTLOOK_ACTION = "read_application_outlook"
+EXECUTOR_POLAR = "polar"
+EXECUTOR_GROK = "grok"
+RUN_ID_PREFIXES = {
+    EXECUTOR_POLAR: "R",
+    EXECUTOR_GROK: "G",
+}
+ATS_PRIOR_SUBMISSION_REPEAT_KEY = "ats_prior_submission"
+ATS_PRIOR_SUBMISSION_BLOCKER = "already_applied_on_ats"
 PRODUCTION_RESUME_EXPORT_PATH = FAMILY_RESUME_EXPORT_PATH
 TELEMETRY_TZ_NAME = "America/New_York"
 TELEMETRY_TZ = ZoneInfo(TELEMETRY_TZ_NAME)
@@ -983,6 +991,7 @@ def canonical_repeat_key(raw: str) -> str:
         NATIVE_RESUME_REPEAT_KEY,
         COPILOT_EMAIL_REPEAT_KEY,
         SUBMIT_PROOF_REPEAT_KEY,
+        ATS_PRIOR_SUBMISSION_REPEAT_KEY,
     }:
         return token
     return REPEAT_KEY_ALIASES.get(token, token)
@@ -1007,9 +1016,27 @@ def eastern_datetime(now: Optional[datetime] = None) -> datetime:
     return now.astimezone(TELEMETRY_TZ)
 
 
-def mint_run_id(now: Optional[datetime] = None) -> str:
+def mint_run_id(now: Optional[datetime] = None, executor: str = EXECUTOR_POLAR) -> str:
+    """Run id on the America/New_York wall clock.
+
+    Polar Local keeps `R-`. The Grok Bot sibling mints `G-` so both
+    executors can claim through the same queue.claim_run_id column.
+    """
+    try:
+        prefix = RUN_ID_PREFIXES[executor]
+    except KeyError as exc:
+        raise ValueError(f"unknown executor {executor!r}") from exc
     stamp = eastern_datetime(now)
-    return f"R-{stamp.strftime('%Y%m%d-%H%M%S')}"
+    return f"{prefix}-{stamp.strftime('%Y%m%d-%H%M%S')}"
+
+
+def executor_from_run_id(run_id: str) -> str:
+    """Executor that minted a run id, or '' when the prefix is unknown."""
+    token = str(run_id or "").strip()
+    for executor, prefix in RUN_ID_PREFIXES.items():
+        if token.startswith(f"{prefix}-"):
+            return executor
+    return ""
 
 
 def format_sheet_timestamp(now: Optional[datetime] = None) -> str:
@@ -1126,8 +1153,13 @@ def consider_jobright_card(
     section_k_hit: bool = False,
     requisition_blocked: bool = False,
     hard_fact_conflict: bool = False,
+    ats_prior_submission: bool = False,
 ) -> ConsiderDecision:
     status = normalize_text(sheet_status)
+    if ats_prior_submission:
+        return ConsiderDecision(
+            "skip_applied", True, True, "ats shows a prior submission by this account"
+        )
     if already_applied_on_jobright or status == "submitted":
         return ConsiderDecision("skip_applied", True, True, "already applied")
     if closed:
@@ -1171,10 +1203,55 @@ def jobright_ack_action(
     *,
     employer_page_confirmation: bool,
     submit_clicked: bool,
+    ats_prior_submission: bool = False,
 ) -> str:
+    """Yes / I applied only on proof.
+
+    Proof is this run's Submit plus employer-page confirmation, or the
+    employer ATS showing a prior submission by this applicant account
+    (owner decision 2026-09-15, `ats_prior_submission_action`).
+    """
+    if ats_prior_submission:
+        return "ack_i_applied"
     if employer_page_confirmation and submit_clicked:
         return "ack_i_applied"
     return "do_not_ack"
+
+
+@dataclass(frozen=True)
+class AtsPriorSubmissionDecision:
+    status: str
+    blocker: str
+    incident_category: str
+    repeat_key: str
+    fill_form: bool
+    submit: bool
+    jobright_ack: str
+    notes: str
+
+
+def ats_prior_submission_action() -> AtsPriorSubmissionDecision:
+    """ATS truth wins over Jobright Apply Now.
+
+    When the employer ATS shows this applicant account already submitted
+    for the same requisition: no fill, no Submit, queue SKIP with blocker
+    already_applied_on_ats, one DEDUP incident, and a truthful Jobright
+    ack because the ATS confirms the prior submission.
+    """
+    return AtsPriorSubmissionDecision(
+        status="SKIP",
+        blocker=ATS_PRIOR_SUBMISSION_BLOCKER,
+        incident_category="DEDUP",
+        repeat_key=ATS_PRIOR_SUBMISSION_REPEAT_KEY,
+        fill_form=False,
+        submit=False,
+        jobright_ack=jobright_ack_action(
+            employer_page_confirmation=False,
+            submit_clicked=False,
+            ats_prior_submission=True,
+        ),
+        notes="employer ATS shows a prior submission by this account; do not resubmit",
+    )
 
 
 def after_confirm_persistence_action(*, sheet_write_ok: bool) -> str:

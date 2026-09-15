@@ -104,6 +104,8 @@ Recover `IN_PROGRESS` only when `claim_run_id` is empty, the owner run_log is no
 
 `polar_browser` remains on the `control` tab as historical state. Do not acquire it. A stale owner there must not stop discovery or apply.
 
+Claim ids carry an executor prefix. Polar Local mints `R-` and the Grok Bot sibling mints `G-` through `polar_policy.mint_run_id(executor=...)`; `polar_policy.executor_from_run_id` reads it back. Both executors claim through this same `claim_run_id` column, one `job_key` at a time, with the same write-then-readback protocol. Grok writes the same `queue`, `run_log`, `incident_log`, and `writing_log` tabs with `run_log.workflow` `grok-apply-jobs` or `grok-production-learning-daily`. There is no Grok tab, no Grok column, no second Sheet. Grok never touches `control`, `heartbeat`, `learning_reports`, or an `R-` row. A different Jobright surface does not remove collision; the claim does. See `docs/automation/GROKBOT.md`.
+
 If the Mac slept while Job 6 was `IN_PROGRESS` and the claim is abandoned or self-owned, resume Job 6. Do not start over from Job 1.
 
 ## Autofill owner
