@@ -1,7 +1,7 @@
 # polar-scheduler-heartbeat
 
 workflow: polar-scheduler-heartbeat
-workflow_version: 2026-09-15.fast-validation+9892abac3f82
+workflow_version: 2026-09-15.future-sponsorship-no+9892abac3f82
 status: production
 enabled: true
 needs_browser_lock: false

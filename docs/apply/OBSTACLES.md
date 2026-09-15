@@ -108,9 +108,9 @@ the form has no long written answers.
 
 **H-1B field was No.** Junyi wants that on every form that asks
 specifically “Will you require H-1B sponsorship?” Written as form
-strategy in `knowledge/work_authorization.yaml`. The fact file still
-says future employer sponsorship is expected. Broader “now or in the
-future require sponsorship?” is still Yes / do not answer No.
+strategy in `knowledge/work_authorization.yaml`. Owner policy
+2026-09-15: the broader “now or in the future require sponsorship?”
+widget is No. Autofill No is correct. Forcing Yes is the defect.
 
 ## What Junyi confirmed on Gemini (2026-08-23)
 

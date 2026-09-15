@@ -267,8 +267,8 @@ class TestPreferencesMemory(unittest.TestCase):
         self.assertIn("unassigned", delta)
 
     def test_github_wins_strategy_conflict(self):
-        body = "standing form answer is No for future sponsorship"
-        github = "form_answer: Yes"
+        body = "standing form answer is Yes for future sponsorship"
+        github = "form_answer: No"
         self.assertTrue(preference_conflicts_github(body, github))
         self.assertEqual(winning_memory_source("LEARNING_CANDIDATE"), "canonical_github")
         self.assertEqual(winning_memory_source("LOCAL_PRIVATE"), "canonical_github")

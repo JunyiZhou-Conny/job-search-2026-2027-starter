@@ -60,8 +60,8 @@ work_authorization:
   expected_ead_ready: "2027-01-18"
   earliest_full_time_start: "2027-01-18"
   preferred_full_time_start: "2027-01-18 (ideal); any later date also fine, including Summer 2027"
-  future_sponsorship_needed: true
-  future_sponsorship_required: true
+  future_sponsorship_needed: false
+  future_sponsorship_required: false
 
 search:
   country: "United States"

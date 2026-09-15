@@ -8,8 +8,6 @@
 # gold copy. SHA256
 # 2ac0791447eef92e48c4b4cd11da1c4cef6cf8ec787ed78a249a2f0568d4238e.
 # Do not invent skills, dates, or metrics from the PDF.
-# runtime_lines / workflow_lines / submit_check stay on the 2026-09-14
-# 911 wording until the separate sponsorship PR recompiles Polar.
 
 version: 1
 updated: "2026-09-15"
@@ -18,11 +16,10 @@ owner_decision: "Junyi 2026-09-15. Owner-supplied JZ_Resume_2027.pdf. Stored nam
 stored_name: "Perfect Resume"
 selector: polar_simplify_stored_name
 ingest_pdf: "resumes/Perfect Resume/JZ_Resume_2027.pdf"
-# No new Mac path was identified for JZ_Resume_2027.pdf. Do not invent one.
-# The 2026-09-14 Desktop 911 path is retired so Polar does not attach
-# those older bytes. Polar compiled text still names 911 until recompile.
+# No Mac path for JZ_Resume_2027.pdf. Do not invent a Desktop 911 path.
+# The 2026-09-14 Desktop JZ_Resume_911.pdf path is retired.
 identified_mac_pdf: ""
-# Same bytes as ingest_pdf. Kept so Polar compiled paths still resolve.
+# Same bytes as ingest_pdf. Alias from #142.
 compile_alias_pdf: "resumes/Perfect Resume/perfect_resume.pdf"
 master_pdf: "resumes/base/JZ_resume.pdf"
 family_export_pdf: "generated/resumes/export/ai_infra_v1.pdf"
@@ -42,12 +39,12 @@ runtime_lines:
   - "On the Jobright-first path, prefer the just-generated Jobright resume. polar_policy.native_resume_action is the engineer table."
   - "If the native widget already shows a non-forbidden file, including a just-generated Jobright resume, leave it."
   - "If the widget is empty and a just-generated Jobright resume is available, attach that generated file."
-  - "Else attach Perfect Resume. Polar/Simplify stored name `Perfect Resume`. Identified 911 gold copy is `JZ_Resume_911.pdf` at `/Users/conny/Desktop/JZ_Resume_911.pdf` or `resumes/Perfect Resume/perfect_resume.pdf`. Do not invent another 911 filename."
+  - "Else attach Perfect Resume. Polar/Simplify stored name `Perfect Resume`. Native file is `resumes/Perfect Resume/JZ_Resume_2027.pdf`. Do not invent a Desktop path."
   - "Per-role family routing is postponed. Do not switch to `ai_infra` or any other family at apply time."
   - "One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach."
   - "Look at the native ATS Resume/CV widget. Copilot sidebar Completed is not proof the widget has a file. polar_policy.native_resume_action is the engineer table."
   - "Do not upload `resumes/base/JZ_resume.pdf`. Do not upload `generated/resumes/export/ai_infra_v1.pdf`. Do not upload the sanitized PDF next to a family .tex."
-  - "If neither the generated Jobright resume nor Perfect Resume / 911 can be attached, mark REVIEW_READY with blocker missing_production_resume and continue the worker. Report why."
+  - "If neither the generated Jobright resume nor Perfect Resume / `JZ_Resume_2027.pdf` can be attached, mark REVIEW_READY with blocker missing_production_resume and continue the worker. Report why."
   - "Do not compile LaTeX during apply. Do not export or create `ai_infra_v1` as a fallback."
   - "Do not invent a new resume for every job. Do not invent a Jobright Turbo credit policy."
 
@@ -55,10 +52,10 @@ workflow_lines:
   - "Prefer the just-generated Jobright resume when it is visible or available."
   - "If the native widget already shows a file that is not a forbidden file, leave it."
   - "If the widget is empty and the generated Jobright resume is available, attach that generated file."
-  - "Else attach Perfect Resume by stored name, or `resumes/Perfect Resume/perfect_resume.pdf` when that checkout file exists."
-  - "If that repo file is missing, attach `/Users/conny/Desktop/JZ_Resume_911.pdf` only when that file exists. That is the identified 911 gold copy. Do not invent another path."
+  - "Else attach Perfect Resume by stored name, or `resumes/Perfect Resume/JZ_Resume_2027.pdf` when that checkout file exists."
+  - "Do not invent a Desktop 911 path. identified_mac_pdf is empty."
   - "Do not upload `resumes/base/JZ_resume.pdf`. Do not upload `generated/resumes/export/ai_infra_v1.pdf`. Do not upload the sanitized PDF next to a family .tex."
   - "Do not compile LaTeX during apply. Do not switch resume families. Do not silently fall back to `ai_infra_v1`."
-  - "If neither generated nor 911 / Perfect Resume can be attached, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker."
+  - "If neither generated nor Perfect Resume / `JZ_Resume_2027.pdf` can be attached, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker."
 
-submit_check: "Approved resume is the just-generated Jobright file, or Perfect Resume / identified JZ_Resume_911.pdf. Do not upload the two-page master or any ai_infra file."
+submit_check: "Approved resume is the just-generated Jobright file, or Perfect Resume / identified JZ_Resume_2027.pdf. Do not upload the two-page master or any ai_infra file."

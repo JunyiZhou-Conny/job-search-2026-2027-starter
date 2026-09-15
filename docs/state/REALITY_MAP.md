@@ -143,13 +143,13 @@ parent-compiler test for computer-use context
 3. Referral hold. Created 22aaf12, retired e90c733, yet
    `docs/eligibility.md:42-43`, `.cursor/rules/06-networking.mdc:23-24`,
    and `docs/apply/OBSTACLES.md:235-237` on Stack A still say hold.
-4. Sponsorship widget. Main's `work_authorization.yaml:45-47` answers the
-   broad question Yes and `eligibility.md:50` forbids answering No to
-   bypass ATS. Stack A flips the standing answer to "No, I do not need
-   sponsorship" (`form_strategy.yaml:26-44`) and sets
-   `never_lie_to_bypass_ats: false`, while the fact
-   `future_sponsorship_required: true` stays in both files. This is a
-   fact-versus-form-answer conflict and needs the owner's word.
+4. Sponsorship widget. Historical: Main's 2026-09-10 mapping answered the
+   broad question Yes while Stack A had answered No, with
+   `future_sponsorship_required: true` in both files. Owner policy
+   2026-09-15 resolved this by setting `future_sponsorship_required:
+   false`. The standard now-or-future widget is No. Autofill No is
+   correct. Forcing Yes is the defect. H-1B-named stays No. Other
+   authorization widgets keep their own facts.
 5. Applied means confirmed. `docs/workflow.md:22` says confirm before
    `applied`; `.cursor/rules/12-application-records.mdc:41` lets an apply
    queue click write `applied`.

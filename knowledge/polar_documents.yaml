@@ -25,10 +25,8 @@ documents:
     purpose: only production resume for every application
     stored_name: Perfect Resume
     selector: polar_simplify_stored_name
-    # Compile input. Path stays until the sponsorship Polar recompile.
-    # Owner file is resumes/Perfect Resume/JZ_Resume_2027.pdf (same bytes).
-    approved_path: resumes/Perfect Resume/perfect_resume.pdf
-    expected_filename: perfect_resume.pdf
+    approved_path: resumes/Perfect Resume/JZ_Resume_2027.pdf
+    expected_filename: JZ_Resume_2027.pdf
     use_when:
       - every job's native ATS resume or CV widget
       - the native widget is empty and Polar must attach a resume

@@ -45,7 +45,7 @@ street_address_source: local Polar or private profile. Do not compile or log the
 
 Approved documents. Attach only when the form asks for that class. Never paste contents.
 - emory_official_transcript: `Emory_Official_Transcript.pdf` (available in repo). official undergraduate transcript.
-- production_resume_perfect: Polar/Simplify stored name `Perfect Resume`; native-file `resumes/Perfect Resume/perfect_resume.pdf` (available in repo). only production resume for every application.
+- production_resume_perfect: Polar/Simplify stored name `Perfect Resume`; native-file `resumes/Perfect Resume/JZ_Resume_2027.pdf` (available in repo). only production resume for every application.
 - harvard_unofficial_transcript: `Harvard_unofficial_transcript.pdf` (available in repo). unofficial current-program transcript.
 
 - Legal name: Junyi Zhou
@@ -59,8 +59,8 @@ Approved documents. Attach only when the form asks for that class. Never paste c
 - Citizenship country (form and fact): China
 - Permanent resident elsewhere since citizenship: No
 - Current visa type when asked: F-1
-- Future sponsorship required (standing fact): True
-- Required future-sponsorship widget: Yes. Execution: answer_from_future_sponsorship_required.
+- Future sponsorship required (standing fact): False
+- Required future-sponsorship widget: No. Execution: answer_from_future_sponsorship_required.
 - Answer only the asked semantic. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship on a field that did not ask.
 - Optional identity or status fields stay blank. Required and clear fields get the one matching fact. Required and unclear fields BLOCK that job only.
 - If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.
@@ -89,7 +89,7 @@ This list is a fill table. Do not walk it against every populated widget after A
 - employed_by_this_company_before: No. When: Have you been employed by [this company] in the past?.
 - open_to_relocating: Yes. When: Are you open to relocating?.
 - h1b_named_question_only: No.
-- visa_sponsorship: Yes. When: Will you now or in the future require visa sponsorship? Answer the future_sponsorship_required fact only. Do not mention F-1, OPT, EAD, or citizenship.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
+- visa_sponsorship: No. When: Will you now or in the future require visa sponsorship? Answer the future_sponsorship_required fact only. Do not mention F-1, OPT, EAD, or citizenship.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
 - citizenship_country: China. When: Country of citizenship / nationality. Also the export-control country widget..
 - permanent_resident_elsewhere: No. When: Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?.
 - eligible_to_begin_employment_immediately: Yes. When: If offered employment, would you be legally eligible to begin employment immediately?.
@@ -222,12 +222,12 @@ Priority slot reservation is 0. Jobright ranks new cards.
 On the Jobright-first path, prefer the just-generated Jobright resume. polar_policy.native_resume_action is the engineer table.
 If the native widget already shows a non-forbidden file, including a just-generated Jobright resume, leave it.
 If the widget is empty and a just-generated Jobright resume is available, attach that generated file.
-Else attach Perfect Resume. Polar/Simplify stored name `Perfect Resume`. Identified 911 gold copy is `JZ_Resume_911.pdf` at `/Users/conny/Desktop/JZ_Resume_911.pdf` or `resumes/Perfect Resume/perfect_resume.pdf`. Do not invent another 911 filename.
+Else attach Perfect Resume. Polar/Simplify stored name `Perfect Resume`. Native file is `resumes/Perfect Resume/JZ_Resume_2027.pdf`. Do not invent a Desktop path.
 Per-role family routing is postponed. Do not switch to `ai_infra` or any other family at apply time.
 One master resume on disk: `JZ_resume` at `resumes/base/`. It is the two-page source of truth, not a production attach.
 Look at the native ATS Resume/CV widget. Copilot sidebar Completed is not proof the widget has a file. polar_policy.native_resume_action is the engineer table.
 Do not upload `resumes/base/JZ_resume.pdf`. Do not upload `generated/resumes/export/ai_infra_v1.pdf`. Do not upload the sanitized PDF next to a family .tex.
-If neither the generated Jobright resume nor Perfect Resume / 911 can be attached, mark REVIEW_READY with blocker missing_production_resume and continue the worker. Report why.
+If neither the generated Jobright resume nor Perfect Resume / `JZ_Resume_2027.pdf` can be attached, mark REVIEW_READY with blocker missing_production_resume and continue the worker. Report why.
 Do not compile LaTeX during apply. Do not export or create `ai_infra_v1` as a fallback.
 Do not invent a new resume for every job. Do not invent a Jobright Turbo credit policy.
 
@@ -353,7 +353,7 @@ Prioritized auto-submit: True.
 A regular job may be submitted once only when every item holds:
 - Duplicate check passes against the Sheet and section K.
 - Company and title on the page match the queue row.
-- Approved resume is the just-generated Jobright file, or Perfect Resume / identified JZ_Resume_911.pdf. Do not upload the two-page master or any ai_infra file.
+- Approved resume is the just-generated Jobright file, or Perfect Resume / identified JZ_Resume_2027.pdf. Do not upload the two-page master or any ai_infra file.
 - Identity fields (First Name, Last Name, application email) are correct after a visible form DOM read-back. Extension sidebar progress is not proof.
 - Normal account and contact email fields show the APPLICATION mailbox, not the academic mailbox.
 - Referral / how-heard is blank unless a verified fact exists. Clear invented Event referrals.
@@ -739,7 +739,7 @@ Do not:
 
 Known failure classes. Repair from facts. Note the class:
 - nickname_on_legal_first_name: wrong value Conny. Repair: First Name is the legal first name from config/profile.yaml. Upstream candidate: Jobright profile name field or generated resume header. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_nickname_on_legal_first_name. Observed: Owner-observed 2026-09-15, production run R-20260914-2309.
-- sponsorship_no_on_future_sponsorship_widget: wrong value No. Repair: future_sponsorship_required is true. Required widget answer is Yes. polar_policy.auth_form_action. Upstream candidate: Jobright profile sponsorship setting. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_no_on_future_sponsorship_widget. Observed: Jobright-era apply 2026-09-15.
+- sponsorship_yes_on_future_sponsorship_widget: wrong value Yes. Repair: future_sponsorship_required is false. Required widget answer is No. polar_policy.auth_form_action. Forcing Yes is the defect. Upstream candidate: A later correction or profile setting that forces Yes. Owner action if Jobright profile still says Yes. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_yes_on_future_sponsorship_widget. Observed: Owner policy 2026-09-15. Retires the Autofill-No-is-defect class..
 - academic_mailbox_on_application_field: wrong value academic mailbox. Repair: Local APPLICATION mailbox. polar_policy.contact_email_action. repeat_key copilot_academic_mailbox_on_application_field.
 - invented_referral: wrong value Event. Repair: Blank unless a verified referral fact exists. polar_policy.referral_field_action. repeat_key invented_referral. Observed: Jobright-era apply 2026-09-15.
 - citizenship_not_china: wrong value United States. Repair: China. Observed: Copilot on Twitch 2026-09-03, pre-Jobright.
