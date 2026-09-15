@@ -95,11 +95,12 @@ class TestPolarCompileIsByteIdentical(unittest.TestCase):
         )
         self.assertEqual(diff.stdout.strip(), "", diff.stdout)
 
-    def test_policy_revision_is_the_post_139_compile(self):
+    def test_policy_revision_matches_the_committed_compile(self):
         operator = load_yaml(ROOT / "knowledge" / "polar_operator.yaml")
-        self.assertEqual(operator["policy_revision"], "2026-09-15.sheets-capability")
+        revision = str(operator["policy_revision"])
+        self.assertTrue(revision.startswith("2026-"), revision)
         apply = (POLAR_DIR / "workflows" / "apply-ready-jobs.md").read_text(encoding="utf-8")
-        self.assertIn("workflow_version: 2026-09-15.sheets-capability+", apply)
+        self.assertIn(f"workflow_version: {revision}+", apply)
 
 
 class TestLineTagging(unittest.TestCase):

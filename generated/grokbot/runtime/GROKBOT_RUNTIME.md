@@ -139,7 +139,7 @@ street_address_source: none on this computer. If a required street field is empt
 - US Person / export control: I am not a U.S. Person. Export-control country China.
 
 Standing widget answers (owner-confirmed). Apply them verbatim.
-These lines are shared byte-for-byte with the Polar render. Where one names an older autofill sidebar by product name, read it as the autofill tool on this computer, the Jobright extension.
+These lines are shared byte-for-byte with the Polar render.
 
 - how_heard_or_referral: (blank). When: How did you hear about this role / referral source / Event.
 - employed_by_this_company_before: No. When: Have you been employed by [this company] in the past?.
@@ -149,7 +149,7 @@ These lines are shared byte-for-byte with the Polar render. Where one names an o
 - citizenship_country: China. When: Country of citizenship / nationality. Also the export-control country widget..
 - permanent_resident_elsewhere: No. When: Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?.
 - eligible_to_begin_employment_immediately: Yes. When: If offered employment, would you be legally eligible to begin employment immediately?.
-- eeo_self_identification: Preserve the values Simplify Copilot fills from Junyi's profile. Do not clear them. Do not change them. Confirmed: gender Male; hispanic_latino No; race Asian; veteran_status I am not a protected veteran; disability No, I do not have a disability and have not had one in the past.
+- eeo_self_identification: Preserve the values Autofill fills from Junyi's profile. Do not clear them. Do not change them. Trusted when populated. Do not reopen or re-verify them after Autofill. Use the confirmed values only when a required EEO widget is empty or left at Select, or when a wrong value is visible in passing. Confirmed: gender Male; hispanic_latino No; race Asian; veteran_status I am not a protected veteran; disability No, I do not have a disability and have not had one in the past.
 - years_of_relevant_experience: 2. When: How many years of relevant / work / professional experience do you have?.
 - automated_script_or_spoofing: No. When: Are you applying via an automated script or spoofing?.
 - prior_internship_or_coop_in_general: Yes. When: Do you have prior internship or co-op experience?.
@@ -376,7 +376,7 @@ When the gate is open, a regular job may be submitted once only when every item 
 - Duplicate check passes against the Sheet and the historical duplicate guard in section G8.
 - Company and title on the page match the queue row.
 - Approved resume is the just-generated Jobright file, or Perfect Resume / identified JZ_Resume_911.pdf. Do not upload the two-page master or any ai_infra file.
-- Identity fields are correct after a visible form DOM read-back. Extension sidebar progress is not proof.
+- Identity fields (First Name, Last Name, application email) are correct after a visible form DOM read-back. Extension sidebar progress is not proof.
 - Normal account and contact email fields show the APPLICATION mailbox, not the academic mailbox.
 - Referral / how-heard is blank unless a verified fact exists. Clear invented Event referrals.
 - Required factual fields are resolved from this runtime or left for Junyi.

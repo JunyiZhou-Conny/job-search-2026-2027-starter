@@ -564,7 +564,7 @@ def facts_rows(src: RuntimeSources) -> List[Row]:
             grok="Standing widget answers (owner-confirmed). Apply them verbatim.",
         ),
         polar_only("This list is a fill table. Do not walk it against every populated widget after Autofill."),
-        grok_only("These lines are shared byte-for-byte with the Polar render. Where one names an older autofill sidebar by product name, read it as the autofill tool on this computer, the Jobright extension."),
+        grok_only("These lines are shared byte-for-byte with the Polar render."),
         "",
         bullet(standing_answer_lines(src)),
     ]
