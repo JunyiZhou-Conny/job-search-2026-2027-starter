@@ -58,6 +58,7 @@ from polar_policy import (
     CLAIM_REPEAT_RECOVERED,
     DUPLICATE_JOB_KEY_REPEAT_KEY,
     SHEET_QUERY_NA_REPEAT_KEY,
+    STALE_APPLY_CLOSE_NOTE,
     TELEMETRY_INCONSISTENCY,
     DEGREE_LEVEL_REPEAT_KEY,
     INCIDENT_CATEGORIES,
@@ -319,7 +320,7 @@ def section_g8(src: RuntimeSources) -> str:
             f"Incident repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}. Do not claim. Do not Submit. Do not guess.",
             "One live apply across Polar and this Bot. QUERY run_log for workflow in "
             + ", ".join(sorted(APPLY_WORKFLOW_NAMES))
-            + " with result PARTIAL and blank ended_at. polar_policy.start_apply_run_action. NO_WORK if another apply is live. Do not create grok_browser or any browser mutex control key.",
+            + " with result PARTIAL and blank ended_at. polar_policy.start_apply_run_action. NO_WORK if another apply is live (started_at younger than work_claim.ttl_minutes). stale_close if it is older or started_at is unparseable: write ended_at and FAILED with polar_policy.stale_apply_close_fields, then continue. Do not create grok_browser or any browser mutex control key.",
             "Do not create scratch tabs. If a QUERY returns #N/A or #REF!, treat as miss. "
             f"Incident repeat_key {SHEET_QUERY_NA_REPEAT_KEY}.",
             "Cheap SKIP before Add, Apply Now, or Start. polar_policy.skip_path_action. Do not generate a resume or open ATS to record a card-level skip.",
@@ -558,19 +559,30 @@ def _identity_and_preflight(name: str) -> List[str]:
     ]
 
 
-def _telemetry_lines(name: str, *, apply_counters: bool) -> List[str]:
+def _telemetry_lines(name: str, *, apply_counters: bool, live_apply_gate: bool) -> List[str]:
     counters = (
         "Update the same run_id row with polar_policy.apply_run_counters."
         if apply_counters
         else "jobs_seen, jobs_attempted, submitted_regular, submitted_priority, blocked, skipped, and submission_unknown stay 0 or blank on this routine. It applies to nothing."
     )
+    if live_apply_gate:
+        start_lines = [
+            "QUERY run_log for a live apply (apply-ready-jobs or grok-apply-jobs, PARTIAL, ended_at blank) before writing PARTIAL. polar_policy.start_apply_run_action. A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes.",
+            "If NO_WORK, write this run_id as NO_WORK with both timestamps and exit. Do not leave a second live PARTIAL.",
+            f"If stale_close, close the other apply row with polar_policy.stale_apply_close_fields (`{STALE_APPLY_CLOSE_NOTE}`), then continue.",
+            "Otherwise upsert the row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.",
+        ]
+    else:
+        start_lines = [
+            "This routine is not an apply. Do not run polar_policy.start_apply_run_action. A live or crashed apply PARTIAL does not stop this finalizer.",
+            "Upsert this routine's own run_log row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.",
+        ]
     return [
         "## Run telemetry",
         "",
         f"One routine run writes one run_log row. workflow is {name}. Copy workflow_version from this file into that row.",
         "Mint run_id with polar_policy.mint_run_id(executor=grok). The prefix is G-. Never mint an R- id.",
-        "QUERY run_log for a live apply (apply-ready-jobs or grok-apply-jobs, PARTIAL, ended_at blank) before writing PARTIAL. polar_policy.start_apply_run_action. If NO_WORK, write this run_id as NO_WORK with both timestamps and exit. Do not leave a second live PARTIAL.",
-        "Otherwise upsert the row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.",
+        *start_lines,
         "duration_minutes is polar_policy.run_duration_minutes(started_at, ended_at). Same clock. Never chat wall-clock. "
         f"If the written minutes disagree, record {TELEMETRY_INCONSISTENCY}.",
         "The row is not final until polar_policy.run_log_row_is_final is true.",
@@ -630,7 +642,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "",
         "A Sheet claim is required before any apply work. A different Jobright surface does not remove collision with Polar Local.",
         "Mint run_id with polar_policy.mint_run_id(executor=grok). Never mint an R- id.",
-        "QUERY run_log for a live apply-ready-jobs or grok-apply-jobs PARTIAL with blank ended_at. polar_policy.start_apply_run_action. If NO_WORK, write this run_id as NO_WORK and exit. Do not upsert PARTIAL.",
+        "QUERY run_log for a live apply-ready-jobs or grok-apply-jobs PARTIAL with blank ended_at. polar_policy.start_apply_run_action. If NO_WORK, write this run_id as NO_WORK and exit. Do not upsert PARTIAL. If stale_close, close that row with polar_policy.stale_apply_close_fields and continue.",
         "Do not create grok_browser or any browser mutex control key.",
         "job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Two rows: abort, "
         f"repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}.",
@@ -645,7 +657,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "After each job stage, write last_stage and updated_at on this queue row with datetime.isoformat.",
         "",
         *_sheet_contract_lines(tabs_never_touched=never_touched),
-        *_telemetry_lines(name, apply_counters=True),
+        *_telemetry_lines(name, apply_counters=True, live_apply_gate=True),
         "## Entry",
         "",
         f"entry: {entry.get('surface')}",
@@ -669,7 +681,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "A skip that needed the employer page (closed, hard-fact conflict, ATS prior submission), Jobright Applied, or a historical or requisition duplicate consumes considered and continues.",
         "A Sheet row already in REVIEW_READY, BLOCKED, IN_PROGRESS, SUBMISSION_UNKNOWN, or SKIP is a leftover the Agent re-offers. Skip it without consuming considered and without a Jobright ack. polar_policy.consider_jobright_card(executor=grok) returns that skip with consume_considered false. Three leftovers must leave the whole budget for new claims.",
         "Stop claiming new jobs when polar_policy.considered_budget_exhausted is true.",
-        "Polar Local and this Bot share one live-apply gate. polar_policy.start_apply_run_action. Do not start a second grok-apply-jobs while any apply is PARTIAL with blank ended_at.",
+        "Polar Local and this Bot share one live-apply gate. polar_policy.start_apply_run_action. Do not start a second grok-apply-jobs while another apply is live. A stale PARTIAL is stale_close, not NO_WORK.",
         "",
         "## Autofill",
         "",
@@ -819,7 +831,7 @@ def render_learning_workflow_body(operator: Dict[str, Any]) -> str:
     lines = [
         *_identity_and_preflight(name),
         *_sheet_contract_lines(tabs_never_touched=never_touched),
-        *_telemetry_lines(name, apply_counters=False),
+        *_telemetry_lines(name, apply_counters=False, live_apply_gate=False),
         "## Status",
         "",
         "status: disabled_until_sheet_proof",

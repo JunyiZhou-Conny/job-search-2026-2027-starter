@@ -280,6 +280,8 @@ ATS_PRIOR_SUBMISSION_BLOCKER = "already_applied_on_ats"
 DUPLICATE_JOB_KEY_REPEAT_KEY = "duplicate_job_key"
 SHEET_QUERY_NA_REPEAT_KEY = "sheet_query_na"
 TELEMETRY_INCONSISTENCY = "TELEMETRY_INCONSISTENCY"
+STALE_APPLY_CLOSE_NOTE = "stale_apply_closed; reason=no_ended_at_after_ttl"
+STALE_APPLY_CLOSE_RESULT = "FAILED"
 APPLY_WORKFLOW_NAMES = frozenset({"apply-ready-jobs", "grok-apply-jobs"})
 SHEET_ERROR_TOKENS = frozenset({"#n/a", "#ref!", "#value!", "#name?", "#null!"})
 CHEAP_SKIP_LEAVE_STATUSES = frozenset(
@@ -1198,7 +1200,7 @@ def apply_workflow_name(name: str) -> bool:
     return str(name or "").strip() in APPLY_WORKFLOW_NAMES
 
 
-def apply_run_is_live(row: Mapping[str, Any]) -> bool:
+def _apply_partial_open(row: Mapping[str, Any]) -> bool:
     if not apply_workflow_name(str(row.get("workflow") or "")):
         return False
     if str(row.get("result") or "").strip() != "PARTIAL":
@@ -1206,14 +1208,56 @@ def apply_run_is_live(row: Mapping[str, Any]) -> bool:
     return not str(row.get("ended_at") or "").strip()
 
 
-def live_apply_run_id(
+def apply_run_is_stale(
+    row: Mapping[str, Any],
+    *,
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    root: Optional[Path] = None,
+) -> bool:
+    """Open apply PARTIAL that can no longer prove it is still running.
+
+    Same clock and TTL as work_claim.ttl_minutes. Unparseable started_at
+    is stale so a crash cannot hold the mutex forever. Does not create
+    polar_browser.
+    """
+    if not _apply_partial_open(row):
+        return False
+    if now is None:
+        now = eastern_datetime()
+    started = parse_timestamp(str(row.get("started_at") or ""))
+    if started is None:
+        return True
+    ttl = work_claim_ttl_minutes(root) if ttl_minutes is None else ttl_minutes
+    return started + timedelta(minutes=ttl) <= now
+
+
+def apply_run_is_live(
+    row: Mapping[str, Any],
+    *,
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    root: Optional[Path] = None,
+) -> bool:
+    if not _apply_partial_open(row):
+        return False
+    return not apply_run_is_stale(
+        row, now=now, ttl_minutes=ttl_minutes, root=root
+    )
+
+
+def _first_apply_run_id(
     run_logs: Sequence[Mapping[str, Any]],
     *,
-    exclude_run_id: str = "",
+    exclude_run_id: str,
+    predicate,
+    now: Optional[datetime],
+    ttl_minutes: Optional[int],
+    root: Optional[Path],
 ) -> Optional[str]:
     skip = normalize_text(exclude_run_id)
     for row in run_logs:
-        if not apply_run_is_live(row):
+        if not predicate(row, now=now, ttl_minutes=ttl_minutes, root=root):
             continue
         run_id = str(row.get("run_id") or "").strip()
         if not run_id:
@@ -1224,14 +1268,94 @@ def live_apply_run_id(
     return None
 
 
+def live_apply_run_id(
+    run_logs: Sequence[Mapping[str, Any]],
+    *,
+    exclude_run_id: str = "",
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    root: Optional[Path] = None,
+) -> Optional[str]:
+    return _first_apply_run_id(
+        run_logs,
+        exclude_run_id=exclude_run_id,
+        predicate=apply_run_is_live,
+        now=now,
+        ttl_minutes=ttl_minutes,
+        root=root,
+    )
+
+
+def stale_apply_run_id(
+    run_logs: Sequence[Mapping[str, Any]],
+    *,
+    exclude_run_id: str = "",
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    root: Optional[Path] = None,
+) -> Optional[str]:
+    return _first_apply_run_id(
+        run_logs,
+        exclude_run_id=exclude_run_id,
+        predicate=apply_run_is_stale,
+        now=now,
+        ttl_minutes=ttl_minutes,
+        root=root,
+    )
+
+
+def stale_apply_close_fields(
+    row: Mapping[str, Any],
+    *,
+    now: Optional[datetime] = None,
+) -> Dict[str, str]:
+    """Named fields that close a stale apply PARTIAL so claims can recover."""
+    ended = format_sheet_timestamp(now)
+    started = str(row.get("started_at") or "")
+    duration = run_duration_minutes(started, ended)
+    notes = str(row.get("notes") or "").strip()
+    if STALE_APPLY_CLOSE_NOTE not in notes:
+        notes = f"{notes}; {STALE_APPLY_CLOSE_NOTE}".strip("; ").strip()
+    fields = {
+        "ended_at": ended,
+        "result": STALE_APPLY_CLOSE_RESULT,
+        "notes": notes,
+    }
+    if duration is not None:
+        fields["duration_minutes"] = str(duration)
+    return fields
+
+
 def start_apply_run_action(
     run_logs: Sequence[Mapping[str, Any]],
     *,
     this_run_id: str = "",
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    root: Optional[Path] = None,
 ) -> str:
-    """One live real-job applier across Polar (R-) and Grok (G-)."""
-    if live_apply_run_id(run_logs, exclude_run_id=this_run_id):
+    """One live real-job applier across Polar (R-) and Grok (G-).
+
+    Fresh PARTIAL + blank ended_at → NO_WORK. Stale PARTIAL → stale_close
+    so the next apply can write ended_at/FAILED and reach abandoned-claim
+    recovery. Learning routines must not call this helper.
+    """
+    if live_apply_run_id(
+        run_logs,
+        exclude_run_id=this_run_id,
+        now=now,
+        ttl_minutes=ttl_minutes,
+        root=root,
+    ):
         return "NO_WORK"
+    if stale_apply_run_id(
+        run_logs,
+        exclude_run_id=this_run_id,
+        now=now,
+        ttl_minutes=ttl_minutes,
+        root=root,
+    ):
+        return "stale_close"
     return "continue"
 
 

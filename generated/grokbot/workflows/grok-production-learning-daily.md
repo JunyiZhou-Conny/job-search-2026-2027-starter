@@ -1,7 +1,7 @@
 # grok-production-learning-daily
 
 workflow: grok-production-learning-daily
-workflow_version: 2026-09-15.grok-sibling+9c47671abe8b
+workflow_version: 2026-09-15.grok-sibling+123c34990908
 executor: grok_bot
 status: disabled_until_sheet_proof
 enabled: false
@@ -76,8 +76,8 @@ Do not create a Sheet tab named scratch or scratch_*. Named writes are the fix. 
 
 One routine run writes one run_log row. workflow is grok-production-learning-daily. Copy workflow_version from this file into that row.
 Mint run_id with polar_policy.mint_run_id(executor=grok). The prefix is G-. Never mint an R- id.
-QUERY run_log for a live apply (apply-ready-jobs or grok-apply-jobs, PARTIAL, ended_at blank) before writing PARTIAL. polar_policy.start_apply_run_action. If NO_WORK, write this run_id as NO_WORK with both timestamps and exit. Do not leave a second live PARTIAL.
-Otherwise upsert the row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.
+This routine is not an apply. Do not run polar_policy.start_apply_run_action. A live or crashed apply PARTIAL does not stop this finalizer.
+Upsert this routine's own run_log row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.
 duration_minutes is polar_policy.run_duration_minutes(started_at, ended_at). Same clock. Never chat wall-clock. If the written minutes disagree, record TELEMETRY_INCONSISTENCY.
 The row is not final until polar_policy.run_log_row_is_final is true.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED. lock_result is NOT_REQUIRED. SKIPPED_LOCKED is historical; never write it.

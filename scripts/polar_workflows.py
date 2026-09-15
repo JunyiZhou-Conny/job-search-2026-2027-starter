@@ -332,9 +332,10 @@ def _lease_block(name: str) -> str:
                     "Mint run_id first. Then QUERY run_log for a live apply: workflow in "
                     + ", ".join(sorted(APPLY_WORKFLOW_NAMES))
                     + "; result PARTIAL; ended_at blank. polar_policy.start_apply_run_action.",
-                    "Do not read every historical run_log row.",
+                    "A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical run_log row.",
                     "If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.",
-                    "One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-ready-jobs or grok-apply-jobs.",
+                    "If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.",
+                    "One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-ready-jobs or grok-apply-jobs while another apply is live.",
                     "Do not acquire polar_browser. Do not create grok_browser.",
                     "",
                 ]
