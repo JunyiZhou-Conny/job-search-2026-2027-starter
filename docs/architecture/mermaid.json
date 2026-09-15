@@ -1,0 +1,16 @@
+{
+  "theme": "base",
+  "themeVariables": {
+    "fontFamily": "WenQuanYi Micro Hei, WenQuanYi Zen Hei, Droid Sans Fallback, sans-serif",
+    "fontSize": "16px",
+    "primaryTextColor": "#1B2631"
+  },
+  "flowchart": {
+    "htmlLabels": true,
+    "curve": "basis",
+    "nodeSpacing": 28,
+    "rankSpacing": 44,
+    "padding": 16,
+    "useMaxWidth": false
+  }
+}

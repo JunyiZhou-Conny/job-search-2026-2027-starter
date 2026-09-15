@@ -1,0 +1,49 @@
+%%{init: {"theme":"base","themeVariables":{"fontFamily":"WenQuanYi Micro Hei, WenQuanYi Zen Hei, Droid Sans Fallback, sans-serif","fontSize":"16px"}}}%%
+
+flowchart LR
+  classDef state fill:#E8F4FC,stroke:#1B4F72,color:#0B1F33
+  classDef process fill:#F7F7F2,stroke:#2C3E50,color:#1B2631
+  classDef decision fill:#FFF4D6,stroke:#8A6D1B,color:#5D4A12
+  classDef human fill:#FDECEC,stroke:#8B1E1E,color:#5B1111
+  classDef disabled fill:#F4F6F7,stroke:#7F8C8D,stroke-dasharray: 5 5,color:#5D6D7E
+  classDef auto fill:#E8F8F5,stroke:#0E6655,color:#0B3D32
+
+  Prod["Polar production<br/>discover + apply + heartbeat"]
+  Tele["Sheet telemetry<br/>run_log / incident_log<br/>writing_log / queue"]
+  Pref["PREFERENCES.md<br/>pending pref_YYYYMMDD_NNN<br/>本地 inbox"]
+  Daily["production-learning-daily<br/>22:00 ET / 自动"]
+  Report["learning_reports<br/>sanitized Markdown<br/>publish_status sheet_only"]
+  Canary{"control.github_write_canary<br/>== success?"}
+  Issue["GitHub Issue<br/>[Polar Production] date<br/>可选持久证据"]
+  Stay["只留在 Sheet<br/>今天的默认路径"]
+  GPT["chatgpt-production-review<br/>disabled / 非必经 hop"]
+  Cursor["Cursor / 工程师<br/>读生产证据"]
+  Class{"classify<br/>bug / policy gap<br/>recurring UX / one-off<br/>environment / no-action"}
+  Inspect["inspect current main<br/>不要信过期文档"]
+  Fix["generalize fix<br/>YAML / polar_policy / compiler"]
+  Tests["tests + 再编译 generated"]
+  PR["open PR<br/>STOP BEFORE MERGE"]
+  Merge["human merge<br/>开 PR 不是 canonical"]
+  Main["GitHub main 更新"]
+  Next["next Polar bootstrap<br/>再拉 raw main<br/>生产行为才变"]
+
+  class Prod,Daily,Stay,Inspect,Fix,Tests process
+  class Tele,Pref,Report,Issue,Main state
+  class Canary,Class decision
+  class GPT disabled
+  class Cursor process
+  class PR process
+  class Merge human
+  class Next auto
+
+  Prod --> Tele
+  Prod --> Pref
+  Tele --> Daily
+  Pref --> Daily
+  Daily --> Report --> Canary
+  Canary -->|"proven"| Issue
+  Canary -->|"not proven"| Stay
+  Issue -.-> GPT
+  Issue --> Cursor
+  Stay --> Cursor
+  Cursor --> Class --> Inspect --> Fix --> Tests --> PR --> Merge --> Main --> Next --> Prod

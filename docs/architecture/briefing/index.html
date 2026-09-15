@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Polar briefing</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="chrome">
+    <div class="chrome-inner">
+      <div class="brand">Polar</div>
+      <nav class="chapters" id="chapters" aria-label="Chapters"></nav>
+      <div class="truth" id="truth" data-truth="production">production</div>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <article class="scene" id="scene"></article>
+  </main>
+
+  <footer class="dock">
+    <button type="button" class="nav" id="prev">Back</button>
+    <div class="dots" id="dots"></div>
+    <span class="hint" id="hint"></span>
+    <button type="button" class="nav" id="next">Next</button>
+  </footer>
+
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="sheet" id="sheet" hidden></aside>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

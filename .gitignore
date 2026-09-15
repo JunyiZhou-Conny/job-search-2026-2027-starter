@@ -28,6 +28,7 @@ resumes/**/*.synctex.gz
 generated/resumes/
 generated/logs/
 generated/apply_queue/*.html
+docs/architecture/rendered/*.html
 .venv/
 data/queue_undo_journal.json
 
