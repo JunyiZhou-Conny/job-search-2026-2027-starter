@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 from urllib.parse import urlparse
@@ -1601,6 +1601,9 @@ class AuthFacts:
     current_status: Optional[str] = None
     current_us_work_authorization: Optional[bool] = None
     legally_eligible_to_begin_immediately: Optional[bool] = None
+    opt_ead_start_date: Optional[date] = None
+    opt_ead_end_date: Optional[date] = None
+    earliest_full_time_start: Optional[date] = None
     authorized_for_any_employer: Optional[bool] = None
     sponsorship_required_to_begin: Optional[bool] = None
     future_sponsorship_required: Optional[bool] = None
@@ -1622,6 +1625,20 @@ def _optional_bool(value: Any) -> Optional[bool]:
     if text in {"false", "no"}:
         return False
     return None
+
+
+def _optional_date(value: Any) -> Optional[date]:
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        return date.fromisoformat(text[:10])
+    except ValueError:
+        return None
 
 
 def _yes_no_from_bool(value: Optional[bool]) -> Optional[str]:
@@ -1655,6 +1672,9 @@ def load_auth_facts(root: Optional[Path] = None) -> AuthFacts:
         legally_eligible_to_begin_immediately=_optional_bool(
             data.get("legally_eligible_to_begin_immediately")
         ),
+        opt_ead_start_date=_optional_date(data.get("opt_ead_start_date")),
+        opt_ead_end_date=_optional_date(data.get("opt_ead_end_date")),
+        earliest_full_time_start=_optional_date(data.get("earliest_full_time_start")),
         authorized_for_any_employer=any_employer,
         sponsorship_required_to_begin=_optional_bool(data.get("sponsorship_required_to_begin")),
         future_sponsorship_required=_optional_bool(data.get("future_sponsorship_required")),
@@ -1732,6 +1752,28 @@ def _bool_answer(value: Optional[bool], kind: str) -> Tuple[str, str]:
     return f"answer_{token}", kind
 
 
+def _authorization_at_start_answer(
+    facts: AuthFacts,
+    start_date: Any = None,
+) -> Tuple[str, str]:
+    window_start = facts.opt_ead_start_date
+    window_end = facts.opt_ead_end_date
+    if start_date not in (None, ""):
+        parsed = _optional_date(start_date)
+        if parsed is None:
+            return "leave_unresolved", "authorization_at_start_unknown"
+        effective = parsed
+    else:
+        effective = facts.earliest_full_time_start or window_start
+    if window_start and window_end and effective:
+        if window_start <= effective <= window_end:
+            return "answer_yes", "authorization_at_start"
+        if effective < window_start:
+            return "answer_no", "authorization_at_start"
+        return "leave_unresolved", "authorization_at_start_unknown"
+    return _bool_answer(facts.legally_eligible_to_begin_immediately, "authorization_at_start")
+
+
 def _status_yes_no_answer(widget_text: str, current_status: Optional[str]) -> Tuple[str, str]:
     asked = normalize_text(widget_text)
     have = normalize_text(current_status or "")
@@ -1792,6 +1834,7 @@ def auth_form_action(
     required: bool = True,
     names_non_us_countries_only: bool = False,
     facts: Optional[AuthFacts] = None,
+    start_date: Optional[Any] = None,
 ) -> Tuple[str, str]:
     resolved = facts if facts is not None else load_auth_facts()
     instructed = _explicit_status_answer(explicit_status_instruction) or _explicit_status_answer(
@@ -1841,9 +1884,7 @@ def auth_form_action(
     if kind == "current_work_authorization":
         return _bool_answer(resolved.current_us_work_authorization, "current_work_authorization")
     if kind == "authorization_at_start":
-        return _bool_answer(
-            resolved.legally_eligible_to_begin_immediately, "authorization_at_start"
-        )
+        return _authorization_at_start_answer(resolved, start_date)
     if kind == "authorized_for_any_employer":
         return _bool_answer(resolved.authorized_for_any_employer, "authorized_for_any_employer")
     if kind == "sponsorship_to_begin":
@@ -1871,6 +1912,7 @@ def sponsorship_form_action(
     says_work_authorization_not_sponsorship: bool = False,
     required: bool = True,
     facts: Optional[AuthFacts] = None,
+    start_date: Optional[Any] = None,
 ) -> Tuple[str, str]:
     if says_work_authorization_not_sponsorship:
         if not required:
@@ -1882,6 +1924,7 @@ def sponsorship_form_action(
         required=required,
         names_non_us_countries_only=names_non_us_countries_only,
         facts=facts,
+        start_date=start_date,
     )
 
 

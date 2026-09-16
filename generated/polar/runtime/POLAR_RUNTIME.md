@@ -79,7 +79,7 @@ Approved documents. Attach only when the form asks for that class. Never paste c
 - Preferred work mode: in-person or hybrid
 - Search country: United States. Any US city is fine. Boston preferred.
 - Non-US work location is a skip.
-- Eligible to begin employment immediately: conditional_on_start_date
+- Eligible to begin employment immediately: Yes
 - US Person / export control: I am not a U.S. Person. Export-control country China.
 
 Standing widget answers (owner-confirmed). Apply them verbatim when you fill a widget that is empty, in error, or in a fast-validation class (section P).
@@ -92,7 +92,7 @@ This list is a fill table. Do not walk it against every populated widget after A
 - visa_sponsorship: Yes. When: Will you now or in the future require visa sponsorship? Answer the future_sponsorship_required fact only. Do not mention F-1, OPT, EAD, or citizenship.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
 - citizenship_country: China. When: Country of citizenship / nationality. Also the export-control country widget..
 - permanent_resident_elsewhere: No. When: Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?.
-- eligible_to_begin_employment_immediately: conditional_on_start_date. When: If offered employment, would you be legally eligible to begin employment immediately?.
+- eligible_to_begin_employment_immediately: Yes. When: If offered employment, would you be legally eligible to begin employment immediately?.
 - eeo_self_identification: Preserve the values Autofill fills from Junyi's profile. Do not clear them. Do not change them. Trusted when populated. Do not reopen or re-verify them after Autofill. Use the confirmed values only when a required EEO widget is empty or left at Select, or when a wrong value is visible in passing. Confirmed: gender Male; hispanic_latino No; race Asian; veteran_status I am not a protected veteran; disability No, I do not have a disability and have not had one in the past.
 - years_of_relevant_experience: 2. When: How many years of relevant / work / professional experience do you have?.
 - automated_script_or_spoofing: No. When: Are you applying via an automated script or spoofing?.

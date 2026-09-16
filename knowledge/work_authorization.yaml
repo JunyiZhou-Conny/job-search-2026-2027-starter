@@ -104,9 +104,9 @@ form_strategy:
     when: "Since obtaining your most recent citizenship, did you become a permanent resident in any other country/region?"
   eligible_to_begin_employment_immediately:
     decided: "2026-09-16"
-    form_answer: "conditional_on_start_date"
+    form_answer: "Yes"
     when: "If offered employment, would you be legally eligible to begin employment immediately?"
-    note: "Updated 2026-09-16: OPT EAD is not valid until opt_ead_start_date (2027-02-16). For a start date on/after 2027-02-16 and on/before 2028-02-16, answer Yes. For an earlier requested start date, answer No and leave for Junyi if the widget is required. Supersedes the 2026-09-03 blanket Yes (which assumed the old 2027-01-18 planning date)."
+    note: "Updated 2026-09-16: OPT EAD is not valid until opt_ead_start_date (2027-02-16). Compiled / Polar-apply answer is Yes because kept roles start on/after that date (through opt_ead_end_date 2028-02-16). polar_policy.auth_form_action uses the role start when one is supplied: Yes in that window, No if earlier, unresolved if later. Supersedes the 2026-09-03 blanket Yes (which assumed the old 2027-01-18 planning date) and the non-fill token conditional_on_start_date."
 
 standard_question_answers:
   # Use only after OPT EAD is valid for the employment period being asked about.

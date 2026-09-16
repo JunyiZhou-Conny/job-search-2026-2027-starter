@@ -73,7 +73,7 @@ sponsorship on a field that did not ask.
 | Are you a U.S. citizen? / country of citizenship | `citizenship_country` | **China** | leave blank |
 | What is your visa / status? | `current_status` | **F-1** | leave blank |
 | Are you currently authorized to work in the U.S.? | `current_us_work_authorization` | `not_yet_authorized_pending_opt_start` (no single static Yes/No) → BLOCK that job | leave blank |
-| Are you authorized to work in the U.S.? (no currently/now) | `legally_eligible_to_begin_immediately` | **No** as a standing bool; Yes only for a start on/after 2027-02-16 and on/before 2028-02-16 | leave blank |
+| Are you authorized to work in the U.S.? (no currently/now) | `legally_eligible_to_begin_immediately` | **Yes** when the role start is on/after 2027-02-16 and on/before 2028-02-16 (`polar_policy.auth_form_action`; Polar apply defaults to that window). **No** if the requested start is earlier. Standing today-bool is still false. | leave blank |
 | Authorized to work for any employer? | `authorized_for_any_employer` | **Yes** | leave blank |
 | Do you have an EAD? | `opt_ead_in_possession` | **No** | leave blank |
 | Has OPT been approved? | `opt_approved` | **No** | leave blank |

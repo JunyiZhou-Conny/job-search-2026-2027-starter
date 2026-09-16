@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sys
 import unittest
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 import yaml
@@ -973,9 +973,9 @@ class TestAuthSemanticSeparation(unittest.TestCase):
             ("Country of citizenship", "answer_china", "citizenship"),
             ("What is your current visa type?", "answer_f1", "visa_status"),
             ("Are you an F-1 student?", "answer_yes", "status_yes_no"),
-            ("Are you authorized to work in the United States?", "answer_no", "authorization_at_start"),
+            ("Are you authorized to work in the United States?", "answer_yes", "authorization_at_start"),
             ("Are you authorized to work in the United States for any employer?", "answer_yes", "authorized_for_any_employer"),
-            ("Are you legally eligible to begin employment immediately?", "answer_no", "authorization_at_start"),
+            ("Are you legally eligible to begin employment immediately?", "answer_yes", "authorization_at_start"),
             ("Do you require sponsorship to begin employment?", "answer_no", "sponsorship_to_begin"),
             ("Do you currently possess an Employment Authorization Document (EAD)?", "answer_no", "ead_possession"),
             ("Has your OPT been approved?", "answer_no", "opt_approval"),
@@ -1033,6 +1033,9 @@ class TestAuthSemanticSeparation(unittest.TestCase):
         self.assertEqual(self.facts.current_status, "F-1")
         self.assertIsNone(self.facts.current_us_work_authorization)
         self.assertFalse(self.facts.legally_eligible_to_begin_immediately)
+        self.assertEqual(self.facts.opt_ead_start_date, date(2027, 2, 16))
+        self.assertEqual(self.facts.opt_ead_end_date, date(2028, 2, 16))
+        self.assertEqual(self.facts.earliest_full_time_start, date(2027, 2, 16))
         self.assertTrue(self.facts.authorized_for_any_employer)
         self.assertFalse(self.facts.sponsorship_required_to_begin)
         self.assertTrue(self.facts.future_sponsorship_required)
@@ -1079,13 +1082,42 @@ class TestAuthSemanticSeparation(unittest.TestCase):
             required=True,
             facts=self.facts,
         )
-        self.assertEqual((legal_auth, legal_reason), ("answer_no", "authorization_at_start"))
+        self.assertEqual((legal_auth, legal_reason), ("answer_yes", "authorization_at_start"))
         h1b_action, h1b_reason = auth_form_action(
             widget_text="Will you require H-1B sponsorship?",
             required=True,
             facts=self.facts,
         )
         self.assertEqual((h1b_action, h1b_reason), ("answer_yes", "h1b_sponsorship"))
+
+    def test_authorization_at_start_follows_opt_window(self):
+        prompt = "Are you legally eligible to begin employment immediately?"
+        default_action, default_reason = auth_form_action(
+            widget_text=prompt,
+            required=True,
+            facts=self.facts,
+        )
+        self.assertEqual((default_action, default_reason), ("answer_yes", "authorization_at_start"))
+        cases = (
+            ("2026-12-18", "answer_no", "authorization_at_start"),
+            ("2027-02-16", "answer_yes", "authorization_at_start"),
+            ("2027-05-18", "answer_yes", "authorization_at_start"),
+            ("2028-02-16", "answer_yes", "authorization_at_start"),
+            ("2028-02-17", "leave_unresolved", "authorization_at_start_unknown"),
+        )
+        for start, action, reason in cases:
+            got_action, got_reason = auth_form_action(
+                widget_text=prompt,
+                required=True,
+                facts=self.facts,
+                start_date=start,
+            )
+            self.assertEqual((got_action, got_reason), (action, reason), start)
+            self.assertEqual(
+                auth_telemetry_outcome(got_action, got_reason),
+                "answered" if got_action.startswith("answer_") else "ambiguous_required_blocked",
+                start,
+            )
 
 
 if __name__ == "__main__":

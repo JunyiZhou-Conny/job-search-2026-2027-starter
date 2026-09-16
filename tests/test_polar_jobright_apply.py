@@ -438,7 +438,7 @@ class TestFastValidationPass(unittest.TestCase):
             "Do you have an EAD?": ("ead_possession", "answer_no"),
             "Has your OPT been approved?": ("opt_approval", "answer_no"),
             "Will you be eligible for OPT?": ("opt_eligibility", "answer_yes"),
-            "Are you legally eligible to begin employment immediately?": ("authorization_at_start", "answer_no"),
+            "Are you legally eligible to begin employment immediately?": ("authorization_at_start", "answer_yes"),
             "Are you currently authorized to work in the U.S.?": ("current_work_authorization", "leave_unresolved"),
             "Are you an F-1 student?": ("status_yes_no", "answer_yes"),
             "Are you authorized to work without sponsorship?": ("authorization_without_sponsorship", "leave_unresolved"),
