@@ -1,7 +1,7 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-16.future-sponsorship-yes+fbe92a94d59f
+workflow_version: 2026-09-16.future-sponsorship-yes+a80710a41752
 status: production
 enabled: true
 needs_browser_lock: false
@@ -85,9 +85,10 @@ Do not encode personal-fact values into git from Polar.
 ## Work order
 
 1. Open last night's production packet if it exists, including Polar Preferences Delta.
-   Prefer the GitHub Issue titled [Polar Production] YYYY-MM-DD for the latest America/New_York date.
+   Search existing Issues titled [Polar Production] YYYY-MM-DD and prefer the newest title date.
+   Last night is yesterday's America/New_York date at 02:00. Do not use today's calendar date.
    Read the ChatGPT production review if present. If it is missing, continue.
-   If google_sheets is available and that Issue is missing, read learning_reports for that date.
+   If google_sheets is available and that Issue is missing, read the newest learning_reports row by report_date.
    sheet_only is a valid packet. Do not invent a GitHub write path.
 2. Daily packet overlap and records:
    If any open PR title starts with [Polar maintenance], do not open another maintenance PR.
