@@ -215,6 +215,8 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Junyi-authorized maintenance path", text)
         self.assertIn("pref_20260912_002 | STALE", text)
         self.assertIn("pref_20260914_001 | PROMOTE", text)
+        self.assertIn("pref_20260915_005 | PROMOTE", text)
+        self.assertIn("pref_20260915_002 | OWNER_DECISION", text)
         self.assertIn("An open Cursor PR is not canonical.", text)
         self.assertIn("Match candidate_id only.", text)
         self.assertIn("Never reuse. Never fill gaps.", text)
@@ -396,6 +398,7 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("- reproduce Jobright profile filling by hand", text)
         self.assertIn("- distrust all Autofill output by default", text)
         self.assertIn("nickname_on_legal_first_name: wrong value Conny.", text)
+        self.assertIn("gpa_dual_value_to_single: wrong value 4.0, 3.925.", text)
         self.assertIn("Do not assume the profile was fixed.", text)
         self.assertIn("Status unknown.", text)
         self.assertIn("repeat_key autofill_nickname_on_legal_first_name", text)
@@ -437,7 +440,7 @@ class TestPolarRuntime(unittest.TestCase):
         operator = yaml.safe_load(
             (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
         )
-        self.assertEqual(operator["policy_revision"], "2026-09-15.future-sponsorship-no")
+        self.assertEqual(operator["policy_revision"], "2026-09-15.gpa-dual-value")
         autofill = operator["autofill"]
         self.assertIs(autofill["full_form_audit"], False)
         self.assertEqual(tuple(autofill["post_autofill_checks"]), FAST_VALIDATION_CLASSES)
@@ -456,6 +459,8 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertEqual(known["nickname_on_legal_first_name"]["upstream_status"], "unknown")
         self.assertEqual(known["sponsorship_yes_on_future_sponsorship_widget"]["wrong_value"], "Yes")
         self.assertEqual(known["sponsorship_yes_on_future_sponsorship_widget"]["upstream_status"], "unknown")
+        self.assertEqual(known["gpa_dual_value_to_single"]["wrong_value"], "4.0, 3.925")
+        self.assertEqual(known["gpa_dual_value_to_single"]["upstream_status"], "unknown")
         self.assertNotIn("sponsorship_no_on_future_sponsorship_widget", known)
         self.assertIs(autofill["fast_validation_pass"]["timing"]["is_timeout"], False)
 

@@ -1,5 +1,5 @@
 last_updated: "2026-09-15"
-policy_revision: "2026-09-15.future-sponsorship-no"
+policy_revision: "2026-09-15.gpa-dual-value"
 source: "Owner 2026-09-15. Jobright-era apply. Standard future-sponsorship widget is No from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Sheet blocked/submitted/unknown memory stays. Full-queue reads, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
@@ -149,6 +149,13 @@ autofill:
         observed: "Copilot on Twitch 2026-09-03, pre-Jobright"
         wrong_value: "United States"
         repair: "China."
+      gpa_dual_value_to_single:
+        observed: "Production 2026-09-15. Autofill wrote both school GPAs into one widget on two apply-ready-jobs runs."
+        wrong_value: "4.0, 3.925"
+        repair: "Single-box GPA is 4.0 from knowledge/form_strategy.yaml always.gpa.if_only_one_gpa_box. polar_policy.gpa_field_action. Do not paste both school GPAs into one widget."
+        upstream_candidate: "Jobright Autofill concatenating education GPAs. Owner action if the Jobright profile stores both values in one field."
+        upstream_status: unknown
+        repeat_key: gpa_dual_value_to_single
     form_complexity:
       routine_is_default: true
       complex_signals:

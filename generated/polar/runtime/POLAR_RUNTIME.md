@@ -701,6 +701,13 @@ preference_resolutions:
 - pref_20260913_002 | PROMOTE | scripts/polar_policy.py | none
 - pref_20260913_003 | DROP_REDUNDANT | scripts/polar_policy.py | none
 - pref_20260913_004 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260915_001 | DROP_REDUNDANT | scripts/polar_policy.py | none
+- pref_20260915_002 | OWNER_DECISION | knowledge/work_authorization.yaml | none
+- pref_20260915_003 | KEEP_LOCAL | knowledge/written_response_bank.yaml | none
+- pref_20260915_004 | KEEP_LOCAL | knowledge/form_strategy.yaml | none
+- pref_20260915_005 | PROMOTE | knowledge/polar_operator.yaml | none
+- pref_20260915_006 | KEEP_LOCAL | knowledge/form_strategy.yaml | none
+- pref_20260915_007 | OWNER_DECISION | none | none
 Cursor writes generalized lessons and knowledge/preference_resolutions.yaml.
 Default for Polar and for unattended nightly maintenance: STOP BEFORE MERGE.
 Junyi-authorized maintenance path: after tests pass, merge verified maintenance changes with gh. Record merged by this agent. Do not enable GitHub auto-merge. Do not bypass required checks. Do not merge personal-fact values or apply-policy guesses.
@@ -743,6 +750,7 @@ Known failure classes. Repair from facts. Note the class:
 - academic_mailbox_on_application_field: wrong value academic mailbox. Repair: Local APPLICATION mailbox. polar_policy.contact_email_action. repeat_key copilot_academic_mailbox_on_application_field.
 - invented_referral: wrong value Event. Repair: Blank unless a verified referral fact exists. polar_policy.referral_field_action. repeat_key invented_referral. Observed: Jobright-era apply 2026-09-15.
 - citizenship_not_china: wrong value United States. Repair: China. Observed: Copilot on Twitch 2026-09-03, pre-Jobright.
+- gpa_dual_value_to_single: wrong value 4.0, 3.925. Repair: Single-box GPA is 4.0 from knowledge/form_strategy.yaml always.gpa.if_only_one_gpa_box. polar_policy.gpa_field_action. Do not paste both school GPAs into one widget. Upstream candidate: Jobright Autofill concatenating education GPAs. Owner action if the Jobright profile stores both values in one field. Status unknown. Do not assume the profile was fixed. repeat_key gpa_dual_value_to_single. Observed: Production 2026-09-15. Autofill wrote both school GPAs into one widget on two apply-ready-jobs runs..
 
 Routine forms are the default path. Complex signals: account_or_otp_required, workday_or_eightfold_multistep, large_compliance_block, nontrivial_writing, unusual_eligibility.
 Extra care only when a complex signal is actually on the form. Routine forms take the fast path. polar_policy.form_complexity.
