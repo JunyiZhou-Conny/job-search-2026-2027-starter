@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-15.future-sponsorship-no+11ff673cad39
+workflow_version: 2026-09-16.future-sponsorship-yes+93afb7293967
 status: production
 enabled: true
 needs_browser_lock: false
@@ -261,7 +261,7 @@ Jobright Autofill is the default filler. Polar is anomaly detection and targeted
 Full-form audit is off. polar_policy.full_form_audit_permitted is false.
 Verify only these five classes on the employer form DOM. polar_policy.post_autofill_checks. polar_policy.post_autofill_field_action is the engineer table.
 - identity: first_name, last_name, application_email. Legal first and last name from config/profile.yaml. Normal email fields show the local APPLICATION mailbox. No full profile audit. Legal first name Junyi. Legal last name Zhou.
-- work_authorization: citizenship, visa_status, status_yes_no, current_work_authorization, authorization_at_start, authorized_for_any_employer, authorization_without_sponsorship, sponsorship_to_begin, future_sponsorship, h1b_sponsorship, opt_eligibility, opt_approval, ead_possession, work_authorization_wording, country_specific_sponsorship. These are every kind polar_policy.auth_form_action classifies. Re-read each present widget of these kinds even when Autofill populated it. knowledge/work_authorization.yaml stays authoritative. Classify the exact question with polar_policy.auth_form_action and answer only that semantic. Required currently-authorized or sponsorship-to-begin with an unknown fact: leave the field and BLOCK that job only. Optional widgets of these kinds stay blank; clear a guessed value when the widget allows it, and if it cannot be cleared the value must match auth_form_action or the job is BLOCKED. Do not fill unasked OPT, EAD, or immigration widgets.
+- work_authorization: citizenship, visa_status, status_yes_no, current_work_authorization, authorization_at_start, authorized_for_any_employer, authorization_without_sponsorship, sponsorship_to_begin, future_sponsorship, h1b_sponsorship, opt_eligibility, opt_approval, ead_possession, work_authorization_wording, country_specific_sponsorship. These are every kind polar_policy.auth_form_action classifies. Re-read each present widget of these kinds even when Autofill populated it. knowledge/work_authorization.yaml stays authoritative. Classify the exact question with polar_policy.auth_form_action and answer only that semantic. Required currently-authorized with an unknown or non-bool fact (not_yet_authorized_pending_opt_start): leave the field and BLOCK that job only. Required sponsorship-to-begin is No. Optional widgets of these kinds stay blank; clear a guessed value when the widget allows it, and if it cannot be cleared the value must match auth_form_action or the job is BLOCKED. Do not fill unasked OPT, EAD, or immigration widgets.
 - eligibility_critical: enrollment_status, graduation_timing, internship_eligibility, work_location_or_relocation, minimum_age, security_clearance, citizenship_when_genuinely_relevant. Only widgets that decide eligibility for this role. Not every generic question.
 - required_empty_or_error: required_but_empty, validation_error, unanswered_required_radio, required_combobox_left_at_select, jobright_sidebar_complete_but_employer_dom_empty. Employer DOM is truth. Fill from section A facts or leave for Junyi and BLOCK that job only. Never invent.
 - required_legal_compliance: required_attestation, required_consent_checkbox, required_export_control, required_automated_script_declaration. Only when the widgets exist and are required on this form. Do not generalize one employer's seven compliance questions to every form.
@@ -278,7 +278,7 @@ Do not:
 
 Known failure classes. Repair from facts. Note the class:
 - nickname_on_legal_first_name: wrong value Conny. Repair: First Name is the legal first name from config/profile.yaml. Upstream candidate: Jobright profile name field or generated resume header. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_nickname_on_legal_first_name. Observed: Owner-observed 2026-09-15, production run R-20260914-2309.
-- sponsorship_yes_on_future_sponsorship_widget: wrong value Yes. Repair: future_sponsorship_required is false. Required widget answer is No. polar_policy.auth_form_action. Forcing Yes is the defect. Upstream candidate: A later correction or profile setting that forces Yes. Owner action if Jobright profile still says Yes. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_yes_on_future_sponsorship_widget. Observed: Owner policy 2026-09-15. Retires the Autofill-No-is-defect class..
+- sponsorship_no_on_future_sponsorship_widget: wrong value No. Repair: future_sponsorship_required is true. Required widget answer is Yes. polar_policy.auth_form_action. Forcing No is the defect. Upstream candidate: Jobright profile or Autofill still answering No from the 2026-09-15 fact. Owner action if the profile still says No. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_no_on_future_sponsorship_widget. Observed: Owner policy 2026-09-16. Restores the Autofill-No-is-defect class. Retires the 2026-09-15 Autofill-Yes-is-defect class..
 - academic_mailbox_on_application_field: wrong value academic mailbox. Repair: Local APPLICATION mailbox. polar_policy.contact_email_action. repeat_key copilot_academic_mailbox_on_application_field.
 - invented_referral: wrong value Event. Repair: Blank unless a verified referral fact exists. polar_policy.referral_field_action. repeat_key invented_referral. Observed: Jobright-era apply 2026-09-15.
 - citizenship_not_china: wrong value United States. Repair: China. Observed: Copilot on Twitch 2026-09-03, pre-Jobright.
@@ -289,7 +289,7 @@ Timing: a routine form is single digits to low teens minutes. Three routine appl
 Corrections log: note meaningful Autofill corrections in run_log notes as autofill_corrections=<class tokens>. polar_policy.autofill_corrections_note.
 One incident_log row per repeated correction class per run with the canonical repeat_key. Not one row per widget. No heavier telemetry.
 
-Autofill No on a future-sponsorship widget is correct. Forcing Yes is the defect. Re-classify the exact question with polar_policy.auth_form_action.
+Autofill Yes on a future-sponsorship widget is correct. Forcing No is the defect. Re-classify the exact question with polar_policy.auth_form_action.
 The extension invented Event as a referral. polar_policy.referral_field_action. Clear invented referrals. Do not invent a referrer.
 
 ## Mailbox
@@ -332,7 +332,7 @@ Do not skip a line that only says the student must be enrolled in a degree.
 Master's study is not PhD and is not undergraduate-only.
 If the posting matches a skip phrase, status SKIP. Do not authenticate. Do not fill.
 Incident repeat_key is degree_level_gate_missed_at_discovery. Category TRIAGE.
-Also skip a 2026 role or start, employment start before 2027-01-18,
+Also skip a 2026 role or start, employment start before 2027-02-16,
 a non-US work location, or an incompatible TS-SCI or polygraph requirement.
 If the page is an HTTP 404, says page not found, no longer open, no longer accepting,
 or that this job or requisition has been removed or closed, SKIP.
@@ -420,14 +420,14 @@ For each Jobright card:
 11. Fill required-but-empty widgets from section A. Do not walk section A against populated widgets. Authorization widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.
    If the field is optional, leave it blank. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship.
-   Required future-sponsorship widget: No. Required H-1B-named widget: No.
-   Required citizenship: China. Required visa type: F-1. Required eligible-to-begin: Yes.
+   Required future-sponsorship widget: Yes. Required H-1B-named widget: Yes.
+   Required citizenship: China. Required visa type: F-1. Required eligible-to-begin: Yes only when the requested start is on/after 2027-02-16 and on/before 2028-02-16; otherwise No. If the start is missing or in the 2026-12-18 to 2027-02-16 gap, leave the field and BLOCK that job only.
    Required authorized-for-any-employer: Yes. Required EAD: No. Required OPT approval: No. Required OPT eligibility: Yes.
-   Required currently-authorized or sponsorship-to-begin: leave the field and mark BLOCKED on this job only when that fact is unknown.
+   Required currently-authorized: leave the field and mark BLOCKED on this job only (fact is not_yet_authorized_pending_opt_start; no single static Yes/No). Required sponsorship-to-begin: No.
    If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity.
    If it says select Yes or No, or uses not or never with Yes, leave the field and mark BLOCKED on this job only.
    Country-only lists and work-authorization-without-sponsorship wording: blank if optional, BLOCKED if required.
-   After autofill, correct invented citizenship, a forced Yes on the future-sponsorship widget, copied sponsorship answers, unasked F-1, extra explanation, and invented referrals.
+   After autofill, correct invented citizenship, a forced No on the future-sponsorship widget, copied sponsorship answers, unasked F-1, extra explanation, and invented referrals.
    Do not mention immigration in Why-us, motivation, cover letters, or other free response unless the prompt asked.
    A blocked authorization field must not stop the rest of the worker.
 12. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.

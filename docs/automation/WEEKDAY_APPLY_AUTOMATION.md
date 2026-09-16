@@ -97,8 +97,8 @@ From the 2026-08-22 10-tab review
 |---|---|
 | Copilot filled EEO (gender/race/veteran/disability) | `eeo_touched=true`. **Block Submit.** |
 | Work auth is US citizen / green card and profile is F-1 | `work_auth_mismatch=true`. **Block Submit.** |
-| Visa sponsorship / now-or-future sponsorship answered **No** | Matches `future_sponsorship_required`. Polar Local continues. Cursor Cloud G2 still re-reads the exact widget after autofill. Autofill No is correct. Forcing Yes is the defect. |
-| “H-1B sponsorship?” named and answered No | Intended. Do not block on that alone. |
+| Visa sponsorship / now-or-future sponsorship answered **Yes** | Matches `future_sponsorship_required`. Polar Local continues. Cursor Cloud G2 still re-reads the exact widget after autofill. Autofill Yes is correct. Forcing No is the defect. |
+| “H-1B sponsorship?” named and answered Yes | Intended. Independent of the future-sponsorship fact. Do not block on that alone. |
 | Education widgets look like a dumped blob | `education_misfill=true`. Review, do not Submit. |
 | Copilot “need review” matches empty form fields | Expected. Log the empty field names into `knowledge/autofill_obstacles.yaml` if they are new gaps. |
 | Job closed / 404 / “no longer open” | **Close the tab.** Write `decision=closed` in `data/job_decisions.csv` and `posting_closed` in `data/activity_log.csv`. Do not pick a sibling from Current openings. Next URL. |

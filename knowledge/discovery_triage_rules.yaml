@@ -15,7 +15,7 @@ profile_anchors:
   program_end_date: "2026-12-18"          # I-20 / SEVIS → OPT + earliest FT + default resume
   commencement_date: "2027-03"            # ceremony / some Harvard listings
   graduation_display_default: "December 2026 (program completion)"
-  earliest_ft_start: "2027-01-18"         # planned from program end; confirm with HIO
+  earliest_ft_start: "2027-02-16"         # OPT EAD start, owner-confirmed 2026-09-16 (supersedes 2027-01-18 placeholder)
   preferred_intern_term: "Summer 2027"
   skip_job_cycles: ["2026"]               # any 2026 intern/FT start term — not candidate grad year
   remote_ok: false
@@ -115,10 +115,11 @@ guide_rules:
     default_decision: skip
     guidance: >
       Candidate target work window: internships starting Summer 2027 (preferred),
-      and full-time on/after 2027-01-18. SKIP when the ROLE TERM / START is in 2026:
+      and full-time on/after 2027-02-16 (OPT EAD start, owner-confirmed 2026-09-16).
+      SKIP when the ROLE TERM / START is in 2026:
       - "Summer 2026", "Fall 2026", "Spring 2026", "Winter 2026" intern/co-op
       - "2026 Intern", "Intern 2026", "new grad 2026 start", start Jun–Dec 2026
-      - Any clear employment start before 2027-01-18
+      - Any clear employment start before 2027-02-16
       KEEP/review targets: Summer 2027 intern, Fall 2027 if relevant, 2027 FT.
       IMPORTANT — do NOT skip only because text mentions the candidate's
       graduation / program end "December 2026" / "2026-12-18". That is the

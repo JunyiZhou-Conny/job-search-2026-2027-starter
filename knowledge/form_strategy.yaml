@@ -3,7 +3,7 @@
 # extension sidebar. Cloud computer-use still uses Simplify Copilot.
 # Submit is governed by docs/policy/SUBMIT_ROLLOUT.md.
 
-last_updated: "2026-09-15"
+last_updated: "2026-09-16"
 source: "Junyi Scale / Notion / Perplexity inspect plus Hayden / Lila / Traba rules; Junyi 2026-08-25 work-auth / GPA / website / discipline; Junyi leftover rules after Advanced Space redo 2026-08-25"
 
 always:
@@ -32,15 +32,15 @@ always:
 
   h1b_named_question_only:
     see: "knowledge/work_authorization.yaml form_strategy.h1b_named_question_only"
-    form_answer: "No"
+    form_answer: "Yes"
 
   visa_sponsorship:
     status: derived_from_fact
-    confirmed_by: "Owner policy 2026-09-15"
-    form_answer: "No"
+    confirmed_by: "Owner policy 2026-09-16 (supersedes 2026-09-15)"
+    form_answer: "Yes"
     execution: answer_from_future_sponsorship_required
-    historical_form_answer: "Yes"
-    accept_also: ["No", "None", "No, I do not need sponsorship"]
+    historical_form_answer: "No"
+    accept_also: ["Yes", "Yes, I will need sponsorship"]
     see: "knowledge/work_authorization.yaml form_strategy.visa_sponsorship"
     when: >
       Will you now or in the future require visa sponsorship? Answer
@@ -54,23 +54,25 @@ always:
       Quantbot Greenhouse 2026-09-04. Polar set No from the standing
       sponsorship answer. The widget says work authorization, not visa
       sponsorship. Leave for Junyi until that wording is confirmed.
-    supersedes: "2026-09-10 Yes mapping from a then-true fact"
+    supersedes: "2026-09-15 No mapping (owner has now explicitly reversed that policy)"
     before_any_submit: >
       Re-read each authorization widget as its own question. If the form
       names F-1, J-1, or M-1 and clearly says answer Yes or answer No,
       that polarity governs that widget. A required future-sponsorship
-      widget should match future_sponsorship_required (No). Autofill No
-      is correct. Forcing Yes is the defect. If a required widget is
+      widget should match future_sponsorship_required (Yes). Autofill Yes
+      is correct now. Forcing No is the defect. If a required widget is
       semantically unclear, leave it and mark only that job BLOCKED.
-      Do not Submit a Yes that belongs to a different semantic.
-    fact_unchanged: "future_sponsorship_required is false as of 2026-09-15"
+      Do not Submit a No that belongs to a different semantic.
+    fact_changed: "future_sponsorship_required is true as of 2026-09-16. Owner directly and explicitly confirmed this; do not revert without a new owner statement."
     explicit_status_instruction: >
       Follow a clear F-1, J-1, or M-1 Yes or No instruction on that
       widget. Select Yes or No, or not/never with Yes, stays unresolved.
     reason: >
-      Owner policy 2026-09-15 sets the stored future-sponsorship fact
-      to false. The standard now-or-future widget is No. Do not
-      volunteer extra status. Do not invent other immigration facts.
+      Owner policy 2026-09-16 sets the stored future-sponsorship fact
+      to true (owner stated they need sponsorship in the future and
+      wants full honesty on this). The standard now-or-future widget is
+      Yes. Do not volunteer extra status. Do not invent other
+      immigration facts.
 
   citizenship_country:
     decided: "2026-09-03"
@@ -85,9 +87,17 @@ always:
     when: "Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?"
 
   eligible_to_begin_employment_immediately:
-    decided: "2026-09-03"
-    form_answer: "Yes"
+    decided: "2026-09-16"
+    form_answer: "conditional_on_start_date"
+    historical_form_answer: "Yes"
     when: "If offered employment, would you be legally eligible to begin employment immediately?"
+    note: >
+      Updated 2026-09-16: OPT EAD is not valid until 2027-02-16.
+      For a start date on/after 2027-02-16 and on/before 2028-02-16,
+      answer Yes. For an earlier requested start date, answer No and
+      leave for Junyi if the widget is required. Supersedes the
+      2026-09-03 blanket Yes (which assumed the old 2027-01-18
+      planning date).
 
   eeo_self_identification:
     decided: "2026-09-03"
@@ -428,7 +438,7 @@ later_not_this_run:
 # the employer DOM is empty. It is not a full-form audit.
 copilot_sidebar_is_not_the_form:
   decided: "2026-08-23"
-  revised: "2026-09-15"
+  revised: "2026-09-16"
   rule: >
     "Completed" on phone / phone-country / resume / progress does not
     mean the widget has a value. Look at the form DOM for the fast
@@ -438,10 +448,12 @@ copilot_sidebar_is_not_the_form:
     widgets, required-but-empty or error widgets, and required legal
     attestations. The extension wrote the nickname Conny on First Name
     and invented Event as a referral. Correct those from facts.
-    Autofill No on a future-sponsorship widget is the standing answer.
-    Forcing Yes is the defect. A populated widget with no error and no
-    known failure class is trusted, not re-read. Never invent a
-    referral. Do not Run Autofill Again.
+    Autofill Yes on a future-sponsorship widget is the standing answer
+    as of 2026-09-16 (owner confirmed sponsorship IS needed in the
+    future; supersedes the 2026-09-15 No policy). Forcing No is now the
+    defect. A populated widget with no error and no known failure class
+    is trusted, not re-read. Never invent a referral. Do not Run
+    Autofill Again.
   especially_on: prioritized
   do_not: "Mark identity complete from the sidebar alone."
   do_not_either: "Re-read every populated widget to prove Autofill worked."

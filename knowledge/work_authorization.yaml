@@ -15,20 +15,39 @@ commencement_date: "2027-03"
 # form_answers guidance below, which is unchanged.
 resume_grad_default: "dual_date"
 
-expected_opt_start_window: "2027-01-18 onward"
-expected_ead_ready: "2027-01-18"  # planned from program end; confirm against actual EAD / HIO
-earliest_full_time_start: "2027-01-18"
-preferred_full_time_start: "2027-01-18 ideal; any later 2027 date including Summer OK"
-future_sponsorship_required: false
+expected_opt_start_window: "2027-02-16"
+expected_ead_ready: "2027-02-16"  # owner-confirmed 2026-09-16; supersedes prior 2027-01-18 placeholder
+opt_ead_start_date: "2027-02-16"  # owner-confirmed 2026-09-16
+opt_ead_end_date: "2028-02-16"    # owner-confirmed 2026-09-16 (one-year EAD)
+earliest_full_time_start: "2027-02-16"  # updated 2026-09-16: cannot start under OPT before the EAD start date
+preferred_full_time_start: "2027-02-16 ideal; any later date through 2028-02-16 OK while EAD is valid"
+future_sponsorship_required: true
 # Independent facts. Do not infer one answer from another.
-# Owner policy 2026-09-15: the standard now-or-future sponsorship
-# widget answers No. Do not invent other immigration facts from this.
-current_us_work_authorization: unknown
-legally_eligible_to_begin_immediately: true
+# Owner policy 2026-09-16 (supersedes 2026-09-15): owner stated directly and
+# explicitly that they DO need sponsorship in the future ("being tremendously
+# honest with that"). The standard now-or-future sponsorship widget now
+# answers Yes. Do not revert to the 2026-09-15 No without a new owner statement.
+current_us_work_authorization: not_yet_authorized_pending_opt_start
+# Owner policy 2026-09-16: before opt_ead_start_date the owner is not yet
+# authorized for standard employment (F-1 without OPT/CPT in hand). From
+# opt_ead_start_date through opt_ead_end_date, authorized under OPT EAD.
+# After opt_ead_end_date, authorization again becomes unknown pending any
+# extension or change of status. Compute against today's date; do not use a
+# single static Yes/No for this fact going forward.
+legally_eligible_to_begin_immediately: false
+# Updated 2026-09-16: only true for a start on/after opt_ead_start_date
+# (2027-02-16). For any start requested before that date, this is false.
 authorized_for_any_employer: true
-sponsorship_required_to_begin: unknown
-h1b_sponsorship_required: false
+sponsorship_required_to_begin: false
+# Owner policy 2026-09-16: OPT EAD (2027-02-16 to 2028-02-16) covers the
+# start of employment for roles starting in that window, so sponsorship is
+# not required "to begin". Sponsorship is required for continued employment
+# beyond opt_ead_end_date (see future_sponsorship_required).
+h1b_sponsorship_required: true
 opt_ead_in_possession: false
+# Owner policy 2026-09-16: EAD has not landed yet as of today; expected to
+# arrive with validity starting opt_ead_start_date. Flip to true once the
+# owner confirms the physical/digital card is in hand.
 opt_approved: false
 opt_eligible_expected: true
 
@@ -38,16 +57,16 @@ permanent_resident_elsewhere_since_citizenship: false
 export_control_country: "China"   # citizenship or LPR, whichever obtained last
 
 # Form strategy (widgets) vs standing fact.
-# Owner policy 2026-09-15: future_sponsorship_required is false.
-# That is the standard now-or-future sponsorship widget only.
+# Owner policy 2026-09-16 (supersedes 2026-09-15): future_sponsorship_required
+# is true. That is the standard now-or-future sponsorship widget only.
 form_strategy:
   h1b_named_question_only:
-    decided: "2026-08-23"
-    form_answer: "No"
+    decided: "2026-09-16"
+    form_answer: "Yes"
     when: >
       The question is specifically "Will you require H-1B sponsorship?"
       or the same idea with H-1B named.
-    fact_unchanged: "h1b_sponsorship_required stays false. Independent of future_sponsorship_required."
+    fact_changed: "h1b_sponsorship_required is now true as of 2026-09-16 owner policy. Previously false 2026-08-23 to 2026-09-15."
 
   visa_type_named:
     decided: "2026-08-24"
@@ -57,16 +76,16 @@ form_strategy:
 
   visa_sponsorship:
     status: derived_from_fact
-    confirmed_by: "Owner policy 2026-09-15. Standard now-or-future sponsorship widget is No."
-    form_answer: "No"
+    confirmed_by: "Owner policy 2026-09-16. Standard now-or-future sponsorship widget is Yes."
+    form_answer: "Yes"
     execution: answer_from_future_sponsorship_required
-    historical_form_answer: "Yes"
+    historical_form_answer: "No"
     when: >
       Will you now or in the future require visa sponsorship? The
       future_sponsorship_required fact only. Do not add F-1, OPT, or
       citizenship to this answer.
-    history: "2026-08-24 recorded No; 2026-09-03 Junyi confirmed No; 2026-09-09 Polar blocked the conflict; 2026-09-10 owner policy answered Yes from a true fact; 2026-09-15 owner policy sets the fact to false so the widget is No. Autofill No is correct. Forcing Yes is the defect."
-    fact_unchanged: "future_sponsorship_required is false as of 2026-09-15."
+    history: "2026-08-24 recorded No; 2026-09-03 Junyi confirmed No; 2026-09-09 Polar blocked the conflict; 2026-09-10 owner policy answered Yes from a true fact; 2026-09-15 owner policy set the fact to false so the widget was No; 2026-09-16 owner directly and explicitly confirmed sponsorship IS needed in the future, so the fact flips back to true and the widget is Yes."
+    fact_changed: "future_sponsorship_required is true as of 2026-09-16. Do not revert to No without a new explicit owner statement."
     explicit_status_instruction: >
       If the form names F-1/J-1/M-1 and clearly says answer Yes or
       answer No, follow that polarity on that widget. Select Yes or No,
@@ -84,19 +103,19 @@ form_strategy:
     form_answer: "No"
     when: "Since obtaining your most recent citizenship, did you become a permanent resident in any other country/region?"
   eligible_to_begin_employment_immediately:
-    decided: "2026-09-03"
-    form_answer: "Yes"
+    decided: "2026-09-16"
+    form_answer: "conditional_on_start_date"
     when: "If offered employment, would you be legally eligible to begin employment immediately?"
-    note: "Junyi confirmed Yes on 2026-09-03 for the Twitch form with earliest full-time start 2027-01-18 on file."
+    note: "Updated 2026-09-16: OPT EAD is not valid until opt_ead_start_date (2027-02-16). For a start date on/after 2027-02-16 and on/before 2028-02-16, answer Yes. For an earlier requested start date, answer No and leave for Junyi if the widget is required. Supersedes the 2026-09-03 blanket Yes (which assumed the old 2027-01-18 planning date)."
 
 standard_question_answers:
   # Use only after OPT EAD is valid for the employment period being asked about.
   authorized_to_work_in_us:
-    typical_answer: "Yes"
-    condition: "Valid OPT EAD covering the employment period"
+    typical_answer: "Yes, if the employment period falls within 2027-02-16 to 2028-02-16 (OPT EAD validity). Otherwise No / leave for Junyi."
+    condition: "Valid OPT EAD covering the employment period. See opt_ead_start_date / opt_ead_end_date."
   will_require_sponsorship_now_or_future:
-    typical_answer: "No"
-    confirmed: "Owner policy 2026-09-15. Derived from future_sponsorship_required."
+    typical_answer: "Yes"
+    confirmed: "Owner policy 2026-09-16 (supersedes 2026-09-15 No). Derived from future_sponsorship_required."
     condition: "This widget only. Do not add status, OPT, or citizenship."
   program_end_or_graduation_date:
     typical_answer: "Program completion / I-20 end: December 18, 2026; commencement March 2027"
@@ -111,7 +130,8 @@ standard_question_answers:
     fact. It never invents an answer that is not listed here.
 
 questions_requiring_manual_review:
-  - "Forms that conflate OPT/EAD with H-1B under a single 'sponsorship' question"
+  - "Forms asking for an exact employment start date between 2026-12-18 (program end) and 2027-02-16 (OPT EAD start): the owner is not yet work-authorized in that window. Leave for Junyi if the role cannot start on/after 2027-02-16."
+  - "Forms conflating OPT/EAD with H-1B under a single 'sponsorship' question"
   - "Forms that give an explicit F-1/J-1/M-1 Yes or No instruction. Follow the instruction. If it still conflicts with a stored fact, leave the field."
   - "Questions asking if you need sponsorship 'to begin work' when OPT covers start"
   - "Will you now or in the future require work authorization to work in the U.S.? (Quantbot Greenhouse 2026-09-04. Polar set No. Not the standing visa-sponsorship widget until Junyi confirms.)"
@@ -120,6 +140,7 @@ questions_requiring_manual_review:
 
 hard_constraints:
   - "No fully remote roles"
-  - "Full-time start must be on or after 2027-01-18 (planned; confirm with HIO)"
+  - "Full-time start must be on or after 2027-02-16 (OPT EAD start; updated 2026-09-16, confirm with HIO)"
   - "Do not treat no/unclear sponsorship as hard ineligibility"
   - "Do not invent a single false graduation month; use program_end vs commencement accurately"
+  - "Owner requires sponsorship in the future (confirmed 2026-09-16); do not answer sponsorship widgets No"

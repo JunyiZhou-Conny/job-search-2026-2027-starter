@@ -106,16 +106,18 @@ AI Software Engineer Intern. Sidebar: Autofill complete, nothing in
 need-review. Submit unclicked. Junyi said the rest looks perfect because
 the form has no long written answers.
 
-**H-1B field was No.** Junyi wants that on every form that asks
-specifically “Will you require H-1B sponsorship?” Written as form
-strategy in `knowledge/work_authorization.yaml`. Owner policy
-2026-09-15: the broader “now or in the future require sponsorship?”
-widget is No. Autofill No is correct. Forcing Yes is the defect.
+**H-1B field was No.** That was the 2026-08-23 standing answer, later
+reaffirmed 2026-09-15. Written as form strategy in
+`knowledge/work_authorization.yaml`. Owner policy 2026-09-15: the
+broader “now or in the future require sponsorship?” widget is No.
+Autofill No was then correct. Owner policy 2026-09-16 reversed both
+independent facts: H-1B-named is Yes and the broader now-or-future
+widget is Yes. Autofill Yes is correct. Forcing No is the defect.
 
 ## What Junyi confirmed on Gemini (2026-08-23)
 
 Design Developer. Cover letter and website empty (expected; later).
-H-1B No (wanted).
+H-1B No (wanted on 2026-08-23; superseded by owner policy 2026-09-16 Yes).
 
 New always-rules (`knowledge/form_strategy.yaml`):
 

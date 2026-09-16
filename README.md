@@ -5,7 +5,7 @@ application ledger of record; this repo holds *why* — resume version, pursuit 
 sponsorship signal, work-authorization answers, networking, and next actions.
 
 **Target:** Summer 2027 internships and 2027 new-grad roles. Earliest full-time start
-`2027-01-18` (I-20 program end `2026-12-18`, commencement March 2027). No fully remote roles.
+`2027-02-16` (OPT EAD start, owner-confirmed 2026-09-16; I-20 program end `2026-12-18`, commencement March 2027). No fully remote roles.
 
 ## Sharing with friends
 

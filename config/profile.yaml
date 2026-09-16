@@ -51,17 +51,19 @@ certifications:
   - "AWS Certified AI Practitioner"
   - "AWS Machine Learning Associate"
 
-earliest_start_date: "2027-01-18"
+earliest_start_date: "2027-02-16"  # updated 2026-09-16: OPT EAD start (owner-confirmed); see knowledge/work_authorization.yaml
 
 work_authorization:
   current_status: "F-1"
   internship_authorization: "unknown"
   post_graduation_authorization: "OPT (initial / first-year)"
-  expected_ead_ready: "2027-01-18"
-  earliest_full_time_start: "2027-01-18"
-  preferred_full_time_start: "2027-01-18 (ideal); any later date also fine, including Summer 2027"
-  future_sponsorship_needed: false
-  future_sponsorship_required: false
+  expected_ead_ready: "2027-02-16"  # updated 2026-09-16, supersedes 2027-01-18 placeholder
+  opt_ead_start_date: "2027-02-16"  # owner-confirmed 2026-09-16
+  opt_ead_end_date: "2028-02-16"    # owner-confirmed 2026-09-16 (one-year EAD)
+  earliest_full_time_start: "2027-02-16"
+  preferred_full_time_start: "2027-02-16 (ideal); any later date through 2028-02-16 also fine while EAD is valid"
+  future_sponsorship_needed: true
+  future_sponsorship_required: true  # owner policy 2026-09-16, supersedes 2026-09-15 false
 
 search:
   country: "United States"
@@ -90,7 +92,7 @@ search:
       priority: co_primary
       discovery_weight: 0.5
       description: "Full-time new-grad / entry-level roles with 2027 start"
-      start_flexibility: "Earliest 2027-01-18; Jan start preferred; Summer 2027 (or any later 2027 date) fully acceptable"
+      start_flexibility: "Earliest 2027-02-16 (OPT EAD start); Summer 2027 (or any later date through 2028-02-16) fully acceptable"
       discovery_sources: ["jobright_matches", "newgrad_jobs"]
     - id: internship_if_eligible
       priority: co_primary
@@ -102,7 +104,7 @@ search:
   primary_track: "new_grad_2027_start"
   secondary_track: "internship_if_eligible"
   track_balance: "balanced_intern_and_new_grad"
-  target_start_window: "Full-time: 2027-01-18 onward (Jan preferred, Summer 2027 OK). Internships: any eligible start."
+  target_start_window: "Full-time: 2027-02-16 onward (OPT EAD start, owner-confirmed 2026-09-16; Summer 2027 OK). Internships: any eligible start on/after 2027-02-16."
   pursuit_lanes:
     - core
     - broad
@@ -120,7 +122,7 @@ constraints:
   - "Answer work-auth questions truthfully; save verbatim Q&A when forms conflate OPT/EAD/H-1B."
   - "Simplify is the base ledger; this repo is the strategy layer via one-way CSV import."
   - "Prefer in-person; do not pursue fully remote roles."
-  - "Full-time start must be on or after 2027-01-18 (planned from program end + OPT; confirm with HIO). Do not reject Summer 2027 or later new-grad starts."
+  - "Full-time start must be on or after 2027-02-16 (OPT EAD start, owner-confirmed 2026-09-16; confirm with HIO). Do not reject Summer 2027 or later new-grad starts."
   - "Location: any US city acceptable; Boston preferred."
   - "Manual labels (label_source=manual) must not be auto-overwritten."
 

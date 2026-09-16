@@ -150,7 +150,7 @@ Regular work is fast and truthful. Prefer the just-generated Jobright resume. El
 
 Jobright Autofill is the default filler. Polar is anomaly detection and targeted repair. The canonical list is `knowledge/polar_operator.yaml` `autofill.fast_validation_pass`; `polar_policy.post_autofill_field_action` is the engineer table.
 
-Production run R-20260914-2309 submitted 3 of 3 in about 85 minutes, about 28 minutes per application. The slow part was a post-Autofill audit of the whole form. Autofill is imperfect (nickname on First Name, blanks). Autofill No on a future-sponsorship widget is now the standing answer; forcing Yes is the defect. Autofill followed by a blind Submit is not allowed either.
+Production run R-20260914-2309 submitted 3 of 3 in about 85 minutes, about 28 minutes per application. The slow part was a post-Autofill audit of the whole form. Autofill is imperfect (nickname on First Name, blanks). Autofill Yes on a future-sponsorship widget is the standing answer as of owner policy 2026-09-16 (supersedes the 2026-09-15 No); forcing No is the defect. Autofill followed by a blind Submit is not allowed either.
 
 After Autofill, Polar verifies only five classes on the employer form DOM:
 

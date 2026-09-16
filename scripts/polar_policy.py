@@ -205,8 +205,8 @@ NATIVE_RESUME_REPEAT_KEY = "native_resume_empty"
 COPILOT_EMAIL_REPEAT_KEY = "copilot_academic_mailbox_on_application_field"
 SUBMIT_PROOF_REPEAT_KEY = "submit_success_without_page_confirmation"
 NICKNAME_FIRST_NAME_REPEAT_KEY = "autofill_nickname_on_legal_first_name"
-SPONSORSHIP_YES_REPEAT_KEY = "autofill_sponsorship_yes_on_future_sponsorship_widget"
-SPONSORSHIP_NO_REPEAT_KEY = "autofill_sponsorship_no_on_future_sponsorship_widget"  # retired 2026-09-15; No is correct
+SPONSORSHIP_YES_REPEAT_KEY = "autofill_sponsorship_yes_on_future_sponsorship_widget"  # retired 2026-09-16; Yes is correct
+SPONSORSHIP_NO_REPEAT_KEY = "autofill_sponsorship_no_on_future_sponsorship_widget"  # restored 2026-09-16; No is the defect
 INVENTED_REFERRAL_REPEAT_KEY = "invented_referral"
 POST_AUTOFILL_TRUST_SOURCE = "form_dom"
 # Fast validation pass. Jobright Autofill is the default filler. Polar
@@ -228,7 +228,7 @@ POST_AUTOFILL_TRUSTED_CLASSES = (
 )
 KNOWN_AUTOFILL_FAILURE_CLASSES = (
     "nickname_on_legal_first_name",
-    "sponsorship_yes_on_future_sponsorship_widget",
+    "sponsorship_no_on_future_sponsorship_widget",
     "academic_mailbox_on_application_field",
     "invented_referral",
     "citizenship_not_china",

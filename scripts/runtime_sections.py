@@ -466,6 +466,27 @@ def candidate_fact_bullets(src: RuntimeSources) -> List[str]:
     visa_block = auth_form.get("visa_sponsorship") or {}
     sponsorship_form = md_escape(visa_block.get("form_answer") or "unknown")
     sponsorship_execution = md_escape(visa_block.get("execution") or "")
+    h1b_block = auth_form.get("h1b_named_question_only") or always.get("h1b_named_question_only") or {}
+    h1b_form = md_escape(h1b_block.get("form_answer") or "unknown")
+    current_auth = auth.get("current_us_work_authorization")
+    if current_auth == "not_yet_authorized_pending_opt_start":
+        current_auth_line = (
+            "Required currently-authorized widget: leave unresolved. "
+            "Standing fact is not_yet_authorized_pending_opt_start "
+            "(authorized only 2027-02-16 to 2028-02-16; compute against today's date; "
+            "no single static Yes/No)."
+        )
+    else:
+        current_auth_line = (
+            "Required currently-authorized widget: leave unresolved. "
+            "The current-authorization fact is unknown."
+        )
+    eligible_block = (
+        always.get("eligible_to_begin_employment_immediately")
+        or auth_form.get("eligible_to_begin_employment_immediately")
+        or {}
+    )
+    eligible_form = md_escape(eligible_block.get("form_answer") or "unknown")
     return [
         f"Legal name: {md_escape(profile.get('legal_name') or profile.get('name'))}",
         f"Preferred name: {md_escape(profile.get('preferred_name'))}",
@@ -484,9 +505,9 @@ def candidate_fact_bullets(src: RuntimeSources) -> List[str]:
         "Optional identity or status fields stay blank. Required and clear fields get the one matching fact. Required and unclear fields BLOCK that job only.",
         "If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.",
         "Country-only sponsorship lists and work-authorization-without-sponsorship wording stay unresolved when required, and blank when optional.",
-        "H-1B-named widget: No",
+        f"H-1B-named widget: {h1b_form}",
         "Authorized-for-any-employer widget: Yes",
-        "Required currently-authorized widget: leave unresolved. The current-authorization fact is unknown.",
+        current_auth_line,
         "Required EAD widget: No. Required OPT-approval widget: No. Required OPT-eligibility widget: Yes.",
         f"Program end / I-20 date: {program_end}",
         f"Commencement: {commencement}",
@@ -498,7 +519,7 @@ def candidate_fact_bullets(src: RuntimeSources) -> List[str]:
         f"Preferred work mode: {md_escape(anchors.get('preferred_work_mode') or 'in-person or hybrid')}",
         "Search country: United States. Any US city is fine. Boston preferred.",
         "Non-US work location is a skip.",
-        "Eligible to begin employment immediately: Yes",
+        f"Eligible to begin employment immediately: {eligible_form}",
         "US Person / export control: I am not a U.S. Person. Export-control country China.",
     ]
 
@@ -593,6 +614,15 @@ def triage_rule_lines(src: RuntimeSources) -> List[str]:
 
 
 def triage_rows(src: RuntimeSources) -> List[Row]:
+    auth = src.auth if isinstance(src.auth, dict) else {}
+    profile = src.profile if isinstance(src.profile, dict) else {}
+    anchors = src.triage.get("profile_anchors") or {} if isinstance(src.triage, dict) else {}
+    earliest_ft = md_escape(
+        auth.get("earliest_full_time_start")
+        or anchors.get("earliest_ft_start")
+        or profile.get("earliest_start_date")
+        or "2027-02-16"
+    )
     return [
         *variant(
             polar="Triage at apply time from the Jobright card and the employer JD. Dedupe against the Sheet and section K.",
@@ -612,7 +642,7 @@ def triage_rows(src: RuntimeSources) -> List[Row]:
             polar="apply-ready-jobs reads the full employer posting immediately after it is open, before login or form fill.",
             grok="grok-apply-jobs reads the full employer posting immediately after it is open, before login or form fill.",
         ),
-        shared("A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip."),
+        shared(f"A fuller JD can reveal a 2026 start, a start before {earliest_ft}, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip."),
         shared("Those degree-level misses share repeat_key degree_level_gate_missed_at_discovery."),
     ]
 

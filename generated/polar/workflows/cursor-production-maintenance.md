@@ -1,7 +1,7 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-15.future-sponsorship-no+baba0bb597fb
+workflow_version: 2026-09-16.future-sponsorship-yes+baba0bb597fb
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false

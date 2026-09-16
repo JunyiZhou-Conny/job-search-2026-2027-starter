@@ -368,8 +368,8 @@ class TestFastValidationPass(unittest.TestCase):
             ),
         )
         self.assertIn("nickname_on_legal_first_name", known_autofill_failure_classes())
-        self.assertIn("sponsorship_yes_on_future_sponsorship_widget", known_autofill_failure_classes())
-        self.assertNotIn("sponsorship_no_on_future_sponsorship_widget", known_autofill_failure_classes())
+        self.assertIn("sponsorship_no_on_future_sponsorship_widget", known_autofill_failure_classes())
+        self.assertNotIn("sponsorship_yes_on_future_sponsorship_widget", known_autofill_failure_classes())
 
     def test_populated_routine_widgets_are_trusted(self):
         for klass in post_autofill_trusted_classes():
@@ -433,12 +433,12 @@ class TestFastValidationPass(unittest.TestCase):
         facts = load_auth_facts()
         # The five kinds Bugbot flagged, plus the wording each one comes from.
         expected = {
-            "Will you now or in the future require visa sponsorship?": ("future_sponsorship", "answer_no"),
-            "Do you require sponsorship to begin employment?": ("sponsorship_to_begin", "leave_unresolved"),
+            "Will you now or in the future require visa sponsorship?": ("future_sponsorship", "answer_yes"),
+            "Do you require sponsorship to begin employment?": ("sponsorship_to_begin", "answer_no"),
             "Do you have an EAD?": ("ead_possession", "answer_no"),
             "Has your OPT been approved?": ("opt_approval", "answer_no"),
             "Will you be eligible for OPT?": ("opt_eligibility", "answer_yes"),
-            "Are you legally eligible to begin employment immediately?": ("authorization_at_start", "answer_yes"),
+            "Are you legally eligible to begin employment immediately?": ("authorization_at_start", "answer_no"),
             "Are you currently authorized to work in the U.S.?": ("current_work_authorization", "leave_unresolved"),
             "Are you an F-1 student?": ("status_yes_no", "answer_yes"),
             "Are you authorized to work without sponsorship?": ("authorization_without_sponsorship", "leave_unresolved"),

@@ -36,9 +36,9 @@ Template-owner example (Junyi) — ignore on a personalized fork:
 - Dual dates (BOTH real — different meanings; never invent a third month):
   - I-20 / program end: 2026-12-18 → default resume + OPT + earliest FT planning
   - Commencement / some Harvard listings: March 2027
-- Work window: Summer 2027 internships (primary intern target) + FT on/after 2027-01-18
+- Work window: Summer 2027 internships (primary intern target) + FT on/after 2027-02-16
 - HARD SKIP any role whose TERM/START is 2026 (Summer/Fall/Spring 2026 intern,
-  "2026 Intern", start before 2027-01-18). Do not keep Fall 2026 internships.
+  "2026 Intern", start before 2027-02-16). Do not keep Fall 2026 internships.
 - Do NOT skip only because text mentions candidate graduation December 2026
   (that is the person, not the job cycle).
 - Do NOT hard-skip only for “December 2026” / “Spring/March 2027” graduation wording
@@ -246,7 +246,7 @@ For each row assign exactly one: keep | later | skip
 
 4) start_date_conflict (hard → skip)
    Job term/start in 2026 → skip (Summer/Fall/Spring 2026 intern, 2026 Intern,
-   FT start before 2027-01-18). Target = Summer 2027 intern + 2027 FT.
+   FT start before 2027-02-16). Target = Summer 2027 intern + 2027 FT.
    Exception: do not skip only for “graduate December 2026” (candidate date).
 
 5) timing_expired (hard → skip)
