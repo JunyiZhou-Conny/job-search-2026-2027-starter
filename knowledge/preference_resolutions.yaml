@@ -94,3 +94,48 @@ resolutions:
     canonical_destination: scripts/polar_policy.py
     resolved_revision: ""
     # Jobright job_key ignores query strings such as ?x.
+  - candidate_id: pref_20260915_001
+    outcome: DROP_REDUNDANT
+    canonical_destination: scripts/polar_policy.py
+    resolved_revision: ""
+    # Polar Production #148. Monotonic incident_id already on main as
+    # pref_20260910_024 plus polar_policy.next_incident_id. Do not
+    # re-repair. Remaining same-day collisions are concurrent-run race.
+  - candidate_id: pref_20260915_002
+    outcome: OWNER_DECISION
+    canonical_destination: knowledge/work_authorization.yaml
+    resolved_revision: ""
+    # Polar Production #148. Required currently-authorized Yes/No is
+    # still unknown. Runtime already BLOCKs. Do not invent an answer.
+  - candidate_id: pref_20260915_003
+    outcome: KEEP_LOCAL
+    canonical_destination: knowledge/written_response_bank.yaml
+    resolved_revision: ""
+    # Polar Production #148. Jobright-generated cover letters invent
+    # unverified metrics. Polar already rewrote before submit. Deferred
+    # so this run implements only the GPA lesson.
+  - candidate_id: pref_20260915_004
+    outcome: KEEP_LOCAL
+    canonical_destination: knowledge/form_strategy.yaml
+    resolved_revision: ""
+    # Polar Production #148. Jobright Easy Apply locks email to the
+    # connected Gmail. Workaround is company-site apply. Deferred.
+  - candidate_id: pref_20260915_005
+    outcome: PROMOTE
+    canonical_destination: knowledge/polar_operator.yaml
+    resolved_revision: ""
+    # Polar Production #148. Autofill concatenated both school GPAs
+    # into one widget. Known failure class gpa_dual_value_to_single.
+  - candidate_id: pref_20260915_006
+    outcome: KEEP_LOCAL
+    canonical_destination: knowledge/form_strategy.yaml
+    resolved_revision: ""
+    # Polar Production #148. Employer Submit can re-open the Jobright
+    # sidebar and Cancel can wipe form rows. Generalized later. No
+    # employer if/else in this run.
+  - candidate_id: pref_20260915_007
+    outcome: OWNER_DECISION
+    canonical_destination: ""
+    resolved_revision: ""
+    # Polar Production #148. iCIMS password-reset mail did not arrive.
+    # Owner resets that ATS account out of band. Not a code fact.

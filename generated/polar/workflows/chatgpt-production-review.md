@@ -1,7 +1,7 @@
 # chatgpt-production-review
 
 workflow: chatgpt-production-review
-workflow_version: 2026-09-15.future-sponsorship-no+bf2dab21ffc7
+workflow_version: 2026-09-15.gpa-dual-value+bf2dab21ffc7
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false

@@ -1,7 +1,7 @@
 # production-learning-daily
 
 workflow: production-learning-daily
-workflow_version: 2026-09-15.future-sponsorship-no+76ee67e650b6
+workflow_version: 2026-09-15.gpa-dual-value+76ee67e650b6
 status: production
 enabled: true
 needs_browser_lock: false

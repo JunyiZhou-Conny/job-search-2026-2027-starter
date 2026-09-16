@@ -251,7 +251,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
 
     def test_apply_post_autofill_is_fast_validation_pass(self):
         text = read_workflow("apply-ready-jobs")
-        self.assertRegex(text, r"(?m)^workflow_version: 2026-09-15\.future-sponsorship-no\+[0-9a-f]{12}$")
+        self.assertRegex(text, r"(?m)^workflow_version: 2026-09-15\.gpa-dual-value\+[0-9a-f]{12}$")
         post = parse_contract_block(text, "Post-autofill")
         self.assertEqual(post.get("trust"), "form_dom")
         self.assertEqual(post.get("sidebar_is_proof"), "false")
@@ -276,6 +276,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("Fast validation pass passes, then Submit once.", text)
         self.assertIn("fast validation pass on the form DOM (five classes) → targeted repair", text)
         self.assertIn("nickname_on_legal_first_name: wrong value Conny.", text)
+        self.assertIn("gpa_dual_value_to_single: wrong value 4.0, 3.925.", text)
         self.assertIn("Do not assume the profile was fixed.", text)
         self.assertIn("- re-verify gender, race, ethnicity, veteran, or disability after Autofill", text)
         self.assertIn("- reproduce Jobright profile filling by hand", text)
@@ -292,7 +293,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
         learning = read_workflow("production-learning-daily")
         self.assertIn("- Autofill corrections by class, from autofill_corrections tokens in run_log notes", learning)
         for name in WORKFLOW_RENDERERS:
-            self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-15\.future-sponsorship-no\+", name)
+            self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-15\.gpa-dual-value\+", name)
 
     def test_compiler_refuses_short_or_renamed_auth_verify_list(self):
         import copy

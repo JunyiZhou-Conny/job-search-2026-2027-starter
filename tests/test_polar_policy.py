@@ -52,6 +52,7 @@ from polar_policy import (  # noqa: E402
     named_row,
     preference_resolution_action,
     reconcile_preference_candidates,
+    gpa_field_action,
     next_incident_id,
     pick_canonical_requisition_row,
     plan_control_write,
@@ -822,6 +823,39 @@ class TestPref20260911005Resolution(unittest.TestCase):
             reconcile_preference_candidates([candidate], [row], on_main=True),
             [],
         )
+
+
+class TestPref20260915Resolutions(unittest.TestCase):
+    def _rows(self):
+        raw = yaml.safe_load(
+            (ROOT / "knowledge" / "preference_resolutions.yaml").read_text(
+                encoding="utf-8"
+            )
+        )
+        return load_preference_resolutions(raw)
+
+    def test_packet_ids_are_classified(self):
+        by_id = {row.candidate_id: row for row in self._rows()}
+        self.assertEqual(by_id["pref_20260915_001"].outcome, "DROP_REDUNDANT")
+        self.assertEqual(by_id["pref_20260915_002"].outcome, "OWNER_DECISION")
+        self.assertEqual(by_id["pref_20260915_003"].outcome, "KEEP_LOCAL")
+        self.assertEqual(by_id["pref_20260915_004"].outcome, "KEEP_LOCAL")
+        self.assertEqual(by_id["pref_20260915_005"].outcome, "PROMOTE")
+        self.assertEqual(
+            by_id["pref_20260915_005"].canonical_destination,
+            "knowledge/polar_operator.yaml",
+        )
+        self.assertEqual(by_id["pref_20260915_006"].outcome, "KEEP_LOCAL")
+        self.assertEqual(by_id["pref_20260915_007"].outcome, "OWNER_DECISION")
+        self.assertEqual(by_id["pref_20260915_005"].resolved_revision, "")
+
+
+class TestGpaDualValue(unittest.TestCase):
+    def test_concatenated_school_gpas_repair_to_single_box(self):
+        self.assertEqual(gpa_field_action(filled_value="4.0, 3.925"), "repair_to_single_box")
+        self.assertEqual(gpa_field_action(filled_value="4.0; 3.925"), "repair_to_single_box")
+        self.assertEqual(gpa_field_action(filled_value="4.0"), "keep")
+        self.assertEqual(gpa_field_action(filled_value=""), "fill_single_box")
 
 
 class TestClosedPostingAndSponsorship(unittest.TestCase):

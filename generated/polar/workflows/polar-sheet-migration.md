@@ -1,7 +1,7 @@
 # polar-sheet-migration
 
 workflow: polar-sheet-migration
-workflow_version: 2026-09-15.future-sponsorship-no+2651642dbe7c
+workflow_version: 2026-09-15.gpa-dual-value+2651642dbe7c
 status: manual_once
 enabled: false
 needs_browser_lock: false

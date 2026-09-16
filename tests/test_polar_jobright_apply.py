@@ -28,6 +28,7 @@ from polar_policy import (  # noqa: E402
     form_complexity,
     full_form_audit_permitted,
     full_queue_read_permitted,
+    gpa_field_action,
     incident_learning_era,
     jobright_ack_action,
     known_autofill_failure_classes,
@@ -340,6 +341,11 @@ class TestJobrightEraContract(unittest.TestCase):
         self.assertFalse(post_autofill_sidebar_is_proof())
         self.assertEqual(referral_field_action(filled_value="Event"), "clear_invented")
         self.assertEqual(referral_field_action(filled_value=""), "leave_blank")
+        self.assertEqual(gpa_field_action(filled_value="4.0, 3.925"), "repair_to_single_box")
+        self.assertEqual(gpa_field_action(filled_value="4.0 / 3.925"), "repair_to_single_box")
+        self.assertEqual(gpa_field_action(filled_value="4.0"), "keep")
+        self.assertEqual(gpa_field_action(filled_value="3.925"), "keep")
+        self.assertEqual(gpa_field_action(filled_value=""), "fill_single_box")
 
 
 class TestFastValidationPass(unittest.TestCase):
@@ -369,6 +375,7 @@ class TestFastValidationPass(unittest.TestCase):
         )
         self.assertIn("nickname_on_legal_first_name", known_autofill_failure_classes())
         self.assertIn("sponsorship_yes_on_future_sponsorship_widget", known_autofill_failure_classes())
+        self.assertIn("gpa_dual_value_to_single", known_autofill_failure_classes())
         self.assertNotIn("sponsorship_no_on_future_sponsorship_widget", known_autofill_failure_classes())
 
     def test_populated_routine_widgets_are_trusted(self):

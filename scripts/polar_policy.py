@@ -208,6 +208,7 @@ NICKNAME_FIRST_NAME_REPEAT_KEY = "autofill_nickname_on_legal_first_name"
 SPONSORSHIP_YES_REPEAT_KEY = "autofill_sponsorship_yes_on_future_sponsorship_widget"
 SPONSORSHIP_NO_REPEAT_KEY = "autofill_sponsorship_no_on_future_sponsorship_widget"  # retired 2026-09-15; No is correct
 INVENTED_REFERRAL_REPEAT_KEY = "invented_referral"
+GPA_DUAL_VALUE_REPEAT_KEY = "gpa_dual_value_to_single"
 POST_AUTOFILL_TRUST_SOURCE = "form_dom"
 # Fast validation pass. Jobright Autofill is the default filler. Polar
 # verifies only these five high-risk classes on the employer form DOM.
@@ -232,6 +233,7 @@ KNOWN_AUTOFILL_FAILURE_CLASSES = (
     "academic_mailbox_on_application_field",
     "invented_referral",
     "citizenship_not_china",
+    "gpa_dual_value_to_single",
 )
 FULL_FORM_AUDIT_PERMITTED = False
 FORM_COMPLEXITY_SIGNALS = (
@@ -301,6 +303,7 @@ REPEAT_KEY_ALIASES = {
     "control_duplicate_key_env_simplify_copilot": CONTROL_KEY_DUPLICATE_REPEAT_KEY,
 }
 INCIDENT_ID_RE = re.compile(r"^INC-(\d{8})-(\d{1,3})$")
+GPA_NUMBER_RE = re.compile(r"\d+\.\d+")
 
 TRUSTED_WORKFLOW_NAMES = (
     "discover-jobs-hourly",
@@ -1444,6 +1447,20 @@ def referral_field_action(*, filled_value: str, fact_has_referral: bool = False)
     if not token:
         return "leave_blank"
     return "clear_invented"
+
+
+def gpa_looks_concatenated(value: str) -> bool:
+    return len(GPA_NUMBER_RE.findall(value or "")) >= 2
+
+
+def gpa_field_action(*, filled_value: str) -> str:
+    """Single-box GPA after Autofill. Two school GPAs in one widget is the defect."""
+    token = (filled_value or "").strip()
+    if not token:
+        return "fill_single_box"
+    if gpa_looks_concatenated(token):
+        return "repair_to_single_box"
+    return "keep"
 
 
 def email_verification_action() -> str:
