@@ -13,8 +13,11 @@ answer, writes `knowledge/preference_resolutions.yaml`, opens one PR, and
   (see “Sheet-only fallback” below). Do not paste this whole file into
   the UI.
 - Uncommitted work is invisible. The run checks out `main`.
-- Do **not** enable Polar `cursor-production-maintenance`. That work
-  order is a disabled Polar→Cursor Web click. It is not this trigger.
+- Polar Local `cursor-production-maintenance` at 02:00 is a
+  STOP-BEFORE-MERGE sibling. It is not this Cloud trigger and not a
+  required Polar→Cursor Web click. Do not treat enabling that Polar
+  Workflow as creating this Automation. This Cloud agent still must not
+  enable Polar Saved Workflows or a second Automation from here.
 
 ---
 

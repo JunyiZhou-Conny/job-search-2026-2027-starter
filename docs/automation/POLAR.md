@@ -220,8 +220,9 @@ Do not merge these into one giant Workflow. Saved Polar Workflows store only the
 | `apply-ready-jobs` | minute 20 every hour | Saved Workflow. Jobright recommendations entry. Considered-candidate cap. |
 | `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. |
 | `production-learning-daily` | 22:00 daily | Saved Workflow. Sanitized learning report. No application clicks. |
+| `cursor-production-maintenance` | 02:00 daily | Saved Workflow. STOP BEFORE MERGE. Issue handoff or Issue file. Not a Cursor Automation substitute. |
 
-`polar-github-write-canary`, `chatgpt-production-review`, and `cursor-production-maintenance` exist as compiled instructions. They stay manual until the write path is proven. Phase 3 stops before merge.
+`polar-github-write-canary` and `chatgpt-production-review` stay manual and disabled. `cursor-production-maintenance` may run at 02:00 after this compile is on `main`. It never merges. It never flips `github_write_canary`. It never closes daily `[Polar Production]` packets.
 
 ## Cloud discovery stays as shadow
 

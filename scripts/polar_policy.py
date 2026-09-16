@@ -349,6 +349,7 @@ WORKFLOW_REQUIRED_CAPABILITIES: Dict[str, Tuple[str, ...]] = {
 WORKFLOW_OPTIONAL_CAPABILITIES: Dict[str, Tuple[str, ...]] = {
     "discover-jobs-hourly": (CAPABILITY_LOCAL_FILESYSTEM,),
     "production-learning-daily": (CAPABILITY_GITHUB_ISSUES,),
+    "cursor-production-maintenance": (CAPABILITY_GOOGLE_SHEETS,),
 }
 
 APPLY_URL_CONFIDENCE = "apply_url_confidence"
