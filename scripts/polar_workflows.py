@@ -725,7 +725,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "   Classify the exact question. Answer only that semantic. Do not copy one fact into another field.",
             "   If the field is optional, leave it blank. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship.",
             "   Required future-sponsorship widget: Yes. Required H-1B-named widget: Yes.",
-            "   Required citizenship: China. Required visa type: F-1. Required eligible-to-begin: Yes only when the requested start is on/after 2027-02-16 and on/before 2028-02-16; otherwise No. If the start is missing or in the 2026-12-18 to 2027-02-16 gap, leave the field and BLOCK that job only.",
+            "   Required citizenship: China. Required visa type: F-1. Required eligible-to-begin: Yes when no requested start is supplied. When a start is supplied: Yes on/after 2027-02-16 and on/before 2028-02-16; No if earlier; leave the field and BLOCK that job only if later or unparseable.",
             "   Required authorized-for-any-employer: Yes. Required EAD: No. Required OPT approval: No. Required OPT eligibility: Yes.",
             "   Required currently-authorized: leave the field and mark BLOCKED on this job only (fact is not_yet_authorized_pending_opt_start; no single static Yes/No). Required sponsorship-to-begin: No.",
             "   If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity.",
