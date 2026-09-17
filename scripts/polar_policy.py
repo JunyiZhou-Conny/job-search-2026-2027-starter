@@ -173,6 +173,12 @@ AGENT_APPLY_ENTRY_SOURCE = "jobright_agent_queue"
 AGENT_APPLY_ENTRY_URL = "https://jobright.ai/agent"
 AGENT_START_ACTION = "do_not_press"
 AGENT_START_REPEAT_KEY = "agent_start_unverified"
+START_APPLY_RESUME = "resume"
+AGENT_CONTINUOUS_MODE = "resume_same_run"
+AGENT_CONTINUOUS_REFILL = "visible_matches_without_start"
+AGENT_START_AGAIN_AFTER_BATCH = "blocked_until_observe"
+AGENT_CONTINUOUS_LIVENESS = "last_write_by_run"
+PRACTICE_LANE = "practice"
 AUTOFILL_OWNER = "jobright_extension"
 LEGACY_READY_INVENTORY = "inventory_only"
 PREF_ID_RE = re.compile(r"^pref_(\d{8})_(\d{3})$")
@@ -1342,16 +1348,32 @@ def start_apply_run_action(
     run_logs: Sequence[Mapping[str, Any]],
     *,
     this_run_id: str = "",
+    this_workflow: str = "",
+    last_writes_by_run_id: Optional[Mapping[str, str]] = None,
     now: Optional[datetime] = None,
     ttl_minutes: Optional[int] = None,
     root: Optional[Path] = None,
 ) -> str:
     """One live real-job applier across Polar (R-) and Grok (G-).
 
-    Fresh PARTIAL + blank ended_at → NO_WORK. Stale PARTIAL → stale_close
-    so the next apply can write ended_at/FAILED and reach abandoned-claim
-    recovery. Learning routines must not call this helper.
+    Default (apply-ready-jobs / unspecified): Fresh PARTIAL + blank
+    ended_at → NO_WORK. Stale PARTIAL → stale_close so the next apply
+    can write ended_at/FAILED and reach abandoned-claim recovery.
+
+    apply-agent-jobs may return resume when the live PARTIAL is also
+    Polar apply-agent-jobs. Foreign live apply, including apply-ready-jobs
+    and Grok, still NO_WORK. Write-based liveness is Agent-path only.
+    Learning routines must not call this helper.
     """
+    if str(this_workflow or "").strip() == APPLY_AGENT_WORKFLOW:
+        return _start_agent_apply_run_action(
+            run_logs,
+            this_run_id=this_run_id,
+            last_writes_by_run_id=last_writes_by_run_id or {},
+            now=now,
+            ttl_minutes=ttl_minutes,
+            root=root,
+        )
     if live_apply_run_id(
         run_logs,
         exclude_run_id=this_run_id,
@@ -1368,6 +1390,222 @@ def start_apply_run_action(
         root=root,
     ):
         return "stale_close"
+    return "continue"
+
+
+def apply_agent_partial_is_stale(
+    row: Mapping[str, Any],
+    *,
+    last_write_at: str = "",
+    now: Optional[datetime] = None,
+    ttl_minutes: Optional[int] = None,
+    root: Optional[Path] = None,
+) -> bool:
+    """Write-based liveness for apply-agent-jobs PARTIALs only.
+
+    Latest parseable Sheet write by that run (queue.updated_at /
+    incident.recorded_at) wins. Missing or unparseable last_write falls
+    back to started_at. apply-ready-jobs and Grok keep started_at via
+    apply_run_is_stale. Does not change work_claim.ttl_minutes.
+    """
+    if not _apply_partial_open(row):
+        return False
+    if str(row.get("workflow") or "").strip() != APPLY_AGENT_WORKFLOW:
+        return apply_run_is_stale(
+            row, now=now, ttl_minutes=ttl_minutes, root=root
+        )
+    if now is None:
+        now = eastern_datetime()
+    ttl = work_claim_ttl_minutes(root) if ttl_minutes is None else ttl_minutes
+    instant = parse_timestamp(str(last_write_at or ""))
+    if instant is None or instant.tzinfo is None:
+        instant = parse_timestamp(str(row.get("started_at") or ""))
+    if instant is None or instant.tzinfo is None:
+        return True
+    return instant + timedelta(minutes=ttl) <= now
+
+
+def _start_agent_apply_run_action(
+    run_logs: Sequence[Mapping[str, Any]],
+    *,
+    this_run_id: str,
+    last_writes_by_run_id: Mapping[str, str],
+    now: Optional[datetime],
+    ttl_minutes: Optional[int],
+    root: Optional[Path],
+) -> str:
+    skip = normalize_text(this_run_id)
+    live_id = ""
+    live_workflow = ""
+    stale_id = ""
+    for row in run_logs:
+        if not _apply_partial_open(row):
+            continue
+        run_id = str(row.get("run_id") or "").strip()
+        if not run_id:
+            continue
+        if skip and normalize_text(run_id) == skip:
+            continue
+        workflow = str(row.get("workflow") or "").strip()
+        if workflow == APPLY_AGENT_WORKFLOW:
+            stale = apply_agent_partial_is_stale(
+                row,
+                last_write_at=str(last_writes_by_run_id.get(run_id) or ""),
+                now=now,
+                ttl_minutes=ttl_minutes,
+                root=root,
+            )
+        else:
+            stale = apply_run_is_stale(
+                row, now=now, ttl_minutes=ttl_minutes, root=root
+            )
+        if stale:
+            if not stale_id:
+                stale_id = run_id
+            continue
+        if not live_id:
+            live_id = run_id
+            live_workflow = workflow
+    if live_id:
+        if (
+            live_workflow == APPLY_AGENT_WORKFLOW
+            and executor_from_run_id(live_id) == EXECUTOR_POLAR
+        ):
+            return START_APPLY_RESUME
+        return "NO_WORK"
+    if stale_id:
+        return "stale_close"
+    return "continue"
+
+
+@dataclass(frozen=True)
+class AgentContinuousCaps:
+    mode: str
+    stay_on: str
+    refill: str
+    start_again_after_batch: str
+    liveness: str
+    first_enabled_cap: int
+    owner_ceiling: int
+    practice_share_limit: float
+
+
+def agent_continuous_caps(root: Optional[Path] = None) -> AgentContinuousCaps:
+    operator = load_operator(root)
+    block = (operator.get("agent_apply") or {}).get("continuous")
+    if not isinstance(block, dict):
+        raise ValueError("agent_apply.continuous is required")
+    quota = block.get("daily_submit_quota")
+    if not isinstance(quota, dict):
+        raise ValueError("agent_apply.continuous.daily_submit_quota is required")
+    first_enabled = _positive_int(
+        quota.get("first_enabled_cap"),
+        "agent_apply.continuous.daily_submit_quota.first_enabled_cap",
+    )
+    owner_ceiling = _positive_int(
+        quota.get("owner_ceiling"),
+        "agent_apply.continuous.daily_submit_quota.owner_ceiling",
+    )
+    canary_cap = apply_run_caps(root).max_considered
+    if owner_ceiling != 100:
+        raise ValueError(
+            "agent_apply.continuous.daily_submit_quota.owner_ceiling must be 100"
+        )
+    if first_enabled > canary_cap:
+        raise ValueError(
+            "first_enabled_cap must stay <= canary.max_jobs_per_run; "
+            "do not encode the owner 100 ceiling as the first cap"
+        )
+    if first_enabled >= owner_ceiling:
+        raise ValueError("do not encode owner 100 as the first enabled cap")
+    if str(quota.get("count") or "") != "submitted_plus_submission_unknown":
+        raise ValueError(
+            "daily_submit_quota.count must be submitted_plus_submission_unknown"
+        )
+    try:
+        practice_limit = float(block.get("practice_share_stop"))
+    except (TypeError, ValueError) as exc:
+        raise ValueError(
+            "agent_apply.continuous.practice_share_stop must be a fraction"
+        ) from exc
+    if abs(practice_limit - 0.25) > 1e-9:
+        raise ValueError(
+            "agent_apply.continuous.practice_share_stop must be 0.25"
+        )
+    mode = str(block.get("mode") or "").strip()
+    stay_on = str(block.get("stay_on") or "").strip()
+    refill = str(block.get("refill") or "").strip()
+    start_again = str(block.get("start_again_after_batch") or "").strip()
+    liveness = str(block.get("liveness") or "").strip()
+    if mode != AGENT_CONTINUOUS_MODE:
+        raise ValueError("agent_apply.continuous.mode must be resume_same_run")
+    if stay_on != AGENT_APPLY_ENTRY_URL:
+        raise ValueError(
+            f"agent_apply.continuous.stay_on must be {AGENT_APPLY_ENTRY_URL}"
+        )
+    if refill != AGENT_CONTINUOUS_REFILL:
+        raise ValueError(
+            "agent_apply.continuous.refill must be visible_matches_without_start"
+        )
+    if start_again != AGENT_START_AGAIN_AFTER_BATCH:
+        raise ValueError(
+            "start_again_after_batch must stay blocked_until_observe"
+        )
+    if liveness != AGENT_CONTINUOUS_LIVENESS:
+        raise ValueError(
+            "agent_apply.continuous.liveness must be last_write_by_run"
+        )
+    return AgentContinuousCaps(
+        mode=mode,
+        stay_on=stay_on,
+        refill=refill,
+        start_again_after_batch=start_again,
+        liveness=liveness,
+        first_enabled_cap=first_enabled,
+        owner_ceiling=owner_ceiling,
+        practice_share_limit=practice_limit,
+    )
+
+
+def daily_submit_quota_action(
+    submitted_today: int,
+    submission_unknown_today: int = 0,
+    *,
+    cap: Optional[int] = None,
+    root: Optional[Path] = None,
+) -> str:
+    """Stop when today's SUBMITTED + SUBMISSION_UNKNOWN hits the first cap.
+
+    Owner 100 is the ceiling, not the first enabled cap. Trigger is quota,
+    not a clock.
+    """
+    consumed = max(0, int(submitted_today)) + max(0, int(submission_unknown_today))
+    limit = (
+        agent_continuous_caps(root).first_enabled_cap if cap is None else int(cap)
+    )
+    if consumed >= max(0, limit):
+        return "stop"
+    return "continue"
+
+
+def practice_share_stop_action(
+    submitted_today: int,
+    practice_submitted_today: int,
+    *,
+    root: Optional[Path] = None,
+) -> str:
+    """Stop adding when today's SUBMITTED practice share already exceeds 25%.
+
+    Share is practice_submitted / submitted. Zero submitted is continue
+    (nothing to measure). Does not invent a second ranker.
+    """
+    total = max(0, int(submitted_today))
+    practice = max(0, int(practice_submitted_today))
+    if total <= 0:
+        return "continue"
+    limit = agent_continuous_caps(root).practice_share_limit
+    if practice / total > limit:
+        return "stop"
     return "continue"
 
 

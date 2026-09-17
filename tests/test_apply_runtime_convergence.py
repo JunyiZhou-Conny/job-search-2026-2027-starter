@@ -17,12 +17,18 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from polar_policy import (  # noqa: E402
+    APPLY_AGENT_WORKFLOW,
     APPLY_WORKFLOW_NAMES,
     DUPLICATE_JOB_KEY_REPEAT_KEY,
+    START_APPLY_RESUME,
     STALE_APPLY_CLOSE_NOTE,
     STALE_APPLY_CLOSE_RESULT,
     SHEET_QUERY_NA_REPEAT_KEY,
     TELEMETRY_INCONSISTENCY,
+    agent_continuous_caps,
+    apply_agent_partial_is_stale,
+    daily_submit_quota_action,
+    practice_share_stop_action,
     apply_run_is_live,
     apply_run_is_stale,
     attempt_claim_job,
@@ -473,6 +479,120 @@ class TestLogging(unittest.TestCase):
         self.assertIn("Do not filter this QUERY to young started_at", apply)
         self.assertIn("every open apply PARTIAL", apply)
         self.assertIn("Immediately upsert a run_log row", apply)
+        self.assertNotIn("this_workflow=apply-agent-jobs", apply)
+        self.assertNotIn("If resume:", apply)
+
+
+class TestAgentContinuousFollowOn(unittest.TestCase):
+    def test_default_start_still_bounces_a_live_agent_row(self):
+        agent_live = {
+            "run_id": "R-20260915-0915",
+            "workflow": "apply-agent-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T09:15:00-04:00",
+            "ended_at": "",
+        }
+        self.assertEqual(start_apply_run_action([agent_live], now=NOW), "NO_WORK")
+
+    def test_agent_path_resumes_same_polar_agent_run(self):
+        agent_live = {
+            "run_id": "R-20260915-0915",
+            "workflow": "apply-agent-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T09:15:00-04:00",
+            "ended_at": "",
+        }
+        self.assertEqual(
+            start_apply_run_action(
+                [agent_live],
+                this_workflow=APPLY_AGENT_WORKFLOW,
+                now=NOW,
+            ),
+            START_APPLY_RESUME,
+        )
+
+    def test_agent_path_does_not_attach_to_ready_or_grok(self):
+        ready_live = {
+            "run_id": "R-20260916-2320",
+            "workflow": "apply-ready-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T09:16:00-04:00",
+            "ended_at": "",
+        }
+        grok_live = {
+            "run_id": "G-20260915-105000",
+            "workflow": "grok-apply-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T09:50:00-04:00",
+            "ended_at": "",
+        }
+        self.assertEqual(
+            start_apply_run_action(
+                [ready_live],
+                this_workflow=APPLY_AGENT_WORKFLOW,
+                now=NOW,
+            ),
+            "NO_WORK",
+        )
+        self.assertEqual(
+            start_apply_run_action(
+                [grok_live],
+                this_workflow=APPLY_AGENT_WORKFLOW,
+                now=NOW,
+            ),
+            "NO_WORK",
+        )
+
+    def test_write_liveness_is_agent_path_only(self):
+        old_agent = {
+            "run_id": "R-20260915-0620",
+            "workflow": "apply-agent-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T06:20:00-04:00",
+            "ended_at": "",
+        }
+        self.assertTrue(apply_run_is_stale(old_agent, now=NOW))
+        self.assertTrue(apply_agent_partial_is_stale(old_agent, now=NOW))
+        self.assertFalse(
+            apply_agent_partial_is_stale(
+                old_agent,
+                last_write_at="2026-09-15T10:00:00-04:00",
+                now=NOW,
+            )
+        )
+        self.assertEqual(start_apply_run_action([old_agent], now=NOW), "stale_close")
+        self.assertEqual(
+            start_apply_run_action(
+                [old_agent],
+                this_workflow=APPLY_AGENT_WORKFLOW,
+                now=NOW,
+            ),
+            "stale_close",
+        )
+        self.assertEqual(
+            start_apply_run_action(
+                [old_agent],
+                this_workflow=APPLY_AGENT_WORKFLOW,
+                last_writes_by_run_id={"R-20260915-0620": "2026-09-15T10:00:00-04:00"},
+                now=NOW,
+            ),
+            START_APPLY_RESUME,
+        )
+
+    def test_quota_uses_first_cap_not_owner_ceiling(self):
+        caps = agent_continuous_caps()
+        self.assertEqual(caps.owner_ceiling, 100)
+        self.assertEqual(caps.first_enabled_cap, 3)
+        self.assertLess(caps.first_enabled_cap, caps.owner_ceiling)
+        self.assertEqual(daily_submit_quota_action(2, 0), "continue")
+        self.assertEqual(daily_submit_quota_action(3, 0), "stop")
+        self.assertEqual(daily_submit_quota_action(2, 1), "stop")
+        self.assertEqual(daily_submit_quota_action(99, 0, cap=100), "continue")
+
+    def test_practice_share_stop_after_submitted_exists(self):
+        self.assertEqual(practice_share_stop_action(0, 0), "continue")
+        self.assertEqual(practice_share_stop_action(4, 1), "continue")
+        self.assertEqual(practice_share_stop_action(3, 1), "stop")
 
 
 if __name__ == "__main__":

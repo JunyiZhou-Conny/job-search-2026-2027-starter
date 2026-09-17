@@ -14,7 +14,9 @@ from polar_policy import (
     AGENT_APPLY_ENTRY_SOURCE,
     AGENT_APPLY_ENTRY_URL,
     AGENT_START_ACTION,
+    AGENT_START_AGAIN_AFTER_BATCH,
     AGENT_START_REPEAT_KEY,
+    START_APPLY_RESUME,
     POLAR_APPLY_WORKFLOW_NAMES,
     CLAIM_REPEAT_ALREADY,
     CLAIM_REPEAT_RECOVERED,
@@ -62,6 +64,7 @@ from polar_policy import (
     TRUSTED_REPO,
     WRITING_LOG_COLUMNS,
     CLAIM_REPEAT_MISSING_COLUMN,
+    agent_continuous_caps,
     apply_run_caps,
     bootstrap_prompt,
     capability_preflight_block,
@@ -341,28 +344,52 @@ def _lease_block(name: str) -> str:
                 second = f"{apply_names[0]} or {apply_names[1]}"
             else:
                 second = ", ".join(apply_names[:-1]) + f", or {apply_names[-1]}"
+            if name == APPLY_AGENT_WORKFLOW:
+                lines.extend(
+                    [
+                        "QUERY run_log for every open apply PARTIAL: workflow in "
+                        + ", ".join(apply_names)
+                        + "; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at.",
+                        "For each open apply-agent-jobs PARTIAL, take the latest parseable Sheet write by that run_id (queue.updated_at on its claims, or incident.recorded_at). That is last_write_at. apply-ready-jobs and grok-apply-jobs still classify on started_at.",
+                        f"polar_policy.start_apply_run_action(..., this_workflow={APPLY_AGENT_WORKFLOW}, last_writes_by_run_id=...) classifies continue | {START_APPLY_RESUME} | NO_WORK | stale_close.",
+                        "If resume: the live PARTIAL is this Polar apply-agent-jobs R-. Attach to that run_id. Do not mint. Do not write a second run_log row. Do not exit NO_WORK. Update the same run_log row. Stay on https://jobright.ai/agent.",
+                        "If NO_WORK: another apply is live (apply-ready-jobs, grok-apply-jobs, or a foreign Polar apply). Mint this invocation's run_id only to write result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit. Do not attach to apply-ready-jobs.",
+                        "If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then mint a new R- and continue. Do not exit NO_WORK.",
+                        "If continue: mint run_id with polar_policy.mint_run_id. Prefix R-. Upsert PARTIAL on that new row.",
+                        "An apply-agent-jobs PARTIAL is live when its last Sheet write by that run (or started_at if no later write) is younger than work_claim.ttl_minutes. A writing session longer than 180 minutes stays live. No write for 180 minutes is stale. This write-based test is for apply-agent-jobs only. It does not change apply-ready-jobs or Grok started_at liveness.",
+                        "One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-agent-jobs while apply-ready-jobs or grok-apply-jobs is live.",
+                        "Do not acquire polar_browser. Do not create grok_browser.",
+                        "",
+                        "If this invocation minted a new R-, upsert a run_log row for that run_id with started_at now and result PARTIAL.",
+                        "If resume, the PARTIAL already exists. Update that same run_id. Do not append a second row.",
+                        "A later crash must still leave that run_log row. Do not append a second row for the same run_id.",
+                        "",
+                    ]
+                )
+            else:
+                lines.extend(
+                    [
+                        "Mint run_id first. Then QUERY run_log for every open apply PARTIAL: workflow in "
+                        + ", ".join(apply_names)
+                        + "; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.",
+                        "A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical ended run_log row.",
+                        "If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.",
+                        "If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.",
+                        "One live real-job applier across Polar (R-) and Grok (G-). Do not start a second "
+                        + second
+                        + " while another apply is live.",
+                        "Do not acquire polar_browser. Do not create grok_browser.",
+                        "",
+                    ]
+                )
+        if name != APPLY_AGENT_WORKFLOW:
             lines.extend(
                 [
-                    "Mint run_id first. Then QUERY run_log for every open apply PARTIAL: workflow in "
-                    + ", ".join(apply_names)
-                    + "; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.",
-                    "A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical ended run_log row.",
-                    "If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.",
-                    "If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.",
-                    "One live real-job applier across Polar (R-) and Grok (G-). Do not start a second "
-                    + second
-                    + " while another apply is live.",
-                    "Do not acquire polar_browser. Do not create grok_browser.",
+                    "Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.",
+                    "A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.",
                     "",
                 ]
             )
-        lines.extend(
-            [
-                "Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.",
-                "A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.",
-                "",
-            ]
-        )
     if name in POLAR_APPLY_WORKFLOW_NAMES:
         lines.extend(
             [
@@ -595,6 +622,10 @@ def _agent_apply_config(operator: Dict[str, Any]) -> Dict[str, Any]:
     )
     if tuple(labels) != required:
         raise SystemExit("agent_apply.blockers must reuse the grok-apply-jobs Agent labels in order")
+    try:
+        agent_continuous_caps()
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
     return block
 
 
@@ -1046,6 +1077,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
 def render_apply_agent(operator: Dict[str, Any]) -> str:
     _assert_live_apply_entry(operator)
     agent = _agent_apply_config(operator)
+    continuous = agent_continuous_caps()
     blockers = agent.get("blockers") or []
     blocker_lines = [
         f"- {row.get('label')}: {row.get('action')}"
@@ -1096,8 +1128,8 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             "do_not_load: GROKBOT_RUNTIME",
             "grok_routines: leave_off",
             "",
-            "Live Polar apply_entry stays jobright_recommendations. This workflow is the Polar-owned Agent draft.",
-            "Mint run_id with polar_policy.mint_run_id. The prefix is R-. Never mint a G- id.",
+            "Live Polar apply_entry stays jobright_recommendations. This workflow is the Polar-owned continuous Agent draft.",
+            "Mint run_id only when start_apply_run_action returns continue or after stale_close. Resume uses the live R-. The prefix is R-. Never mint a G- id.",
             "Do not open generated/grokbot/runtime/GROKBOT_RUNTIME.md. Do not treat grok-apply-jobs as this run's workflow.",
             "An empty READY queue is a valid start. Do not FIFO READY_REGULAR or READY_PRIORITY.",
             "READY_* rows are inventory and dedupe only unless that job_key appears on Jobright.",
@@ -1106,10 +1138,42 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             _polar_apply_shared_middle(
                 operator,
                 live_window_line=(
-                    "Another Polar apply run does not get its own live window. "
-                    "polar_policy.start_apply_run_action. One live apply across R- and G-."
+                    "This is one apply session on /agent, not a :20 window. "
+                    "Do not assume hourly apply-ready-jobs. "
+                    "polar_policy.start_apply_run_action with this_workflow=apply-agent-jobs "
+                    "may resume the live Polar Agent R-. Foreign live apply still NO_WORK."
                 ),
             ),
+            "## Continuous session",
+            "",
+            f"mode: {continuous.mode}",
+            f"stay_on: {continuous.stay_on}",
+            "cron: none",
+            "enabled: false",
+            f"start: {AGENT_START_ACTION}",
+            f"start_again_after_batch: {continuous.start_again_after_batch}",
+            f"refill: {continuous.refill}",
+            "batch_hint_jobs_added: 10",
+            "daily_submit_quota_action: polar_policy.daily_submit_quota_action",
+            "daily_submit_quota_count: submitted_plus_submission_unknown",
+            f"daily_submit_quota_first_enabled_cap: {continuous.first_enabled_cap}",
+            f"daily_submit_quota_owner_ceiling: {continuous.owner_ceiling}",
+            "practice_share_stop: polar_policy.practice_share_stop_action",
+            f"practice_share_limit: {continuous.practice_share_limit}",
+            f"liveness: {continuous.liveness}",
+            "sleep_network: environment_leave_partial",
+            "",
+            "Stay on https://jobright.ai/agent for the whole session. Do not open /jobs/recommend from this file.",
+            "Owner 100 is the ceiling he wants. The first enabled cap is 3 submitted plus SUBMISSION_UNKNOWN. Do not compile 100 as the active cap.",
+            "Trigger = daily submitted quota, not a clock. max_considered 3 is a per-wake considered budget, not a daily stop.",
+            "When considered_budget_exhausted and daily_submit_quota_action is still continue: leave this PARTIAL open. Do not write ended_at. Stop this invocation. Next wake uses resume.",
+            "When daily_submit_quota_action is stop: write ended_at, stop. Do not press Start to chase the owner ceiling.",
+            "When practice_share_stop_action is stop: stop adding. Cheap SKIP still first. Do not Start leftover chrome.",
+            "ENVIRONMENT (sleep / network / capability drop): leave PARTIAL and last_stage. Stop. Do not press Start. Next wake resume or stale_close then Job N.",
+            "After a claimed batch drains and quota is not hit: refill from visible matches. Never Add All. Never Start.",
+            "Owner ~10 added is a batch hint, not a selector. The leftover 9 Jobs Added queue is not this run's batch.",
+            f"start_again_after_batch stays {AGENT_START_AGAIN_AFTER_BATCH} until a Mac observe proves Start does not auto-submit.",
+            "",
             "## Work order",
             "",
             "Never invent facts. If a required fact is missing, leave the widget. polar_policy.missing_required_fact_action.",
@@ -1140,8 +1204,10 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             "Agent surface blockers and the allowed response. Labels only. Do not invent selectors.",
             *blocker_lines,
             "",
-            "Loop the current Agent card, then one claimed match, until considered_budget_exhausted or the loaded list ends.",
+            "Loop the current Agent card, then one claimed match, until daily_submit_quota_action is stop, practice_share_stop_action is stop, or the loaded list ends and refill is empty.",
+            "Per-wake: stop new cards when considered_budget_exhausted, but leave PARTIAL if the daily quota remains.",
             "Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.",
+            "Do not open a new :20 apply-ready-jobs window from this file.",
             "",
             "For each Agent candidate:",
             "1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.",
@@ -1180,7 +1246,8 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             "## This workflow never does",
             "",
             "- Flip live apply_entry or start apply-ready-jobs from this file.",
-            "- Click Add All, View All and add the list, or press Start.",
+            "- Give this worker a :20 cron or treat hourly apply-ready-jobs as this session.",
+            "- Click Add All, View All and add the list, or press Start, including Start-again refill.",
             "- Load GROKBOT_RUNTIME, mint a G- id, or enable Grok routines.",
             "- Inherit grok_cloud closed Submit or Grok's four-check post-autofill.",
             "- Write the control, heartbeat, or learning_reports tabs, or any second Sheet.",

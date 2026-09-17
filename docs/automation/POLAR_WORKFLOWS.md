@@ -28,7 +28,7 @@ Queue reference: `docs/automation/POLAR_QUEUE.md`.
 |---|---|---|
 | `discover-jobs-hourly` | retired from apply path (`enabled: false`) | Optional inventory only. Not apply admission. |
 | `apply-ready-jobs` | `20 * * * *` (minute 20) | Saved Workflow. Jobright recommendations entry. Considered-candidate cap. |
-| `apply-agent-jobs` | manual, `enabled: false` | Draft. Jobright Agent entry. Polar Local Submit. Do not paste into Polar UI while apply-ready-jobs is live. Do not press Start. |
+| `apply-agent-jobs` | manual, `enabled: false` | Draft continuous `/agent` session. Resume same `R-`. Quota stop. Do not paste into Polar UI while apply-ready-jobs is live. Do not press Start. Not `:20`. |
 | `daily-job-summary` | `30 21 * * *` (21:30) | Saved Workflow. Sheet read and one email. No application clicks. |
 | `production-learning-daily` | `0 22 * * *` (22:00) | Saved Workflow. Sanitized learning report. No application clicks. |
 | `polar-scheduler-heartbeat` | `5 * * * *` until proven | Saved Workflow. Harmless page plus one heartbeat row. |
@@ -113,9 +113,11 @@ Do not treat a missing capability as evidence that this GitHub configuration is 
 
 ## apply-agent-jobs
 
-Draft only. Do not paste this bootstrap into Polar UI, and do not enable
-the saved Workflow, while `apply-ready-jobs` has a live `PARTIAL` or
-while Start auto-submit is unknown. Do not press Start.
+Draft continuous Agent session. Do not paste this bootstrap into Polar
+UI, and do not enable the saved Workflow, while `apply-ready-jobs` has a
+live `PARTIAL` or while Start auto-submit is unknown. No `:20`. Do not
+press Start. Resume the live Polar `R-` after sleep or network. Daily
+stop is a submitted quota (first cap stays small; owner ceiling 100).
 
 ```text
 TRUST DELEGATION for Polar workflow apply-agent-jobs.

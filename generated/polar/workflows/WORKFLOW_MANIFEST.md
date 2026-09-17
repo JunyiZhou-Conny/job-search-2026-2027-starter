@@ -23,7 +23,7 @@ They load the two owner-designated raw main files on each run.
 
 - `discover-jobs-hourly` workflow_version `2026-09-16.apply-runtime-convergence+7e284dd1a737`
 - `apply-ready-jobs` workflow_version `2026-09-16.apply-runtime-convergence+8ab58d0738e8`
-- `apply-agent-jobs` workflow_version `2026-09-16.apply-runtime-convergence+2c1e5e1a558c`
+- `apply-agent-jobs` workflow_version `2026-09-16.apply-runtime-convergence+90f02fc2e631`
 - `daily-job-summary` workflow_version `2026-09-16.apply-runtime-convergence+74a0dd5a25c2`
 - `production-learning-daily` workflow_version `2026-09-16.apply-runtime-convergence+941eea23b3ea`
 - `polar-scheduler-heartbeat` workflow_version `2026-09-16.apply-runtime-convergence+9ca7c8e248e1`

@@ -1,6 +1,6 @@
 last_updated: "2026-09-17"
 policy_revision: "2026-09-16.apply-runtime-convergence"
-source: "Owner 2026-09-16 (supersedes 2026-09-15). Jobright-era apply. Standard future-sponsorship widget is Yes from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title. 2026-09-17: Polar Local owns Jobright Agent; live apply_entry stays recommendations while apply-ready-jobs is the :20 worker. apply-agent-jobs is the Polar-owned Agent draft and stays disabled."
+source: "Owner 2026-09-16 (supersedes 2026-09-15). Jobright-era apply. Standard future-sponsorship widget is Yes from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title. 2026-09-17: Polar Local owns Jobright Agent. Live apply_entry stays recommendations while apply-ready-jobs is the :20 worker. apply-agent-jobs is the disabled continuous Agent draft (resume same R-, quota stop, stay on /agent). Do not give it :20. Do not encode owner 100 as the first enabled cap. Do not press Start."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
 # Live apply_entry stays jobright_recommendations while apply-ready-jobs
@@ -15,6 +15,22 @@ agent_apply:
   start_reason: "2026-09-17 screenshot: Start is available; whether Start auto-submits is unknown. Do not press Start."
   claim_before: add_to_agent_queue_or_apply_now
   grok_routines: leave_off
+  # Continuous follow-on (polar-continuous-agent.md). Disabled. Not a :20
+  # worker. Do not flip live apply_entry. Do not press Start.
+  continuous:
+    mode: resume_same_run
+    stay_on: https://jobright.ai/agent
+    schedule: manual
+    start_again_after_batch: blocked_until_observe
+    refill: visible_matches_without_start
+    batch_hint_jobs_added: 10
+    daily_submit_quota:
+      count: submitted_plus_submission_unknown
+      owner_ceiling: 100
+      first_enabled_cap: 3
+    practice_share_stop: 0.25
+    liveness: last_write_by_run
+    sleep_network: environment_leave_partial
   observed_2026_09_17:
     agent_state: Standby / Start
     jobs_added: "9 Jobs Added"
@@ -226,6 +242,7 @@ queue_read:
   live_apply_query:
     workflows:
       - apply-ready-jobs
+      - apply-agent-jobs
       - grok-apply-jobs
     result: PARTIAL
     ended_at: blank
@@ -356,11 +373,11 @@ schedules:
   apply_agent_jobs:
     workflow: apply-agent-jobs
     cron_et: ""
-    meaning: "Draft Polar-owned Jobright Agent apply. Off until the live apply-ready-jobs PARTIAL has ended_at and Start auto-submit is known. Do not press Start. Do not enable Grok routines."
+    meaning: "Continuous Polar Agent draft on /agent. Resume the live R- after sleep or network. Daily submitted quota (first cap 3; owner ceiling 100). No :20. Off until the live apply-ready-jobs PARTIAL has ended_at and Start auto-submit is known. Do not press Start. Do not enable Grok routines."
     enabled: false
     apply_path: false
     needs_browser_lock: false
-    polar_mode: "Draft Saved Polar Workflow. Jobright Agent entry. Polar Local Submit. R- ids. Not grok-apply-jobs. Do not paste into Polar UI while apply-ready-jobs is live."
+    polar_mode: "Draft Saved Polar Workflow. Continuous Jobright Agent session. Polar Local Submit. R- ids. Not grok-apply-jobs. Not hourly apply-ready-jobs. Do not paste into Polar UI while apply-ready-jobs is live."
   daily_job_summary:
     workflow: daily-job-summary
     cron_et: "30 21 * * *"

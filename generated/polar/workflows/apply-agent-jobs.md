@@ -1,7 +1,7 @@
 # apply-agent-jobs
 
 workflow: apply-agent-jobs
-workflow_version: 2026-09-16.apply-runtime-convergence+2c1e5e1a558c
+workflow_version: 2026-09-16.apply-runtime-convergence+90f02fc2e631
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
@@ -78,15 +78,20 @@ Do not acquire it. Do not write run_log result SKIPPED_LOCKED because that row i
 A stale polar_browser owner_run_id must not stop this workflow.
 Unrelated Polar workflows may already be using their own browser surfaces.
 
-Mint run_id first. Then QUERY run_log for every open apply PARTIAL: workflow in apply-agent-jobs, apply-ready-jobs, grok-apply-jobs; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.
-A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical ended run_log row.
-If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.
-If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.
-One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-agent-jobs, apply-ready-jobs, or grok-apply-jobs while another apply is live.
+QUERY run_log for every open apply PARTIAL: workflow in apply-agent-jobs, apply-ready-jobs, grok-apply-jobs; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at.
+For each open apply-agent-jobs PARTIAL, take the latest parseable Sheet write by that run_id (queue.updated_at on its claims, or incident.recorded_at). That is last_write_at. apply-ready-jobs and grok-apply-jobs still classify on started_at.
+polar_policy.start_apply_run_action(..., this_workflow=apply-agent-jobs, last_writes_by_run_id=...) classifies continue | resume | NO_WORK | stale_close.
+If resume: the live PARTIAL is this Polar apply-agent-jobs R-. Attach to that run_id. Do not mint. Do not write a second run_log row. Do not exit NO_WORK. Update the same run_log row. Stay on https://jobright.ai/agent.
+If NO_WORK: another apply is live (apply-ready-jobs, grok-apply-jobs, or a foreign Polar apply). Mint this invocation's run_id only to write result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit. Do not attach to apply-ready-jobs.
+If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then mint a new R- and continue. Do not exit NO_WORK.
+If continue: mint run_id with polar_policy.mint_run_id. Prefix R-. Upsert PARTIAL on that new row.
+An apply-agent-jobs PARTIAL is live when its last Sheet write by that run (or started_at if no later write) is younger than work_claim.ttl_minutes. A writing session longer than 180 minutes stays live. No write for 180 minutes is stale. This write-based test is for apply-agent-jobs only. It does not change apply-ready-jobs or Grok started_at liveness.
+One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-agent-jobs while apply-ready-jobs or grok-apply-jobs is live.
 Do not acquire polar_browser. Do not create grok_browser.
 
-Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.
-A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.
+If this invocation minted a new R-, upsert a run_log row for that run_id with started_at now and result PARTIAL.
+If resume, the PARTIAL already exists. Update that same run_id. Do not append a second row.
+A later crash must still leave that run_log row. Do not append a second row for the same run_id.
 
 ## Work claim
 
@@ -223,8 +228,8 @@ run_id_prefix: R
 do_not_load: GROKBOT_RUNTIME
 grok_routines: leave_off
 
-Live Polar apply_entry stays jobright_recommendations. This workflow is the Polar-owned Agent draft.
-Mint run_id with polar_policy.mint_run_id. The prefix is R-. Never mint a G- id.
+Live Polar apply_entry stays jobright_recommendations. This workflow is the Polar-owned continuous Agent draft.
+Mint run_id only when start_apply_run_action returns continue or after stale_close. Resume uses the live R-. The prefix is R-. Never mint a G- id.
 Do not open generated/grokbot/runtime/GROKBOT_RUNTIME.md. Do not treat grok-apply-jobs as this run's workflow.
 An empty READY queue is a valid start. Do not FIFO READY_REGULAR or READY_PRIORITY.
 READY_* rows are inventory and dedupe only unless that job_key appears on Jobright.
@@ -245,7 +250,7 @@ run_log_map: jobs_seen=considered, jobs_attempted=forms_reached
 Recovery does not consume considered.
 A skip of closed, duplicate, Applied, or hard-fact-conflict consumes considered and continues.
 Stop new Jobright cards when polar_policy.considered_budget_exhausted is true.
-Another Polar apply run does not get its own live window. polar_policy.start_apply_run_action. One live apply across R- and G-.
+This is one apply session on /agent, not a :20 window. Do not assume hourly apply-ready-jobs. polar_policy.start_apply_run_action with this_workflow=apply-agent-jobs may resume the live Polar Agent R-. Foreign live apply still NO_WORK.
 Weight is writing-depth metadata. It is not a slot reservation.
 
 ## Autofill
@@ -391,6 +396,36 @@ If polar_policy.requisition_submit_blocked returns a sibling, skip this job.
 Note requisition_suppressed. Incident repeat_key requisition_suppressed.
 Do not create a second ledger.
 
+## Continuous session
+
+mode: resume_same_run
+stay_on: https://jobright.ai/agent
+cron: none
+enabled: false
+start: do_not_press
+start_again_after_batch: blocked_until_observe
+refill: visible_matches_without_start
+batch_hint_jobs_added: 10
+daily_submit_quota_action: polar_policy.daily_submit_quota_action
+daily_submit_quota_count: submitted_plus_submission_unknown
+daily_submit_quota_first_enabled_cap: 3
+daily_submit_quota_owner_ceiling: 100
+practice_share_stop: polar_policy.practice_share_stop_action
+practice_share_limit: 0.25
+liveness: last_write_by_run
+sleep_network: environment_leave_partial
+
+Stay on https://jobright.ai/agent for the whole session. Do not open /jobs/recommend from this file.
+Owner 100 is the ceiling he wants. The first enabled cap is 3 submitted plus SUBMISSION_UNKNOWN. Do not compile 100 as the active cap.
+Trigger = daily submitted quota, not a clock. max_considered 3 is a per-wake considered budget, not a daily stop.
+When considered_budget_exhausted and daily_submit_quota_action is still continue: leave this PARTIAL open. Do not write ended_at. Stop this invocation. Next wake uses resume.
+When daily_submit_quota_action is stop: write ended_at, stop. Do not press Start to chase the owner ceiling.
+When practice_share_stop_action is stop: stop adding. Cheap SKIP still first. Do not Start leftover chrome.
+ENVIRONMENT (sleep / network / capability drop): leave PARTIAL and last_stage. Stop. Do not press Start. Next wake resume or stale_close then Job N.
+After a claimed batch drains and quota is not hit: refill from visible matches. Never Add All. Never Start.
+Owner ~10 added is a batch hint, not a selector. The leftover 9 Jobs Added queue is not this run's batch.
+start_again_after_batch stays blocked_until_observe until a Mac observe proves Start does not auto-submit.
+
 ## Work order
 
 Never invent facts. If a required fact is missing, leave the widget. polar_policy.missing_required_fact_action.
@@ -425,8 +460,10 @@ Agent surface blockers and the allowed response. Labels only. Do not invent sele
 - Verification code: Read the newest code from the matching ATS sender in the application Outlook inbox in this browser. Never write the code anywhere.
 - Paused: Continue only for a job this run still owns. Otherwise Skip.
 
-Loop the current Agent card, then one claimed match, until considered_budget_exhausted or the loaded list ends.
+Loop the current Agent card, then one claimed match, until daily_submit_quota_action is stop, practice_share_stop_action is stop, or the loaded list ends and refill is empty.
+Per-wake: stop new cards when considered_budget_exhausted, but leave PARTIAL if the daily quota remains.
 Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.
+Do not open a new :20 apply-ready-jobs window from this file.
 
 For each Agent candidate:
 1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.
@@ -512,7 +549,8 @@ lock_result is NOT_REQUIRED.
 ## This workflow never does
 
 - Flip live apply_entry or start apply-ready-jobs from this file.
-- Click Add All, View All and add the list, or press Start.
+- Give this worker a :20 cron or treat hourly apply-ready-jobs as this session.
+- Click Add All, View All and add the list, or press Start, including Start-again refill.
 - Load GROKBOT_RUNTIME, mint a G- id, or enable Grok routines.
 - Inherit grok_cloud closed Submit or Grok's four-check post-autofill.
 - Write the control, heartbeat, or learning_reports tabs, or any second Sheet.
