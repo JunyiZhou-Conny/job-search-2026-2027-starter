@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-16.apply-runtime-convergence+afbe02db66f5
+workflow_version: 2026-09-16.apply-runtime-convergence+7e284dd1a737
 status: retired_from_apply_path
 enabled: false
 needs_browser_lock: false
@@ -176,7 +176,7 @@ If this workflow is invoked anyway, write inventory for history and dedupe only.
 6. New inventory rows stay NEW or SKIP. Do not mint READY_* as apply source.
 7. Keep Jobright source_url. last_stage stays discovered.
 8. Always write apply_url_confidence. Use none when apply_url is empty.
-9. Do not open Original Job Post. Do not start apply-ready-jobs work.
+9. Do not open Original Job Post. Do not start apply-ready-jobs or apply-agent-jobs work.
 
 Stop after a thin inventory pass. Do not infinite-scroll.
 Write the run_log row. lock_result is NOT_REQUIRED.

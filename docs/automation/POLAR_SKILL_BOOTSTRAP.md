@@ -34,6 +34,7 @@ Trusted paths, exact files only:
 - generated/polar/runtime/POLAR_RUNTIME.md
 - generated/polar/workflows/discover-jobs-hourly.md
 - generated/polar/workflows/apply-ready-jobs.md
+- generated/polar/workflows/apply-agent-jobs.md
 - generated/polar/workflows/daily-job-summary.md
 - generated/polar/workflows/production-learning-daily.md
 - generated/polar/workflows/polar-scheduler-heartbeat.md

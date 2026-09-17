@@ -276,6 +276,7 @@ class TestPolarRuntime(unittest.TestCase):
         for name in (
             "discover-jobs-hourly",
             "apply-ready-jobs",
+            "apply-agent-jobs",
             "daily-job-summary",
             "production-learning-daily",
             "polar-scheduler-heartbeat",

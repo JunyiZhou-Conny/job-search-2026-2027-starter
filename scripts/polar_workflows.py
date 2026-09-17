@@ -8,7 +8,16 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 from polar_resume_attach import workflow_lines as resume_workflow_lines
 from polar_policy import (
     APPLY_URL_CONFIDENCE,
+    APPLY_AGENT_WORKFLOW,
+    APPLY_ENTRY_SOURCE,
     APPLY_WORKFLOW_NAMES,
+    AGENT_APPLY_ENTRY_SOURCE,
+    AGENT_APPLY_ENTRY_URL,
+    AGENT_START_ACTION,
+    AGENT_START_AGAIN_AFTER_BATCH,
+    AGENT_START_REPEAT_KEY,
+    START_APPLY_RESUME,
+    POLAR_APPLY_WORKFLOW_NAMES,
     CLAIM_REPEAT_ALREADY,
     CLAIM_REPEAT_RECOVERED,
     DUPLICATE_JOB_KEY_REPEAT_KEY,
@@ -55,6 +64,7 @@ from polar_policy import (
     TRUSTED_REPO,
     WRITING_LOG_COLUMNS,
     CLAIM_REPEAT_MISSING_COLUMN,
+    agent_continuous_caps,
     apply_run_caps,
     bootstrap_prompt,
     capability_preflight_block,
@@ -325,29 +335,62 @@ def _lease_block(name: str) -> str:
         "Unrelated Polar workflows may already be using their own browser surfaces.",
         "",
     ]
-    if name in ("discover-jobs-hourly", "apply-ready-jobs"):
-        if name == "apply-ready-jobs":
+    if name in ("discover-jobs-hourly", *sorted(POLAR_APPLY_WORKFLOW_NAMES)):
+        if name in POLAR_APPLY_WORKFLOW_NAMES:
+            apply_names = sorted(APPLY_WORKFLOW_NAMES)
+            if len(apply_names) == 1:
+                second = apply_names[0]
+            elif len(apply_names) == 2:
+                second = f"{apply_names[0]} or {apply_names[1]}"
+            else:
+                second = ", ".join(apply_names[:-1]) + f", or {apply_names[-1]}"
+            if name == APPLY_AGENT_WORKFLOW:
+                lines.extend(
+                    [
+                        "QUERY run_log for every open apply PARTIAL: workflow in "
+                        + ", ".join(apply_names)
+                        + "; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at.",
+                        "For each open apply-agent-jobs PARTIAL, take the latest parseable Sheet write by that run_id (queue.updated_at on its claims, or incident.recorded_at). That is last_write_at. apply-ready-jobs and grok-apply-jobs still classify on started_at.",
+                        f"polar_policy.start_apply_run_action(..., this_workflow={APPLY_AGENT_WORKFLOW}, last_writes_by_run_id=...) classifies continue | {START_APPLY_RESUME} | NO_WORK | stale_close.",
+                        "If resume: the live PARTIAL is this Polar apply-agent-jobs R-. Attach to that run_id. Do not mint. Do not write a second run_log row. Do not exit NO_WORK. Update the same run_log row. Stay on https://jobright.ai/agent.",
+                        "If NO_WORK: another apply is live (apply-ready-jobs, grok-apply-jobs, or a foreign Polar apply). Mint this invocation's run_id only to write result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit. Do not attach to apply-ready-jobs.",
+                        "If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then mint a new R- and continue. Do not exit NO_WORK.",
+                        "If continue: mint run_id with polar_policy.mint_run_id. Prefix R-. Upsert PARTIAL on that new row.",
+                        "An apply-agent-jobs PARTIAL is live when its last Sheet write by that run (or started_at if no later write) is younger than work_claim.ttl_minutes. A writing session longer than 180 minutes stays live. No write for 180 minutes is stale. This write-based test is for apply-agent-jobs only. It does not change apply-ready-jobs or Grok started_at liveness.",
+                        "One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-agent-jobs while apply-ready-jobs or grok-apply-jobs is live.",
+                        "Do not acquire polar_browser. Do not create grok_browser.",
+                        "",
+                        "If this invocation minted a new R-, upsert a run_log row for that run_id with started_at now and result PARTIAL.",
+                        "If resume, the PARTIAL already exists. Update that same run_id. Do not append a second row.",
+                        "A later crash must still leave that run_log row. Do not append a second row for the same run_id.",
+                        "",
+                    ]
+                )
+            else:
+                lines.extend(
+                    [
+                        "Mint run_id first. Then QUERY run_log for every open apply PARTIAL: workflow in "
+                        + ", ".join(apply_names)
+                        + "; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.",
+                        "A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical ended run_log row.",
+                        "If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.",
+                        "If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.",
+                        "One live real-job applier across Polar (R-) and Grok (G-). Do not start a second "
+                        + second
+                        + " while another apply is live.",
+                        "Do not acquire polar_browser. Do not create grok_browser.",
+                        "",
+                    ]
+                )
+        if name != APPLY_AGENT_WORKFLOW:
             lines.extend(
                 [
-                    "Mint run_id first. Then QUERY run_log for every open apply PARTIAL: workflow in "
-                    + ", ".join(sorted(APPLY_WORKFLOW_NAMES))
-                    + "; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.",
-                    "A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical ended run_log row.",
-                    "If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.",
-                    "If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.",
-                    "One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-ready-jobs or grok-apply-jobs while another apply is live.",
-                    "Do not acquire polar_browser. Do not create grok_browser.",
+                    "Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.",
+                    "A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.",
                     "",
                 ]
             )
-        lines.extend(
-            [
-                "Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.",
-                "A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.",
-                "",
-            ]
-        )
-    if name == "apply-ready-jobs":
+    if name in POLAR_APPLY_WORKFLOW_NAMES:
         lines.extend(
             [
                 "## Work claim",
@@ -537,7 +580,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
             "6. New inventory rows stay NEW or SKIP. Do not mint READY_* as apply source.",
             "7. Keep Jobright source_url. last_stage stays discovered.",
             "8. Always write apply_url_confidence. Use none when apply_url is empty.",
-            "9. Do not open Original Job Post. Do not start apply-ready-jobs work.",
+            "9. Do not open Original Job Post. Do not start apply-ready-jobs or apply-agent-jobs work.",
             "",
             "Stop after a thin inventory pass. Do not infinite-scroll.",
             "Write the run_log row. lock_result is NOT_REQUIRED.",
@@ -546,8 +589,238 @@ def render_discover(operator: Dict[str, Any]) -> str:
     )
 
 
+def _assert_live_apply_entry(operator: Dict[str, Any]) -> None:
+    if operator.get("apply_entry") != APPLY_ENTRY_SOURCE:
+        raise SystemExit(
+            "live apply_entry must stay jobright_recommendations while "
+            "apply-ready-jobs is the production :20 worker"
+        )
+
+
+def _agent_apply_config(operator: Dict[str, Any]) -> Dict[str, Any]:
+    block = operator.get("agent_apply")
+    if not isinstance(block, dict):
+        raise SystemExit("polar_operator.yaml agent_apply is required")
+    if block.get("apply_entry") != AGENT_APPLY_ENTRY_SOURCE:
+        raise SystemExit("agent_apply.apply_entry must be jobright_agent_queue")
+    if block.get("url") != AGENT_APPLY_ENTRY_URL:
+        raise SystemExit(f"agent_apply.url must be {AGENT_APPLY_ENTRY_URL}")
+    if block.get("add_all") != "never":
+        raise SystemExit("agent_apply.add_all must be never")
+    if block.get("start") != AGENT_START_ACTION:
+        raise SystemExit("agent_apply.start must be do_not_press")
+    if block.get("workflow") != APPLY_AGENT_WORKFLOW:
+        raise SystemExit("agent_apply.workflow must be apply-agent-jobs")
+    blockers = block.get("blockers") or []
+    labels = [str((row or {}).get("label") or "") for row in blockers if isinstance(row, dict)]
+    required = (
+        "Resume confirmation",
+        "Missing fields",
+        "Apply Now",
+        "Verification code",
+        "Paused",
+    )
+    if tuple(labels) != required:
+        raise SystemExit("agent_apply.blockers must reuse the grok-apply-jobs Agent labels in order")
+    try:
+        agent_continuous_caps()
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+    return block
+
+
+def _polar_apply_shared_middle(operator: Dict[str, Any], *, live_window_line: str) -> str:
+    caps = apply_run_caps()
+    return _lines(
+        [
+            "## Budget",
+            "",
+            f"max_considered: {caps.max_considered}",
+            f"reserved_priority_slots: {caps.reserved_priority_slots}",
+            "worker_budget: considered_not_submitted",
+            "daily_regular_cap: none",
+            f"prioritized_auto_submit: {str(caps.prioritized_auto_submit).lower()}",
+            "writing_log_required_before_priority_submit: true",
+            "priority_submit_gate: polar_policy.priority_submit_permitted",
+            "run_log_map: jobs_seen=considered, jobs_attempted=forms_reached",
+            "",
+            "3 considered candidates is not 3 submissions.",
+            "Recovery does not consume considered.",
+            "A skip of closed, duplicate, Applied, or hard-fact-conflict consumes considered and continues.",
+            "Stop new Jobright cards when polar_policy.considered_budget_exhausted is true.",
+            live_window_line,
+            "Weight is writing-depth metadata. It is not a slot reservation.",
+            "",
+            "## Autofill",
+            "",
+            "owner: jobright_extension",
+            "max_attempts_per_form: 1",
+            "do_not_use_simplify_copilot: true",
+            "autofill_gate: polar_policy.autofill_action",
+            "page_surface: polar_policy.page_surface",
+            "",
+            "Jobright extension owns autofill on this path. Do not click Simplify Copilot Autofill.",
+            "Autofill once on the real form. Never Run Autofill Again.",
+            "Trust the form DOM. The extension sidebar is not proof.",
+            "",
+            "## Queue lookup",
+            "",
+            "scope: targeted",
+            "full_scan: false",
+            "polar_policy.queue_read_scope is targeted. polar_policy.full_queue_read_permitted is false.",
+            "",
+            "Do not read every queue row. Do not dump READY_* inventory. A 5,000-row full-queue read is forbidden.",
+            "Lookup by job_key, then company+role+location, then status in "
+            + ", ".join(TARGETED_QUEUE_STATUSES)
+            + ".",
+            "A job_key QUERY must return every visible row with that key. polar_policy.plan_queue_upsert_by_job_key.",
+            "Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Do not scan SKIP or READY inventory.",
+            "incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. Do not read every historical incident row.",
+            "READY_* stays inventory/archive, not apply FIFO.",
+            "Blocked-job memory stays. Jobright can re-surface a blocked card. Cheap SKIP. Leave the existing row.",
+            "Do not increment simplify_attempted or simplify_fallback_count. Leave those historical columns blank.",
+            "",
+            "## Post-autofill",
+            "",
+            "trust: form_dom",
+            "sidebar_is_proof: false",
+            "full_form_audit: false",
+            "mode: fast_validation_pass",
+            "check: " + ", ".join(POST_AUTOFILL_CHECKS),
+            "trust_when_populated_no_error_no_known_failure: " + ", ".join(POST_AUTOFILL_TRUSTED_CLASSES),
+            "polar_policy.post_autofill_trust_source is form_dom.",
+            "",
+            *fast_validation_lines(operator),
+            "",
+            "Autofill Yes on a future-sponsorship widget is correct. Forcing No is the defect. Re-classify the exact question with polar_policy.auth_form_action.",
+            "The extension invented Event as a referral. polar_policy.referral_field_action. Clear invented referrals. Do not invent a referrer.",
+            "",
+            "## Mailbox",
+            "",
+            "readable: true",
+            f"verification: {APPLICATION_OUTLOOK_ACTION}",
+            "abandon_on_email_otp: false",
+            "",
+            "Polar may retrieve a verification code or link from the application Outlook inbox in the browser.",
+            "The required browser connector is enough. A missing Polar email connector does not skip verification.",
+            "Do not mark email OTP unrecoverable. Do not abandon a recoverable application.",
+            "User-only remaining steps: " + ", ".join(USER_ONLY_AUTH_STEPS) + ".",
+            f"Mac leftover: {LOCAL_PREFERENCES_PATH} and Polar site notes on jobright.ai may still say the mailbox cannot be read. GitHub wins.",
+            "",
+            "## Memory ownership",
+            "",
+            "canonical: github",
+            f"local_inbox: {LOCAL_PREFERENCES_PATH}",
+            "local_inbox_is_not_strategy: true",
+            "precedence: " + " > ".join(MEMORY_PRECEDENCE),
+            "preference_classes: " + ", ".join(PREFERENCE_CLASSES),
+            "",
+            "GitHub owns durable behavior, policy, and safe facts.",
+            "PREFERENCES.md is a thin local inbox. It is not a second strategy database.",
+            "Do not copy POLAR_RUNTIME or form strategy into PREFERENCES.",
+            "An old PREFERENCES strategy line must not override newer GitHub behavior.",
+            "LOCAL_PRIVATE values may stay local. SECRET_OR_CREDENTIAL must not be promoted.",
+            "If a local learning candidate conflicts with GitHub strategy, follow GitHub and report the conflict.",
+            "Export assigns or preserves pref_YYYYMMDD_NNN ids. Reconcile only after a resolution row is on main.",
+            "",
+            "## Apply-time hard eligibility",
+            "",
+            "Immediately after the employer JD is readable, before login, account creation, or form fill,",
+            "skip PhD-only and undergraduate-only gates.",
+            "Skip phrases include phd only, phd students only, phd candidates only, doctoral students only,",
+            "must be pursuing a phd, must be enrolled in a phd, undergraduate students only,",
+            "undergraduates only, and must be an undergraduate.",
+            "Do not skip PhD preferred, PhD and Master's, or a sentence that says the role is not PhD only.",
+            "Do not skip a line that only says the student must be enrolled in a degree.",
+            "Master's study is not PhD and is not undergraduate-only.",
+            "If the posting matches a skip phrase, status SKIP. Do not authenticate. Do not fill.",
+            "Decide that skip on the Jobright card or employer JD before expensive form work.",
+            f"Incident repeat_key is {DEGREE_LEVEL_REPEAT_KEY}. Category TRIAGE.",
+            "Also skip a 2026 role or start, employment start before 2027-02-16,",
+            "a non-US work location, or an incompatible TS-SCI or polygraph requirement.",
+            "If the page is an HTTP 404, says page not found, no longer open, no longer accepting,",
+            "or that this job or requisition has been removed or closed, SKIP.",
+            "A job id that contains the digits 404 is not a closed page. Barriers removed is not a closed page.",
+            "Close the tab. Do not open a sibling requisition.",
+            "Sponsorship unknown, unavailable, or generally not offered is not a skip.",
+            "F-1 or OPT mentioned on a board is not a skip.",
+            "An exclusive graduation window remains a note, not a skip.",
+            "Do not change graduation-window policy.",
+            "Do not use discover-jobs-hourly as apply admission.",
+            "",
+            "## Employer requisition dedupe",
+            "",
+            "After the employer application is resolved, capture the most stable identity:",
+            "employer_requisition_id, canonical employer apply_url, and ats_job_id.",
+            "Write those named fields. Keep apply_url_confidence.",
+            "Compare against the Sheet and section K.",
+            "If another row already points at the same employer requisition, keep one canonical row.",
+            "The winner is polar_policy.pick_canonical_requisition_row.",
+            "That helper ranks SUBMITTED, then SUBMISSION_UNKNOWN, then live IN_PROGRESS,",
+            "then earlier discovered_at, then job_key.",
+            "Only that canonical job_key may continue toward Submit.",
+            "The other worker marks this row SKIP with blocker duplicate employer requisition and the canonical job_key.",
+            "Do not have both workers back off.",
+            "Do not submit the same employer requisition twice.",
+            "If polar_policy.requisition_submit_blocked returns a sibling, skip this job.",
+            f"Note requisition_suppressed. Incident repeat_key {REQUISITION_REPEAT}.",
+            "Do not create a second ledger.",
+            "",
+        ]
+    )
+
+
+def _polar_apply_ats_finish_lines(*, continue_surface: str) -> List[str]:
+    return [
+        "Authenticate with ordinary browser flows when asked. Account creation is normal work.",
+        "   polar_policy.page_surface distinguishes landing, login, apply CTA, and form.",
+        "   No fillable form exists is investigate_not_unsupported: login, JD, or another Apply. Not unsupported.",
+        "   If the page asks for email verification, polar_policy.email_verification_action. Read application Outlook. Continue.",
+        "   After the real form is visible, increment forms_reached.",
+        "   Autofill once with the Jobright extension. polar_policy.autofill_action. Do not click Copilot Autofill.",
+        "   Fast validation pass on the form DOM, not the sidebar: First Name, Last Name, application email; work-authorization widgets; eligibility-critical widgets; required-but-empty or error widgets; required legal attestations.",
+        "   Trust populated routine widgets with no error and no known failure class. Do not re-read the whole form.",
+        "   Reread the account email field. Academic mailbox on a normal field is wrong.",
+        f"   Incident repeat_key {COPILOT_EMAIL_REPEAT_KEY} if a parser put the school mailbox there.",
+        "Look at the native Resume/CV widget. polar_policy.native_resume_action. Sidebar Completed is ignored.",
+        *[f"   {line}" for line in resume_workflow_lines()],
+        f"   Incident repeat_key {NATIVE_RESUME_REPEAT_KEY} when neither generated nor Perfect Resume / JZ_Resume_2027.pdf can be attached.",
+        "Fill required-but-empty widgets from section A. Do not walk section A against populated widgets. Authorization widgets use polar_policy.auth_form_action.",
+        "   Classify the exact question. Answer only that semantic. Do not copy one fact into another field.",
+        "   If the field is optional, leave it blank. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship.",
+        "   Required future-sponsorship widget: Yes. Required H-1B-named widget: Yes.",
+        "   Required citizenship: China. Required visa type: F-1. Required eligible-to-begin: Yes when no requested start is supplied. When a start is supplied: Yes on/after 2027-02-16 and on/before 2028-02-16; No if earlier; leave the field and BLOCK that job only if later or unparseable.",
+        "   Required authorized-for-any-employer: Yes. Required EAD: No. Required OPT approval: No. Required OPT eligibility: Yes.",
+        "   Required currently-authorized: leave the field and mark BLOCKED on this job only (fact is not_yet_authorized_pending_opt_start; no single static Yes/No). Required sponsorship-to-begin: No.",
+        "   If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity.",
+        "   If it says select Yes or No, or uses not or never with Yes, leave the field and mark BLOCKED on this job only.",
+        "   Country-only lists and work-authorization-without-sponsorship wording: blank if optional, BLOCKED if required.",
+        "   After autofill, correct invented citizenship, a forced No on the future-sponsorship widget, copied sponsorship answers, unasked F-1, extra explanation, and invented referrals.",
+        "   Do not mention immigration in Why-us, motivation, cover letters, or other free response unless the prompt asked.",
+        "   A blocked authorization field must not stop the rest of the worker.",
+        "Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.",
+        "    For every nontrivial free-response question, append one writing_log row.",
+        "    If weight is prioritized, polar_policy.priority_submit_permitted must be true before Submit.",
+        "    If that gate is false, do not Submit. Mark BLOCKED. Continue.",
+        "Before Submit, reread this queue row and the live sibling rows.",
+        "    If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.",
+        "    If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.",
+        "    Fast validation pass passes, then Submit once. Proof is employer-page confirmation plus a matching queue readback.",
+        "    Sidebar Completed is not confirmation. Copilot Completed is not confirmation. polar_policy.submit_outcome is the engineer table.",
+        f"    If confirmation is missing or the queue readback does not match, write SUBMISSION_UNKNOWN. Incident repeat_key {SUBMIT_PROOF_REPEAT_KEY}. polar_policy.uncertain_submit_action. Do not click Submit again.",
+        "If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.",
+        "Return to the matching Jobright tab. polar_policy.jobright_ack_action.",
+        "    Yes / I applied only after employer confirmation. Do not mark Applied if this run did not submit.",
+        f"    last_stage jobright_ack after a truthful ack. Continue the {continue_surface}.",
+        "If this environment cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.",
+        "Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.",
+        "    Reach Polar Jobs through the Google connector. Find Drive file counts. Do not use the browser as the Sheet API.",
+    ]
+
+
 @_register("apply-ready-jobs")
 def render_apply(operator: Dict[str, Any]) -> str:
+    _assert_live_apply_entry(operator)
     caps = apply_run_caps()
     return _lines(
         [
@@ -800,6 +1073,202 @@ def render_apply(operator: Dict[str, Any]) -> str:
     )
 
 
+@_register("apply-agent-jobs")
+def render_apply_agent(operator: Dict[str, Any]) -> str:
+    _assert_live_apply_entry(operator)
+    agent = _agent_apply_config(operator)
+    continuous = agent_continuous_caps()
+    blockers = agent.get("blockers") or []
+    blocker_lines = [
+        f"- {row.get('label')}: {row.get('action')}"
+        for row in blockers
+        if isinstance(row, dict)
+    ]
+    finish = _polar_apply_ats_finish_lines(continue_surface="Agent surface")
+    numbered_finish = []
+    step = 10
+    lead = {
+        "Authenticate with ordinary browser flows when asked. Account creation is normal work.",
+        "Look at the native Resume/CV widget. polar_policy.native_resume_action. Sidebar Completed is ignored.",
+        "Fill required-but-empty widgets from section A. Do not walk section A against populated widgets. Authorization widgets use polar_policy.auth_form_action.",
+        "Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.",
+        "Before Submit, reread this queue row and the live sibling rows.",
+        "If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.",
+        "Return to the matching Jobright tab. polar_policy.jobright_ack_action.",
+        "If this environment cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.",
+        "Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.",
+    }
+    for line in finish:
+        if line in lead:
+            numbered_finish.append(f"{step}. {line}")
+            step += 1
+        else:
+            numbered_finish.append(f"   {line}" if not line.startswith(" ") else line)
+    return _lines(
+        [
+            _open_files(APPLY_AGENT_WORKFLOW),
+            _preferences_reconcile_block(),
+            _secrets_ban(),
+            _lease_block(APPLY_AGENT_WORKFLOW),
+            _sheet_write_contract(),
+            _telemetry_block(),
+            _identity_block(),
+            "## Entry",
+            "",
+            f"entry: {AGENT_APPLY_ENTRY_SOURCE}",
+            "sheet_queue_is_prerequisite: false",
+            f"url: {AGENT_APPLY_ENTRY_URL}",
+            "add_all: never",
+            f"start: {AGENT_START_ACTION}",
+            f"claim_before: {agent.get('claim_before')}",
+            "select_gate: polar_policy.select_next_apply_job",
+            "legacy_ready: polar_policy.legacy_ready_disposition",
+            "executor: polar_local",
+            "run_id_prefix: R",
+            "do_not_load: GROKBOT_RUNTIME",
+            "grok_routines: leave_off",
+            "",
+            "Live Polar apply_entry stays jobright_recommendations. This workflow is the Polar-owned two-slot Agent draft.",
+            "Mint run_id only when start_apply_run_action returns continue or after stale_close. Resume uses the live R-. The prefix is R-. Never mint a G- id.",
+            "Do not open generated/grokbot/runtime/GROKBOT_RUNTIME.md. Do not treat grok-apply-jobs as this run's workflow.",
+            "An empty READY queue is a valid start. Do not FIFO READY_REGULAR or READY_PRIORITY.",
+            "READY_* rows are inventory and dedupe only unless that job_key appears on Jobright.",
+            "select_next_apply_job recovers SUBMISSION_UNKNOWN and abandoned or self-owned IN_PROGRESS only.",
+            "",
+            _polar_apply_shared_middle(
+                operator,
+                live_window_line=(
+                    "Two Polar slots on /agent are the intended later transport: 08:00 and 09:00. "
+                    "This is not an all-day hourly grind. "
+                    "polar_policy.start_apply_run_action with this_workflow=apply-agent-jobs "
+                    "may resume only when every live row is Polar apply-agent-jobs. "
+                    "Any foreign live apply still NO_WORK."
+                ),
+            ),
+            "## Continuous session",
+            "",
+            f"mode: {continuous.mode}",
+            f"stay_on: {continuous.stay_on}",
+            f"schedule: {continuous.schedule}",
+            f"grind: {continuous.grind}",
+            f"intended_transport: {continuous.intended_transport}",
+            f"wake_slots: {', '.join(continuous.wake_slots)}",
+            f"intended_cron_et: {continuous.intended_cron_et}",
+            f"wake_timezone: {continuous.wake_timezone}",
+            f"owner_daily_shape: {continuous.owner_daily_shape}",
+            "cron: none",
+            "enabled: false",
+            f"start: {AGENT_START_ACTION}",
+            f"start_again_after_batch: {continuous.start_again_after_batch}",
+            f"refill: {continuous.refill}",
+            "batch_hint_jobs_added: 10",
+            "daily_submit_quota_action: polar_policy.daily_submit_quota_action",
+            "daily_submit_quota_count: submitted_plus_submission_unknown",
+            f"daily_submit_quota_first_enabled_cap: {continuous.first_enabled_cap}",
+            f"daily_submit_quota_owner_ceiling: {continuous.owner_ceiling}",
+            "practice_share_stop: polar_policy.practice_share_stop_action",
+            f"practice_share_limit: {continuous.practice_share_limit}",
+            f"liveness: {continuous.liveness}",
+            "sleep_network: environment_leave_partial",
+            "",
+            "Stay on https://jobright.ai/agent. Do not open /jobs/recommend from this file.",
+            "Two slots only: 08:00 and 09:00. Not all-day hourly. Do not compile one all-day PARTIAL that chases 100.",
+            "Wake slots 08:00 and 09:00. wake_timezone is unknown. Polar cron is ET; the owner did not name the wake timezone. intended_cron_et 0 8,9 * * * is Polar-ET later, not schedules.cron_et.",
+            "Owner daily shape is unconfirmed: 100/day or 50 morning + 50 afternoon. First enabled cap stays 3 submitted plus SUBMISSION_UNKNOWN. Do not compile 100 as the active cap.",
+            "The owner will try Polar Browser on /agent himself. He does not want to click daily. Polar cron does that only after enable. This file stays disabled.",
+            "Do not set a cron while apply-ready-jobs is the live :20 ET worker.",
+            "max_considered 3 is the per-slot considered budget. When considered_budget_exhausted: write ended_at and stop this slot. Do not leave PARTIAL after a finished slot. A leftover Agent PARTIAL would NO_WORK apply-ready-jobs at :20.",
+            "When daily_submit_quota_action is stop: write ended_at, stop. Do not press Start to chase 100 or 50+50.",
+            "When practice_share_stop_action is stop: stop adding. Cheap SKIP still first. Do not Start leftover chrome.",
+            "ENVIRONMENT (sleep / network / capability drop): leave PARTIAL and last_stage. Stop. Do not press Start. Next slot resume if this Agent row is still the live Polar apply-agent-jobs PARTIAL. If that PARTIAL is stale: stale_close then Job N. Foreign live apply is NO_WORK.",
+            "After a claimed batch drains and quota is not hit: refill from visible matches. Never Add All. Never Start.",
+            "Owner ~10 added is a batch hint, not a selector. The leftover 9 Jobs Added queue is not this run's batch.",
+            f"start_again_after_batch stays {AGENT_START_AGAIN_AFTER_BATCH} until a Mac observe proves Start does not auto-submit.",
+            "",
+            "## Work order",
+            "",
+            "Never invent facts. If a required fact is missing, leave the widget. polar_policy.missing_required_fact_action.",
+            "Missing references: polar_policy.missing_references_action. Do not fabricate DOB, OPT, references, or sponsorship.",
+            "A blocked job must not stall the worker.",
+            "Do not invent a Jobright Turbo credit policy.",
+            "",
+            "Canonical apply: Agent card → cheap SKIP → claim → Agent labels (never Add All, never Start) → Apply Now if available without Start → Autofill → fast validation pass on the form DOM (five classes) → targeted repair → writing → email verify if needed → polar_local Submit → employer confirm → Jobright ack → minimal Sheet write.",
+            "",
+            "considered starts at 0. forms_reached starts at 0. seen starts empty.",
+            "If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.",
+            "If it is duplicate, abort.",
+            "",
+            "Recover first. Filter SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Loop select_next_apply_job with exclude_keys=seen.",
+            "Process each recovery job with the employer finish rules below. Recovery does not consume considered.",
+            "Do not Jobright-ack a recovery unless this run submitted and the employer confirmed.",
+            "",
+            f"Then open {AGENT_APPLY_ENTRY_URL} while already logged in.",
+            "If Matches onboarding blocks, write jobright_matches_onboarding_gate and stop that surface.",
+            "Never click Add All. Do not View All and add the list. Work one job at a time.",
+            f"Do not press Start. polar_policy.agent_start_action is {AGENT_START_ACTION}. Whether Start auto-submits is unknown.",
+            "2026-09-17 screenshot labels only: Standby / Start, 9 Jobs Added, Awaiting Application Start, Generate Custom Resume checked, Confirm Custom Resume Action Required.",
+            "Add All was not visible in that crop. Still never click Add All if it appears.",
+            "Do not Start the leftover Jobs Added queue. Those jobs are not this run's claims unless this run claimed each one.",
+            "+autofill may appear on Top Matches. Do not invent it as Add All or as a selector.",
+            "Leave Generate Custom Resume checked when it is already checked.",
+            "",
+            "Agent surface blockers and the allowed response. Labels only. Do not invent selectors.",
+            *blocker_lines,
+            "",
+            "Loop the current Agent card, then one claimed match, until daily_submit_quota_action is stop, practice_share_stop_action is stop, considered_budget_exhausted, or the loaded list ends and refill is empty.",
+            "Per-slot: when considered_budget_exhausted, write ended_at and stop. The 09:00 slot mints a new R- unless ENVIRONMENT left PARTIAL. This is not an all-day hourly grind.",
+            "Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.",
+            "Do not start apply-ready-jobs from this file.",
+            "",
+            "For each Agent candidate:",
+            "1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.",
+            "2. Targeted Sheet + section K lookup. QUERY that job_key. If the QUERY returns #N/A or #REF!, treat as miss. "
+            f"Incident repeat_key {SHEET_QUERY_NA_REPEAT_KEY}. Do not create scratch_*.",
+            "   If polar_policy.plan_queue_upsert_by_job_key returns abort, do not claim, do not Submit, "
+            f"incident repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}, add the key to seen, continue.",
+            "   polar_policy.consider_jobright_card against Applied, Sheet status including BLOCKED, requisition identity, closed, and hard-fact conflict.",
+            "3. Cheap SKIP first. Read the Agent card and its JD. polar_policy.skip_path_action.",
+            "   Skip closed, duplicate, Applied, Sheet memory, or hard-fact visible on the card. Count considered. Continue.",
+            "   polar_policy.cheap_skip_write_action: leave a terminal Sheet row; otherwise write one SKIP row.",
+            "   Do not claim IN_PROGRESS. Do not press Start. Do not Apply Now. Do not open the employer ATS. Close extra tabs.",
+            "   If the card JD cannot decide eligibility, polar_policy.eligibility_surface_action is open_employer_jd_only. Read that JD. Still no Start, no Apply Now, no login.",
+            "   After an employer-JD-only skip, write SKIP and continue.",
+            "4. Only if still eligible: upsert one queue row if missing. NEW is claimable. Claim with polar_policy.claim_job_key.",
+            "   Read back job_key, status, last_stage, and claim_run_id.",
+            "   If confirm_claim_readback is not CLAIMED, add the key to seen, Skip that job on the Agent surface, and continue. That miss does not consume considered.",
+            "   After a successful new-card claim, increment considered.",
+            "5. Labels only. Do not invent selectors. Reuse grok-apply-jobs Agent labels: Resume confirmation, Missing fields, Apply Now, Verification code, Paused.",
+            "   Screenshot synonym: Confirm Custom Resume Action Required is Resume confirmation.",
+            "   These labels are the application path. They are not the SKIP path. They are not Start.",
+            "6. Confirm company and title. If they do not match, SKIP or BLOCKED. Continue.",
+            "7. Resume confirmation blocker: confirm the Jobright-generated resume. Do not upload the two-page master or any ai_infra file.",
+            "   Missing fields blocker: fill from compiled facts and standing answers only, then Fixed. A required fact this runtime does not hold means leave it and BLOCKED that job.",
+            "8. If Apply Now is visible without pressing Start, Apply Now opens the employer ATS. Confirm company and title. Read the JD. Run apply-time hard eligibility before login or form fill.",
+            f"   If Apply Now is unreachable without Start, status BLOCKED, blocker agent_start_unverified. Incident repeat_key {AGENT_START_REPEAT_KEY}. Do not press Start. Continue.",
+            "9. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.",
+            "   Capture employer identity and run requisition dedupe. Continue only if still eligible.",
+            *numbered_finish,
+            "",
+            "ATS family is only a note.",
+            "Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion.",
+            "Update the same run_id run_log row with polar_policy.apply_run_counters.",
+            "lock_result is NOT_REQUIRED.",
+            "",
+            "## This workflow never does",
+            "",
+            "- Flip live apply_entry or start apply-ready-jobs from this file.",
+            "- Enable this worker or give it a cron while apply-ready-jobs is the live :20 ET worker.",
+            "- Compile an all-day hourly grind, leave PARTIAL after a finished slot, or raise the first cap to 50 or 100 before the owner confirms 100/day vs 50+50.",
+            "- Click Add All, View All and add the list, or press Start, including Start-again refill.",
+            "- Load GROKBOT_RUNTIME, mint a G- id, or enable Grok routines.",
+            "- Inherit grok_cloud closed Submit or Grok's four-check post-autofill.",
+            "- Write the control, heartbeat, or learning_reports tabs, or any second Sheet.",
+            "- Own data/applications.csv or mint ledger ids.",
+            "",
+        ]
+    )
+
+
 @_register("daily-job-summary")
 def render_summary(operator: Dict[str, Any]) -> str:
     return _lines(
@@ -1029,7 +1498,7 @@ def render_cursor(operator: Dict[str, Any]) -> str:
             "Do not click Merge pull request.",
             "Do not enable auto-merge.",
             "Do not flip or rewrite control key github_write_canary.",
-            "Do not start apply-ready-jobs, recover ICE, Submit, or Cloud stale_close.",
+            "Do not start apply-ready-jobs or apply-agent-jobs, recover ICE, Submit, or Cloud stale_close.",
             "Do not write secrets, send mail, or submit applications.",
             "Do not implement or merge pull/149.",
             "Do not encode personal-fact values into git from Polar.",

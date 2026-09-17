@@ -1,7 +1,7 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-16.apply-runtime-convergence+13af40bcf91c
+workflow_version: 2026-09-16.apply-runtime-convergence+e874afe11c6d
 status: production
 enabled: true
 needs_browser_lock: false
@@ -79,7 +79,7 @@ Do not run gh pr merge.
 Do not click Merge pull request.
 Do not enable auto-merge.
 Do not flip or rewrite control key github_write_canary.
-Do not start apply-ready-jobs, recover ICE, Submit, or Cloud stale_close.
+Do not start apply-ready-jobs or apply-agent-jobs, recover ICE, Submit, or Cloud stale_close.
 Do not write secrets, send mail, or submit applications.
 Do not implement or merge pull/149.
 Do not encode personal-fact values into git from Polar.
