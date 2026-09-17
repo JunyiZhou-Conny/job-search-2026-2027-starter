@@ -2184,9 +2184,10 @@ def _clause_looks_named_school(clause: str) -> bool:
     tokens = re.findall(r"[a-z0-9]+", text)
     if not tokens:
         return False
-    # Unprefixed students-only captures are leftmost and greedy, so they
-    # often swallow posting words before the school. Those words are not
-    # the name; only the suffix after the last template token is.
+    # Unprefixed students-only captures swallow posting words. Keep the
+    # suffix after the last template token so "internship is for MIT"
+    # still sees MIT. A host school before generic college/university
+    # is not the enrollment noun — only the token(s) next to that noun.
     if any(tok in _CAPTURE_TEMPLATE_WORDS for tok in tokens):
         start = 0
         for i, tok in enumerate(tokens):
@@ -2200,16 +2201,25 @@ def _clause_looks_named_school(clause: str) -> bool:
         tok in _DEGREE_OR_FIELD_STOP or tok in _GENERIC_SCHOOL_WORDS for tok in tokens
     ):
         return False
-    if any(
-        tok in _NAMED_SCHOOL_LEXEMES and tok not in _GENERIC_SCHOOL_WORDS
-        for tok in tokens
-    ):
-        return True
     if any(phrase in text for phrase in _OFFICIAL_SCHOOL_PHRASES):
         return True
-    # Official names: leftover must be a real school token (york), not "community".
-    return any(tok in _INSTITUTION_WORDS for tok in tokens) and any(
-        tok in _OFFICIAL_SCHOOL_LEFTOVERS for tok in tokens
+    inst_idxs = [i for i, tok in enumerate(tokens) if tok in _INSTITUTION_WORDS]
+    if inst_idxs:
+        last = inst_idxs[-1]
+        if last == 0:
+            return False
+        before = tokens[:last]
+        tail = before[-2:] if len(before) >= 2 else before
+        if any(tok in _OFFICIAL_SCHOOL_LEFTOVERS for tok in tail):
+            return True
+        last_leftover = before[-1]
+        return (
+            last_leftover in _NAMED_SCHOOL_LEXEMES
+            and last_leftover not in _GENERIC_SCHOOL_WORDS
+        )
+    return any(
+        tok in _NAMED_SCHOOL_LEXEMES and tok not in _GENERIC_SCHOOL_WORDS
+        for tok in tokens
     )
 
 

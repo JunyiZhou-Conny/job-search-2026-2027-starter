@@ -654,6 +654,33 @@ class TestInstitutionEnrollmentGate(unittest.TestCase):
             )
         )
 
+    def test_unprefixed_internship_for_named_school_is_a_skip(self):
+        self.assertEqual(
+            institution_enrollment_hard_skip("This internship is for MIT students only."),
+            "named_school",
+        )
+        self.assertEqual(
+            institution_enrollment_hard_skip("This role is for Stanford students only."),
+            "named_school",
+        )
+
+    def test_host_school_before_generic_enrollment_is_not_a_skip(self):
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This internship at MIT is for college students only."
+            )
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This role at MIT is for university students only."
+            )
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This internship is hosted at MIT for college students only."
+            )
+        )
+
     def test_generic_leftover_institution_words_are_not_a_skip(self):
         for text in (
             "community college students only.",
