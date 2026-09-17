@@ -178,10 +178,11 @@ AGENT_CONTINUOUS_MODE = "resume_same_run"
 AGENT_CONTINUOUS_REFILL = "visible_matches_without_start"
 AGENT_START_AGAIN_AFTER_BATCH = "blocked_until_observe"
 AGENT_CONTINUOUS_LIVENESS = "last_write_by_run"
-AGENT_CONTINUOUS_SCHEDULE = "hourly_intended_disabled"
+AGENT_CONTINUOUS_SCHEDULE = "two_slots_intended_disabled"
 AGENT_CONTINUOUS_GRIND = "not_all_day"
-AGENT_CONTINUOUS_TRANSPORT = "hourly"
-AGENT_WAKE_WINDOW = "08:00-09:00"
+AGENT_CONTINUOUS_TRANSPORT = "two_slots"
+AGENT_WAKE_SLOTS = ("08:00", "09:00")
+AGENT_INTENDED_CRON_ET = "0 8,9 * * *"
 AGENT_WAKE_TIMEZONE = "unknown"
 AGENT_OWNER_DAILY_SHAPE = "unconfirmed"
 PRACTICE_LANE = "practice"
@@ -1503,7 +1504,8 @@ class AgentContinuousCaps:
     schedule: str
     grind: str
     intended_transport: str
-    wake_window: str
+    wake_slots: Tuple[str, ...]
+    intended_cron_et: str
     wake_timezone: str
     owner_daily_shape: str
 
@@ -1558,7 +1560,8 @@ def agent_continuous_caps(root: Optional[Path] = None) -> AgentContinuousCaps:
     schedule = str(block.get("schedule") or "").strip()
     grind = str(block.get("grind") or "").strip()
     transport = str(block.get("intended_transport") or "").strip()
-    wake_window = str(block.get("wake_window") or "").strip()
+    raw_slots = block.get("wake_slots")
+    intended_cron = str(block.get("intended_cron_et") or "").strip()
     wake_timezone = str(block.get("wake_timezone") or "").strip()
     daily_shape = str(block.get("owner_daily_shape") or "").strip()
     if mode != AGENT_CONTINUOUS_MODE:
@@ -1581,16 +1584,23 @@ def agent_continuous_caps(root: Optional[Path] = None) -> AgentContinuousCaps:
         )
     if schedule != AGENT_CONTINUOUS_SCHEDULE:
         raise ValueError(
-            "agent_apply.continuous.schedule must be hourly_intended_disabled"
+            "agent_apply.continuous.schedule must be two_slots_intended_disabled"
         )
     if grind != AGENT_CONTINUOUS_GRIND:
         raise ValueError("agent_apply.continuous.grind must be not_all_day")
     if transport != AGENT_CONTINUOUS_TRANSPORT:
         raise ValueError(
-            "agent_apply.continuous.intended_transport must be hourly"
+            "agent_apply.continuous.intended_transport must be two_slots"
         )
-    if wake_window != AGENT_WAKE_WINDOW:
-        raise ValueError("agent_apply.continuous.wake_window must be 08:00-09:00")
+    if not isinstance(raw_slots, list):
+        raise ValueError("agent_apply.continuous.wake_slots must be a list")
+    wake_slots = tuple(str(slot).strip() for slot in raw_slots)
+    if wake_slots != AGENT_WAKE_SLOTS:
+        raise ValueError("wake_slots must be 08:00 and 09:00")
+    if intended_cron != AGENT_INTENDED_CRON_ET:
+        raise ValueError(
+            "intended_cron_et must be 0 8,9 * * * and must stay off schedules.cron_et"
+        )
     if wake_timezone != AGENT_WAKE_TIMEZONE:
         raise ValueError(
             "wake_timezone must stay unknown until the owner names it"
@@ -1611,7 +1621,8 @@ def agent_continuous_caps(root: Optional[Path] = None) -> AgentContinuousCaps:
         schedule=schedule,
         grind=grind,
         intended_transport=transport,
-        wake_window=wake_window,
+        wake_slots=wake_slots,
+        intended_cron_et=intended_cron,
         wake_timezone=wake_timezone,
         owner_daily_shape=daily_shape,
     )

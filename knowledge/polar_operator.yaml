@@ -1,6 +1,6 @@
 last_updated: "2026-09-17"
 policy_revision: "2026-09-16.apply-runtime-convergence"
-source: "Owner 2026-09-16 (supersedes 2026-09-15). Jobright-era apply. Standard future-sponsorship widget is Yes from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title. 2026-09-17: Polar Local owns Jobright Agent. Live apply_entry stays recommendations while apply-ready-jobs is the :20 ET worker. apply-agent-jobs is the disabled hourly-intended Agent draft on /agent (not an all-day 100 grind). First cap 3 until owner confirms 100/day vs 50+50. Wake 08:00-09:00 timezone unknown. Do not enable. Do not press Start. Grok off."
+source: "Owner 2026-09-16 (supersedes 2026-09-15). Jobright-era apply. Standard future-sponsorship widget is Yes from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title. 2026-09-17: Polar Local owns Jobright Agent. Live apply_entry stays recommendations while apply-ready-jobs is the :20 ET worker. apply-agent-jobs is the disabled two-slot Agent draft on /agent (08:00 and 09:00, not all-day hourly). First cap 3. Wake timezone unknown. Polar cron is ET. Do not enable. Do not press Start. Grok off."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
 # Live apply_entry stays jobright_recommendations while apply-ready-jobs
@@ -15,15 +15,20 @@ agent_apply:
   start_reason: "2026-09-17 screenshot: Start is available; whether Start auto-submits is unknown. Do not press Start."
   claim_before: add_to_agent_queue_or_apply_now
   grok_routines: leave_off
-  # Hourly-intended follow-on (polar-continuous-agent.md). Disabled.
-  # Not an all-day 100 grind. Do not flip live apply_entry. Do not press Start.
+  # Two-slot follow-on (polar-continuous-agent.md). Disabled.
+  # 08:00 and 09:00 only. Not all-day hourly. Polar cron is ET;
+  # wake timezone unknown. intended_cron_et is not schedules.cron_et.
+  # Do not flip live apply_entry. Do not press Start.
   continuous:
     mode: resume_same_run
     stay_on: https://jobright.ai/agent
-    schedule: hourly_intended_disabled
+    schedule: two_slots_intended_disabled
     grind: not_all_day
-    intended_transport: hourly
-    wake_window: "08:00-09:00"
+    intended_transport: two_slots
+    wake_slots:
+      - "08:00"
+      - "09:00"
+    intended_cron_et: "0 8,9 * * *"
     wake_timezone: unknown
     owner_daily_shape: unconfirmed
     start_again_after_batch: blocked_until_observe
@@ -378,11 +383,11 @@ schedules:
   apply_agent_jobs:
     workflow: apply-agent-jobs
     cron_et: ""
-    meaning: "Hourly-intended Polar Agent draft on /agent. Not an all-day 100 grind. Wake 08:00-09:00 timezone unknown. First cap 3 until owner confirms 100/day vs 50+50. cron empty until apply-ready-jobs is no longer the live :20. Do not press Start. Do not enable Grok routines."
+    meaning: "Two-slot Polar Agent draft on /agent (08:00 and 09:00). Not all-day hourly. Wake timezone unknown. Polar cron is ET. First cap 3. cron empty until apply-ready-jobs is no longer the live :20. Do not press Start. Do not enable Grok routines."
     enabled: false
     apply_path: false
     needs_browser_lock: false
-    polar_mode: "Draft Saved Polar Workflow. Hourly-intended Jobright Agent session. Polar Local Submit. R- ids. Not grok-apply-jobs. Not hourly apply-ready-jobs. Do not paste into Polar UI while apply-ready-jobs is live."
+    polar_mode: "Draft Saved Polar Workflow. Two-slot Jobright Agent session (08:00 and 09:00). Polar Local Submit. R- ids. Not grok-apply-jobs. Not hourly apply-ready-jobs. Do not paste into Polar UI while apply-ready-jobs is live."
   daily_job_summary:
     workflow: daily-job-summary
     cron_et: "30 21 * * *"

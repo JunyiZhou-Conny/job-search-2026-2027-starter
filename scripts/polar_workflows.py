@@ -1128,7 +1128,7 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             "do_not_load: GROKBOT_RUNTIME",
             "grok_routines: leave_off",
             "",
-            "Live Polar apply_entry stays jobright_recommendations. This workflow is the Polar-owned hourly-intended Agent draft.",
+            "Live Polar apply_entry stays jobright_recommendations. This workflow is the Polar-owned two-slot Agent draft.",
             "Mint run_id only when start_apply_run_action returns continue or after stale_close. Resume uses the live R-. The prefix is R-. Never mint a G- id.",
             "Do not open generated/grokbot/runtime/GROKBOT_RUNTIME.md. Do not treat grok-apply-jobs as this run's workflow.",
             "An empty READY queue is a valid start. Do not FIFO READY_REGULAR or READY_PRIORITY.",
@@ -1138,8 +1138,8 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             _polar_apply_shared_middle(
                 operator,
                 live_window_line=(
-                    "Hourly Polar invocations on /agent are the intended later transport. "
-                    "This is not an all-day 100 grind. "
+                    "Two Polar slots on /agent are the intended later transport: 08:00 and 09:00. "
+                    "This is not an all-day hourly grind. "
                     "polar_policy.start_apply_run_action with this_workflow=apply-agent-jobs "
                     "may resume only when every live row is Polar apply-agent-jobs. "
                     "Any foreign live apply still NO_WORK."
@@ -1152,7 +1152,8 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             f"schedule: {continuous.schedule}",
             f"grind: {continuous.grind}",
             f"intended_transport: {continuous.intended_transport}",
-            f"wake_window: {continuous.wake_window}",
+            f"wake_slots: {', '.join(continuous.wake_slots)}",
+            f"intended_cron_et: {continuous.intended_cron_et}",
             f"wake_timezone: {continuous.wake_timezone}",
             f"owner_daily_shape: {continuous.owner_daily_shape}",
             "cron: none",
@@ -1171,15 +1172,15 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             "sleep_network: environment_leave_partial",
             "",
             "Stay on https://jobright.ai/agent. Do not open /jobs/recommend from this file.",
-            "Hourly is OK later. Do not compile one all-day PARTIAL that chases 100.",
-            "Wake window 08:00-09:00. wake_timezone is unknown. Polar cron is ET; the owner did not name the wake timezone.",
+            "Two slots only: 08:00 and 09:00. Not all-day hourly. Do not compile one all-day PARTIAL that chases 100.",
+            "Wake slots 08:00 and 09:00. wake_timezone is unknown. Polar cron is ET; the owner did not name the wake timezone. intended_cron_et 0 8,9 * * * is Polar-ET later, not schedules.cron_et.",
             "Owner daily shape is unconfirmed: 100/day or 50 morning + 50 afternoon. First enabled cap stays 3 submitted plus SUBMISSION_UNKNOWN. Do not compile 100 as the active cap.",
             "The owner will try Polar Browser on /agent himself. He does not want to click daily. Polar cron does that only after enable. This file stays disabled.",
             "Do not set a cron while apply-ready-jobs is the live :20 ET worker.",
-            "max_considered 3 is the per-wake considered budget, not a daily stop. When considered_budget_exhausted and daily_submit_quota_action is still continue: leave this PARTIAL open. Do not write ended_at. Stop this wake. Next hourly uses resume. Do not turn this wake into an all-day grind.",
+            "max_considered 3 is the per-slot considered budget. When considered_budget_exhausted: write ended_at and stop this slot. Do not leave PARTIAL after a finished slot. A leftover Agent PARTIAL would NO_WORK apply-ready-jobs at :20.",
             "When daily_submit_quota_action is stop: write ended_at, stop. Do not press Start to chase 100 or 50+50.",
             "When practice_share_stop_action is stop: stop adding. Cheap SKIP still first. Do not Start leftover chrome.",
-            "ENVIRONMENT (sleep / network / capability drop): leave PARTIAL and last_stage. Stop. Do not press Start. Next hourly resume if this Agent row is still the live Polar apply-agent-jobs PARTIAL. If that PARTIAL is stale: stale_close then Job N. Foreign live apply is NO_WORK.",
+            "ENVIRONMENT (sleep / network / capability drop): leave PARTIAL and last_stage. Stop. Do not press Start. Next slot resume if this Agent row is still the live Polar apply-agent-jobs PARTIAL. If that PARTIAL is stale: stale_close then Job N. Foreign live apply is NO_WORK.",
             "After a claimed batch drains and quota is not hit: refill from visible matches. Never Add All. Never Start.",
             "Owner ~10 added is a batch hint, not a selector. The leftover 9 Jobs Added queue is not this run's batch.",
             f"start_again_after_batch stays {AGENT_START_AGAIN_AFTER_BATCH} until a Mac observe proves Start does not auto-submit.",
@@ -1215,7 +1216,7 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             *blocker_lines,
             "",
             "Loop the current Agent card, then one claimed match, until daily_submit_quota_action is stop, practice_share_stop_action is stop, considered_budget_exhausted, or the loaded list ends and refill is empty.",
-            "Per-wake: stop new cards when considered_budget_exhausted, but leave PARTIAL if the daily quota remains. This is not an all-day grind.",
+            "Per-slot: when considered_budget_exhausted, write ended_at and stop. The 09:00 slot mints a new R- unless ENVIRONMENT left PARTIAL. This is not an all-day hourly grind.",
             "Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.",
             "Do not start apply-ready-jobs from this file.",
             "",
@@ -1257,7 +1258,7 @@ def render_apply_agent(operator: Dict[str, Any]) -> str:
             "",
             "- Flip live apply_entry or start apply-ready-jobs from this file.",
             "- Enable this worker or give it a cron while apply-ready-jobs is the live :20 ET worker.",
-            "- Compile an all-day 100 grind or raise the first cap to 50 or 100 before the owner confirms 100/day vs 50+50.",
+            "- Compile an all-day hourly grind, leave PARTIAL after a finished slot, or raise the first cap to 50 or 100 before the owner confirms 100/day vs 50+50.",
             "- Click Add All, View All and add the list, or press Start, including Start-again refill.",
             "- Load GROKBOT_RUNTIME, mint a G- id, or enable Grok routines.",
             "- Inherit grok_cloud closed Submit or Grok's four-check post-autofill.",
