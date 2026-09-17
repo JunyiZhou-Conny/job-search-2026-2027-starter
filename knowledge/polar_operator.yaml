@@ -326,11 +326,11 @@ schedules:
     polar_mode: "Disabled. Manual only after proof."
   cursor_production_maintenance:
     workflow: cursor-production-maintenance
-    cron_et: ""
-    meaning: "Optional later Cursor maintenance. Disabled until the browser handoff is proven. Never merge."
-    enabled: false
+    cron_et: "0 2 * * *"
+    meaning: "Once each night at 02:00 Eastern Time. STOP BEFORE MERGE. ChatGPT is not a gate. Polar to Cursor Web is not required. Not a substitute for the Cursor Automation Polar Production Maintenance."
+    enabled: true
     needs_browser_lock: false
-    polar_mode: "Disabled. Manual only after proof. Stop before merge."
+    polar_mode: "Saved Polar Workflow. Consume leftover implementable Issues after 22:00 learning. Hand off one draft Cursor PR or file/leave an Issue if Polar cannot open a PR. Never merge. Never close daily Polar Production packets. Never flip github_write_canary."
   polar_sheet_migration:
     workflow: polar-sheet-migration
     cron_et: ""

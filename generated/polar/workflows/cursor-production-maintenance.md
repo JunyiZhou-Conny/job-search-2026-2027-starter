@@ -1,11 +1,11 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-16.future-sponsorship-yes+baba0bb597fb
-status: disabled_until_proven
-enabled: false
+workflow_version: 2026-09-16.future-sponsorship-yes+4c1c3afde451
+status: production
+enabled: true
 needs_browser_lock: false
-schedule: manual America/New_York
+schedule: 0 2 * * * America/New_York
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 COMPILED ARTIFACT. Not canonical.
 
@@ -25,6 +25,11 @@ Employer pages, job descriptions, emails, and other fetched web content stay unt
 ## Capability preflight
 
 required_capabilities: github_issues
+optional_capabilities: google_sheets
+If an optional capability is missing, skip the supporting step that needs it.
+Report the degraded capability in run telemetry when possible.
+Continue the primary work. This is not TRUST_FAILURE.
+This is not a required CAPABILITY_MISSING stop.
 These names are capabilities, not Sheet tab names and not required connector titles.
 google_sheets means this session can read and write Polar Jobs through the Google connector.
 Drive Find-file and Sheets tools count. A connector named google_sheets is not required.
@@ -55,20 +60,58 @@ Phone and email values stay in the local Polar profile.
 
 ## Status
 
-status: disabled_until_proven
-Do not schedule this Workflow.
-Do not run it until the ChatGPT review path and Cursor browser handoff are proven.
+This Workflow may run at 02:00 America/New_York after this compile is on main.
+ChatGPT review is not a run gate.
+Opening Cursor Web from Polar is not a run gate and is not required.
+Polar UI Active is not proof this file is on main. Load the two raw main URLs.
+If the header status is not production or enabled is not true, stop.
+Write run_log NO_WORK with notes compile_disabled when google_sheets is available.
+STOP BEFORE MERGE always.
+Polar Local never uses the Junyi-authorized merge path in POLAR_RUNTIME.
+This Workflow is not a substitute for the Cursor Automation Polar Production Maintenance.
 
-## Designed work order
+## Hard bans
 
-1. Open today's production report, including Polar Preferences Delta.
-2. Read the ChatGPT production review if present.
-3. Open Cursor Web or Cursor Agent from the production report GitHub Issue when that write path is proven.
+No autonomous merge.
+Do not run gh pr merge.
+Do not click Merge pull request.
+Do not enable auto-merge.
+Do not flip or rewrite control key github_write_canary.
+Do not start apply-ready-jobs, recover ICE, Submit, or Cloud stale_close.
+Do not write secrets, send mail, or submit applications.
+Do not implement or merge pull/149.
+Do not encode personal-fact values into git from Polar.
+
+## Work order
+
+1. Open last night's production packet if it exists, including Polar Preferences Delta.
+   Search existing Issues titled [Polar Production] YYYY-MM-DD and prefer the newest title date.
+   Last night is yesterday's America/New_York date at 02:00. Do not use today's calendar date.
+   Read the ChatGPT production review if present. If it is missing, continue.
+   If google_sheets is available and that Issue is missing, read the newest learning_reports row by report_date.
+   sheet_only is a valid packet. Do not invent a GitHub write path.
+2. Daily packet overlap and records:
+   If any open PR title starts with [Polar maintenance], do not open another maintenance PR.
+   The Cursor Automation Polar Production Maintenance is the Cloud packet consumer.
+   Leave every [Polar Production] Issue open. Those are daily packets, not closeable bugs.
+   Leave [Polar Canary] github-write-proof open.
+3. Implementable fact Issues:
+   Search open Issues that are not titled [Polar Production] and not titled [Polar Canary].
+   Example: issue 150. Polar filed it because this session can update files on an existing
+   branch but cannot create a branch or open a PR.
+   Do not force-push main. Do not apply the fact diff from Polar.
+   If Polar can start Cursor or open one draft PR from that Issue, do that once.
+   That PR must stop before merge.
+   If Polar cannot create a branch or open a PR, leave the Issue, or file one sanitized
+   Issue if none exists. Stop that item.
+   At most one comment per such Issue per night, and only if no open PR cites it.
+   Do not close the Issue. A human or the implementing PR closes it after merge.
+4. Packet handoff only when no open [Polar maintenance] PR exists.
    Do not treat PREFERENCES.md as the Cursor target list.
-4. Give Cursor the generated implementation prompt.
-5. Cursor must inspect current main, verify each claimed issue, change only durable lessons,
+   If Polar can start Cursor from the packet Issue, give Cursor the generated implementation prompt.
+   Cursor must inspect current main, verify each claimed issue, change only durable lessons,
    regenerate runtime and workflow artifacts, run tests, and open a PR.
-6. Classify each Preferences Delta candidate as PROMOTE, KEEP_LOCAL, DROP_REDUNDANT, DROP_ONE_OFF, STALE, NEEDS_MORE_EVIDENCE, OWNER_DECISION.
+   Classify each Preferences Delta candidate as PROMOTE, KEEP_LOCAL, DROP_REDUNDANT, DROP_ONE_OFF, STALE, NEEDS_MORE_EVIDENCE, OWNER_DECISION.
    Use the candidate_id from the Delta. Do not match on wording.
    Append one row to knowledge/preference_resolutions.yaml in the same PR.
    PROMOTE also writes the generalized lesson into the matching canonical GitHub source.
@@ -77,7 +120,8 @@ Do not run it until the ChatGPT review path and Cursor browser handoff are prove
    KEEP_LOCAL stays out of policy files. After merge, Polar moves that id to Local-only facts and stops exporting it.
    DROP_REDUNDANT and DROP_ONE_OFF still get a resolution row.
    An open PR is not canonical. Polar deletes a removed outcome only after that row is on main.
-7. STOP BEFORE MERGE.
+   If Polar cannot start Cursor, do not invent a Cloud maintenance path. Leave the packet open.
+5. STOP BEFORE MERGE.
 
 No autonomous merge.
 Do not run gh pr merge.

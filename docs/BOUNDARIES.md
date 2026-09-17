@@ -51,12 +51,14 @@ against **their** fork. Two Pro accounts do not share automations. See
 `docs/collaborators/SETUP.md`.
 
 A separate Cursor Automation (“Polar Production Maintenance”) is the
-intended consumer of Polar’s nightly `[Polar Production]` packet. It is
+Cloud consumer of Polar’s nightly `[Polar Production]` packet. It is
 **not** created from this repo. Cloud Agents can only read existing
 Automations. Junyi creates it once in the Cursor UI from
 `docs/automation/UI_POINTER.md`. Canonical rules:
-`docs/automation/POLAR_PRODUCTION_MAINTENANCE.md`. Do not enable Polar
-`cursor-production-maintenance` as a substitute.
+`docs/automation/POLAR_PRODUCTION_MAINTENANCE.md`. Polar Local
+`cursor-production-maintenance` at 02:00 is a STOP-BEFORE-MERGE sibling
+handoff. It is not a substitute for that Automation, not a Polar→Cursor
+Web requirement, and not permission to merge or close daily packets.
 
 ## 4. Credentials never enter chat or git
 

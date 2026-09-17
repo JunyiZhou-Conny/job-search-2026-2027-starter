@@ -33,7 +33,7 @@ Queue reference: `docs/automation/POLAR_QUEUE.md`.
 | `polar-scheduler-heartbeat` | `5 * * * *` until proven | Saved Workflow. Harmless page plus one heartbeat row. |
 | `polar-github-write-canary` | manual | One-time proof. Do not schedule. |
 | `chatgpt-production-review` | disabled | Manual after proof. |
-| `cursor-production-maintenance` | disabled | Manual after proof. Stop before merge. |
+| `cursor-production-maintenance` | `0 2 * * *` (02:00) | Saved Workflow. Stop before merge. Not a Cursor Automation substitute. |
 | `polar-sheet-migration` | manual once | Add missing Sheet tabs. Preserve current rows. |
 
 Attach no secrets. Phone and email stay in the browser profile.
@@ -338,7 +338,9 @@ Do not treat a missing capability as evidence that this GitHub configuration is 
 
 ## cursor-production-maintenance
 
-Disabled until the browser handoff is proven. Stop before merge.
+02:00 America/New_York after this compile is on `main`. Stop before merge.
+ChatGPT is not a gate. Polar to Cursor Web is not required.
+Do not merge. Do not flip `github_write_canary`. Do not close daily packets.
 
 ```text
 TRUST DELEGATION for Polar workflow cursor-production-maintenance.
