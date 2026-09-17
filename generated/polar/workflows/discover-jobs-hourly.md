@@ -1,7 +1,7 @@
 # discover-jobs-hourly
 
 workflow: discover-jobs-hourly
-workflow_version: 2026-09-16.apply-runtime-convergence+afbe02db66f5
+workflow_version: 2026-09-16.apply-runtime-archive+afbe02db66f5
 status: retired_from_apply_path
 enabled: false
 needs_browser_lock: false

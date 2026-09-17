@@ -436,13 +436,13 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Writing is evidence-grounded.", text)
         self.assertIn("Referral / how-heard is blank unless a verified fact exists.", text)
 
-    def test_policy_revision_is_apply_runtime_convergence(self):
+    def test_policy_revision_is_apply_runtime_archive(self):
         import yaml
 
         operator = yaml.safe_load(
             (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
         )
-        self.assertEqual(operator["policy_revision"], "2026-09-16.apply-runtime-convergence")
+        self.assertEqual(operator["policy_revision"], "2026-09-16.apply-runtime-archive")
         autofill = operator["autofill"]
         self.assertIs(autofill["full_form_audit"], False)
         self.assertEqual(tuple(autofill["post_autofill_checks"]), FAST_VALIDATION_CLASSES)
