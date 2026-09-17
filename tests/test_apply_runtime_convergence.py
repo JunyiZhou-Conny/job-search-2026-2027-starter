@@ -512,6 +512,13 @@ class TestAgentContinuousFollowOn(unittest.TestCase):
         )
 
     def test_agent_path_does_not_attach_to_ready_or_grok(self):
+        agent_live = {
+            "run_id": "R-20260915-0915",
+            "workflow": "apply-agent-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T09:15:00-04:00",
+            "ended_at": "",
+        }
         ready_live = {
             "run_id": "R-20260916-2320",
             "workflow": "apply-ready-jobs",
@@ -524,6 +531,20 @@ class TestAgentContinuousFollowOn(unittest.TestCase):
             "workflow": "grok-apply-jobs",
             "result": "PARTIAL",
             "started_at": "2026-09-15T09:50:00-04:00",
+            "ended_at": "",
+        }
+        writing_agent = {
+            "run_id": "R-20260915-0621",
+            "workflow": "apply-agent-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T06:20:00-04:00",
+            "ended_at": "",
+        }
+        ready_stale = {
+            "run_id": "R-20260915-0620",
+            "workflow": "apply-ready-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T06:20:00-04:00",
             "ended_at": "",
         }
         self.assertEqual(
@@ -541,6 +562,41 @@ class TestAgentContinuousFollowOn(unittest.TestCase):
                 now=NOW,
             ),
             "NO_WORK",
+        )
+        self.assertEqual(
+            start_apply_run_action(
+                [agent_live, ready_live],
+                this_workflow=APPLY_AGENT_WORKFLOW,
+                now=NOW,
+            ),
+            "NO_WORK",
+        )
+        self.assertEqual(
+            start_apply_run_action(
+                [agent_live, grok_live],
+                this_workflow=APPLY_AGENT_WORKFLOW,
+                now=NOW,
+            ),
+            "NO_WORK",
+        )
+        self.assertEqual(
+            start_apply_run_action(
+                [writing_agent, ready_live],
+                this_workflow=APPLY_AGENT_WORKFLOW,
+                last_writes_by_run_id={
+                    "R-20260915-0621": "2026-09-15T10:00:00-04:00"
+                },
+                now=NOW,
+            ),
+            "NO_WORK",
+        )
+        self.assertEqual(
+            start_apply_run_action(
+                [agent_live, ready_stale],
+                this_workflow=APPLY_AGENT_WORKFLOW,
+                now=NOW,
+            ),
+            START_APPLY_RESUME,
         )
 
     def test_write_liveness_is_agent_path_only(self):

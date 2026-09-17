@@ -1466,6 +1466,12 @@ def _start_agent_apply_run_action(
         if not live_id:
             live_id = run_id
             live_workflow = workflow
+            continue
+        if (
+            workflow != APPLY_AGENT_WORKFLOW
+            or executor_from_run_id(run_id) != EXECUTOR_POLAR
+        ):
+            return "NO_WORK"
     if live_id:
         if (
             live_workflow == APPLY_AGENT_WORKFLOW
