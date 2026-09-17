@@ -39,7 +39,7 @@ TEMPLATE_OWNER_NEEDLES = (
 TEMPLATE_OWNER_ANCHOR_NEEDLES = (
     "2026-12-18",
     "2027-03",
-    "2027-01-18",
+    "2027-02-16",
     "December 2026 (program completion)",
 )
 TRIAGE_RULES_RELATIVE = "knowledge/discovery_triage_rules.yaml"

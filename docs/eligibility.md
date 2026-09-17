@@ -9,7 +9,7 @@ Use `ineligible` only when at least one of these is true and verified from the p
 - U.S. citizenship required
 - Active security clearance required
 - Internship requires return-to-school / a graduation window that matches **neither** real date: I-20 program end **2026-12-18** (December 2026 completion) **nor** commencement / school listing **March 2027**
-- Start date conflicts with available work authorization timing (planned earliest FT **2027-01-18** from program end + OPT; confirm with HIO)
+- Start date conflicts with available work authorization timing (earliest FT **2027-02-16**, OPT EAD start owner-confirmed 2026-09-16; confirm with HIO)
 - Location / work model is actually unacceptable (including a clear
   non-US work city/country such as Belgrade; `non_us_location`)
 - Role cannot be reasonably connected to your background (Health Data Science + target clusters)
@@ -67,13 +67,13 @@ sponsorship on a field that did not ask.
 
 | Exact question | Fact | Required | Optional |
 |---|---|---|---|
-| Will you now or in the future require visa sponsorship? | `future_sponsorship_required` | **No** | leave blank |
-| Do you require sponsorship to begin employment? | `sponsorship_required_to_begin` | unknown → BLOCK that job | leave blank |
-| Will you require H-1B sponsorship? | `h1b_sponsorship_required` | **No** | leave blank |
+| Will you now or in the future require visa sponsorship? | `future_sponsorship_required` | **Yes** | leave blank |
+| Do you require sponsorship to begin employment? | `sponsorship_required_to_begin` | **No** | leave blank |
+| Will you require H-1B sponsorship? | `h1b_sponsorship_required` | **Yes** | leave blank |
 | Are you a U.S. citizen? / country of citizenship | `citizenship_country` | **China** | leave blank |
 | What is your visa / status? | `current_status` | **F-1** | leave blank |
-| Are you currently authorized to work in the U.S.? | `current_us_work_authorization` | unknown → BLOCK that job | leave blank |
-| Are you authorized to work in the U.S.? (no currently/now) | `legally_eligible_to_begin_immediately` | **Yes** | leave blank |
+| Are you currently authorized to work in the U.S.? | `current_us_work_authorization` | `not_yet_authorized_pending_opt_start` (no single static Yes/No) → BLOCK that job | leave blank |
+| Are you authorized to work in the U.S.? (no currently/now) | `legally_eligible_to_begin_immediately` | **Yes** when the role start is on/after 2027-02-16 and on/before 2028-02-16 (`polar_policy.auth_form_action`; Polar apply defaults to that window). **No** if the requested start is earlier. Standing today-bool is still false. | leave blank |
 | Authorized to work for any employer? | `authorized_for_any_employer` | **Yes** | leave blank |
 | Do you have an EAD? | `opt_ead_in_possession` | **No** | leave blank |
 | Has OPT been approved? | `opt_approved` | **No** | leave blank |

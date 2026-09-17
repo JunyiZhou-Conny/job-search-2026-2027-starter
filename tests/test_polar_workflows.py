@@ -142,8 +142,8 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("Do not pick a sibling from the employer's current openings.", text)
         self.assertIn("clearly says answer Yes or answer No", text)
         self.assertIn("polar_policy.auth_form_action", text)
-        self.assertIn("Required future-sponsorship widget: No.", text)
-        self.assertNotIn("Required future-sponsorship widget: Yes.", text)
+        self.assertIn("Required future-sponsorship widget: Yes.", text)
+        self.assertNotIn("Required future-sponsorship widget: No.", text)
         self.assertIn("A blocked authorization field must not stop the rest of the worker.", text)
         self.assertIn("Barriers removed is not a closed page.", text)
         self.assertIn("17. Update the Sheet after every meaningful stage", text)
@@ -251,7 +251,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
 
     def test_apply_post_autofill_is_fast_validation_pass(self):
         text = read_workflow("apply-ready-jobs")
-        self.assertRegex(text, r"(?m)^workflow_version: 2026-09-15\.future-sponsorship-no\+[0-9a-f]{12}$")
+        self.assertRegex(text, r"(?m)^workflow_version: 2026-09-16\.future-sponsorship-yes\+[0-9a-f]{12}$")
         post = parse_contract_block(text, "Post-autofill")
         self.assertEqual(post.get("trust"), "form_dom")
         self.assertEqual(post.get("sidebar_is_proof"), "false")
@@ -282,8 +282,8 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("Routine forms are the default path. Complex signals: account_or_otp_required, workday_or_eightfold_multistep, large_compliance_block, nontrivial_writing, unusual_eligibility.", text)
         self.assertIn("autofill_corrections=<class tokens>", text)
         # Safeties the pass keeps.
-        self.assertIn("Required future-sponsorship widget: No. Required H-1B-named widget: No.", text)
-        self.assertNotIn("Required future-sponsorship widget: Yes.", text)
+        self.assertIn("Required future-sponsorship widget: Yes. Required H-1B-named widget: Yes.", text)
+        self.assertNotIn("Required future-sponsorship widget: No. Required H-1B-named widget: No.", text)
         self.assertIn("Reread the account email field. Academic mailbox on a normal field is wrong.", text)
         self.assertIn("Clear invented referrals. Do not invent a referrer.", text)
         self.assertIn("Yes / I applied only after employer confirmation.", text)
@@ -292,7 +292,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
         learning = read_workflow("production-learning-daily")
         self.assertIn("- Autofill corrections by class, from autofill_corrections tokens in run_log notes", learning)
         for name in WORKFLOW_RENDERERS:
-            self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-15\.future-sponsorship-no\+", name)
+            self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-16\.future-sponsorship-yes\+", name)
 
     def test_compiler_refuses_short_or_renamed_auth_verify_list(self):
         import copy

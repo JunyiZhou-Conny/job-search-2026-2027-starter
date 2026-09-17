@@ -2,7 +2,7 @@
 
 COMPILED ARTIFACT. Not canonical.
 
-policy_revision: 2026-09-15.future-sponsorship-no
+policy_revision: 2026-09-16.future-sponsorship-yes
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 | Workflow | Status | Lock | Raw URL |
@@ -20,12 +20,12 @@ runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2
 Saved Polar Workflows store only the trust-delegation bootstrap from docs/automation/POLAR_WORKFLOWS.md.
 They load the two owner-designated raw main files on each run.
 
-- `discover-jobs-hourly` workflow_version `2026-09-15.future-sponsorship-no+2a458ebb623a`
-- `apply-ready-jobs` workflow_version `2026-09-15.future-sponsorship-no+11ff673cad39`
-- `daily-job-summary` workflow_version `2026-09-15.future-sponsorship-no+73e8412a69d7`
-- `production-learning-daily` workflow_version `2026-09-15.future-sponsorship-no+76ee67e650b6`
-- `polar-scheduler-heartbeat` workflow_version `2026-09-15.future-sponsorship-no+9892abac3f82`
-- `polar-github-write-canary` workflow_version `2026-09-15.future-sponsorship-no+951051b259e1`
-- `chatgpt-production-review` workflow_version `2026-09-15.future-sponsorship-no+bf2dab21ffc7`
-- `cursor-production-maintenance` workflow_version `2026-09-15.future-sponsorship-no+baba0bb597fb`
-- `polar-sheet-migration` workflow_version `2026-09-15.future-sponsorship-no+2651642dbe7c`
+- `discover-jobs-hourly` workflow_version `2026-09-16.future-sponsorship-yes+2a458ebb623a`
+- `apply-ready-jobs` workflow_version `2026-09-16.future-sponsorship-yes+1e557c63f8b0`
+- `daily-job-summary` workflow_version `2026-09-16.future-sponsorship-yes+73e8412a69d7`
+- `production-learning-daily` workflow_version `2026-09-16.future-sponsorship-yes+76ee67e650b6`
+- `polar-scheduler-heartbeat` workflow_version `2026-09-16.future-sponsorship-yes+9892abac3f82`
+- `polar-github-write-canary` workflow_version `2026-09-16.future-sponsorship-yes+951051b259e1`
+- `chatgpt-production-review` workflow_version `2026-09-16.future-sponsorship-yes+bf2dab21ffc7`
+- `cursor-production-maintenance` workflow_version `2026-09-16.future-sponsorship-yes+baba0bb597fb`
+- `polar-sheet-migration` workflow_version `2026-09-16.future-sponsorship-yes+2651642dbe7c`

@@ -59,21 +59,21 @@ Approved documents. Attach only when the form asks for that class. Never paste c
 - Citizenship country (form and fact): China
 - Permanent resident elsewhere since citizenship: No
 - Current visa type when asked: F-1
-- Future sponsorship required (standing fact): False
-- Required future-sponsorship widget: No. Execution: answer_from_future_sponsorship_required.
+- Future sponsorship required (standing fact): True
+- Required future-sponsorship widget: Yes. Execution: answer_from_future_sponsorship_required.
 - Answer only the asked semantic. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship on a field that did not ask.
 - Optional identity or status fields stay blank. Required and clear fields get the one matching fact. Required and unclear fields BLOCK that job only.
 - If the form names F-1, J-1, or M-1 and clearly says answer Yes or answer No, follow that polarity on that widget. If polarity is unclear, leave the field.
 - Country-only sponsorship lists and work-authorization-without-sponsorship wording stay unresolved when required, and blank when optional.
-- H-1B-named widget: No
+- H-1B-named widget: Yes
 - Authorized-for-any-employer widget: Yes
-- Required currently-authorized widget: leave unresolved. The current-authorization fact is unknown.
+- Required currently-authorized widget: leave unresolved. Standing fact is not_yet_authorized_pending_opt_start (authorized only 2027-02-16 to 2028-02-16; compute against today's date; no single static Yes/No).
 - Required EAD widget: No. Required OPT-approval widget: No. Required OPT-eligibility widget: Yes.
 - Program end / I-20 date: 2026-12-18
 - Commencement: 2027-03
 - Graduation date widget: 2026-12-18
 - Year-only graduation widget: 2027
-- Earliest full-time start: 2027-01-18
+- Earliest full-time start: 2027-02-16
 - Preferred intern term: Summer 2027
 - Remote ok: False
 - Preferred work mode: in-person or hybrid
@@ -88,8 +88,8 @@ This list is a fill table. Do not walk it against every populated widget after A
 - how_heard_or_referral: (blank). When: How did you hear about this role / referral source / Event.
 - employed_by_this_company_before: No. When: Have you been employed by [this company] in the past?.
 - open_to_relocating: Yes. When: Are you open to relocating?.
-- h1b_named_question_only: No.
-- visa_sponsorship: No. When: Will you now or in the future require visa sponsorship? Answer the future_sponsorship_required fact only. Do not mention F-1, OPT, EAD, or citizenship.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
+- h1b_named_question_only: Yes.
+- visa_sponsorship: Yes. When: Will you now or in the future require visa sponsorship? Answer the future_sponsorship_required fact only. Do not mention F-1, OPT, EAD, or citizenship.. DO NOT AUTO-MAP: Will you now or in the future require work authorization to work in the U.S.?. Do not treat that wording as this answer. Leave it unresolved. Seen: Quantbot Greenhouse 2026-09-04. Polar set No from the standing sponsorship answer. The widget says work authorization, not visa sponsorship. Leave for Junyi until that wording is confirmed.
 - citizenship_country: China. When: Country of citizenship / nationality. Also the export-control country widget..
 - permanent_resident_elsewhere: No. When: Since obtaining your most recent citizenship, did you become a permanent resident elsewhere?.
 - eligible_to_begin_employment_immediately: Yes. When: If offered employment, would you be legally eligible to begin employment immediately?.
@@ -154,7 +154,7 @@ discover-jobs-hourly is not apply admission.
 - `non_target_role` (hard, default skip): Skip roles clearly outside SWE / data / ML / AI infra targets (e.g. data-center technician, pure QA-only, unrelated clinical non-tech, wholesale sales). Adjacent cyber/quant may be later, not automatic skip.
 - `sponsorship_not_skip` (hard, default keep): Never skip because sponsorship is unknown, unavailable, F-1 or OPT is mentioned, the company generally does not sponsor, or a board predicts sponsorship difficulty. Keep an otherwise-qualified job. Sponsorship is not a discovery rejection axis.
 - `hard_gate` (hard, default skip): Skip only when board text clearly shows an incompatible hard gate that is independent of graduation wording: PhD-only, or polygraph/TS-SCI when not viable. An exclusive graduation or enrollment window that matches NEITHER (A) program end 2026-12-18 / December 2026 completion, NOR (B) commencement / school-listed March 2027 is a non-blocking eligibility note, not a skip, unless another hard rule independently applies (remote, non_us_location, start_date_conflict / 2026 job term, PhD-only, TS-SCI). Do not invent a graduation date. Application time still answers widgets truthfully (2026-12-18 / year 2027). Examples that should NOT auto-skip: "graduating Spring 2027", "December 2026 graduates", "currently pursuing a degree". Soft/vague windows stay a note. Return-to-school after internship: evaluate against still being a student through program end and ceremony timing; if unclear, prefer later/keep over skip and note uncertainty.
-- `start_date_conflict` (hard, default skip): Candidate target work window: internships starting Summer 2027 (preferred), and full-time on/after 2027-01-18. SKIP when the ROLE TERM / START is in 2026: - "Summer 2026", "Fall 2026", "Spring 2026", "Winter 2026" intern/co-op - "2026 Intern", "Intern 2026", "new grad 2026 start", start Jun–Dec 2026 - Any clear employment start before 2027-01-18 KEEP/review targets: Summer 2027 intern, Fall 2027 if relevant, 2027 FT. IMPORTANT — do NOT skip only because text mentions the candidate's graduation / program end "December 2026" / "2026-12-18". That is the person's date, not the job's start year. Skip on job-cycle/start-year 2026.
+- `start_date_conflict` (hard, default skip): Candidate target work window: internships starting Summer 2027 (preferred), and full-time on/after 2027-02-16 (OPT EAD start, owner-confirmed 2026-09-16). SKIP when the ROLE TERM / START is in 2026: - "Summer 2026", "Fall 2026", "Spring 2026", "Winter 2026" intern/co-op - "2026 Intern", "Intern 2026", "new grad 2026 start", start Jun–Dec 2026 - Any clear employment start before 2027-02-16 KEEP/review targets: Summer 2027 intern, Fall 2027 if relevant, 2027 FT. IMPORTANT — do NOT skip only because text mentions the candidate's graduation / program end "December 2026" / "2026-12-18". That is the person's date, not the job's start year. Skip on job-cycle/start-year 2026.
 - `timing_expired` (hard, default skip): Same policy as start_date_conflict for intern cycles: any 2026 internship term is out of scope (not only "already over"). Prefer skip when the posting is a 2026 intern/new-grad cycle. Summer 2027+ is the default keep window for internships.
 - `traditional_student_coop` (soft, default later_or_skip): Heavy "must be enrolled full-time undergrad / credit-hour co-op" framing with weak SWE fit → skip or later. Do not skip strong SWE/ML internships merely because they say "currently pursuing a degree" — candidate remains in program through December 2026 program end (commencement March 2027).
 - `intern_ok` (policy, default allow_keep): Internships remain co-primary with new-grad, but only for 2027 cycles (esp. Summer 2027). 2026 internship terms are NOT ok — use start_date_conflict / timing_expired. Prefer keep/later when graduation wording is uncertain but the term is clearly 2027. Use grad_display_hint: program_end (default), dual_date (Spring/March wording), or either.
@@ -171,7 +171,7 @@ F-1 or OPT mentioned on a board is not a skip.
 Do not invent work_model, location, graduation windows, or H1B facts.
 Blank location is not an automatic skip.
 apply-ready-jobs reads the full employer posting immediately after it is open, before login or form fill.
-A fuller JD can reveal a 2026 start, a start before 2027-01-18, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip.
+A fuller JD can reveal a 2026 start, a start before 2027-02-16, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip.
 Those degree-level misses share repeat_key degree_level_gate_missed_at_discovery.
 
 ## D. Regular vs prioritized policy
@@ -722,7 +722,7 @@ Jobright Autofill is the default filler. Polar is anomaly detection and targeted
 Full-form audit is off. polar_policy.full_form_audit_permitted is false.
 Verify only these five classes on the employer form DOM. polar_policy.post_autofill_checks. polar_policy.post_autofill_field_action is the engineer table.
 - identity: first_name, last_name, application_email. Legal first and last name from config/profile.yaml. Normal email fields show the local APPLICATION mailbox. No full profile audit. Legal first name Junyi. Legal last name Zhou.
-- work_authorization: citizenship, visa_status, status_yes_no, current_work_authorization, authorization_at_start, authorized_for_any_employer, authorization_without_sponsorship, sponsorship_to_begin, future_sponsorship, h1b_sponsorship, opt_eligibility, opt_approval, ead_possession, work_authorization_wording, country_specific_sponsorship. These are every kind polar_policy.auth_form_action classifies. Re-read each present widget of these kinds even when Autofill populated it. knowledge/work_authorization.yaml stays authoritative. Classify the exact question with polar_policy.auth_form_action and answer only that semantic. Required currently-authorized or sponsorship-to-begin with an unknown fact: leave the field and BLOCK that job only. Optional widgets of these kinds stay blank; clear a guessed value when the widget allows it, and if it cannot be cleared the value must match auth_form_action or the job is BLOCKED. Do not fill unasked OPT, EAD, or immigration widgets.
+- work_authorization: citizenship, visa_status, status_yes_no, current_work_authorization, authorization_at_start, authorized_for_any_employer, authorization_without_sponsorship, sponsorship_to_begin, future_sponsorship, h1b_sponsorship, opt_eligibility, opt_approval, ead_possession, work_authorization_wording, country_specific_sponsorship. These are every kind polar_policy.auth_form_action classifies. Re-read each present widget of these kinds even when Autofill populated it. knowledge/work_authorization.yaml stays authoritative. Classify the exact question with polar_policy.auth_form_action and answer only that semantic. Required currently-authorized with an unknown or non-bool fact (not_yet_authorized_pending_opt_start): leave the field and BLOCK that job only. Required sponsorship-to-begin is No. Optional widgets of these kinds stay blank; clear a guessed value when the widget allows it, and if it cannot be cleared the value must match auth_form_action or the job is BLOCKED. Do not fill unasked OPT, EAD, or immigration widgets.
 - eligibility_critical: enrollment_status, graduation_timing, internship_eligibility, work_location_or_relocation, minimum_age, security_clearance, citizenship_when_genuinely_relevant. Only widgets that decide eligibility for this role. Not every generic question.
 - required_empty_or_error: required_but_empty, validation_error, unanswered_required_radio, required_combobox_left_at_select, jobright_sidebar_complete_but_employer_dom_empty. Employer DOM is truth. Fill from section A facts or leave for Junyi and BLOCK that job only. Never invent.
 - required_legal_compliance: required_attestation, required_consent_checkbox, required_export_control, required_automated_script_declaration. Only when the widgets exist and are required on this form. Do not generalize one employer's seven compliance questions to every form.
@@ -739,7 +739,7 @@ Do not:
 
 Known failure classes. Repair from facts. Note the class:
 - nickname_on_legal_first_name: wrong value Conny. Repair: First Name is the legal first name from config/profile.yaml. Upstream candidate: Jobright profile name field or generated resume header. Owner action. Status unknown. Do not assume the profile was fixed. repeat_key autofill_nickname_on_legal_first_name. Observed: Owner-observed 2026-09-15, production run R-20260914-2309.
-- sponsorship_yes_on_future_sponsorship_widget: wrong value Yes. Repair: future_sponsorship_required is false. Required widget answer is No. polar_policy.auth_form_action. Forcing Yes is the defect. Upstream candidate: A later correction or profile setting that forces Yes. Owner action if Jobright profile still says Yes. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_yes_on_future_sponsorship_widget. Observed: Owner policy 2026-09-15. Retires the Autofill-No-is-defect class..
+- sponsorship_no_on_future_sponsorship_widget: wrong value No. Repair: future_sponsorship_required is true. Required widget answer is Yes. polar_policy.auth_form_action. Forcing No is the defect. Upstream candidate: Jobright profile or Autofill still answering No from the 2026-09-15 fact. Owner action if the profile still says No. Status unknown. Do not assume the profile was fixed. repeat_key autofill_sponsorship_no_on_future_sponsorship_widget. Observed: Owner policy 2026-09-16. Restores the Autofill-No-is-defect class. Retires the 2026-09-15 Autofill-Yes-is-defect class..
 - academic_mailbox_on_application_field: wrong value academic mailbox. Repair: Local APPLICATION mailbox. polar_policy.contact_email_action. repeat_key copilot_academic_mailbox_on_application_field.
 - invented_referral: wrong value Event. Repair: Blank unless a verified referral fact exists. polar_policy.referral_field_action. repeat_key invented_referral. Observed: Jobright-era apply 2026-09-15.
 - citizenship_not_china: wrong value United States. Repair: China. Observed: Copilot on Twitch 2026-09-03, pre-Jobright.

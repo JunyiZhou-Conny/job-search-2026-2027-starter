@@ -684,7 +684,7 @@ def render_apply_workflow_body(operator: Dict[str, Any], caps: ApplyRunCaps, ena
         "Do not skip PhD preferred, PhD and Master's, or a sentence that says the role is not PhD only.",
         "Master's study is not PhD and is not undergraduate-only.",
         f"If the posting matches a skip phrase, status SKIP. Do not authenticate. Do not fill. Incident repeat_key {DEGREE_LEVEL_REPEAT_KEY}. Category TRIAGE.",
-        "Also skip a 2026 role or start, employment start before 2027-01-18, a non-US work location, or an incompatible TS-SCI or polygraph requirement.",
+        "Also skip a 2026 role or start, employment start before 2027-02-16, a non-US work location, or an incompatible TS-SCI or polygraph requirement.",
         "If the page is an HTTP 404, says page not found, no longer open, no longer accepting, or that this job or requisition has been removed or closed, SKIP. Close the tab. Do not open a sibling requisition.",
         "A job id that contains the digits 404 is not a closed page.",
         "Sponsorship unknown, unavailable, or generally not offered is not a skip. F-1 or OPT mentioned on a board is not a skip. An exclusive graduation window is a note, not a skip.",

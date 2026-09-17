@@ -146,10 +146,11 @@ parent-compiler test for computer-use context
 4. Sponsorship widget. Historical: Main's 2026-09-10 mapping answered the
    broad question Yes while Stack A had answered No, with
    `future_sponsorship_required: true` in both files. Owner policy
-   2026-09-15 resolved this by setting `future_sponsorship_required:
-   false`. The standard now-or-future widget is No. Autofill No is
-   correct. Forcing Yes is the defect. H-1B-named stays No. Other
-   authorization widgets keep their own facts.
+   2026-09-15 set `future_sponsorship_required: false` (widget No).
+   Owner policy 2026-09-16 reversed that: `future_sponsorship_required`
+   is true again, so the standard now-or-future widget is Yes. Autofill
+   Yes is correct. Forcing No is the defect. H-1B-named is independently
+   Yes. Other authorization widgets keep their own facts.
 5. Applied means confirmed. `docs/workflow.md:22` says confirm before
    `applied`; `.cursor/rules/12-application-records.mdc:41` lets an apply
    queue click write `applied`.

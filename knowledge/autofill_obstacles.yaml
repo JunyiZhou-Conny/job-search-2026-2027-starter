@@ -109,9 +109,10 @@ phenomena:
       country/region do you have citizenship?" to United States of
       America. Junyi is F-1 (knowledge/work_authorization.yaml
       current_status). The value is wrong on its face even though the
-      correct country is not stored in the repo. Copilot also answered the
+      correct country is not stored in the repo.       Copilot also answered the
       broad immigration sponsorship question No and "legally eligible to
-      begin employment immediately" Yes (earliest start is 2027-01-18).
+      begin employment immediately" Yes (earliest start on file then was
+      2027-01-18; superseded 2026-09-16 by OPT EAD start 2027-02-16).
     implication: >
       A wrong-fact class, not a gap. Any G2 preflight must treat a
       citizenship, nationality, or export-control country widget as
@@ -392,13 +393,15 @@ gaps:
     ask_later: "None unless Junyi changes export-control wording."
 
   - id: copilot_broad_sponsorship_no
-    status: observed_ok
+    status: superseded
     already_in: "knowledge/form_strategy.yaml always.visa_sponsorship"
     form_effect: >
-      Autofill often answers No on visa-sponsorship widgets. Owner
-      policy 2026-09-15 sets the stored future-sponsorship fact to
-      false, so the standing answer is No. Autofill No is correct.
-      Forcing Yes is the defect.
+      Autofill often answers No on visa-sponsorship widgets. That
+      matched owner policy 2026-09-15 (fact false, widget No). Owner
+      policy 2026-09-16 reversed the stored fact to true, so the
+      standing answer is Yes. Autofill Yes is correct. Forcing No is
+      the defect. The 2026-09-03/15 Autofill-No observations remain
+      true as observations.
     ask_later: "None. Re-read the exact widget. Do not copy this Yes onto a different authorization question."
 
   - id: authorized_for_any_employer
