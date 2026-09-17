@@ -4,18 +4,27 @@
 # Family one-pagers stay BUILD artifacts. Per-role routing is postponed.
 # The two-page master stays inventory.
 #
-# 2026-09-15: owner supplied JZ_Resume_2027.pdf. That is the native-file
-# gold copy. SHA256
+# 2026-09-17: owner uploaded replacement Perfect Resume bytes (upload name
+# JZ_Resume_662b.pdf). Installed over JZ_Resume_2027.pdf and the alias.
+# One page, 169078 bytes. SHA256 is pinned in gold_sha256 below and
+# checked by tests/test_polar_resume_attach.py.
+# Superseded 2026-09-15 bytes had SHA256
 # 2ac0791447eef92e48c4b4cd11da1c4cef6cf8ec787ed78a249a2f0568d4238e.
 # Do not invent skills, dates, or metrics from the PDF.
 
 version: 1
-updated: "2026-09-15"
-owner_decision: "Junyi 2026-09-15. Owner-supplied JZ_Resume_2027.pdf. Stored name stays Perfect Resume."
+updated: "2026-09-17"
+owner_decision: "Junyi 2026-09-17. Owner-uploaded replacement bytes installed as JZ_Resume_2027.pdf. Stored name stays Perfect Resume."
 
 stored_name: "Perfect Resume"
 selector: polar_simplify_stored_name
 ingest_pdf: "resumes/Perfect Resume/JZ_Resume_2027.pdf"
+# Pin of the gold bytes on disk. ingest_pdf and compile_alias_pdf must both
+# hash to this. Grok G5 recomputes from disk at compile time.
+gold_sha256: "9819aa260f78ae39dff1e2201f4de97877c71e973f3e6ccc9d55186e1f6b46fe"
+gold_bytes: 169078
+gold_pages: 1
+gold_supplied: "2026-09-17"
 # No Mac path for JZ_Resume_2027.pdf. Do not invent a Desktop 911 path.
 # The 2026-09-14 Desktop JZ_Resume_911.pdf path is retired.
 identified_mac_pdf: ""

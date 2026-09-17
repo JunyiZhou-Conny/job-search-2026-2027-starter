@@ -3,14 +3,15 @@
 Junyi-supervised gold copy. Polar and Simplify already store this resume
 under the name **Perfect Resume**.
 
-The owner file in this folder is `JZ_Resume_2027.pdf` (supplied
-2026-09-15). It is not produced by Resume Stack BUILD. Do not
+The owner file in this folder is `JZ_Resume_2027.pdf`. Current bytes
+are the 2026-09-17 owner upload (one page, 169078 bytes, SHA256 pinned
+as `gold_sha256` in `knowledge/polar_resume_attach.yaml`). They replace
+the 2026-09-15 upload. It is not produced by Resume Stack BUILD. Do not
 overwrite it from `knowledge/evidence_bank.yaml` or family skills.
 
-`perfect_resume.pdf` is the same bytes. Polar compiled runtime and
-workflow text still name that path until the sponsorship Polar
-recompile. Do not treat the older `JZ_Resume_911.pdf` Desktop copy as
-current.
+`perfect_resume.pdf` is the same bytes, kept as an alias so older
+compiled paths still resolve. Do not treat the older
+`JZ_Resume_911.pdf` Desktop copy as current.
 
 Polar attach order is in `knowledge/polar_resume_attach.yaml`.
 Select by the stored name first. Use this file only when a native ATS
