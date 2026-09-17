@@ -1,7 +1,7 @@
 # grok-apply-jobs
 
 workflow: grok-apply-jobs
-workflow_version: 2026-09-15.grok-sibling+c0265e9329b9
+workflow_version: 2026-09-15.grok-sibling+b5b2cd8784e0
 executor: grok_bot
 status: fill_only_until_proven
 enabled: false
@@ -173,6 +173,7 @@ undergraduates only, and must be an undergraduate.
 Do not skip PhD preferred, PhD and Master's, or a sentence that says the role is not PhD only.
 Master's study is not PhD and is not undergraduate-only.
 If the posting matches a skip phrase, status SKIP. Do not authenticate. Do not fill. Incident repeat_key degree_level_gate_missed_at_discovery. Category TRIAGE.
+Also skip an exclusive named-school enrollment gate that does not include the candidate's schools. polar_policy.institution_enrollment_hard_skip. Incident repeat_key institution_named_enrollment_gate.
 Also skip a 2026 role or start, employment start before 2027-02-16, a non-US work location, or an incompatible TS-SCI or polygraph requirement.
 If the page is an HTTP 404, says page not found, no longer open, no longer accepting, or that this job or requisition has been removed or closed, SKIP. Close the tab. Do not open a sibling requisition.
 A job id that contains the digits 404 is not a closed page.

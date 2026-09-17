@@ -154,6 +154,7 @@ discover-jobs-hourly is not apply admission.
 - `non_target_role` (hard, default skip): Skip roles clearly outside SWE / data / ML / AI infra targets (e.g. data-center technician, pure QA-only, unrelated clinical non-tech, wholesale sales). Adjacent cyber/quant may be later, not automatic skip.
 - `sponsorship_not_skip` (hard, default keep): Never skip because sponsorship is unknown, unavailable, F-1 or OPT is mentioned, the company generally does not sponsor, or a board predicts sponsorship difficulty. Keep an otherwise-qualified job. Sponsorship is not a discovery rejection axis.
 - `hard_gate` (hard, default skip): Skip only when board text clearly shows an incompatible hard gate that is independent of graduation wording: PhD-only, or polygraph/TS-SCI when not viable. An exclusive graduation or enrollment window that matches NEITHER (A) program end 2026-12-18 / December 2026 completion, NOR (B) commencement / school-listed March 2027 is a non-blocking eligibility note, not a skip, unless another hard rule independently applies (remote, non_us_location, start_date_conflict / 2026 job term, PhD-only, TS-SCI). Do not invent a graduation date. Application time still answers widgets truthfully (2026-12-18 / year 2027). Examples that should NOT auto-skip: "graduating Spring 2027", "December 2026 graduates", "currently pursuing a degree". Soft/vague windows stay a note. Return-to-school after internship: evaluate against still being a student through program end and ceremony timing; if unclear, prefer later/keep over skip and note uncertainty.
+- `named_school_enrollment` (hard, default skip): Skip when board or JD text exclusively requires enrollment at a specifically named school or campus that is not one of the candidate's schools (Harvard T.H. Chan School of Public Health, Emory University). Example: "currently enrolled MIT students". Do not skip "currently enrolled" / "pursuing a degree" with no named school. Do not skip when the named list includes Harvard or Emory. Independent of degree-level (PhD-only / undergraduate-only) gates. Apply-time helper is polar_policy.institution_enrollment_hard_skip.
 - `start_date_conflict` (hard, default skip): Candidate target work window: internships starting Summer 2027 (preferred), and full-time on/after 2027-02-16 (OPT EAD start, owner-confirmed 2026-09-16). SKIP when the ROLE TERM / START is in 2026: - "Summer 2026", "Fall 2026", "Spring 2026", "Winter 2026" intern/co-op - "2026 Intern", "Intern 2026", "new grad 2026 start", start Jun–Dec 2026 - Any clear employment start before 2027-02-16 KEEP/review targets: Summer 2027 intern, Fall 2027 if relevant, 2027 FT. IMPORTANT — do NOT skip only because text mentions the candidate's graduation / program end "December 2026" / "2026-12-18". That is the person's date, not the job's start year. Skip on job-cycle/start-year 2026.
 - `timing_expired` (hard, default skip): Same policy as start_date_conflict for intern cycles: any 2026 internship term is out of scope (not only "already over"). Prefer skip when the posting is a 2026 intern/new-grad cycle. Summer 2027+ is the default keep window for internships.
 - `traditional_student_coop` (soft, default later_or_skip): Heavy "must be enrolled full-time undergrad / credit-hour co-op" framing with weak SWE fit → skip or later. Do not skip strong SWE/ML internships merely because they say "currently pursuing a degree" — candidate remains in program through December 2026 program end (commencement March 2027).
@@ -171,8 +172,9 @@ F-1 or OPT mentioned on a board is not a skip.
 Do not invent work_model, location, graduation windows, or H1B facts.
 Blank location is not an automatic skip.
 apply-ready-jobs reads the full employer posting immediately after it is open, before login or form fill.
-A fuller JD can reveal a 2026 start, a start before 2027-02-16, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip.
+A fuller JD can reveal a 2026 start, a start before 2027-02-16, a non-US role, PhD-only, undergraduate-only, an exclusive named-school enrollment gate, or TS-SCI/polygraph skip.
 Those degree-level misses share repeat_key degree_level_gate_missed_at_discovery.
+Exclusive named-school enrollment gates that omit the candidate's schools share repeat_key institution_named_enrollment_gate.
 
 ## D. Regular vs prioritized policy
 
@@ -703,6 +705,9 @@ preference_resolutions:
 - pref_20260913_002 | PROMOTE | scripts/polar_policy.py | none
 - pref_20260913_003 | DROP_REDUNDANT | scripts/polar_policy.py | none
 - pref_20260913_004 | PROMOTE | scripts/polar_policy.py | none
+- pref_20260916_001 | PROMOTE | knowledge/work_authorization.yaml | none
+- pref_20260916_002 | PROMOTE | scripts/polar_workflows.py | none
+- pref_20260916_003 | PROMOTE | knowledge/discovery_triage_rules.yaml | none
 Cursor writes generalized lessons and knowledge/preference_resolutions.yaml.
 Default for Polar and for unattended nightly maintenance: STOP BEFORE MERGE.
 Junyi-authorized maintenance path: after tests pass, merge verified maintenance changes with gh. Record merged by this agent. Do not enable GitHub auto-merge. Do not bypass required checks. Do not merge personal-fact values or apply-policy guesses.

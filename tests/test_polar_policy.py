@@ -45,6 +45,11 @@ from polar_policy import (  # noqa: E402
     control_write_persisted,
     degree_level_hard_skip,
     document_availability,
+    candidate_school_names,
+    institution_enrollment_hard_skip,
+    incident_id_tail_scan_permitted,
+    stale_compile_reuse_permitted,
+    INSTITUTION_ENROLLMENT_REPEAT_KEY,
     header_map,
     incident_ids_are_unique,
     load_preference_resolutions,
@@ -573,6 +578,53 @@ class TestDegreeLevelGate(unittest.TestCase):
         )
 
 
+class TestInstitutionEnrollmentGate(unittest.TestCase):
+    def test_profile_schools_include_harvard_and_emory(self):
+        names = candidate_school_names()
+        joined = " ".join(names).lower()
+        self.assertIn("harvard", joined)
+        self.assertIn("emory", joined)
+
+    def test_mit_only_is_skip(self):
+        self.assertEqual(
+            institution_enrollment_hard_skip(
+                "Eligibility restricted to currently enrolled MIT students."
+            ),
+            "named_school",
+        )
+        self.assertEqual(
+            institution_enrollment_hard_skip("Open only to Stanford students."),
+            "named_school",
+        )
+
+    def test_harvard_or_emory_named_list_is_not_a_skip(self):
+        self.assertIsNone(
+            institution_enrollment_hard_skip("Open only to Harvard, MIT, or Stanford students.")
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip("Emory University students only may apply.")
+        )
+
+    def test_unenrolled_degree_language_is_not_a_skip(self):
+        self.assertIsNone(institution_enrollment_hard_skip("Must be currently pursuing a degree."))
+        self.assertIsNone(institution_enrollment_hard_skip("Currently enrolled students are welcome."))
+        self.assertIsNone(institution_enrollment_hard_skip("This internship is PhD students only."))
+
+    def test_repeat_key_aliases_collapse(self):
+        self.assertEqual(
+            canonical_repeat_key("institution_specific_eligibility_gate"),
+            INSTITUTION_ENROLLMENT_REPEAT_KEY,
+        )
+        self.assertEqual(
+            canonical_repeat_key(INSTITUTION_ENROLLMENT_REPEAT_KEY),
+            INSTITUTION_ENROLLMENT_REPEAT_KEY,
+        )
+
+    def test_compile_reuse_and_tail_scan_are_forbidden(self):
+        self.assertFalse(stale_compile_reuse_permitted())
+        self.assertFalse(incident_id_tail_scan_permitted())
+
+
 class TestCanonicalRepeatKey(unittest.TestCase):
     def test_jobright_aliases_collapse(self):
         aliases = (
@@ -1047,6 +1099,7 @@ class TestAuthSemanticSeparation(unittest.TestCase):
     def test_discovery_does_not_skip_on_sponsorship(self):
         self.assertFalse(discovery_skips_on_unknown_sponsorship())
         self.assertIn("sponsorship_not_skip", discovery_guide_rule_ids())
+        self.assertIn("named_school_enrollment", discovery_guide_rule_ids())
         self.assertTrue(self.facts.future_sponsorship_required)
 
     def test_telemetry_outcomes_are_named(self):

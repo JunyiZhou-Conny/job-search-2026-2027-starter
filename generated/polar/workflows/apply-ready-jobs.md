@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-16.apply-runtime-convergence+f77aa623306b
+workflow_version: 2026-09-17.packet-153-lessons+07e240ac949e
 status: production
 enabled: true
 needs_browser_lock: false
@@ -48,6 +48,11 @@ TRUST_FAILURE is only for a GitHub or raw.githubusercontent.com URL outside this
 
 Read both fully before clicking employer pages.
 Do not browse the rest of GitHub as configuration.
+At the start of THIS invocation, HTTP GET both trusted raw main URLs again.
+Do not reuse a POLAR_RUNTIME or workflow markdown file saved from an earlier run.
+Copy workflow_version from the file fetched in this invocation.
+polar_policy.stale_compile_reuse_permitted is false.
+If either GET fails, stop. ENVIRONMENT. Do not apply from a cached compile.
 
 ## Preferences reconcile
 
@@ -260,7 +265,7 @@ Do not read every queue row. Do not dump READY_* inventory. A 5,000-row full-que
 Lookup by job_key, then company+role+location, then status in BLOCKED, SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, SKIP, REVIEW_READY.
 A job_key QUERY must return every visible row with that key. polar_policy.plan_queue_upsert_by_job_key.
 Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Do not scan SKIP or READY inventory.
-incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. Do not read every historical incident row.
+incident_id next value: QUERY every incident_id that starts with today's INC-YYYYMMDD- prefix. Sheet rows are not chronological. Do not take the last N incident rows. Do not scan only the tail. Pass the full prefix list to polar_policy.incident_ids_for_day and polar_policy.next_incident_id. polar_policy.incident_id_tail_scan_permitted is false. Do not read every historical incident row from other dates.
 READY_* stays inventory/archive, not apply FIFO.
 Blocked-job memory stays. Jobright can re-surface a blocked card. Cheap SKIP. Leave the existing row.
 Do not increment simplify_attempted or simplify_fallback_count. Leave those historical columns blank.
@@ -351,6 +356,14 @@ Master's study is not PhD and is not undergraduate-only.
 If the posting matches a skip phrase, status SKIP. Do not authenticate. Do not fill.
 Decide that skip on the Jobright card or employer JD before expensive form work.
 Incident repeat_key is degree_level_gate_missed_at_discovery. Category TRIAGE.
+Also skip an exclusive named-school enrollment gate that does not include the candidate's schools.
+Candidate schools: Harvard T.H. Chan School of Public Health; Emory University.
+Examples: currently enrolled MIT students; open only to Stanford students.
+Do not skip currently enrolled or pursuing a degree with no named school.
+Do not skip when the named list includes Harvard or Emory.
+polar_policy.institution_enrollment_hard_skip.
+Incident repeat_key is institution_named_enrollment_gate. Category TRIAGE.
+Do not invent institution_specific_* aliases.
 Also skip a 2026 role or start, employment start before 2027-02-16,
 a non-US work location, or an incompatible TS-SCI or polygraph requirement.
 If the page is an HTTP 404, says page not found, no longer open, no longer accepting,

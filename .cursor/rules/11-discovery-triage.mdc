@@ -9,7 +9,7 @@ alwaysApply: false
 - Pull jobs with automation scrapers → `data/discovery/YYYY-MM-DD_all.csv`.
 - `scripts/triage_discovery.py` only prepares a review pack; it must **not** regex-decide keep/later/skip.
 - Decisions come from the **AI agent** reading `knowledge/discovery_triage_rules.yaml` + the CSV.
-- Guide rule themes: remote, non_target_role, hard_gate, start_date_conflict, timing_expired, traditional_student_coop, intern_ok, dual_grad_dates, fit_priority, fde, export_compliance, non_us_location.
+- Guide rule themes: remote, non_target_role, hard_gate, named_school_enrollment, start_date_conflict, timing_expired, traditional_student_coop, intern_ok, dual_grad_dates, fit_priority, fde, export_compliance, non_us_location.
 - Forward Deployed / FDE titles → keep and mark (`knowledge/role_families.yaml`). Do not skip them. Do not invent FDE experience.
 - ITAR / EAR / U.S. Person / export compliance → keep. Do not skip. Low care. No need to submit.
 - Dual dates: program end **2026-12-18** (default) + commencement **2027-03**. An exclusive graduation window that matches **neither** date is a non-blocking eligibility note, not a skip. Set `grad_display_hint`. Do not invent a graduation date.

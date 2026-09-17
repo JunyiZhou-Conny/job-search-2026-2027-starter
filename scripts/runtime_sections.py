@@ -642,8 +642,9 @@ def triage_rows(src: RuntimeSources) -> List[Row]:
             polar="apply-ready-jobs reads the full employer posting immediately after it is open, before login or form fill.",
             grok="grok-apply-jobs reads the full employer posting immediately after it is open, before login or form fill.",
         ),
-        shared(f"A fuller JD can reveal a 2026 start, a start before {earliest_ft}, a non-US role, PhD-only, undergraduate-only, or TS-SCI/polygraph skip."),
+        shared(f"A fuller JD can reveal a 2026 start, a start before {earliest_ft}, a non-US role, PhD-only, undergraduate-only, an exclusive named-school enrollment gate, or TS-SCI/polygraph skip."),
         shared("Those degree-level misses share repeat_key degree_level_gate_missed_at_discovery."),
+        shared("Exclusive named-school enrollment gates that omit the candidate's schools share repeat_key institution_named_enrollment_gate."),
     ]
 
 
