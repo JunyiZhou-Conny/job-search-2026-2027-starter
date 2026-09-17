@@ -977,7 +977,7 @@ def render_cursor(operator: Dict[str, Any]) -> str:
             "ChatGPT review is not a run gate.",
             "Opening Cursor Web from Polar is not a run gate and is not required.",
             "Polar UI Active is not proof this file is on main. Load the two raw main URLs.",
-            "If this compiled file still says disabled_until_proven or Do not run, stop.",
+            "If the header status is not production or enabled is not true, stop.",
             "Write run_log NO_WORK with notes compile_disabled when google_sheets is available.",
             "STOP BEFORE MERGE always.",
             "Polar Local never uses the Junyi-authorized merge path in POLAR_RUNTIME.",

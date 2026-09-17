@@ -27,5 +27,5 @@ They load the two owner-designated raw main files on each run.
 - `polar-scheduler-heartbeat` workflow_version `2026-09-16.future-sponsorship-yes+9892abac3f82`
 - `polar-github-write-canary` workflow_version `2026-09-16.future-sponsorship-yes+951051b259e1`
 - `chatgpt-production-review` workflow_version `2026-09-16.future-sponsorship-yes+bf2dab21ffc7`
-- `cursor-production-maintenance` workflow_version `2026-09-16.future-sponsorship-yes+a80710a41752`
+- `cursor-production-maintenance` workflow_version `2026-09-16.future-sponsorship-yes+4c1c3afde451`
 - `polar-sheet-migration` workflow_version `2026-09-16.future-sponsorship-yes+2651642dbe7c`

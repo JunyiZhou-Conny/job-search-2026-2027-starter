@@ -225,6 +225,9 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertNotIn("then merge the PR", text)
         self.assertNotIn("merge it after tests pass", text)
         self.assertNotIn("status: disabled_until_proven", text)
+        self.assertNotIn("disabled_until_proven", text)
+        self.assertNotIn("If this compiled file still says", text)
+        self.assertIn("If the header status is not production or enabled is not true, stop.", text)
         self.assertNotIn("Do not schedule this Workflow.", text)
 
     def test_phase_two_is_disabled(self):

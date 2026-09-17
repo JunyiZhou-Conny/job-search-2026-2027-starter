@@ -1,7 +1,7 @@
 # cursor-production-maintenance
 
 workflow: cursor-production-maintenance
-workflow_version: 2026-09-16.future-sponsorship-yes+a80710a41752
+workflow_version: 2026-09-16.future-sponsorship-yes+4c1c3afde451
 status: production
 enabled: true
 needs_browser_lock: false
@@ -64,7 +64,7 @@ This Workflow may run at 02:00 America/New_York after this compile is on main.
 ChatGPT review is not a run gate.
 Opening Cursor Web from Polar is not a run gate and is not required.
 Polar UI Active is not proof this file is on main. Load the two raw main URLs.
-If this compiled file still says disabled_until_proven or Do not run, stop.
+If the header status is not production or enabled is not true, stop.
 Write run_log NO_WORK with notes compile_disabled when google_sheets is available.
 STOP BEFORE MERGE always.
 Polar Local never uses the Junyi-authorized merge path in POLAR_RUNTIME.
