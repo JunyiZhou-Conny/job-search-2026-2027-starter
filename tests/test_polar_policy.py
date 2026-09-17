@@ -680,6 +680,16 @@ class TestInstitutionEnrollmentGate(unittest.TestCase):
                 "This internship is hosted at MIT for college students only."
             )
         )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This internship at MIT is for students only."
+            )
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This role at Stanford is for students only."
+            )
+        )
 
     def test_generic_leftover_institution_words_are_not_a_skip(self):
         for text in (

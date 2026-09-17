@@ -2111,6 +2111,19 @@ _CAPTURE_TEMPLATE_WORDS = frozenset(
         "position",
     }
 )
+# Host/location schools sit before these words. The enrollment name is the suffix.
+_ENROLLMENT_BREAK_WORDS = frozenset(
+    {
+        "is",
+        "are",
+        "was",
+        "were",
+        "for",
+        "hosted",
+        "located",
+        "based",
+    }
+)
 # No period in the capture class. A later sentence's school name is not this gate.
 _EXCLUSIVE_SCHOOL_NAME = r"[a-z0-9][a-z0-9 ,&'/-]{0,60}"
 # Unprefixed must-be / students-only already swallow preceding text.
@@ -2186,8 +2199,9 @@ def _clause_looks_named_school(clause: str) -> bool:
         return False
     # Unprefixed students-only captures swallow posting words. Keep the
     # suffix after the last template token so "internship is for MIT"
-    # still sees MIT. A host school before generic college/university
-    # is not the enrollment noun — only the token(s) next to that noun.
+    # still sees MIT. Then keep only the span after the last is/for
+    # break so a host school before generic or bare students-only is
+    # not the enrollment noun.
     if any(tok in _CAPTURE_TEMPLATE_WORDS for tok in tokens):
         start = 0
         for i, tok in enumerate(tokens):
@@ -2196,7 +2210,14 @@ def _clause_looks_named_school(clause: str) -> bool:
         tokens = tokens[start:]
         if not tokens:
             return False
-        text = " ".join(tokens)
+    last_break = -1
+    for i, tok in enumerate(tokens):
+        if tok in _ENROLLMENT_BREAK_WORDS:
+            last_break = i
+    tokens = tokens[last_break + 1 :]
+    if not tokens:
+        return False
+    text = " ".join(tokens)
     if all(
         tok in _DEGREE_OR_FIELD_STOP or tok in _GENERIC_SCHOOL_WORDS for tok in tokens
     ):
