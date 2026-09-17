@@ -29,6 +29,7 @@ from polar_policy import (
     KNOWN_AUTOFILL_FAILURE_CLASSES,
     FORM_COMPLEXITY_SIGNALS,
     AUTOFILL_CORRECTIONS_NOTE_TOKEN,
+    SHEET_WRITE_MODE,
     TARGETED_QUEUE_STATUSES,
     USER_ONLY_AUTH_STEPS,
     APPLICATION_OUTLOOK_ACTION,
@@ -58,6 +59,7 @@ from polar_policy import (
     apply_run_caps,
     bootstrap_prompt,
     capability_preflight_block,
+    sheet_io_batching_lines,
     csv_header,
     document_availability,
     load_yaml,
@@ -329,9 +331,9 @@ def _lease_block(name: str) -> str:
         if name == "apply-ready-jobs":
             lines.extend(
                 [
-                    "Mint run_id first. Then QUERY run_log for every open apply PARTIAL: workflow in "
+                    "Mint run_id first. Then one QUERY of run_log for every open apply PARTIAL: workflow in "
                     + ", ".join(sorted(APPLY_WORKFLOW_NAMES))
-                    + "; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.",
+                    + "; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. Do not repeat this QUERY later in the run. polar_policy.start_apply_run_action classifies live versus stale. polar_policy.live_apply_query_is_batched.",
                     "A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical ended run_log row.",
                     "If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.",
                     "If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.",
@@ -395,13 +397,16 @@ def _sheet_write_contract() -> str:
             "## Sheet write contract",
             "",
             "mode: named_header_mapping",
+            "batch: required",
+            f"write_mode: {SHEET_WRITE_MODE}",
+            "one_cell_then_reread: false",
             f"required_readback: {', '.join(REQUIRED_QUEUE_READBACK)}",
             "blank_policy: write_explicit_blank",
             f"never_omit: {APPLY_URL_CONFIDENCE}",
             "",
             "1. Read the actual header row of the tab you are writing.",
             "2. Build a field-name to column mapping from those headers.",
-            "3. Write fields by header name, not by remembered position.",
+            "3. Write fields by header name, not by remembered position. One named-header batch per row mutation. Do not write one cell, reread, then write the next cell.",
             "4. If a value is empty, still write an explicit blank in that named column.",
             "5. Do not shorten a row and shift later fields left.",
             "6. After an important queue write, read back job_key, status, last_stage, and claim_run_id.",
@@ -528,7 +533,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
             "",
             "1. Create run_id. Do not read polar_browser as a mutex.",
             "2. Open Jobright while already logged in only if you are writing inventory.",
-            "3. For each unseen card, write or update one queue row using named header mapping.",
+            "3. For each unseen card, one job_key QUERY then one named-header batch write. Do not scan the full queue.",
             f"   If the live header has no claim_run_id, do not append it. Note {CLAIM_REPEAT_MISSING_COLUMN}.",
             "   If the existing row is IN_PROGRESS, SUBMITTED, SUBMISSION_UNKNOWN, REVIEW_READY, or BLOCKED,",
             "   do not overwrite execution fields. polar_policy.discover_may_overwrite_execution_fields is the check.",
@@ -538,6 +543,7 @@ def render_discover(operator: Dict[str, Any]) -> str:
             "7. Keep Jobright source_url. last_stage stays discovered.",
             "8. Always write apply_url_confidence. Use none when apply_url is empty.",
             "9. Do not open Original Job Post. Do not start apply-ready-jobs work.",
+            *sheet_io_batching_lines(apply_start=False),
             "",
             "Stop after a thin inventory pass. Do not infinite-scroll.",
             "Write the run_log row. lock_result is NOT_REQUIRED.",
@@ -604,16 +610,18 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "",
             "scope: targeted",
             "full_scan: false",
+            "batching: required",
             "polar_policy.queue_read_scope is targeted. polar_policy.full_queue_read_permitted is false.",
             "",
             "Do not read every queue row. Do not dump READY_* inventory. A 5,000-row full-queue read is forbidden.",
-            "Lookup by job_key, then company+role+location, then status in "
+            "Lookup by job_key, then company+role+location only on a job_key miss, then status in "
             + ", ".join(TARGETED_QUEUE_STATUSES)
             + ".",
             "A job_key QUERY must return every visible row with that key. polar_policy.plan_queue_upsert_by_job_key.",
-            "Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Do not scan SKIP or READY inventory.",
+            "Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. One QUERY covers both. Do not scan SKIP or READY inventory.",
             "incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. polar_policy.plan_incident_log_write. Existing id → abort and mint next_incident_id. Append only. Do not overwrite. Do not read every historical incident row.",
             "Do not QUERY the same job_key twice in one card. polar_policy.sheet_io_repeat_lookup_permitted. Do not reread the full run_log after the start query. polar_policy.chatty_sheet_io_permitted is false. polar_policy.run_log_full_history_permitted is false.",
+            *sheet_io_batching_lines(apply_start=True),
             "READY_* stays inventory/archive, not apply FIFO.",
             "Blocked-job memory stays. Jobright can re-surface a blocked card. Cheap SKIP. Leave the existing row.",
             "Do not increment simplify_attempted or simplify_fallback_count. Leave those historical columns blank.",
@@ -717,7 +725,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.",
             "If it is duplicate, abort.",
             "",
-            "Recover first. Filter SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Loop select_next_apply_job with exclude_keys=seen.",
+            "Recover first. One QUERY for SUBMISSION_UNKNOWN and IN_PROGRESS together. polar_policy.recovery_query_is_batched. Loop select_next_apply_job with exclude_keys=seen. Do not repeat that recovery QUERY per card.",
             "Process each recovery job with the employer finish rules below. Recovery does not consume considered.",
             "Do not Jobright-ack a recovery unless this run submitted and the employer confirmed.",
             "",
@@ -728,7 +736,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "",
             "For each Jobright card:",
             "1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.",
-            "2. Targeted Sheet + section K lookup. QUERY that job_key. If the QUERY returns #N/A or #REF!, treat as miss. "
+            "2. Targeted Sheet + section K lookup. One QUERY of that job_key, then stop. If the QUERY returns #N/A or #REF!, treat as miss. "
             f"Incident repeat_key {SHEET_QUERY_NA_REPEAT_KEY}. Do not create scratch_*.",
             "   If polar_policy.plan_queue_upsert_by_job_key returns abort, do not claim, do not Submit, "
             f"incident repeat_key {DUPLICATE_JOB_KEY_REPEAT_KEY}, add the key to seen, continue.",
@@ -789,7 +797,7 @@ def render_apply(operator: Dict[str, Any]) -> str:
             "    Yes / I applied only after employer confirmation. Do not mark Applied if this run did not submit.",
             "    last_stage jobright_ack after a truthful ack. Continue the Recommended List.",
             "16. If this environment cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.",
-            "17. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.",
+            "17. Update the Sheet after every meaningful stage with one named-header batch. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only. Named-field readback is not a second job_key QUERY.",
             "    Reach Polar Jobs through the Google connector. Find Drive file counts. Do not use the browser as the Sheet API.",
             "",
             "ATS family is only a note.",
