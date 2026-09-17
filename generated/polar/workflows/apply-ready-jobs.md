@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-17.packet-153-lessons+07e240ac949e
+workflow_version: 2026-09-17.packet-153-lessons+7438d8f245e4
 status: production
 enabled: true
 needs_browser_lock: false
@@ -358,7 +358,12 @@ Decide that skip on the Jobright card or employer JD before expensive form work.
 Incident repeat_key is degree_level_gate_missed_at_discovery. Category TRIAGE.
 Also skip an exclusive named-school enrollment gate that does not include the candidate's schools.
 Candidate schools: Harvard T.H. Chan School of Public Health; Emory University.
-Examples: currently enrolled MIT students; open only to Stanford students.
+Examples: currently enrolled MIT students; open only to Stanford students;
+New York University students only; Georgia Tech students only.
+Official names skip only when a leftover token is a real school name, not a generic word.
+Do not skip ordinary college, university, school, or institute students.
+Do not skip community college, high school, or business school students.
+Do not skip a later-sentence school mention or an earlier school mention that is not the enrollment gate.
 Do not skip currently enrolled or pursuing a degree with no named school.
 Do not skip when the named list includes Harvard or Emory.
 polar_policy.institution_enrollment_hard_skip.

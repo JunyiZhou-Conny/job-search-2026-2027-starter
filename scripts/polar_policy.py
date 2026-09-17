@@ -2073,6 +2073,44 @@ _INSTITUTION_WORDS = frozenset(
         "school",
     }
 )
+# Official-name leftovers must be distinctive school tokens, not community/high/new.
+_OFFICIAL_SCHOOL_LEFTOVERS = frozenset(
+    {
+        "york",
+        "pennsylvania",
+        "california",
+        "angeles",
+        "georgia",
+    }
+)
+_OFFICIAL_SCHOOL_PHRASES = (
+    "new york university",
+    "university of pennsylvania",
+    "california institute of technology",
+    "university of southern california",
+    "university of california",
+    "georgia institute of technology",
+    "georgia tech",
+    "boston university",
+    "boston college",
+    "johns hopkins",
+    "carnegie mellon",
+    "university of chicago",
+)
+# Unprefixed captures that swallowed the enrollment template are not a school name.
+_CAPTURE_TEMPLATE_WORDS = frozenset(
+    {
+        "must",
+        "currently",
+        "enrolled",
+        "eligibility",
+        "restricted",
+        "limited",
+        "internship",
+        "role",
+        "position",
+    }
+)
 # No period in the capture class. A later sentence's school name is not this gate.
 _EXCLUSIVE_SCHOOL_NAME = r"[a-z0-9][a-z0-9 ,&'/-]{0,60}"
 # Unprefixed must-be / students-only already swallow preceding text.
@@ -2092,9 +2130,9 @@ _EXCLUSIVE_SCHOOL_RES = (
     ),
     re.compile(
         rf"must be (?:a )?(?:current |currently enrolled )?"
-        rf"({_EXCLUSIVE_SCHOOL_NAME_NEAR}) student"
+        rf"(?<![a-z0-9])({_EXCLUSIVE_SCHOOL_NAME_NEAR}) student"
     ),
-    re.compile(rf"({_EXCLUSIVE_SCHOOL_NAME_NEAR}) students only"),
+    re.compile(rf"(?<![a-z0-9])({_EXCLUSIVE_SCHOOL_NAME_NEAR}) students only"),
     re.compile(
         rf"eligibility (?:is )?(?:restricted )?to (?:currently enrolled )?"
         rf"({_EXCLUSIVE_SCHOOL_NAME}) students"
@@ -2146,6 +2184,8 @@ def _clause_looks_named_school(clause: str) -> bool:
     tokens = re.findall(r"[a-z0-9]+", text)
     if not tokens:
         return False
+    if any(tok in _CAPTURE_TEMPLATE_WORDS for tok in tokens):
+        return False
     if all(
         tok in _DEGREE_OR_FIELD_STOP or tok in _GENERIC_SCHOOL_WORDS for tok in tokens
     ):
@@ -2155,10 +2195,11 @@ def _clause_looks_named_school(clause: str) -> bool:
         for tok in tokens
     ):
         return True
-    # Official names: "New York University", not a bare "university students".
+    if any(phrase in text for phrase in _OFFICIAL_SCHOOL_PHRASES):
+        return True
+    # Official names: leftover must be a real school token (york), not "community".
     return any(tok in _INSTITUTION_WORDS for tok in tokens) and any(
-        tok not in _DEGREE_OR_FIELD_STOP and tok not in _GENERIC_SCHOOL_WORDS
-        for tok in tokens
+        tok in _OFFICIAL_SCHOOL_LEFTOVERS for tok in tokens
     )
 
 

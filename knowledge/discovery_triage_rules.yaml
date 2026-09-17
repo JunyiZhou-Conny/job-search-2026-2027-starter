@@ -118,10 +118,17 @@ guide_rules:
       specifically named school or campus that is not one of the
       candidate's schools (Harvard T.H. Chan School of Public Health,
       Emory University). Example: "currently enrolled MIT students".
-      Do not skip "currently enrolled" / "pursuing a degree" with no
-      named school. Do not skip when the named list includes Harvard
-      or Emory. Independent of degree-level (PhD-only / undergraduate-only)
-      gates. Apply-time helper is polar_policy.institution_enrollment_hard_skip.
+      Official names such as New York University skip only when a
+      leftover token is a real school name, not a generic word.
+      Do not skip ordinary "college students" / generic
+      university/college/school/institute. Do not skip community,
+      high, or business school. Do not skip a later-sentence school
+      mention or an earlier school mention that is not the enrollment
+      gate. Do not skip "currently enrolled" / "pursuing a degree"
+      with no named school. Do not skip when the named list includes
+      Harvard or Emory. Independent of degree-level (PhD-only /
+      undergraduate-only) gates. Apply-time helper is
+      polar_policy.institution_enrollment_hard_skip.
 
   - id: start_date_conflict
     severity: hard

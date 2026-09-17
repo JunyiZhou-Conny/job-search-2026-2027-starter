@@ -648,6 +648,30 @@ class TestInstitutionEnrollmentGate(unittest.TestCase):
                 "computer science students only."
             )
         )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "Work at MIT and must be currently enrolled students only."
+            )
+        )
+
+    def test_generic_leftover_institution_words_are_not_a_skip(self):
+        for text in (
+            "community college students only.",
+            "high school students only.",
+            "business school students only.",
+            "local college students only.",
+            "state university students only.",
+            "new university students only.",
+            "our university students only.",
+            "accredited university students only.",
+        ):
+            self.assertIsNone(institution_enrollment_hard_skip(text), text)
+
+    def test_georgia_tech_official_short_name_is_a_skip(self):
+        self.assertEqual(
+            institution_enrollment_hard_skip("Georgia Tech students only."),
+            "named_school",
+        )
 
     def test_later_sentence_school_mention_is_not_a_skip(self):
         self.assertIsNone(
