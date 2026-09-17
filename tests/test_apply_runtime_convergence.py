@@ -190,7 +190,10 @@ class TestStateConcurrency(unittest.TestCase):
         self.assertEqual(missing.prior_status, "NEW")
 
     def test_one_live_apply_across_executors(self):
-        self.assertEqual(APPLY_WORKFLOW_NAMES, frozenset({"apply-ready-jobs", "grok-apply-jobs"}))
+        self.assertEqual(
+            APPLY_WORKFLOW_NAMES,
+            frozenset({"apply-ready-jobs", "apply-agent-jobs", "grok-apply-jobs"}),
+        )
         live = {
             "run_id": "R-20260915-0816",
             "workflow": "apply-ready-jobs",
@@ -214,6 +217,15 @@ class TestStateConcurrency(unittest.TestCase):
         }
         self.assertEqual(start_apply_run_action([grok_live], now=NOW), "NO_WORK")
         self.assertEqual(live_apply_run_id([grok_live], now=NOW), "G-20260915-105000")
+        agent_live = {
+            "run_id": "R-20260915-0915",
+            "workflow": "apply-agent-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T09:15:00-04:00",
+            "ended_at": "",
+        }
+        self.assertEqual(start_apply_run_action([agent_live], now=NOW), "NO_WORK")
+        self.assertEqual(live_apply_run_id([agent_live], now=NOW), "R-20260915-0915")
         closed_partial = {
             "run_id": "R-20260914-1631",
             "workflow": "apply-ready-jobs",

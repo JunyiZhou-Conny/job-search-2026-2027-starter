@@ -1,8 +1,41 @@
-last_updated: "2026-09-16"
+last_updated: "2026-09-17"
 policy_revision: "2026-09-16.apply-runtime-convergence"
-source: "Owner 2026-09-16 (supersedes 2026-09-15). Jobright-era apply. Standard future-sponsorship widget is Yes from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
+source: "Owner 2026-09-16 (supersedes 2026-09-15). Jobright-era apply. Standard future-sponsorship widget is Yes from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title. 2026-09-17: Polar Local owns Jobright Agent; live apply_entry stays recommendations while apply-ready-jobs is the :20 worker. apply-agent-jobs is the Polar-owned Agent draft and stays disabled."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
+# Live apply_entry stays jobright_recommendations while apply-ready-jobs
+# is the production :20 worker (do not flip on main during a live
+# apply-ready-jobs PARTIAL). Polar-owned Agent draft:
+agent_apply:
+  apply_entry: jobright_agent_queue
+  url: https://jobright.ai/agent
+  workflow: apply-agent-jobs
+  add_all: never
+  start: do_not_press
+  start_reason: "2026-09-17 screenshot: Start is available; whether Start auto-submits is unknown. Do not press Start."
+  claim_before: add_to_agent_queue_or_apply_now
+  grok_routines: leave_off
+  observed_2026_09_17:
+    agent_state: Standby / Start
+    jobs_added: "9 Jobs Added"
+    status_line: Awaiting Application Start
+    current_card: Associate AI Software Engineer
+    generate_custom_resume: checked
+    confirm_label: Confirm Custom Resume Action Required
+    resume_title: Junyi Zhou Associate AI Software Engineer
+    add_all_visible_in_crop: false
+  # Labels reused from grok-apply-jobs. Do not invent selectors.
+  blockers:
+    - label: "Resume confirmation"
+      action: "Confirm the Jobright-generated resume. Screenshot label: Confirm Custom Resume Action Required. Do not upload the two-page master or any ai_infra file."
+    - label: "Missing fields"
+      action: "Fill from compiled facts and standing answers only. Fixed when every required field has a truthful value. Otherwise BLOCKED that job."
+    - label: "Apply Now"
+      action: "Opens the employer ATS. Read the JD and run the apply-time skips before login or form fill."
+    - label: "Verification code"
+      action: "Read the newest code from the matching ATS sender in the application Outlook inbox in this browser. Never write the code anywhere."
+    - label: "Paused"
+      action: "Continue only for a job this run still owns. Otherwise Skip."
 autofill:
   owner: jobright_extension
   default_filler: jobright_extension
@@ -320,6 +353,14 @@ schedules:
     enabled: true
     needs_browser_lock: false
     polar_mode: "Saved Polar Workflow on the same named local browser profile. Jobright-first application execution."
+  apply_agent_jobs:
+    workflow: apply-agent-jobs
+    cron_et: ""
+    meaning: "Draft Polar-owned Jobright Agent apply. Off until the live apply-ready-jobs PARTIAL has ended_at and Start auto-submit is known. Do not press Start. Do not enable Grok routines."
+    enabled: false
+    apply_path: false
+    needs_browser_lock: false
+    polar_mode: "Draft Saved Polar Workflow. Jobright Agent entry. Polar Local Submit. R- ids. Not grok-apply-jobs. Do not paste into Polar UI while apply-ready-jobs is live."
   daily_job_summary:
     workflow: daily-job-summary
     cron_et: "30 21 * * *"
@@ -497,6 +538,8 @@ learning_reports_columns:
 # New failure modes may introduce a new canonical key. Do not invent aliases
 # for a key that already exists.
 repeat_keys:
+  agent_start_unverified:
+    meaning: "Jobright Agent Start is available and whether Start auto-submits is unknown. Polar must not press Start. BLOCK that job only when Apply Now is unreachable without Start."
   jobright_matches_onboarding_gate:
     meaning: "Authenticated Jobright Matches (/jobs/recommend) mandatory resume-upload onboarding wall"
     aliases:

@@ -168,6 +168,11 @@ COPILOT_REPEAT_KEY = "simplify_copilot_missing"
 READY_STATUSES = ("READY_REGULAR", "READY_PRIORITY")
 CLAIMABLE_STATUSES = READY_STATUSES + ("NEW",)
 APPLY_ENTRY_SOURCE = "jobright_recommendations"
+APPLY_AGENT_WORKFLOW = "apply-agent-jobs"
+AGENT_APPLY_ENTRY_SOURCE = "jobright_agent_queue"
+AGENT_APPLY_ENTRY_URL = "https://jobright.ai/agent"
+AGENT_START_ACTION = "do_not_press"
+AGENT_START_REPEAT_KEY = "agent_start_unverified"
 AUTOFILL_OWNER = "jobright_extension"
 LEGACY_READY_INVENTORY = "inventory_only"
 PREF_ID_RE = re.compile(r"^pref_(\d{8})_(\d{3})$")
@@ -282,7 +287,8 @@ SHEET_QUERY_NA_REPEAT_KEY = "sheet_query_na"
 TELEMETRY_INCONSISTENCY = "TELEMETRY_INCONSISTENCY"
 STALE_APPLY_CLOSE_NOTE = "stale_apply_closed; reason=no_ended_at_after_ttl"
 STALE_APPLY_CLOSE_RESULT = "FAILED"
-APPLY_WORKFLOW_NAMES = frozenset({"apply-ready-jobs", "grok-apply-jobs"})
+POLAR_APPLY_WORKFLOW_NAMES = frozenset({"apply-ready-jobs", APPLY_AGENT_WORKFLOW})
+APPLY_WORKFLOW_NAMES = POLAR_APPLY_WORKFLOW_NAMES | {"grok-apply-jobs"}
 SHEET_ERROR_TOKENS = frozenset({"#n/a", "#ref!", "#value!", "#name?", "#null!"})
 CHEAP_SKIP_LEAVE_STATUSES = frozenset(
     {
@@ -322,6 +328,7 @@ INCIDENT_ID_RE = re.compile(r"^INC-(\d{8})-(\d{1,3})$")
 TRUSTED_WORKFLOW_NAMES = (
     "discover-jobs-hourly",
     "apply-ready-jobs",
+    APPLY_AGENT_WORKFLOW,
     "daily-job-summary",
     "polar-scheduler-heartbeat",
     "production-learning-daily",
@@ -339,6 +346,7 @@ _SHEET_BROWSER_CAPS = (
 WORKFLOW_REQUIRED_CAPABILITIES: Dict[str, Tuple[str, ...]] = {
     "discover-jobs-hourly": _SHEET_BROWSER_CAPS,
     "apply-ready-jobs": _SHEET_BROWSER_CAPS + (CAPABILITY_LOCAL_FILESYSTEM,),
+    APPLY_AGENT_WORKFLOW: _SHEET_BROWSER_CAPS + (CAPABILITY_LOCAL_FILESYSTEM,),
     "daily-job-summary": (
         CAPABILITY_GOOGLE_SHEETS,
         CAPABILITY_EMAIL,
@@ -1103,6 +1111,7 @@ def canonical_repeat_key(raw: str) -> str:
         ATS_PRIOR_SUBMISSION_REPEAT_KEY,
         DUPLICATE_JOB_KEY_REPEAT_KEY,
         SHEET_QUERY_NA_REPEAT_KEY,
+        AGENT_START_REPEAT_KEY,
     }:
         return token
     return REPEAT_KEY_ALIASES.get(token, token)
@@ -1466,6 +1475,18 @@ def copilot_completed_is_submit_proof() -> bool:
 
 def apply_entry_source() -> str:
     return APPLY_ENTRY_SOURCE
+
+
+def agent_apply_entry_source() -> str:
+    return AGENT_APPLY_ENTRY_SOURCE
+
+
+def agent_start_action() -> str:
+    """Start is available on /agent. Whether it auto-submits is unknown.
+
+    Polar must not press Start until an owner observe answers that.
+    """
+    return AGENT_START_ACTION
 
 
 def autofill_owner() -> str:

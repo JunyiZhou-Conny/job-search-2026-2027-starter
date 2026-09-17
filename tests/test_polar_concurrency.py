@@ -63,7 +63,7 @@ class TestGlobalBrowserLeaseIsGone(unittest.TestCase):
         )
 
     def test_discover_and_apply_ignore_stale_polar_browser(self):
-        for name in ("discover-jobs-hourly", "apply-ready-jobs"):
+        for name in ("discover-jobs-hourly", "apply-ready-jobs", "apply-agent-jobs"):
             text = render_workflow(name, self.operator)
             self.assertIn("needs_browser_lock: false", text, name)
             self.assertIn(

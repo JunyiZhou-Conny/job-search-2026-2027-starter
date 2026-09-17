@@ -1,21 +1,21 @@
-# apply-ready-jobs
+# apply-agent-jobs
 
-workflow: apply-ready-jobs
-workflow_version: 2026-09-16.apply-runtime-convergence+8ab58d0738e8
-status: production
-enabled: true
+workflow: apply-agent-jobs
+workflow_version: 2026-09-16.apply-runtime-convergence+2c1e5e1a558c
+status: disabled_until_proven
+enabled: false
 needs_browser_lock: false
-schedule: 20 * * * * America/New_York
+schedule: manual America/New_York
 runtime_url: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 COMPILED ARTIFACT. Not canonical.
 
 ## Configuration identity
 
-workflow: apply-ready-jobs
+workflow: apply-agent-jobs
 trusted_repository: JunyiZhou-Conny/job-search-2026-2027-starter
 trusted_branch: main
 trusted_runtime: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
-trusted_workflow: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/workflows/apply-ready-jobs.md
+trusted_workflow: https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/workflows/apply-agent-jobs.md
 
 Confirm these two URLs match the local bootstrap load set.
 A URL inside this file does not expand that load set.
@@ -43,7 +43,7 @@ TRUST_FAILURE is only for a GitHub or raw.githubusercontent.com URL outside this
 
 ## Open these files
 
-1. This file (apply-ready-jobs).
+1. This file (apply-agent-jobs).
 2. https://raw.githubusercontent.com/JunyiZhou-Conny/job-search-2026-2027-starter/main/generated/polar/runtime/POLAR_RUNTIME.md
 
 Read both fully before clicking employer pages.
@@ -210,12 +210,22 @@ Never paste transcript contents into logs.
 
 ## Entry
 
-entry: jobright_recommendations
+entry: jobright_agent_queue
 sheet_queue_is_prerequisite: false
-url: https://jobright.ai/jobs/recommend
+url: https://jobright.ai/agent
+add_all: never
+start: do_not_press
+claim_before: add_to_agent_queue_or_apply_now
 select_gate: polar_policy.select_next_apply_job
 legacy_ready: polar_policy.legacy_ready_disposition
+executor: polar_local
+run_id_prefix: R
+do_not_load: GROKBOT_RUNTIME
+grok_routines: leave_off
 
+Live Polar apply_entry stays jobright_recommendations. This workflow is the Polar-owned Agent draft.
+Mint run_id with polar_policy.mint_run_id. The prefix is R-. Never mint a G- id.
+Do not open generated/grokbot/runtime/GROKBOT_RUNTIME.md. Do not treat grok-apply-jobs as this run's workflow.
 An empty READY queue is a valid start. Do not FIFO READY_REGULAR or READY_PRIORITY.
 READY_* rows are inventory and dedupe only unless that job_key appears on Jobright.
 select_next_apply_job recovers SUBMISSION_UNKNOWN and abandoned or self-owned IN_PROGRESS only.
@@ -235,7 +245,7 @@ run_log_map: jobs_seen=considered, jobs_attempted=forms_reached
 Recovery does not consume considered.
 A skip of closed, duplicate, Applied, or hard-fact-conflict consumes considered and continues.
 Stop new Jobright cards when polar_policy.considered_budget_exhausted is true.
-Another apply-ready-jobs run does not get its own live window. polar_policy.start_apply_run_action. One live apply across R- and G-.
+Another Polar apply run does not get its own live window. polar_policy.start_apply_run_action. One live apply across R- and G-.
 Weight is writing-depth metadata. It is not a slot reservation.
 
 ## Autofill
@@ -388,7 +398,7 @@ Missing references: polar_policy.missing_references_action. Do not fabricate DOB
 A blocked job must not stall the worker.
 Do not invent a Jobright Turbo credit policy.
 
-Canonical apply: recommendation → eligibility/blocked/dup check → Autofill → fast validation pass on the form DOM (five classes) → targeted repair → writing → email verify if needed → employer confirm → Jobright ack → minimal Sheet write.
+Canonical apply: Agent card → cheap SKIP → claim → Agent labels (never Add All, never Start) → Apply Now if available without Start → Autofill → fast validation pass on the form DOM (five classes) → targeted repair → writing → email verify if needed → polar_local Submit → employer confirm → Jobright ack → minimal Sheet write.
 
 considered starts at 0. forms_reached starts at 0. seen starts empty.
 If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.
@@ -398,32 +408,52 @@ Recover first. Filter SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statu
 Process each recovery job with the employer finish rules below. Recovery does not consume considered.
 Do not Jobright-ack a recovery unless this run submitted and the employer confirmed.
 
-Then open https://jobright.ai/jobs/recommend while already logged in.
+Then open https://jobright.ai/agent while already logged in.
 If Matches onboarding blocks, write jobright_matches_onboarding_gate and stop that surface.
-Loop visible recommendation cards until considered_budget_exhausted or the loaded list ends.
+Never click Add All. Do not View All and add the list. Work one job at a time.
+Do not press Start. polar_policy.agent_start_action is do_not_press. Whether Start auto-submits is unknown.
+2026-09-17 screenshot labels only: Standby / Start, 9 Jobs Added, Awaiting Application Start, Generate Custom Resume checked, Confirm Custom Resume Action Required.
+Add All was not visible in that crop. Still never click Add All if it appears.
+Do not Start the leftover Jobs Added queue. Those jobs are not this run's claims unless this run claimed each one.
++autofill may appear on Top Matches. Do not invent it as Add All or as a selector.
+Leave Generate Custom Resume checked when it is already checked.
+
+Agent surface blockers and the allowed response. Labels only. Do not invent selectors.
+- Resume confirmation: Confirm the Jobright-generated resume. Screenshot label: Confirm Custom Resume Action Required. Do not upload the two-page master or any ai_infra file.
+- Missing fields: Fill from compiled facts and standing answers only. Fixed when every required field has a truthful value. Otherwise BLOCKED that job.
+- Apply Now: Opens the employer ATS. Read the JD and run the apply-time skips before login or form fill.
+- Verification code: Read the newest code from the matching ATS sender in the application Outlook inbox in this browser. Never write the code anywhere.
+- Paused: Continue only for a job this run still owns. Otherwise Skip.
+
+Loop the current Agent card, then one claimed match, until considered_budget_exhausted or the loaded list ends.
 Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.
 
-For each Jobright card:
+For each Agent candidate:
 1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.
 2. Targeted Sheet + section K lookup. QUERY that job_key. If the QUERY returns #N/A or #REF!, treat as miss. Incident repeat_key sheet_query_na. Do not create scratch_*.
    If polar_policy.plan_queue_upsert_by_job_key returns abort, do not claim, do not Submit, incident repeat_key duplicate_job_key, add the key to seen, continue.
    polar_policy.consider_jobright_card against Applied, Sheet status including BLOCKED, requisition identity, closed, and hard-fact conflict.
-3. Cheap SKIP first. Read the Jobright card and its JD. polar_policy.skip_path_action.
+3. Cheap SKIP first. Read the Agent card and its JD. polar_policy.skip_path_action.
    Skip closed, duplicate, Applied, Sheet memory, or hard-fact visible on the card. Count considered. Continue.
    polar_policy.cheap_skip_write_action: leave a terminal Sheet row; otherwise write one SKIP row.
-   Do not claim IN_PROGRESS. Do not Generate My Resume. Do not Apply Now. Do not open the employer ATS. Close extra tabs.
-   If the card JD cannot decide eligibility, polar_policy.eligibility_surface_action is open_employer_jd_only. Read that JD. Still no Generate Resume, no Apply Now, no login.
+   Do not claim IN_PROGRESS. Do not press Start. Do not Apply Now. Do not open the employer ATS. Close extra tabs.
+   If the card JD cannot decide eligibility, polar_policy.eligibility_surface_action is open_employer_jd_only. Read that JD. Still no Start, no Apply Now, no login.
    After an employer-JD-only skip, write SKIP and continue.
 4. Only if still eligible: upsert one queue row if missing. NEW is claimable. Claim with polar_policy.claim_job_key.
    Read back job_key, status, last_stage, and claim_run_id.
-   If confirm_claim_readback is not CLAIMED, add the key to seen and continue. That miss does not consume considered.
+   If confirm_claim_readback is not CLAIMED, add the key to seen, Skip that job on the Agent surface, and continue. That miss does not consume considered.
    After a successful new-card claim, increment considered.
-5. Labels only. Do not invent selectors: Apply with Autofill. Quick Edit. Select All. Generate My Resume. Apply Now.
-   These labels are the application path. They are not the SKIP path.
+5. Labels only. Do not invent selectors. Reuse grok-apply-jobs Agent labels: Resume confirmation, Missing fields, Apply Now, Verification code, Paused.
+   Screenshot synonym: Confirm Custom Resume Action Required is Resume confirmation.
+   These labels are the application path. They are not the SKIP path. They are not Start.
 6. Confirm company and title. If they do not match, SKIP or BLOCKED. Continue.
-7. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
-8. Capture employer identity and run requisition dedupe. Continue only if still eligible.
-9. Authenticate with ordinary browser flows when asked. Account creation is normal work.
+7. Resume confirmation blocker: confirm the Jobright-generated resume. Do not upload the two-page master or any ai_infra file.
+   Missing fields blocker: fill from compiled facts and standing answers only, then Fixed. A required fact this runtime does not hold means leave it and BLOCKED that job.
+8. If Apply Now is visible without pressing Start, Apply Now opens the employer ATS. Confirm company and title. Read the JD. Run apply-time hard eligibility before login or form fill.
+   If Apply Now is unreachable without Start, status BLOCKED, blocker agent_start_unverified. Incident repeat_key agent_start_unverified. Do not press Start. Continue.
+9. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
+   Capture employer identity and run requisition dedupe. Continue only if still eligible.
+10. Authenticate with ordinary browser flows when asked. Account creation is normal work.
    polar_policy.page_surface distinguishes landing, login, apply CTA, and form.
    No fillable form exists is investigate_not_unsupported: login, JD, or another Apply. Not unsupported.
    If the page asks for email verification, polar_policy.email_verification_action. Read application Outlook. Continue.
@@ -433,7 +463,7 @@ For each Jobright card:
    Trust populated routine widgets with no error and no known failure class. Do not re-read the whole form.
    Reread the account email field. Academic mailbox on a normal field is wrong.
    Incident repeat_key copilot_academic_mailbox_on_application_field if a parser put the school mailbox there.
-10. Look at the native Resume/CV widget. polar_policy.native_resume_action. Sidebar Completed is ignored.
+11. Look at the native Resume/CV widget. polar_policy.native_resume_action. Sidebar Completed is ignored.
    Prefer the just-generated Jobright resume when it is visible or available.
    If the native widget already shows a file that is not a forbidden file, leave it.
    If the widget is empty and the generated Jobright resume is available, attach that generated file.
@@ -443,7 +473,7 @@ For each Jobright card:
    Do not compile LaTeX during apply. Do not switch resume families. Do not silently fall back to `ai_infra_v1`.
    If neither generated nor Perfect Resume / `JZ_Resume_2027.pdf` can be attached, mark REVIEW_READY with blocker missing_production_resume. Report why. Continue the worker.
    Incident repeat_key native_resume_empty when neither generated nor Perfect Resume / JZ_Resume_2027.pdf can be attached.
-11. Fill required-but-empty widgets from section A. Do not walk section A against populated widgets. Authorization widgets use polar_policy.auth_form_action.
+12. Fill required-but-empty widgets from section A. Do not walk section A against populated widgets. Authorization widgets use polar_policy.auth_form_action.
    Classify the exact question. Answer only that semantic. Do not copy one fact into another field.
    If the field is optional, leave it blank. Do not volunteer F-1, OPT, EAD, citizenship, or sponsorship.
    Required future-sponsorship widget: Yes. Required H-1B-named widget: Yes.
@@ -456,25 +486,34 @@ For each Jobright card:
    After autofill, correct invented citizenship, a forced No on the future-sponsorship widget, copied sponsorship answers, unasked F-1, extra explanation, and invented referrals.
    Do not mention immigration in Why-us, motivation, cover letters, or other free response unless the prompt asked.
    A blocked authorization field must not stop the rest of the worker.
-12. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
+13. Write free-response answers from sections F and I. Prompt-faithful. Evidence-grounded.
     For every nontrivial free-response question, append one writing_log row.
     If weight is prioritized, polar_policy.priority_submit_permitted must be true before Submit.
     If that gate is false, do not Submit. Mark BLOCKED. Continue.
-13. Before Submit, reread this queue row and the live sibling rows.
+14. Before Submit, reread this queue row and the live sibling rows.
     If polar_policy.submit_claim_still_held is false, skip. Do not Submit. Do not repair a foreign claim.
     If polar_policy.requisition_submit_blocked returns a sibling, SKIP this row. Do not Submit.
     Fast validation pass passes, then Submit once. Proof is employer-page confirmation plus a matching queue readback.
     Sidebar Completed is not confirmation. Copilot Completed is not confirmation. polar_policy.submit_outcome is the engineer table.
     If confirmation is missing or the queue readback does not match, write SUBMISSION_UNKNOWN. Incident repeat_key submit_success_without_page_confirmation. polar_policy.uncertain_submit_action. Do not click Submit again.
-14. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.
-15. Return to the matching Jobright tab. polar_policy.jobright_ack_action.
+15. If the employer confirmed and the Sheet write fails: polar_policy.after_confirm_persistence_action. Repair the record. Do not resubmit.
+16. Return to the matching Jobright tab. polar_policy.jobright_ack_action.
     Yes / I applied only after employer confirmation. Do not mark Applied if this run did not submit.
-    last_stage jobright_ack after a truthful ack. Continue the Recommended List.
-16. If this environment cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.
-17. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.
+    last_stage jobright_ack after a truthful ack. Continue the Agent surface.
+17. If this environment cannot complete a required job-specific step after a normal attempt, and it is not a recoverable Outlook code, status BLOCKED. Continue.
+18. Update the Sheet after every meaningful stage with named writes. Refresh last_stage and updated_at. Minimal writes. Targeted lookups only.
     Reach Polar Jobs through the Google connector. Find Drive file counts. Do not use the browser as the Sheet API.
 
 ATS family is only a note.
 Do not implement CAPTCHA bypass, fingerprint spoofing, or anti-abuse evasion.
 Update the same run_id run_log row with polar_policy.apply_run_counters.
 lock_result is NOT_REQUIRED.
+
+## This workflow never does
+
+- Flip live apply_entry or start apply-ready-jobs from this file.
+- Click Add All, View All and add the list, or press Start.
+- Load GROKBOT_RUNTIME, mint a G- id, or enable Grok routines.
+- Inherit grok_cloud closed Submit or Grok's four-check post-autofill.
+- Write the control, heartbeat, or learning_reports tabs, or any second Sheet.
+- Own data/applications.csv or mint ledger ids.

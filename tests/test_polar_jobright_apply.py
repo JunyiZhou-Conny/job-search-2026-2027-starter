@@ -13,6 +13,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from polar_policy import (  # noqa: E402
     abandon_application_on_email_otp,
     after_confirm_persistence_action,
+    agent_apply_entry_source,
+    agent_start_action,
     apply_entry_source,
     apply_run_caps,
     apply_run_counters,
@@ -320,6 +322,32 @@ class TestLearningAndDiscoverPath(unittest.TestCase):
             apply,
         )
         self.assertFalse(operator["schedules"]["discover_jobs_hourly"]["enabled"])
+        self.assertFalse(operator["schedules"]["apply_agent_jobs"]["enabled"])
+        self.assertEqual(operator["apply_entry"], "jobright_recommendations")
+        self.assertEqual(operator["agent_apply"]["apply_entry"], "jobright_agent_queue")
+        self.assertEqual(agent_apply_entry_source(), "jobright_agent_queue")
+        self.assertEqual(agent_start_action(), "do_not_press")
+        agent = render_workflow("apply-agent-jobs", operator)
+        self.assertIn("entry: jobright_agent_queue", agent)
+        self.assertIn("url: https://jobright.ai/agent", agent)
+        self.assertIn("start: do_not_press", agent)
+        self.assertIn("add_all: never", agent)
+        self.assertIn("Never click Add All", agent)
+        self.assertIn("Do not press Start", agent)
+        self.assertIn("Confirm Custom Resume Action Required", agent)
+        self.assertIn("Resume confirmation", agent)
+        self.assertIn("Missing fields", agent)
+        self.assertIn("polar_policy.mint_run_id", agent)
+        self.assertIn("The prefix is R-.", agent)
+        self.assertNotIn("Never mint an R- id.", agent)
+        self.assertIn("Do not open generated/grokbot/runtime/GROKBOT_RUNTIME.md", agent)
+        self.assertNotIn("check: identity, contact, sponsorship_wording, referral", agent)
+        self.assertIn("check: identity, work_authorization, eligibility_critical, required_empty_or_error, required_legal_compliance", agent)
+        self.assertIn("Required future-sponsorship widget: Yes.", agent)
+        self.assertIn("Fast validation pass passes, then Submit once.", agent)
+        self.assertIn("repeat_key agent_start_unverified", agent)
+        self.assertIn("enabled: false", agent)
+        self.assertIn("status: disabled_until_proven", agent)
         self.assertIn("scope: targeted", apply)
         self.assertIn("full_scan: false", apply)
         self.assertIn("trust: form_dom", apply)

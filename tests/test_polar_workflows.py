@@ -77,7 +77,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
             lease = parse_contract_block(text, "Browser lease")
             self.assertEqual(lease.get("needs_browser_lock"), "false")
             self.assertIn("historical control state", text)
-            if name == "apply-ready-jobs":
+            if name in ("apply-ready-jobs", "apply-agent-jobs"):
                 claim = parse_contract_block(text, "Work claim")
                 self.assertEqual(claim.get("ownership"), "queue.claim_run_id")
                 self.assertIn("already_claimed", text)
@@ -126,6 +126,22 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("polar_policy.page_surface", text)
         self.assertIn("polar_policy.autofill_action", text)
         self.assertIn("Apply with Autofill", text)
+        agent = read_workflow("apply-agent-jobs")
+        agent_entry = parse_contract_block(agent, "Entry")
+        self.assertEqual(agent_entry.get("entry"), "jobright_agent_queue")
+        self.assertEqual(agent_entry.get("url"), "https://jobright.ai/agent")
+        self.assertEqual(agent_entry.get("add_all"), "never")
+        self.assertEqual(agent_entry.get("start"), "do_not_press")
+        self.assertEqual(agent_entry.get("run_id_prefix"), "R")
+        self.assertEqual(agent_entry.get("do_not_load"), "GROKBOT_RUNTIME")
+        self.assertIn("Never click Add All.", agent)
+        self.assertIn("Do not press Start.", agent)
+        self.assertIn("Confirm Custom Resume Action Required", agent)
+        self.assertIn("Required future-sponsorship widget: Yes.", agent)
+        self.assertIn("Fast validation pass passes, then Submit once.", agent)
+        self.assertNotIn("check: identity, contact, sponsorship_wording, referral", agent)
+        self.assertNotIn("GROKBOT_RUNTIME.md as configuration", agent)
+        self.assertIn("mode: fast_validation_pass", agent)
         self.assertIn("Perfect Resume", text)
         self.assertIn("resumes/Perfect Resume/JZ_Resume_2027.pdf", text)
         self.assertNotIn("/Users/conny/Desktop/JZ_Resume_911.pdf", text)
@@ -252,6 +268,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
         for name in (
             "discover-jobs-hourly",
             "apply-ready-jobs",
+            "apply-agent-jobs",
             "daily-job-summary",
             "production-learning-daily",
             "polar-scheduler-heartbeat",
@@ -278,6 +295,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
             "eeo_demographics, phone_address_formatting, resume_filename, populated_education_employment, routine_non_material",
         )
         assert_no_full_form_audit(self, text, "apply-ready-jobs")
+        assert_no_full_form_audit(self, read_workflow("apply-agent-jobs"), "apply-agent-jobs")
         self.assertNotIn("check: identity, contact, sponsorship_wording, referral", text)
         self.assertNotIn("Validate form DOM, not the sidebar", text)
         self.assertNotIn("Finish remaining required fields from section A", text)
