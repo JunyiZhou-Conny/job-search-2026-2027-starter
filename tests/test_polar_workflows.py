@@ -266,7 +266,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
 
     def test_apply_post_autofill_is_fast_validation_pass(self):
         text = read_workflow("apply-ready-jobs")
-        self.assertRegex(text, r"(?m)^workflow_version: 2026-09-16\.future-sponsorship-yes\+[0-9a-f]{12}$")
+        self.assertRegex(text, r"(?m)^workflow_version: 2026-09-16\.apply-runtime-convergence\+[0-9a-f]{12}$")
         post = parse_contract_block(text, "Post-autofill")
         self.assertEqual(post.get("trust"), "form_dom")
         self.assertEqual(post.get("sidebar_is_proof"), "false")
@@ -307,7 +307,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
         learning = read_workflow("production-learning-daily")
         self.assertIn("- Autofill corrections by class, from autofill_corrections tokens in run_log notes", learning)
         for name in WORKFLOW_RENDERERS:
-            self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-16\.future-sponsorship-yes\+", name)
+            self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-16\.apply-runtime-convergence\+", name)
 
     def test_compiler_refuses_short_or_renamed_auth_verify_list(self):
         import copy
@@ -332,12 +332,16 @@ class TestGeneratedWorkflows(unittest.TestCase):
             fast_validation_contract(renamed)
         self.assertEqual(len(auth["widgets"]), len(set(auth["widgets"])))
 
-    def test_apply_url_confidence_stays_in_queue_schema(self):
+    def test_queue_schema_still_matches_named_columns(self):
         header = (ROOT / "generated" / "polar" / "queue_schema.csv").read_text(
             encoding="utf-8"
         ).strip()
         self.assertEqual(header.split(","), QUEUE_COLUMNS)
-        self.assertEqual(QUEUE_COLUMNS[8], APPLY_URL_CONFIDENCE)
+        # apply_url_confidence may still exist on the live header. Its index
+        # is not architecture. Named writes are the contract.
+        self.assertIn(APPLY_URL_CONFIDENCE, QUEUE_COLUMNS)
+        self.assertIn("status", QUEUE_COLUMNS)
+        self.assertIn("claim_run_id", QUEUE_COLUMNS)
 
 
 if __name__ == "__main__":

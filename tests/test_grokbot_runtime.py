@@ -359,7 +359,8 @@ class TestGrokOwnershipAndLearning(unittest.TestCase):
         self.assertIn("run_id_prefix: G", apply)
         self.assertIn("Never mint an R- id.", apply)
         self.assertIn("Never touch a live R- claim.", apply)
-        self.assertIn("Claim with polar_policy.attempt_claim_job.", apply)
+        self.assertIn("Claim with polar_policy.claim_job_key.", apply)
+        self.assertIn("polar_policy.attempt_claim_job", apply)
 
     def test_ats_prior_submission_is_compiled_for_grok_only(self):
         text = runtime()

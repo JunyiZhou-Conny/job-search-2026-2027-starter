@@ -630,7 +630,9 @@ Two live sibling claims do not both back off.
 Before Submit, reread claim_run_id and rerun requisition_submit_blocked.
 Abandoned IN_PROGRESS claims older than 180 minutes may be recovered.
 Empty claim_run_id on IN_PROGRESS is abandoned.
-On start, upsert a run_log row for this run_id with result PARTIAL so a crash still leaves a row.
+On start, QUERY run_log for every open apply PARTIAL with blank ended_at. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale. NO_WORK if another apply is live. stale_close if the PARTIAL is older than work_claim.ttl_minutes or started_at is unparseable: write ended_at and FAILED with polar_policy.stale_apply_close_fields, then continue. That is the mutex close, not a browser lease. Then upsert this run_id with result PARTIAL, including after stale_close, so a crash still leaves a row.
+job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Two rows with the same key: abort that job, do not claim, do not Submit.
+Do not create scratch tabs. Do not acquire polar_browser. Do not create grok_browser.
 After each job stage, write last_stage and updated_at on that queue row.
 Heartbeat, daily summary, and production-learning-daily do not claim queue jobs.
 

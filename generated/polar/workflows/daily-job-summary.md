@@ -1,7 +1,7 @@
 # daily-job-summary
 
 workflow: daily-job-summary
-workflow_version: 2026-09-16.future-sponsorship-yes+73e8412a69d7
+workflow_version: 2026-09-16.apply-runtime-convergence+74a0dd5a25c2
 status: production
 enabled: true
 needs_browser_lock: false
@@ -33,6 +33,8 @@ Browser access to sheets.google.com is not google_sheets. If the Google connecto
 queue, run_log, incident_log, control, writing_log, heartbeat, and learning_reports are Google Sheet tabs. They are reached through google_sheets.
 A missing tab is a polar-sheet-migration data issue, not CAPABILITY_MISSING, unless google_sheets itself is missing.
 If all required capabilities are available, execute this workflow.
+Prove each required capability once at start. polar_policy.capability_reprove_permitted.
+After they succeed, do not re-prove google_sheets, browser, or local_filesystem mid-run.
 If any required capability is unavailable, report ENVIRONMENT / CAPABILITY_MISSING in this run's own output.
 Name the missing capability. Stop. Do not invent execution.
 Write an incident_log row only if google_sheets is available.
@@ -92,7 +94,9 @@ Those four cells must still match the values from before the canary write. Notes
 These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.
 
 Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.
-Named writes are the fix. Prose that says remember column I is not the fix.
+Named writes are the fix. Prose that says remember column I is not the fix. Column index is not architecture.
+Do not create a Sheet tab named scratch, scratch2, or scratch_*. Do not copy the queue into a new tab to look it up.
+If a QUERY returns #N/A, #REF!, or another error token, polar_policy.sheet_query_failure_action is treat_as_miss_no_scratch. Incident repeat_key sheet_query_na. Continue. Do not invent an index tab.
 
 ## Run telemetry
 
@@ -102,7 +106,9 @@ Mint run_id with polar_policy.mint_run_id on the America/New_York wall clock. Do
 Record started_at when you acquire work. Record ended_at before you exit.
 Both timestamps use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset. Do not write EDT or EST.
 The row is not final until polar_policy.run_log_row_is_final is true.
-duration_minutes is coarse. Use whole minutes.
+duration_minutes is polar_policy.run_duration_minutes(started_at, ended_at). Same clock. Whole minutes.
+Do not use chat wall-clock. Do not invent a duration that disagrees with ended_at minus started_at.
+If a previous write disagrees, record TELEMETRY_INCONSISTENCY in notes and incident category PERFORMANCE. Keep the computed duration.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED.
 SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.
 

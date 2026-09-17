@@ -1,7 +1,7 @@
 # apply-ready-jobs
 
 workflow: apply-ready-jobs
-workflow_version: 2026-09-16.future-sponsorship-yes+1e557c63f8b0
+workflow_version: 2026-09-16.apply-runtime-convergence+f77aa623306b
 status: production
 enabled: true
 needs_browser_lock: false
@@ -33,6 +33,8 @@ Browser access to sheets.google.com is not google_sheets. If the Google connecto
 queue, run_log, incident_log, control, writing_log, heartbeat, and learning_reports are Google Sheet tabs. They are reached through google_sheets.
 A missing tab is a polar-sheet-migration data issue, not CAPABILITY_MISSING, unless google_sheets itself is missing.
 If all required capabilities are available, execute this workflow.
+Prove each required capability once at start. polar_policy.capability_reprove_permitted.
+After they succeed, do not re-prove google_sheets, browser, or local_filesystem mid-run.
 If any required capability is unavailable, report ENVIRONMENT / CAPABILITY_MISSING in this run's own output.
 Name the missing capability. Stop. Do not invent execution.
 Write an incident_log row only if google_sheets is available.
@@ -59,6 +61,7 @@ Keep LOCAL_PRIVATE values. Do not emit keep_local ids in Preferences Delta.
 Allocate a new pref_YYYYMMDD_NNN from pending ids, keep_local ids, and section P resolution ids.
 Use max(used numbers for that date) + 1. Never fill gaps. Never reuse an id.
 If there are no pending ids or no new main rows, write nothing.
+polar_policy.preferences_reconcile_action is noop in that case. Do not reread the file looking for work. Do not rewrite the inbox.
 The rewrite is idempotent. Do not create a preferences-cleanup workflow.
 
 ## Secrets ban
@@ -75,6 +78,13 @@ Do not acquire it. Do not write run_log result SKIPPED_LOCKED because that row i
 A stale polar_browser owner_run_id must not stop this workflow.
 Unrelated Polar workflows may already be using their own browser surfaces.
 
+Mint run_id first. Then QUERY run_log for every open apply PARTIAL: workflow in apply-ready-jobs, grok-apply-jobs; result PARTIAL; ended_at blank. Do not filter this QUERY to young started_at. polar_policy.start_apply_run_action classifies live versus stale.
+A PARTIAL is live only when started_at is younger than work_claim.ttl_minutes. Older, or unparseable started_at, is stale. Do not read every historical ended run_log row.
+If that helper returns NO_WORK, write this run_id as result NO_WORK with started_at and ended_at now, duration_minutes 0, notes live_apply=<other run_id>. Do not upsert PARTIAL. Exit.
+If it returns stale_close, close the other apply row with polar_policy.stale_apply_close_fields: ended_at now, result FAILED, notes stale_apply_closed; reason=no_ended_at_after_ttl. That releases its IN_PROGRESS claims through the abandoned-claim rule. Then continue. Do not exit NO_WORK.
+One live real-job applier across Polar (R-) and Grok (G-). Do not start a second apply-ready-jobs or grok-apply-jobs while another apply is live.
+Do not acquire polar_browser. Do not create grok_browser.
+
 Immediately upsert a run_log row for this run_id with started_at now and result PARTIAL.
 A later crash must still leave that run_log row. Update the same run_id at the end. Do not append a second row for the same run_id.
 
@@ -88,6 +98,7 @@ ttl_minutes: 180
 claim_one_at_a_time: true
 schema_mutator: polar-sheet-migration
 
+job_key is unique. polar_policy.plan_queue_upsert_by_job_key. Zero rows: append once. One row: update that row. Two or more: abort that job. Incident repeat_key duplicate_job_key. Do not claim. Do not Submit. Do not guess.
 This run is one worker. Claim one job close to execution. Do not pre-claim a list.
 If the live queue header has no claim_run_id, do not append it from this workflow.
 Note missing_claim_column. Incident repeat_key missing_claim_column.
@@ -139,7 +150,9 @@ Those four cells must still match the values from before the canary write. Notes
 These English rules are what Polar follows. polar_policy helpers are the same decision table for engineers.
 
 Omitting apply_url_confidence once shifted status and last_stage into the wrong columns.
-Named writes are the fix. Prose that says remember column I is not the fix.
+Named writes are the fix. Prose that says remember column I is not the fix. Column index is not architecture.
+Do not create a Sheet tab named scratch, scratch2, or scratch_*. Do not copy the queue into a new tab to look it up.
+If a QUERY returns #N/A, #REF!, or another error token, polar_policy.sheet_query_failure_action is treat_as_miss_no_scratch. Incident repeat_key sheet_query_na. Continue. Do not invent an index tab.
 
 ## Run telemetry
 
@@ -149,7 +162,9 @@ Mint run_id with polar_policy.mint_run_id on the America/New_York wall clock. Do
 Record started_at when you acquire work. Record ended_at before you exit.
 Both timestamps use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset. Do not write EDT or EST.
 The row is not final until polar_policy.run_log_row_is_final is true.
-duration_minutes is coarse. Use whole minutes.
+duration_minutes is polar_policy.run_duration_minutes(started_at, ended_at). Same clock. Whole minutes.
+Do not use chat wall-clock. Do not invent a duration that disagrees with ended_at minus started_at.
+If a previous write disagrees, record TELEMETRY_INCONSISTENCY in notes and incident category PERFORMANCE. Keep the computed duration.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED.
 SKIPPED_LOCKED is historical. Do not write it because polar_browser looks held.
 
@@ -220,7 +235,7 @@ run_log_map: jobs_seen=considered, jobs_attempted=forms_reached
 Recovery does not consume considered.
 A skip of closed, duplicate, Applied, or hard-fact-conflict consumes considered and continues.
 Stop new Jobright cards when polar_policy.considered_budget_exhausted is true.
-Another apply-ready-jobs run has its own budget. Do not start a second Polar apply.
+Another apply-ready-jobs run does not get its own live window. polar_policy.start_apply_run_action. One live apply across R- and G-.
 Weight is writing-depth metadata. It is not a slot reservation.
 
 ## Autofill
@@ -243,8 +258,11 @@ polar_policy.queue_read_scope is targeted. polar_policy.full_queue_read_permitte
 
 Do not read every queue row. Do not dump READY_* inventory. A 5,000-row full-queue read is forbidden.
 Lookup by job_key, then company+role+location, then status in BLOCKED, SUBMITTED, SUBMISSION_UNKNOWN, IN_PROGRESS, SKIP, REVIEW_READY.
-Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. READY_* stays inventory/archive, not apply FIFO.
-Blocked-job memory stays. Jobright can re-surface a blocked card. Skip it.
+A job_key QUERY must return every visible row with that key. polar_policy.plan_queue_upsert_by_job_key.
+Recovery filters SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Do not scan SKIP or READY inventory.
+incident_id next value: QUERY today's INC-YYYYMMDD- prefix only. polar_policy.incident_ids_for_day. Do not read every historical incident row.
+READY_* stays inventory/archive, not apply FIFO.
+Blocked-job memory stays. Jobright can re-surface a blocked card. Cheap SKIP. Leave the existing row.
 Do not increment simplify_attempted or simplify_fallback_count. Leave those historical columns blank.
 
 ## Post-autofill
@@ -331,6 +349,7 @@ Do not skip PhD preferred, PhD and Master's, or a sentence that says the role is
 Do not skip a line that only says the student must be enrolled in a degree.
 Master's study is not PhD and is not undergraduate-only.
 If the posting matches a skip phrase, status SKIP. Do not authenticate. Do not fill.
+Decide that skip on the Jobright card or employer JD before expensive form work.
 Incident repeat_key is degree_level_gate_missed_at_discovery. Category TRIAGE.
 Also skip a 2026 role or start, employment start before 2027-02-16,
 a non-US work location, or an incompatible TS-SCI or polygraph requirement.
@@ -375,7 +394,7 @@ considered starts at 0. forms_reached starts at 0. seen starts empty.
 If polar_policy.claim_header_state is missing, do not append the column. Exit OWNER_ACTION_REQUIRED.
 If it is duplicate, abort.
 
-Recover first. Filter SUBMISSION_UNKNOWN and IN_PROGRESS only. Loop select_next_apply_job with exclude_keys=seen.
+Recover first. Filter SUBMISSION_UNKNOWN and IN_PROGRESS only. QUERY those statuses. Loop select_next_apply_job with exclude_keys=seen.
 Process each recovery job with the employer finish rules below. Recovery does not consume considered.
 Do not Jobright-ack a recovery unless this run submitted and the employer confirmed.
 
@@ -386,16 +405,23 @@ Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.
 
 For each Jobright card:
 1. Read company, role, and the Jobright info URL. job_key is polar_policy.jobright_job_id.
-2. Targeted Sheet + section K lookup. polar_policy.consider_jobright_card against Applied, Sheet status including BLOCKED, requisition identity, closed, and hard-fact conflict.
-   Skip closed, duplicate, Applied, or hard-fact-conflict. Count considered. Continue.
-3. Upsert a queue row if missing. NEW is claimable. Claim with polar_policy.attempt_claim_job.
+2. Targeted Sheet + section K lookup. QUERY that job_key. If the QUERY returns #N/A or #REF!, treat as miss. Incident repeat_key sheet_query_na. Do not create scratch_*.
+   If polar_policy.plan_queue_upsert_by_job_key returns abort, do not claim, do not Submit, incident repeat_key duplicate_job_key, add the key to seen, continue.
+   polar_policy.consider_jobright_card against Applied, Sheet status including BLOCKED, requisition identity, closed, and hard-fact conflict.
+3. Cheap SKIP first. Read the Jobright card and its JD. polar_policy.skip_path_action.
+   Skip closed, duplicate, Applied, Sheet memory, or hard-fact visible on the card. Count considered. Continue.
+   polar_policy.cheap_skip_write_action: leave a terminal Sheet row; otherwise write one SKIP row.
+   Do not claim IN_PROGRESS. Do not Generate My Resume. Do not Apply Now. Do not open the employer ATS. Close extra tabs.
+   If the card JD cannot decide eligibility, polar_policy.eligibility_surface_action is open_employer_jd_only. Read that JD. Still no Generate Resume, no Apply Now, no login.
+   After an employer-JD-only skip, write SKIP and continue.
+4. Only if still eligible: upsert one queue row if missing. NEW is claimable. Claim with polar_policy.claim_job_key.
    Read back job_key, status, last_stage, and claim_run_id.
    If confirm_claim_readback is not CLAIMED, add the key to seen and continue. That miss does not consume considered.
    After a successful new-card claim, increment considered.
-4. Labels only. Do not invent selectors: Apply with Autofill. Quick Edit. Select All. Generate My Resume. Apply Now.
-5. Confirm company and title. If they do not match, SKIP or BLOCKED. Continue.
-6. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
-7. Read the employer JD. Run apply-time hard eligibility before expensive form work.
+5. Labels only. Do not invent selectors: Apply with Autofill. Quick Edit. Select All. Generate My Resume. Apply Now.
+   These labels are the application path. They are not the SKIP path.
+6. Confirm company and title. If they do not match, SKIP or BLOCKED. Continue.
+7. If the posting is closed or 404, SKIP. Do not pick a sibling from the employer's current openings.
 8. Capture employer identity and run requisition dedupe. Continue only if still eligible.
 9. Authenticate with ordinary browser flows when asked. Account creation is normal work.
    polar_policy.page_surface distinguishes landing, login, apply CTA, and form.

@@ -92,7 +92,15 @@ Read the live header row. Map field names to columns. Write by name. Write expli
 
 If the live queue header has no `claim_run_id`, do not append it from apply or discover. Run `polar-sheet-migration` once. That workflow appends the header at the far right when it is missing and leaves it unchanged when it already exists exactly once.
 
-`apply-ready-jobs` is one worker. Recovery uses `select_next_apply_job`. New work is a Jobright card. It claims that `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`, then processes it. A lost claim does not consume the considered budget. Do not write `SKIPPED_LOCKED`. Before Submit, reread `claim_run_id` and rerun `requisition_submit_blocked` on the live sibling rows. If this run lost the claim or is no longer the canonical survivor, do not Submit.
+`job_key` is unique. `plan_queue_upsert_by_job_key` locates every visible row with that key. Zero → append once. One → update that row. Two or more → abort that job, incident `duplicate_job_key`, do not claim, do not Submit.
+
+`apply-ready-jobs` is one worker. Before it upserts `PARTIAL`, it queries `run_log` for every open apply `PARTIAL` (`apply-ready-jobs` or `grok-apply-jobs`) with blank `ended_at`. Do not filter that QUERY to young `started_at`. `start_apply_run_action` classifies: `NO_WORK` when another apply is still live (`started_at` younger than `work_claim.ttl_minutes`); `stale_close` when a crashed PARTIAL is older than that TTL or `started_at` is unparseable. Close the other row with `stale_apply_close_fields`, then Polar upserts this run `PARTIAL` so the mutex stays held. Grok must write its own live `PARTIAL` after `stale_close` too. `grok-production-learning-daily` is not an apply and must not call `start_apply_run_action`. Do not acquire `polar_browser`. Do not create `grok_browser`.
+
+Cheap SKIP is first-class. Card-level or Sheet-memory skips write `SKIP` or leave the existing terminal row without `IN_PROGRESS`, without Generate Resume, without Apply Now, and without opening the employer ATS. Open the employer JD only when the Jobright card cannot decide eligibility.
+
+Recovery uses `select_next_apply_job`. New work is a Jobright card that survived cheap SKIP. It claims that `job_key` by writing `status=IN_PROGRESS` and `claim_run_id=<this run>`, then processes it. A lost claim does not consume the considered budget. Do not write `SKIPPED_LOCKED`. Before Submit, reread `claim_run_id` and rerun `requisition_submit_blocked` on the live sibling rows. If this run lost the claim or is no longer the canonical survivor, do not Submit.
+
+Do not create `scratch_*` tabs. A QUERY that returns `#N/A` or `#REF!` is a lookup miss (`sheet_query_na`), not a license to dump the queue.
 
 Same employer requisition uses `pick_canonical_requisition_row`. Only that survivor continues toward Submit. The other sibling is `SKIP`.
 

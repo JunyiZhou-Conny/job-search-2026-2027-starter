@@ -1,7 +1,7 @@
 # grok-production-learning-daily
 
 workflow: grok-production-learning-daily
-workflow_version: 2026-09-15.grok-sibling+28fcf08e316b
+workflow_version: 2026-09-15.grok-sibling+123c34990908
 executor: grok_bot
 status: disabled_until_sheet_proof
 enabled: false
@@ -70,12 +70,15 @@ tabs_never_touched: control, heartbeat, learning_reports, queue, writing_log
 7. If job_key, status, or last_stage do not match what you meant, repair those fields.
 8. If claim_run_id is another run_id, do not overwrite it. Skip that job.
 Leave simplify_attempted and simplify_fallback_count blank. Those columns are historical.
+Do not create a Sheet tab named scratch or scratch_*. Named writes are the fix. Column index is not architecture.
 
 ## Run telemetry
 
 One routine run writes one run_log row. workflow is grok-production-learning-daily. Copy workflow_version from this file into that row.
 Mint run_id with polar_policy.mint_run_id(executor=grok). The prefix is G-. Never mint an R- id.
-Upsert the row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.
+This routine is not an apply. Do not run polar_policy.start_apply_run_action. A live or crashed apply PARTIAL does not stop this finalizer.
+Upsert this routine's own run_log row with started_at now and result PARTIAL first. Record ended_at before you exit. Both use polar_policy.format_sheet_timestamp. ISO-8601 with a numeric offset.
+duration_minutes is polar_policy.run_duration_minutes(started_at, ended_at). Same clock. Never chat wall-clock. If the written minutes disagree, record TELEMETRY_INCONSISTENCY.
 The row is not final until polar_policy.run_log_row_is_final is true.
 result is SUCCESS, PARTIAL, FAILED, SKIPPED_LOCKED, NO_WORK, OWNER_ACTION_REQUIRED. lock_result is NOT_REQUIRED. SKIPPED_LOCKED is historical; never write it.
 jobs_seen, jobs_attempted, submitted_regular, submitted_priority, blocked, skipped, and submission_unknown stay 0 or blank on this routine. It applies to nothing.
