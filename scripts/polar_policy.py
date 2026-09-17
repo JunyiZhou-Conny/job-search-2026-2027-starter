@@ -1172,6 +1172,8 @@ def run_duration_minutes(started_at: str, ended_at: str) -> Optional[int]:
     end = parse_timestamp(ended_at)
     if start is None or end is None:
         return None
+    if start.tzinfo is None or end.tzinfo is None:
+        return None
     seconds = (end - start).total_seconds()
     return max(0, int(round(seconds / 60.0)))
 
@@ -1227,7 +1229,7 @@ def apply_run_is_stale(
     if now is None:
         now = eastern_datetime()
     started = parse_timestamp(str(row.get("started_at") or ""))
-    if started is None:
+    if started is None or started.tzinfo is None:
         return True
     ttl = work_claim_ttl_minutes(root) if ttl_minutes is None else ttl_minutes
     return started + timedelta(minutes=ttl) <= now

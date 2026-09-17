@@ -269,6 +269,22 @@ class TestStateConcurrency(unittest.TestCase):
         }
         self.assertTrue(apply_run_is_stale(missing_start, now=NOW))
         self.assertEqual(start_apply_run_action([missing_start], now=NOW), "stale_close")
+        naive_start = {
+            "run_id": "R-crash-naive-start",
+            "workflow": "apply-ready-jobs",
+            "result": "PARTIAL",
+            "started_at": "2026-09-15T10:00:00",
+            "ended_at": "",
+        }
+        self.assertTrue(apply_run_is_stale(naive_start, now=NOW))
+        self.assertEqual(start_apply_run_action([naive_start], now=NOW), "stale_close")
+        naive_fields = stale_apply_close_fields(naive_start, now=NOW)
+        self.assertEqual(naive_fields["result"], STALE_APPLY_CLOSE_RESULT)
+        self.assertEqual(naive_fields["ended_at"], "2026-09-15T10:20:00-04:00")
+        self.assertNotIn("duration_minutes", naive_fields)
+        self.assertIsNone(
+            run_duration_minutes("2026-09-15T10:00:00", "2026-09-15T10:20:00-04:00")
+        )
 
     def test_foreign_per_row_claim_still_holds_when_key_is_unique(self):
         row = {
