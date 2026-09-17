@@ -622,6 +622,33 @@ class TestInstitutionEnrollmentGate(unittest.TestCase):
         )
         self.assertIsNone(institution_enrollment_hard_skip("Restricted to institute students."))
 
+    def test_official_listed_school_names_are_a_skip(self):
+        self.assertEqual(
+            institution_enrollment_hard_skip("New York University students only."),
+            "named_school",
+        )
+        self.assertEqual(
+            institution_enrollment_hard_skip(
+                "Open only to California Institute of Technology students."
+            ),
+            "named_school",
+        )
+        self.assertEqual(
+            institution_enrollment_hard_skip(
+                "Eligibility restricted to currently enrolled "
+                "University of Pennsylvania students."
+            ),
+            "named_school",
+        )
+
+    def test_earlier_school_mention_is_not_an_unprefixed_gate(self):
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "We partner with Stanford and this internship is for "
+                "computer science students only."
+            )
+        )
+
     def test_later_sentence_school_mention_is_not_a_skip(self):
         self.assertIsNone(
             institution_enrollment_hard_skip(

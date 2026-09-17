@@ -2065,8 +2065,18 @@ _GENERIC_SCHOOL_WORDS = frozenset(
         "student",
     }
 )
+_INSTITUTION_WORDS = frozenset(
+    {
+        "university",
+        "college",
+        "institute",
+        "school",
+    }
+)
 # No period in the capture class. A later sentence's school name is not this gate.
 _EXCLUSIVE_SCHOOL_NAME = r"[a-z0-9][a-z0-9 ,&'/-]{0,60}"
+# Unprefixed must-be / students-only already swallow preceding text.
+_EXCLUSIVE_SCHOOL_NAME_NEAR = r"[a-z0-9][a-z0-9 ,&'/-]{0,40}"
 _EXCLUSIVE_SCHOOL_RES = (
     re.compile(rf"currently enrolled ({_EXCLUSIVE_SCHOOL_NAME}) students"),
     re.compile(
@@ -2082,9 +2092,9 @@ _EXCLUSIVE_SCHOOL_RES = (
     ),
     re.compile(
         rf"must be (?:a )?(?:current |currently enrolled )?"
-        rf"({_EXCLUSIVE_SCHOOL_NAME}) student"
+        rf"({_EXCLUSIVE_SCHOOL_NAME_NEAR}) student"
     ),
-    re.compile(rf"({_EXCLUSIVE_SCHOOL_NAME}) students only"),
+    re.compile(rf"({_EXCLUSIVE_SCHOOL_NAME_NEAR}) students only"),
     re.compile(
         rf"eligibility (?:is )?(?:restricted )?to (?:currently enrolled )?"
         rf"({_EXCLUSIVE_SCHOOL_NAME}) students"
@@ -2140,8 +2150,14 @@ def _clause_looks_named_school(clause: str) -> bool:
         tok in _DEGREE_OR_FIELD_STOP or tok in _GENERIC_SCHOOL_WORDS for tok in tokens
     ):
         return False
-    return any(
+    if any(
         tok in _NAMED_SCHOOL_LEXEMES and tok not in _GENERIC_SCHOOL_WORDS
+        for tok in tokens
+    ):
+        return True
+    # Official names: "New York University", not a bare "university students".
+    return any(tok in _INSTITUTION_WORDS for tok in tokens) and any(
+        tok not in _DEGREE_OR_FIELD_STOP and tok not in _GENERIC_SCHOOL_WORDS
         for tok in tokens
     )
 
