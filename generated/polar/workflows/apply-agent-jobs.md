@@ -1,7 +1,7 @@
 # apply-agent-jobs
 
 workflow: apply-agent-jobs
-workflow_version: 2026-09-16.apply-runtime-convergence+3a2e4a1cf17e
+workflow_version: 2026-09-16.apply-runtime-convergence+8f5438add2fb
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
@@ -427,10 +427,10 @@ Wake window 08:00-09:00. wake_timezone is unknown. Polar cron is ET; the owner d
 Owner daily shape is unconfirmed: 100/day or 50 morning + 50 afternoon. First enabled cap stays 3 submitted plus SUBMISSION_UNKNOWN. Do not compile 100 as the active cap.
 The owner will try Polar Browser on /agent himself. He does not want to click daily. Polar cron does that only after enable. This file stays disabled.
 Do not set a cron while apply-ready-jobs is the live :20 ET worker.
-max_considered 3 is the per-wake considered budget. When considered_budget_exhausted: write ended_at and stop this wake. Do not leave a day-long PARTIAL.
+max_considered 3 is the per-wake considered budget, not a daily stop. When considered_budget_exhausted and daily_submit_quota_action is still continue: leave this PARTIAL open. Do not write ended_at. Stop this wake. Next hourly uses resume. Do not turn this wake into an all-day grind.
 When daily_submit_quota_action is stop: write ended_at, stop. Do not press Start to chase 100 or 50+50.
 When practice_share_stop_action is stop: stop adding. Cheap SKIP still first. Do not Start leftover chrome.
-ENVIRONMENT (sleep / network / capability drop): leave PARTIAL and last_stage. Stop. Do not press Start. Next hourly resume if this Agent row is still the only live apply, else stale_close then Job N. Foreign live apply is NO_WORK.
+ENVIRONMENT (sleep / network / capability drop): leave PARTIAL and last_stage. Stop. Do not press Start. Next hourly resume if this Agent row is still the live Polar apply-agent-jobs PARTIAL. If that PARTIAL is stale: stale_close then Job N. Foreign live apply is NO_WORK.
 After a claimed batch drains and quota is not hit: refill from visible matches. Never Add All. Never Start.
 Owner ~10 added is a batch hint, not a selector. The leftover 9 Jobs Added queue is not this run's batch.
 start_again_after_batch stays blocked_until_observe until a Mac observe proves Start does not auto-submit.
@@ -470,7 +470,7 @@ Agent surface blockers and the allowed response. Labels only. Do not invent sele
 - Paused: Continue only for a job this run still owns. Otherwise Skip.
 
 Loop the current Agent card, then one claimed match, until daily_submit_quota_action is stop, practice_share_stop_action is stop, considered_budget_exhausted, or the loaded list ends and refill is empty.
-Per-wake: when considered_budget_exhausted, write ended_at and stop. This is not an all-day grind.
+Per-wake: stop new cards when considered_budget_exhausted, but leave PARTIAL if the daily quota remains. This is not an all-day grind.
 Do not infinite-scroll. Do not FIFO the Sheet READY_* backlog.
 Do not start apply-ready-jobs from this file.
 
