@@ -218,7 +218,7 @@ Do not merge these into one giant Workflow. Saved Polar Workflows store only the
 |---|---|---|
 | `discover-jobs-hourly` | retired from apply path | Off by default. Inventory only if invoked. |
 | `apply-ready-jobs` | minute 20 every hour | Saved Workflow. Jobright recommendations entry. Considered-candidate cap. |
-| `apply-agent-jobs` | manual, `enabled: false` | Draft continuous Polar Agent on `/agent`. Resume the live `R-`. Daily submitted quota (first cap small; owner ceiling 100). Not a `:20` worker. Do not enable while `apply-ready-jobs` is live. Do not press Start. |
+| `apply-agent-jobs` | manual, `enabled: false` | Draft hourly-intended Polar Agent on `/agent`. Not an all-day grind. First cap 3 until 100/day vs 50+50 is confirmed. Do not enable while `apply-ready-jobs` is live. Do not press Start. |
 | `daily-job-summary` | 21:30 daily | Saved Workflow. Queue read and one email. No application clicks. |
 | `production-learning-daily` | 22:00 daily | Saved Workflow. Sanitized learning report. No application clicks. |
 | `cursor-production-maintenance` | 02:00 daily | Saved Workflow. STOP BEFORE MERGE. Issue handoff or Issue file. Not a Cursor Automation substitute. |

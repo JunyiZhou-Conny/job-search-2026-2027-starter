@@ -139,6 +139,8 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("mode: resume_same_run", agent)
         self.assertIn("daily_submit_quota_first_enabled_cap: 3", agent)
         self.assertIn("daily_submit_quota_owner_ceiling: 100", agent)
+        self.assertIn("grind: not_all_day", agent)
+        self.assertIn("intended_transport: hourly", agent)
         self.assertNotIn("20 * * * *", agent)
         self.assertIn("Confirm Custom Resume Action Required", agent)
         self.assertIn("Required future-sponsorship widget: Yes.", agent)

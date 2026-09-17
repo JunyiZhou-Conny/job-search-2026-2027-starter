@@ -178,6 +178,12 @@ AGENT_CONTINUOUS_MODE = "resume_same_run"
 AGENT_CONTINUOUS_REFILL = "visible_matches_without_start"
 AGENT_START_AGAIN_AFTER_BATCH = "blocked_until_observe"
 AGENT_CONTINUOUS_LIVENESS = "last_write_by_run"
+AGENT_CONTINUOUS_SCHEDULE = "hourly_intended_disabled"
+AGENT_CONTINUOUS_GRIND = "not_all_day"
+AGENT_CONTINUOUS_TRANSPORT = "hourly"
+AGENT_WAKE_WINDOW = "08:00-09:00"
+AGENT_WAKE_TIMEZONE = "unknown"
+AGENT_OWNER_DAILY_SHAPE = "unconfirmed"
 PRACTICE_LANE = "practice"
 AUTOFILL_OWNER = "jobright_extension"
 LEGACY_READY_INVENTORY = "inventory_only"
@@ -1494,6 +1500,12 @@ class AgentContinuousCaps:
     first_enabled_cap: int
     owner_ceiling: int
     practice_share_limit: float
+    schedule: str
+    grind: str
+    intended_transport: str
+    wake_window: str
+    wake_timezone: str
+    owner_daily_shape: str
 
 
 def agent_continuous_caps(root: Optional[Path] = None) -> AgentContinuousCaps:
@@ -1543,6 +1555,12 @@ def agent_continuous_caps(root: Optional[Path] = None) -> AgentContinuousCaps:
     refill = str(block.get("refill") or "").strip()
     start_again = str(block.get("start_again_after_batch") or "").strip()
     liveness = str(block.get("liveness") or "").strip()
+    schedule = str(block.get("schedule") or "").strip()
+    grind = str(block.get("grind") or "").strip()
+    transport = str(block.get("intended_transport") or "").strip()
+    wake_window = str(block.get("wake_window") or "").strip()
+    wake_timezone = str(block.get("wake_timezone") or "").strip()
+    daily_shape = str(block.get("owner_daily_shape") or "").strip()
     if mode != AGENT_CONTINUOUS_MODE:
         raise ValueError("agent_apply.continuous.mode must be resume_same_run")
     if stay_on != AGENT_APPLY_ENTRY_URL:
@@ -1561,6 +1579,26 @@ def agent_continuous_caps(root: Optional[Path] = None) -> AgentContinuousCaps:
         raise ValueError(
             "agent_apply.continuous.liveness must be last_write_by_run"
         )
+    if schedule != AGENT_CONTINUOUS_SCHEDULE:
+        raise ValueError(
+            "agent_apply.continuous.schedule must be hourly_intended_disabled"
+        )
+    if grind != AGENT_CONTINUOUS_GRIND:
+        raise ValueError("agent_apply.continuous.grind must be not_all_day")
+    if transport != AGENT_CONTINUOUS_TRANSPORT:
+        raise ValueError(
+            "agent_apply.continuous.intended_transport must be hourly"
+        )
+    if wake_window != AGENT_WAKE_WINDOW:
+        raise ValueError("agent_apply.continuous.wake_window must be 08:00-09:00")
+    if wake_timezone != AGENT_WAKE_TIMEZONE:
+        raise ValueError(
+            "wake_timezone must stay unknown until the owner names it"
+        )
+    if daily_shape != AGENT_OWNER_DAILY_SHAPE:
+        raise ValueError(
+            "owner_daily_shape must stay unconfirmed until 100/day vs 50+50"
+        )
     return AgentContinuousCaps(
         mode=mode,
         stay_on=stay_on,
@@ -1570,6 +1608,12 @@ def agent_continuous_caps(root: Optional[Path] = None) -> AgentContinuousCaps:
         first_enabled_cap=first_enabled,
         owner_ceiling=owner_ceiling,
         practice_share_limit=practice_limit,
+        schedule=schedule,
+        grind=grind,
+        intended_transport=transport,
+        wake_window=wake_window,
+        wake_timezone=wake_timezone,
+        owner_daily_shape=daily_shape,
     )
 
 
