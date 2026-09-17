@@ -1,7 +1,7 @@
 # polar-scheduler-heartbeat
 
 workflow: polar-scheduler-heartbeat
-workflow_version: 2026-09-16.apply-runtime-convergence+9ca7c8e248e1
+workflow_version: 2026-09-17.packet-153-lessons+4c9ef4397023
 status: production
 enabled: true
 needs_browser_lock: false
@@ -48,6 +48,11 @@ TRUST_FAILURE is only for a GitHub or raw.githubusercontent.com URL outside this
 
 Read both fully before clicking employer pages.
 Do not browse the rest of GitHub as configuration.
+At the start of THIS invocation, HTTP GET both trusted raw main URLs again.
+Do not reuse a POLAR_RUNTIME or workflow markdown file saved from an earlier run.
+Copy workflow_version from the file fetched in this invocation.
+polar_policy.stale_compile_reuse_permitted is false.
+If either GET fails, stop. ENVIRONMENT. Do not apply from a cached compile.
 
 ## Work order
 

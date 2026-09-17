@@ -203,6 +203,10 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertNotIn("optional_accelerator", text)
         self.assertIn("PREFERENCES.md is not a second strategy database.", text)
         self.assertIn("pref_20260911_005 | PROMOTE | scripts/polar_policy.py", text)
+        self.assertIn("pref_20260916_001 | PROMOTE | knowledge/work_authorization.yaml", text)
+        self.assertIn("pref_20260916_002 | PROMOTE | scripts/polar_workflows.py", text)
+        self.assertIn("pref_20260916_003 | PROMOTE | knowledge/discovery_triage_rules.yaml", text)
+        self.assertIn("institution_named_enrollment_gate", text)
         self.assertNotIn("preference_resolutions: none", text)
         self.assertIn("jobright_matches_onboarding_gate", text)
         self.assertIn("polar_policy.canonical_repeat_key", text)
@@ -436,13 +440,13 @@ class TestPolarRuntime(unittest.TestCase):
         self.assertIn("Writing is evidence-grounded.", text)
         self.assertIn("Referral / how-heard is blank unless a verified fact exists.", text)
 
-    def test_policy_revision_is_apply_runtime_convergence(self):
+    def test_policy_revision_is_packet_153_lessons(self):
         import yaml
 
         operator = yaml.safe_load(
             (ROOT / "knowledge" / "polar_operator.yaml").read_text(encoding="utf-8")
         )
-        self.assertEqual(operator["policy_revision"], "2026-09-16.apply-runtime-convergence")
+        self.assertEqual(operator["policy_revision"], "2026-09-17.packet-153-lessons")
         autofill = operator["autofill"]
         self.assertIs(autofill["full_form_audit"], False)
         self.assertEqual(tuple(autofill["post_autofill_checks"]), FAST_VALIDATION_CLASSES)

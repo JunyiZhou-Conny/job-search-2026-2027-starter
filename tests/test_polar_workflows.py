@@ -119,6 +119,11 @@ class TestGeneratedWorkflows(unittest.TestCase):
         self.assertIn("Sponsorship unknown, unavailable, or generally not offered is not a skip.", text)
         self.assertIn("phd candidates only", text)
         self.assertIn("degree_level_gate_missed_at_discovery", text)
+        self.assertIn("institution_named_enrollment_gate", text)
+        self.assertIn("polar_policy.institution_enrollment_hard_skip", text)
+        self.assertIn("polar_policy.stale_compile_reuse_permitted is false", text)
+        self.assertIn("Sheet rows are not chronological", text)
+        self.assertIn("polar_policy.incident_id_tail_scan_permitted is false", text)
         self.assertIn("jobright_matches_onboarding_gate", text)
         self.assertIn("polar_policy.canonical_repeat_key", text)
         self.assertIn("polar_policy.native_resume_action", text)
@@ -266,7 +271,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
 
     def test_apply_post_autofill_is_fast_validation_pass(self):
         text = read_workflow("apply-ready-jobs")
-        self.assertRegex(text, r"(?m)^workflow_version: 2026-09-16\.apply-runtime-convergence\+[0-9a-f]{12}$")
+        self.assertRegex(text, r"(?m)^workflow_version: 2026-09-17\.packet-153-lessons\+[0-9a-f]{12}$")
         post = parse_contract_block(text, "Post-autofill")
         self.assertEqual(post.get("trust"), "form_dom")
         self.assertEqual(post.get("sidebar_is_proof"), "false")
@@ -307,7 +312,7 @@ class TestGeneratedWorkflows(unittest.TestCase):
         learning = read_workflow("production-learning-daily")
         self.assertIn("- Autofill corrections by class, from autofill_corrections tokens in run_log notes", learning)
         for name in WORKFLOW_RENDERERS:
-            self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-16\.apply-runtime-convergence\+", name)
+            self.assertRegex(read_workflow(name), r"(?m)^workflow_version: 2026-09-17\.packet-153-lessons\+", name)
 
     def test_compiler_refuses_short_or_renamed_auth_verify_list(self):
         import copy

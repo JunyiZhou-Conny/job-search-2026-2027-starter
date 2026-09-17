@@ -94,3 +94,26 @@ resolutions:
     canonical_destination: scripts/polar_policy.py
     resolved_revision: ""
     # Jobright job_key ignores query strings such as ?x.
+  - candidate_id: pref_20260916_001
+    outcome: PROMOTE
+    canonical_destination: knowledge/work_authorization.yaml
+    resolved_revision: ""
+    # Polar Production #153 / PREFERENCES pref_20260916_001. OPT EAD
+    # 2027-02-16–2028-02-16 and future_sponsorship_required Yes already
+    # on main via #152. Formal resolution row so Polar can drop the id.
+  - candidate_id: pref_20260916_002
+    outcome: PROMOTE
+    canonical_destination: scripts/polar_workflows.py
+    resolved_revision: ""
+    # Polar Production #153. Stale downloaded compile answered No on
+    # future-sponsorship for ~9 hours after #152. Each invocation must
+    # GET both trusted raw main URLs. polar_policy.stale_compile_reuse_permitted
+    # is false. Owner still decides whether to re-contact Adobe,
+    # Headlands Technologies, and Crusoe.
+  - candidate_id: pref_20260916_003
+    outcome: PROMOTE
+    canonical_destination: knowledge/discovery_triage_rules.yaml
+    resolved_revision: ""
+    # Polar Production #153. InterSystems MIT-only micro-intern. Exclusive
+    # named-school enrollment that omits Harvard / Emory is a skip.
+    # polar_policy.institution_enrollment_hard_skip.

@@ -199,6 +199,7 @@ REQUISITION_REPEAT = "requisition_suppressed"
 CONTROL_REQUIRED_READBACK = ("key", "owner_run_id", "notes")
 CONTROL_LEASE_READBACK = ("key", "owner_run_id", "acquired_at", "expires_at")
 DEGREE_LEVEL_REPEAT_KEY = "degree_level_gate_missed_at_discovery"
+INSTITUTION_ENROLLMENT_REPEAT_KEY = "institution_named_enrollment_gate"
 JOBRIGHT_ONBOARDING_REPEAT_KEY = "jobright_matches_onboarding_gate"
 CONTROL_KEY_DUPLICATE_REPEAT_KEY = "control_key_duplicate"
 NATIVE_RESUME_REPEAT_KEY = "native_resume_empty"
@@ -314,6 +315,9 @@ REPEAT_KEY_ALIASES = {
     "phd_only_missed_at_discovery": DEGREE_LEVEL_REPEAT_KEY,
     "phd_only_gate_missed_at_discovery": DEGREE_LEVEL_REPEAT_KEY,
     "undergrad_only_gate_missed_at_discovery": DEGREE_LEVEL_REPEAT_KEY,
+    "institution_specific_eligibility_gate": INSTITUTION_ENROLLMENT_REPEAT_KEY,
+    "named_school_enrollment_gate": INSTITUTION_ENROLLMENT_REPEAT_KEY,
+    "mit_only_enrollment_gate": INSTITUTION_ENROLLMENT_REPEAT_KEY,
     "control_duplicate_key": CONTROL_KEY_DUPLICATE_REPEAT_KEY,
     "control_duplicate_key_env_simplify_copilot": CONTROL_KEY_DUPLICATE_REPEAT_KEY,
 }
@@ -1094,6 +1098,7 @@ def canonical_repeat_key(raw: str) -> str:
         return ""
     if token in {
         DEGREE_LEVEL_REPEAT_KEY,
+        INSTITUTION_ENROLLMENT_REPEAT_KEY,
         JOBRIGHT_ONBOARDING_REPEAT_KEY,
         COPILOT_REPEAT_KEY,
         CONTROL_KEY_DUPLICATE_REPEAT_KEY,
@@ -1388,6 +1393,16 @@ def incident_id_day_prefix(day: str) -> str:
 def incident_ids_for_day(existing: Sequence[str], day: str) -> Tuple[str, ...]:
     prefix = incident_id_day_prefix(day)
     return tuple(raw for raw in existing if str(raw or "").startswith(prefix))
+
+
+def incident_id_tail_scan_permitted() -> bool:
+    """Sheet incident_log rows are not chronological. Tail scans reuse ids."""
+    return False
+
+
+def stale_compile_reuse_permitted() -> bool:
+    """A prior run's downloaded POLAR_RUNTIME or workflow file is not this run."""
+    return False
 
 
 def capability_reprove_permitted(*, already_proven: bool) -> bool:
@@ -1945,6 +1960,313 @@ def degree_level_hard_skip(jd_text: str) -> Optional[str]:
         return "phd_only"
     if any(_marker_without_negation(text, marker) for marker in undergrad_markers):
         return "undergrad_only"
+    return None
+
+
+_DEGREE_OR_FIELD_STOP = frozenset(
+    {
+        "phd",
+        "ph",
+        "d",
+        "doctoral",
+        "doctorate",
+        "undergraduate",
+        "undergrad",
+        "bachelor",
+        "bachelors",
+        "master",
+        "masters",
+        "graduate",
+        "mba",
+        "degree",
+        "program",
+        "computer",
+        "science",
+        "engineering",
+        "students",
+        "student",
+        "current",
+        "currently",
+        "enrolled",
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "of",
+        "at",
+        "in",
+        "to",
+        "for",
+        "this",
+        "internship",
+        "role",
+        "position",
+        "applicants",
+        "applicant",
+        "candidates",
+        "candidate",
+    }
+)
+_NAMED_SCHOOL_LEXEMES = frozenset(
+    {
+        "mit",
+        "cmu",
+        "nyu",
+        "ucla",
+        "usc",
+        "caltech",
+        "stanford",
+        "harvard",
+        "emory",
+        "yale",
+        "princeton",
+        "columbia",
+        "berkeley",
+        "cornell",
+        "brown",
+        "dartmouth",
+        "upenn",
+        "duke",
+        "northwestern",
+        "rice",
+        "vanderbilt",
+        "uchicago",
+        "northeastern",
+        "tufts",
+        "wellesley",
+        "babson",
+        "bentley",
+        "georgetown",
+        "massachusetts",
+        "carnegie",
+        "mellon",
+        "hopkins",
+        "calpoly",
+    }
+)
+_GENERIC_SCHOOL_WORDS = frozenset(
+    {
+        "the",
+        "of",
+        "and",
+        "at",
+        "in",
+        "school",
+        "university",
+        "college",
+        "institute",
+        "public",
+        "health",
+        "t",
+        "h",
+        "th",
+        "students",
+        "student",
+    }
+)
+_INSTITUTION_WORDS = frozenset(
+    {
+        "university",
+        "college",
+        "institute",
+        "school",
+    }
+)
+# Official-name leftovers must be distinctive school tokens, not community/high/new.
+_OFFICIAL_SCHOOL_LEFTOVERS = frozenset(
+    {
+        "york",
+        "pennsylvania",
+        "california",
+        "angeles",
+        "georgia",
+    }
+)
+_OFFICIAL_SCHOOL_PHRASES = (
+    "new york university",
+    "university of pennsylvania",
+    "california institute of technology",
+    "university of southern california",
+    "university of california",
+    "georgia institute of technology",
+    "georgia tech",
+    "boston university",
+    "boston college",
+    "johns hopkins",
+    "carnegie mellon",
+    "university of chicago",
+)
+# Unprefixed captures that swallowed the enrollment template are not a school name.
+_CAPTURE_TEMPLATE_WORDS = frozenset(
+    {
+        "must",
+        "currently",
+        "enrolled",
+        "eligibility",
+        "restricted",
+        "limited",
+        "internship",
+        "role",
+        "position",
+    }
+)
+# Host/location schools sit before these words. The enrollment name is the suffix.
+_ENROLLMENT_BREAK_WORDS = frozenset(
+    {
+        "is",
+        "are",
+        "was",
+        "were",
+        "for",
+        "hosted",
+        "located",
+        "based",
+    }
+)
+# No period in the capture class. A later sentence's school name is not this gate.
+_EXCLUSIVE_SCHOOL_NAME = r"[a-z0-9][a-z0-9 ,&'/-]{0,60}"
+# Unprefixed must-be / students-only already swallow preceding text.
+_EXCLUSIVE_SCHOOL_NAME_NEAR = r"[a-z0-9][a-z0-9 ,&'/-]{0,40}"
+_EXCLUSIVE_SCHOOL_RES = (
+    re.compile(rf"currently enrolled ({_EXCLUSIVE_SCHOOL_NAME}) students"),
+    re.compile(
+        rf"restricted(?: eligibility)? to (?:currently enrolled )?"
+        rf"({_EXCLUSIVE_SCHOOL_NAME}) students"
+    ),
+    re.compile(
+        rf"open only to (?:currently enrolled )?({_EXCLUSIVE_SCHOOL_NAME}) students"
+    ),
+    re.compile(
+        rf"limited to (?:currently enrolled )?(?:students (?:at|of|from) )?"
+        rf"({_EXCLUSIVE_SCHOOL_NAME}) students"
+    ),
+    re.compile(
+        rf"must be (?:a )?(?:current |currently enrolled )?"
+        rf"(?<![a-z0-9])({_EXCLUSIVE_SCHOOL_NAME_NEAR}) student"
+    ),
+    re.compile(rf"(?<![a-z0-9])({_EXCLUSIVE_SCHOOL_NAME_NEAR}) students only"),
+    re.compile(
+        rf"eligibility (?:is )?(?:restricted )?to (?:currently enrolled )?"
+        rf"({_EXCLUSIVE_SCHOOL_NAME}) students"
+    ),
+)
+
+
+def candidate_school_names(root: Optional[Path] = None) -> Tuple[str, ...]:
+    profile = load_yaml((Path(root) if root else ROOT) / "config" / "profile.yaml")
+    if not isinstance(profile, dict):
+        return ()
+    names: List[str] = []
+    school = str(profile.get("school") or "").strip()
+    if school:
+        names.append(school)
+    for row in profile.get("education_history") or []:
+        if isinstance(row, dict):
+            item = str(row.get("school") or "").strip()
+            if item:
+                names.append(item)
+    seen = set()
+    out: List[str] = []
+    for name in names:
+        key = normalize_text(name)
+        if key and key not in seen:
+            seen.add(key)
+            out.append(name)
+    return tuple(out)
+
+
+def format_candidate_schools(schools: Optional[Sequence[str]] = None) -> str:
+    names = tuple(schools) if schools is not None else candidate_school_names()
+    return "; ".join(names)
+
+
+def _candidate_school_tokens(schools: Sequence[str]) -> set:
+    tokens = set()
+    for school in schools:
+        for raw in re.findall(r"[a-z0-9]+", normalize_text(school)):
+            if raw not in _GENERIC_SCHOOL_WORDS and len(raw) > 2:
+                tokens.add(raw)
+    return tokens
+
+
+def _clause_looks_named_school(clause: str) -> bool:
+    text = normalize_text(clause)
+    if not text or "." in text:
+        return False
+    tokens = re.findall(r"[a-z0-9]+", text)
+    if not tokens:
+        return False
+    # Unprefixed students-only captures swallow posting words. Keep the
+    # suffix after the last template token so "internship is for MIT"
+    # still sees MIT. Then keep only the span after the last is/for
+    # break so a host school before generic or bare students-only is
+    # not the enrollment noun.
+    if any(tok in _CAPTURE_TEMPLATE_WORDS for tok in tokens):
+        start = 0
+        for i, tok in enumerate(tokens):
+            if tok in _CAPTURE_TEMPLATE_WORDS:
+                start = i + 1
+        tokens = tokens[start:]
+        if not tokens:
+            return False
+    last_break = -1
+    for i, tok in enumerate(tokens):
+        if tok in _ENROLLMENT_BREAK_WORDS:
+            last_break = i
+    tokens = tokens[last_break + 1 :]
+    if not tokens:
+        return False
+    text = " ".join(tokens)
+    if all(
+        tok in _DEGREE_OR_FIELD_STOP or tok in _GENERIC_SCHOOL_WORDS for tok in tokens
+    ):
+        return False
+    if any(phrase in text for phrase in _OFFICIAL_SCHOOL_PHRASES):
+        return True
+    inst_idxs = [i for i, tok in enumerate(tokens) if tok in _INSTITUTION_WORDS]
+    if inst_idxs:
+        last = inst_idxs[-1]
+        if last == 0:
+            return False
+        before = tokens[:last]
+        tail = before[-2:] if len(before) >= 2 else before
+        if any(tok in _OFFICIAL_SCHOOL_LEFTOVERS for tok in tail):
+            return True
+        last_leftover = before[-1]
+        return (
+            last_leftover in _NAMED_SCHOOL_LEXEMES
+            and last_leftover not in _GENERIC_SCHOOL_WORDS
+        )
+    return any(
+        tok in _NAMED_SCHOOL_LEXEMES and tok not in _GENERIC_SCHOOL_WORDS
+        for tok in tokens
+    )
+
+
+def institution_enrollment_hard_skip(
+    jd_text: str,
+    candidate_schools: Optional[Sequence[str]] = None,
+) -> Optional[str]:
+    """Skip exclusive named-school enrollment that omits the candidate's schools."""
+    text = normalize_text(jd_text)
+    if not text:
+        return None
+    schools = (
+        tuple(candidate_schools)
+        if candidate_schools is not None
+        else candidate_school_names()
+    )
+    own = _candidate_school_tokens(schools)
+    for pattern in _EXCLUSIVE_SCHOOL_RES:
+        for match in pattern.finditer(text):
+            clause = normalize_text(match.group(1) or "")
+            if not _clause_looks_named_school(clause):
+                continue
+            clause_tokens = set(re.findall(r"[a-z0-9]+", clause))
+            if own and clause_tokens & own:
+                continue
+            return "named_school"
     return None
 
 

@@ -1,7 +1,7 @@
 # chatgpt-production-review
 
 workflow: chatgpt-production-review
-workflow_version: 2026-09-16.apply-runtime-convergence+b40c7e78b50a
+workflow_version: 2026-09-17.packet-153-lessons+531530e2be0e
 status: disabled_until_proven
 enabled: false
 needs_browser_lock: false
@@ -48,6 +48,11 @@ TRUST_FAILURE is only for a GitHub or raw.githubusercontent.com URL outside this
 
 Read both fully before clicking employer pages.
 Do not browse the rest of GitHub as configuration.
+At the start of THIS invocation, HTTP GET both trusted raw main URLs again.
+Do not reuse a POLAR_RUNTIME or workflow markdown file saved from an earlier run.
+Copy workflow_version from the file fetched in this invocation.
+polar_policy.stale_compile_reuse_permitted is false.
+If either GET fails, stop. ENVIRONMENT. Do not apply from a cached compile.
 
 ## Secrets ban
 

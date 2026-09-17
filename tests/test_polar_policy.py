@@ -45,6 +45,11 @@ from polar_policy import (  # noqa: E402
     control_write_persisted,
     degree_level_hard_skip,
     document_availability,
+    candidate_school_names,
+    institution_enrollment_hard_skip,
+    incident_id_tail_scan_permitted,
+    stale_compile_reuse_permitted,
+    INSTITUTION_ENROLLMENT_REPEAT_KEY,
     header_map,
     incident_ids_are_unique,
     load_preference_resolutions,
@@ -573,6 +578,160 @@ class TestDegreeLevelGate(unittest.TestCase):
         )
 
 
+class TestInstitutionEnrollmentGate(unittest.TestCase):
+    def test_profile_schools_include_harvard_and_emory(self):
+        names = candidate_school_names()
+        joined = " ".join(names).lower()
+        self.assertIn("harvard", joined)
+        self.assertIn("emory", joined)
+
+    def test_mit_only_is_skip(self):
+        self.assertEqual(
+            institution_enrollment_hard_skip(
+                "Eligibility restricted to currently enrolled MIT students."
+            ),
+            "named_school",
+        )
+        self.assertEqual(
+            institution_enrollment_hard_skip("Open only to Stanford students."),
+            "named_school",
+        )
+
+    def test_harvard_or_emory_named_list_is_not_a_skip(self):
+        self.assertIsNone(
+            institution_enrollment_hard_skip("Open only to Harvard, MIT, or Stanford students.")
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip("Emory University students only may apply.")
+        )
+
+    def test_unenrolled_degree_language_is_not_a_skip(self):
+        self.assertIsNone(institution_enrollment_hard_skip("Must be currently pursuing a degree."))
+        self.assertIsNone(institution_enrollment_hard_skip("Currently enrolled students are welcome."))
+        self.assertIsNone(institution_enrollment_hard_skip("This internship is PhD students only."))
+
+    def test_generic_school_words_are_not_a_skip(self):
+        self.assertIsNone(institution_enrollment_hard_skip("Open only to college students."))
+        self.assertIsNone(
+            institution_enrollment_hard_skip("Currently enrolled university students may apply.")
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "Eligibility is restricted to currently enrolled graduate school students."
+            )
+        )
+        self.assertIsNone(institution_enrollment_hard_skip("Restricted to institute students."))
+
+    def test_official_listed_school_names_are_a_skip(self):
+        self.assertEqual(
+            institution_enrollment_hard_skip("New York University students only."),
+            "named_school",
+        )
+        self.assertEqual(
+            institution_enrollment_hard_skip(
+                "Open only to California Institute of Technology students."
+            ),
+            "named_school",
+        )
+        self.assertEqual(
+            institution_enrollment_hard_skip(
+                "Eligibility restricted to currently enrolled "
+                "University of Pennsylvania students."
+            ),
+            "named_school",
+        )
+
+    def test_earlier_school_mention_is_not_an_unprefixed_gate(self):
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "We partner with Stanford and this internship is for "
+                "computer science students only."
+            )
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "Work at MIT and must be currently enrolled students only."
+            )
+        )
+
+    def test_unprefixed_internship_for_named_school_is_a_skip(self):
+        self.assertEqual(
+            institution_enrollment_hard_skip("This internship is for MIT students only."),
+            "named_school",
+        )
+        self.assertEqual(
+            institution_enrollment_hard_skip("This role is for Stanford students only."),
+            "named_school",
+        )
+
+    def test_host_school_before_generic_enrollment_is_not_a_skip(self):
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This internship at MIT is for college students only."
+            )
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This role at MIT is for university students only."
+            )
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This internship is hosted at MIT for college students only."
+            )
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This internship at MIT is for students only."
+            )
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "This role at Stanford is for students only."
+            )
+        )
+
+    def test_generic_leftover_institution_words_are_not_a_skip(self):
+        for text in (
+            "community college students only.",
+            "high school students only.",
+            "business school students only.",
+            "local college students only.",
+            "state university students only.",
+            "new university students only.",
+            "our university students only.",
+            "accredited university students only.",
+        ):
+            self.assertIsNone(institution_enrollment_hard_skip(text), text)
+
+    def test_georgia_tech_official_short_name_is_a_skip(self):
+        self.assertEqual(
+            institution_enrollment_hard_skip("Georgia Tech students only."),
+            "named_school",
+        )
+
+    def test_later_sentence_school_mention_is_not_a_skip(self):
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "Must be currently enrolled. Stanford students are encouraged to apply."
+            )
+        )
+
+    def test_repeat_key_aliases_collapse(self):
+        self.assertEqual(
+            canonical_repeat_key("institution_specific_eligibility_gate"),
+            INSTITUTION_ENROLLMENT_REPEAT_KEY,
+        )
+        self.assertEqual(
+            canonical_repeat_key(INSTITUTION_ENROLLMENT_REPEAT_KEY),
+            INSTITUTION_ENROLLMENT_REPEAT_KEY,
+        )
+
+    def test_compile_reuse_and_tail_scan_are_forbidden(self):
+        self.assertFalse(stale_compile_reuse_permitted())
+        self.assertFalse(incident_id_tail_scan_permitted())
+
+
 class TestCanonicalRepeatKey(unittest.TestCase):
     def test_jobright_aliases_collapse(self):
         aliases = (
@@ -1047,6 +1206,7 @@ class TestAuthSemanticSeparation(unittest.TestCase):
     def test_discovery_does_not_skip_on_sponsorship(self):
         self.assertFalse(discovery_skips_on_unknown_sponsorship())
         self.assertIn("sponsorship_not_skip", discovery_guide_rule_ids())
+        self.assertIn("named_school_enrollment", discovery_guide_rule_ids())
         self.assertTrue(self.facts.future_sponsorship_required)
 
     def test_telemetry_outcomes_are_named(self):

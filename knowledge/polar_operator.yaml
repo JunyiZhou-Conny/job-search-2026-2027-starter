@@ -1,5 +1,5 @@
-last_updated: "2026-09-16"
-policy_revision: "2026-09-16.apply-runtime-convergence"
+last_updated: "2026-09-17"
+policy_revision: "2026-09-17.packet-153-lessons"
 source: "Owner 2026-09-16 (supersedes 2026-09-15). Jobright-era apply. Standard future-sponsorship widget is Yes from knowledge/work_authorization.yaml. Jobright owns discovery, resume generate, extension autofill, and generated writing. Polar runs a fast validation pass on the form DOM (identity, work authorization, eligibility-critical, required-empty-or-error, required legal), repairs anomalies, retrieves Outlook verification codes, confirms on the employer page, then acks Jobright. Unique job_key, one live apply (R or G), cheap SKIP before claim or ATS. Sheet blocked/submitted/unknown memory stays. Full-queue reads, scratch tabs, Copilot-as-autofill, and full-form audits do not. PREFERENCES stays thin. google_sheets is Google-connector reach to Polar Jobs, not a connector title."
 timezone: "America/New_York"
 apply_entry: jobright_recommendations
@@ -512,6 +512,12 @@ repeat_keys:
       - phd_only_missed_at_discovery
       - phd_only_gate_missed_at_discovery
       - undergrad_only_gate_missed_at_discovery
+  institution_named_enrollment_gate:
+    meaning: "Exclusive named-school enrollment gate on the full JD that omits the candidate's schools. Polar Production #153 InterSystems MIT-only micro-intern."
+    aliases:
+      - institution_specific_eligibility_gate
+      - named_school_enrollment_gate
+      - mit_only_enrollment_gate
   control_key_duplicate:
     meaning: "Two Sheet control-tab rows share one key. Polar must abort that write, not guess."
     aliases:
