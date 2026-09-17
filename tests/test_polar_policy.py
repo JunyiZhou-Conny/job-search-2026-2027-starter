@@ -610,6 +610,25 @@ class TestInstitutionEnrollmentGate(unittest.TestCase):
         self.assertIsNone(institution_enrollment_hard_skip("Currently enrolled students are welcome."))
         self.assertIsNone(institution_enrollment_hard_skip("This internship is PhD students only."))
 
+    def test_generic_school_words_are_not_a_skip(self):
+        self.assertIsNone(institution_enrollment_hard_skip("Open only to college students."))
+        self.assertIsNone(
+            institution_enrollment_hard_skip("Currently enrolled university students may apply.")
+        )
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "Eligibility is restricted to currently enrolled graduate school students."
+            )
+        )
+        self.assertIsNone(institution_enrollment_hard_skip("Restricted to institute students."))
+
+    def test_later_sentence_school_mention_is_not_a_skip(self):
+        self.assertIsNone(
+            institution_enrollment_hard_skip(
+                "Must be currently enrolled. Stanford students are encouraged to apply."
+            )
+        )
+
     def test_repeat_key_aliases_collapse(self):
         self.assertEqual(
             canonical_repeat_key("institution_specific_eligibility_gate"),

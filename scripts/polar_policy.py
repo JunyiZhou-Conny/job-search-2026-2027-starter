@@ -2008,12 +2008,8 @@ _DEGREE_OR_FIELD_STOP = frozenset(
         "candidate",
     }
 )
-_SCHOOL_LEXEMES = frozenset(
+_NAMED_SCHOOL_LEXEMES = frozenset(
     {
-        "university",
-        "college",
-        "institute",
-        "school",
         "mit",
         "cmu",
         "nyu",
@@ -2065,29 +2061,33 @@ _GENERIC_SCHOOL_WORDS = frozenset(
         "t",
         "h",
         "th",
+        "students",
+        "student",
     }
 )
+# No period in the capture class. A later sentence's school name is not this gate.
+_EXCLUSIVE_SCHOOL_NAME = r"[a-z0-9][a-z0-9 ,&'/-]{0,60}"
 _EXCLUSIVE_SCHOOL_RES = (
-    re.compile(r"currently enrolled ([a-z0-9][a-z0-9 .,&'/-]{0,78}) students"),
+    re.compile(rf"currently enrolled ({_EXCLUSIVE_SCHOOL_NAME}) students"),
     re.compile(
-        r"restricted(?: eligibility)? to (?:currently enrolled )?"
-        r"([a-z0-9][a-z0-9 .,&'/-]{0,78}) students"
+        rf"restricted(?: eligibility)? to (?:currently enrolled )?"
+        rf"({_EXCLUSIVE_SCHOOL_NAME}) students"
     ),
     re.compile(
-        r"open only to (?:currently enrolled )?([a-z0-9][a-z0-9 .,&'/-]{0,78}) students"
+        rf"open only to (?:currently enrolled )?({_EXCLUSIVE_SCHOOL_NAME}) students"
     ),
     re.compile(
-        r"limited to (?:currently enrolled )?(?:students (?:at|of|from) )?"
-        r"([a-z0-9][a-z0-9 .,&'/-]{0,78}) students"
+        rf"limited to (?:currently enrolled )?(?:students (?:at|of|from) )?"
+        rf"({_EXCLUSIVE_SCHOOL_NAME}) students"
     ),
     re.compile(
-        r"must be (?:a )?(?:current |currently enrolled )?"
-        r"([a-z0-9][a-z0-9 .,&'/-]{0,40}) student"
+        rf"must be (?:a )?(?:current |currently enrolled )?"
+        rf"({_EXCLUSIVE_SCHOOL_NAME}) student"
     ),
-    re.compile(r"([a-z0-9][a-z0-9 .,&'/-]{0,40}) students only"),
+    re.compile(rf"({_EXCLUSIVE_SCHOOL_NAME}) students only"),
     re.compile(
-        r"eligibility (?:is )?(?:restricted )?to (?:currently enrolled )?"
-        r"([a-z0-9][a-z0-9 .,&'/-]{0,78}) students"
+        rf"eligibility (?:is )?(?:restricted )?to (?:currently enrolled )?"
+        rf"({_EXCLUSIVE_SCHOOL_NAME}) students"
     ),
 )
 
@@ -2130,12 +2130,20 @@ def _candidate_school_tokens(schools: Sequence[str]) -> set:
 
 
 def _clause_looks_named_school(clause: str) -> bool:
-    tokens = re.findall(r"[a-z0-9]+", normalize_text(clause))
+    text = normalize_text(clause)
+    if not text or "." in text:
+        return False
+    tokens = re.findall(r"[a-z0-9]+", text)
     if not tokens:
         return False
-    if all(tok in _DEGREE_OR_FIELD_STOP for tok in tokens):
+    if all(
+        tok in _DEGREE_OR_FIELD_STOP or tok in _GENERIC_SCHOOL_WORDS for tok in tokens
+    ):
         return False
-    return any(tok in _SCHOOL_LEXEMES for tok in tokens)
+    return any(
+        tok in _NAMED_SCHOOL_LEXEMES and tok not in _GENERIC_SCHOOL_WORDS
+        for tok in tokens
+    )
 
 
 def institution_enrollment_hard_skip(
