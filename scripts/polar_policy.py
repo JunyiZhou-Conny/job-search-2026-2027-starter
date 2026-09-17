@@ -2184,8 +2184,18 @@ def _clause_looks_named_school(clause: str) -> bool:
     tokens = re.findall(r"[a-z0-9]+", text)
     if not tokens:
         return False
+    # Unprefixed students-only captures are leftmost and greedy, so they
+    # often swallow posting words before the school. Those words are not
+    # the name; only the suffix after the last template token is.
     if any(tok in _CAPTURE_TEMPLATE_WORDS for tok in tokens):
-        return False
+        start = 0
+        for i, tok in enumerate(tokens):
+            if tok in _CAPTURE_TEMPLATE_WORDS:
+                start = i + 1
+        tokens = tokens[start:]
+        if not tokens:
+            return False
+        text = " ".join(tokens)
     if all(
         tok in _DEGREE_OR_FIELD_STOP or tok in _GENERIC_SCHOOL_WORDS for tok in tokens
     ):
