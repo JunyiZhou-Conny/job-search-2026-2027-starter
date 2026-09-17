@@ -1,6 +1,6 @@
 # Polar queue schema
 
-This file is the reference for the Polar Local Google Sheet. GitHub stays configuration and audit. The Sheet is runtime checkpoint state.
+This file is the reference for the Polar Local Google Sheet. GitHub stays configuration and audit. The Sheet is runtime checkpoint state. The whole-system map is `docs/architecture/POLAR_SYSTEM.md`.
 
 Do not build a database, Redis, or a second `data/applications.csv`.
 

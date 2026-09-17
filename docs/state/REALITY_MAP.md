@@ -1,5 +1,8 @@
 # Reality map, 2026-09-03
 
+This file is archaeology from 2026-09-03. It is not the current Polar production map.
+For the live Polar Local system on current `main`, use `docs/architecture/POLAR_SYSTEM.md`.
+
 Evidence-backed reconstruction of this repository before any redesign.
 Written by the coordinator agent that took ownership on 2026-09-03.
 Every claim carries a pointer. `VERIFIED` means read or run. `INFERRED`
