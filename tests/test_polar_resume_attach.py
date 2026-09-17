@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import sys
 import unittest
 from pathlib import Path
@@ -15,6 +16,7 @@ from polar_resume_attach import (  # noqa: E402
     POLAR_COMPILE_ALIAS_REPO_PATH,
     PRODUCTION_RESUME_REPO_PATH,
     PRODUCTION_RESUME_STORED_NAME,
+    TWO_PAGE_MASTER_PATH,
     load_attach_policy,
     perfect_resume_file_available,
     repo_pdf,
@@ -43,6 +45,23 @@ class TestPolarResumeAttach(unittest.TestCase):
         )
         self.assertTrue(perfect_resume_file_available(ROOT))
         self.assertEqual(load_attach_policy().get("identified_mac_pdf"), "")
+
+    def test_gold_bytes_match_pinned_sha256(self):
+        policy = load_attach_policy()
+        pinned = str(policy.get("gold_sha256") or "").strip().lower()
+        self.assertRegex(pinned, r"^[0-9a-f]{64}$")
+        gold = (ROOT / PRODUCTION_RESUME_REPO_PATH).read_bytes()
+        self.assertEqual(hashlib.sha256(gold).hexdigest(), pinned)
+        self.assertEqual(len(gold), int(policy.get("gold_bytes") or 0))
+        alias = (ROOT / POLAR_COMPILE_ALIAS_REPO_PATH).read_bytes()
+        self.assertEqual(hashlib.sha256(alias).hexdigest(), pinned)
+        # The two-page master is never the gold bytes.
+        master = (ROOT / TWO_PAGE_MASTER_PATH).read_bytes()
+        self.assertNotEqual(hashlib.sha256(master).hexdigest(), pinned)
+        # Retired 2026-09-15 bytes must not come back.
+        self.assertNotEqual(
+            pinned, "2ac0791447eef92e48c4b4cd11da1c4cef6cf8ec787ed78a249a2f0568d4238e"
+        )
 
     def test_never_upload_family_export(self):
         policy = load_attach_policy()

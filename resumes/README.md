@@ -8,7 +8,7 @@ This folder starts fresh with one active resume.
 - `base/JZ_resume.pdf` is the compiled two-page master. It is not a Polar attach.
 - `base/evidence_bank.md` lists what the base resume may claim.
 - `families/ai_infra/ai_infra_v1.tex` is a frozen Resume Stack BUILD one-pager. It is not Polar's apply resume.
-- `Perfect Resume/JZ_Resume_2027.pdf` is the Junyi-supplied gold copy Polar may upload when a native widget needs bytes. Polar and Simplify already store the name **Perfect Resume**. `Perfect Resume/perfect_resume.pdf` is the same bytes, kept so Polar compiled paths still resolve.
+- `Perfect Resume/JZ_Resume_2027.pdf` is the Junyi-supplied gold copy Polar may upload when a native widget needs bytes (current bytes: 2026-09-17 owner upload, one page; SHA256 pinned in `knowledge/polar_resume_attach.yaml`). Polar and Simplify already store the name **Perfect Resume**. `Perfect Resume/perfect_resume.pdf` is the same bytes, kept so older compiled paths still resolve.
 
 `role_cluster` and `resume_cluster` stay job taxonomy (`cloud_swe`, `data_ml`, `health_ai`). They are not files here. Do not recreate those folders.
 
