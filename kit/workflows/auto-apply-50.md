@@ -9,14 +9,19 @@ contains the *procedure*, never the data.
 ## Run parameters
 
 - **Target:** the `applications target per run` from `profile.md`, counted **per run**. Each
-  run starts its own count at zero.
-- **Submission mode:** whatever `profile.md` says. If it says prepare-and-stop, fill
-  everything and stop before the final submit; do not submit.
+  run starts its own count at zero. `cumulative_applied` is that per-run count — a later
+  run starting again at 1 is expected.
+- **Submission mode:** whatever `profile.md` says.
+  - **submit automatically:** target rows are `SUBMITTED`.
+  - **prepare-and-stop:** fill everything, run the correction checklist, and **stop before
+    the final submit**. Do not submit. Do not press **Start** — the board's own agent can
+    submit from there. Log `PREPARED`, click **Skip** on the queue card (never `I've
+    Applied`), and count `PREPARED` toward the run target.
 - **Ledger:** the sheet URL in `profile.md`, tab `Sheet1`, columns
   `run_id | timestamp_et | company | role | job_url | ats | outcome | cumulative_applied | blocker_or_note | evidence`
-- `outcome` ∈ `SUBMITTED` · `SUBMISSION_UNKNOWN` · `BLOCKED` · `SKIPPED`. Only `SUBMITTED`
-  counts. **Never write `SUBMITTED` without the literal confirmation text or URL in
-  `evidence`.**
+- `outcome` ∈ `SUBMITTED` · `SUBMISSION_UNKNOWN` · `PREPARED` · `BLOCKED` · `SKIPPED`. Only
+  the mode's target outcome counts (`SUBMITTED` or `PREPARED`). **Never write `SUBMITTED`
+  without the literal confirmation text or URL in `evidence`.**
 
 ## STEP 0 — Precondition: the application mailbox must be signed in
 
@@ -34,20 +39,26 @@ Do not start applying. Leave the tab open for the whole run; codes get read from
 ## STEP 1 — Set up the run
 
 1. Mint a `run_id`, e.g. `R-YYYYMMDD-HHMM`.
-2. Read the **entire** ledger tab and collect every `job_url` already marked `SUBMITTED`.
-   Scan all rows — they are not reliably in chronological order. That set is the
-   do-not-reapply list.
+2. Read the **entire** ledger tab and collect every `job_url` already marked `SUBMITTED`,
+   `SUBMISSION_UNKNOWN`, or `PREPARED`. Scan all rows — they are not reliably in
+   chronological order. That set is the do-not-reapply list. `SUBMISSION_UNKNOWN` means
+   submit may already have happened (missing or ambiguous employer confirmation, including a
+   "we already have your profile" screen). Verify only if the owner asks; **never blindly
+   resubmit.**
 
 ### Stop conditions
 
 Stop at the first of these and report:
 
-- The run's target number of `SUBMITTED` rows is reached.
+- The run's target number of counting rows is reached (`SUBMITTED` in submit mode,
+  `PREPARED` in prepare-and-stop).
 - The queue is empty **and** a request for more matches returns nothing new. The queue
   emptying around 40 jobs is normal and is *not* a stop condition — refill per STEP 3.
-- **Eight consecutive jobs end `BLOCKED` or `SKIPPED` with no submission.** Something
-  systemic is wrong — a changed UI, a dead login, bad profile state. Stop and report rather
-  than grinding through the queue.
+- **Eight consecutive jobs end `BLOCKED` with no counting outcome.** Something systemic is
+  wrong — a changed UI, a dead login, bad profile state. Stop and report rather than
+  grinding through the queue. `SKIPPED` does not count toward this — ledger-dedupe hits and
+  hard-bar skips are expected once the ledger has history, and they must not halt the run
+  before new jobs further down the queue are reached.
 - Nine hours elapsed. Stop, report, leave the queue mid-flight for the next run.
 
 Budget ~2.5 min for a simple one-page form and up to ~15 min for Workday or SuccessFactors
@@ -72,11 +83,13 @@ will disagree.
 Any target above 40 needs a mid-run refill.
 
 Add jobs via the composer or a "show me more matches" control, then click **Add** on the
-cards that appear. Fill to 40, press **Start**.
+cards that appear. Fill to 40. Press **Start** only in submit-automatically mode. In
+prepare-and-stop, do **not** press Start — work every job through the manual route in
+STEP 4.
 
 When Active empties, you are not done — request more matches, add at least
-`target - submitted_so_far` more (allow slack for jobs that won't submit cleanly), press
-**Start** again.
+`target - counted_so_far` more (allow slack for jobs that won't complete cleanly). Press
+**Start** again only in submit-automatically mode.
 
 ## Autonomous execution mode
 
@@ -84,14 +97,15 @@ After **Start**, the board's own agent may drive an entire job by itself — gen
 confirm → fill form → submit — **without opening a visible browser tab**, then post a
 "submitted" line in its chat feed and mark the job Applied in its own tracker.
 
-Decide which posture you want and write it in `profile.md`:
+`profile.md` already chose the posture:
 
-- **Accept it** (the reference setup's choice): let it finish, don't pause it, and log the row
-  `SUBMITTED` with the agent's submission line plus its tracker entry as `evidence`. The
-  tradeoff is real — there is no employer-side confirmation to capture, and no opportunity to
-  run the correction checklist on that application.
-- **Require supervision:** don't press Start. Work every job through the manual route in
-  STEP 4, where you see each form before it submits.
+- **submit automatically / accept the board agent** (the reference setup's choice): press
+  Start, let it finish, don't pause it, and log the row `SUBMITTED` with the agent's
+  submission line plus its tracker entry as `evidence`. The tradeoff is real — there is no
+  employer-side confirmation to capture, and no opportunity to run the correction checklist
+  on that application.
+- **prepare-and-stop / require supervision:** don't press Start. Work every job through the
+  manual route in STEP 4, where you see each form, and stop before the final submit.
 
 Either way, whenever the board **hands control back** — `Action Required`,
 `Confirm Resume To Proceed`, `Apply Now ↗` — STEP 4 and the correction checklist apply in
@@ -108,7 +122,9 @@ form (**Action Required**) → submit application.
    skip over match %, seniority, domain, or location, and don't read the full job description
    hunting for reasons to opt out. Deliberation is the cost this system exists to remove.
 2. **Only two reasons to skip:**
-   - The `job_url` is already `SUBMITTED` in the ledger. Never apply twice.
+   - The `job_url` is already `SUBMITTED`, `SUBMISSION_UNKNOWN`, or `PREPARED` in the
+     ledger. Never apply twice. Never blindly resubmit an unknown. Log `SKIPPED` with the
+     reason; move on immediately.
    - The posting states a hard bar that voids the application regardless of how it's filled —
      citizenship or active clearance required, or enrollment at one named school. Log
      `SKIPPED` with the reason; move on immediately.
@@ -125,11 +141,14 @@ form (**Action Required**) → submit application.
    `x/y required fields filled` meter. **Don't trust its green checkmarks** — read the actual
    page. Per-ATS notes are in `DEPENDENCIES.md`.
 6. **Run the pre-submit correction checklist below. Do not skip it.**
-7. Submit. Capture the literal confirmation text or URL as `evidence`. Anything ambiguous —
-   a duplicate-profile screen, "we already have your profile" — is `SUBMISSION_UNKNOWN`, not
-   `SUBMITTED`.
-8. **Return to the queue tab and click `I've Applied.`** The queue does not advance on its
-   own; skipping this stalls the whole run. For a blocked job, click **Skip** instead.
+7. If the mode is prepare-and-stop: **do not submit.** Log `PREPARED` with a note that the
+   form is filled and the checklist passed. If the mode is submit: Submit. Capture the
+   literal confirmation text or URL as `evidence`. Anything ambiguous — a duplicate-profile
+   screen, "we already have your profile" — is `SUBMISSION_UNKNOWN`, not `SUBMITTED`.
+8. **Return to the queue tab.** For `SUBMITTED` or `SUBMISSION_UNKNOWN`, click `I've
+   Applied.` For `PREPARED` or a blocked job, click **Skip** instead — never `I've Applied`
+   on a job you did not submit. The queue does not advance on its own; skipping this stalls
+   the whole run.
 9. **Append the ledger row immediately**, before starting the next job. Write with an explicit
    range update to the next empty row — the Sheets *append* operation auto-detects where your
    table ends and can overwrite an existing row mid-table. Re-read after writing to confirm.
@@ -177,8 +196,8 @@ it in the run summary. It's a legal attestation and it's theirs to make.
 
 ## STEP 5 — Report
 
-A short chat summary: submissions this run against target, blockers grouped by type, real
-average minutes per application, and a link to the ledger.
+A short chat summary: counting outcomes this run against target (`SUBMITTED` or `PREPARED`),
+blockers grouped by type, real average minutes per application, and a link to the ledger.
 
 **Also report every correction you made.** That list is what feeds the daily audit workflow,
 and it's how this checklist grows.

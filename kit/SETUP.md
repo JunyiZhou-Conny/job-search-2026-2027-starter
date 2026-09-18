@@ -39,8 +39,8 @@ run_id	timestamp_et	company	role	job_url	ats	outcome	cumulative_applied	blocker_
 | `company`, `role` | As shown on the posting |
 | `job_url` | **The dedupe key.** Must be filled — this is what stops you reapplying. |
 | `ats` | Workday / Greenhouse / Ashby / iCIMS / ADP / SuccessFactors / … |
-| `outcome` | `SUBMITTED` · `SUBMISSION_UNKNOWN` · `BLOCKED` · `SKIPPED` |
-| `cumulative_applied` | Running count of submissions this run |
+| `outcome` | `SUBMITTED` · `SUBMISSION_UNKNOWN` · `PREPARED` · `BLOCKED` · `SKIPPED` |
+| `cumulative_applied` | Running count of this run's target outcomes (`SUBMITTED` or `PREPARED`). Resets to zero each run. |
 | `blocker_or_note` | What went wrong, or what you had to correct. **This column is what the daily audit reads** — write real detail here, not "ok". |
 | `evidence` | The literal confirmation text or URL. **No evidence, no `SUBMITTED`.** |
 
@@ -70,6 +70,10 @@ Give your agent the three files in `workflows/`, each as a scheduled workflow:
 In Polar this is: paste the file contents into chat, say *"save this as a scheduled workflow
 called auto-apply-50, running at 9am and 5pm, but leave the schedule off for now."* Other
 agents will have their own mechanism.
+
+The scheduled copy is what the apply loop executes. The daily audit edits
+`workflows/auto-apply-50.md` and then **must replace that scheduled workflow** with the
+updated file. If you skip the refresh, checklist lessons never reach the next apply run.
 
 Each workflow file references `profile.md` for personal facts, so put `profile.md` where the
 agent can read it and tell the agent that path.
@@ -152,3 +156,4 @@ Once the trial run comes back clean:
 | Clicks land on the wrong element | Sidebar opened/closed and shifted the viewport | Re-screenshot after any sidebar state change; don't reuse coordinates |
 | Queue stops around 40 jobs | The job board's queue caps at 40 | Normal — refill and restart, per the workflow |
 | Same job offered repeatedly | Board tracker and your ledger disagree | Your ledger wins. Dedupe on `job_url`, not the board's status. |
+| Checklist grew but apply still makes the same mistake | Scheduled apply is a frozen paste | Daily audit must refresh the scheduled `auto-apply-50` workflow from the file |
